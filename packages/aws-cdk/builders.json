@@ -1,0 +1,15 @@
+{
+    "$schema": "@angular-devkit/architect/src/builders-schema.json",
+    "builders": {
+        "build": {
+            "implementation": "./src/build/build",
+            "schema": "./src/build/schema.json",
+            "description": "Build a aws-cdk infrastructure"
+        },
+        "execute": {
+            "implementation": "./src/execute/execute",
+            "schema": "./src/execute/schema.json",
+            "description": "Execute a aws-cdk infrastructure"
+        }
+    }
+}

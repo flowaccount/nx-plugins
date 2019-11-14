@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.nxVersion = '*';
+exports.serverlessVersion = '*';
+exports.serverlessDotEnvVersion = '*';
+exports.serverlessOfflineVersion = '*';
+exports.serverlessOptimizeVersion = '4.1.0-rc.1';
+exports.serverlessTypescriptVersion = '*';
+exports.awsSdkVersion = '*';
+exports.awsTypeLambdaVersion = '*';
