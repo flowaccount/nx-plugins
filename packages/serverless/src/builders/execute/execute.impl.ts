@@ -31,8 +31,16 @@ async function runSerially(
     context: BuilderContext
   ) {
 
+    let args: string = "";
+    for (var key in options) {
+      if (options.hasOwnProperty(key)) {
+        if(options[key] !== undefined) {
+          args += " --" + key + " " + options[key];
+        }
+      }
+    }
     const failedCommand =  await createProcess(
-            "node_modules\\.bin\\serverless offline --config " + options.location + " --location " + options.location,
+            "node_modules\\.bin\\serverless offline" + args ,
             options.readyWhen ? options.readyWhen : "success",
             options,
             context

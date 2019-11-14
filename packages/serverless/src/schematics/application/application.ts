@@ -65,14 +65,11 @@ function getBuildConfig(project: any, options: NormalizedSchema) {
   };
 }
 
-function getServeConfig(options: NormalizedSchema) {
+function getServeConfig(project: any, options: NormalizedSchema) {
   return {
     builder: '@nx/serverless:execute',
     options: {
-      // buildTarget: `${options.name}:build`,
-      arguments: {
-        verbose: true
-      }
+      config: join( project.appProjectRoot, "serverless.yml")
     }
   };
 }
@@ -89,7 +86,7 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
     };
 
     project.architect.build = getBuildConfig(project, options);
-    project.architect.serve = getServeConfig(options);
+    project.architect.serve = getServeConfig(project, options);
     project.architect.lint = generateProjectLint(
       normalize(project.root),
       join(normalize(project.root), 'tsconfig.app.json'),
@@ -187,7 +184,7 @@ export default function(schema: Schema): Rule {
       }),
       addLintFiles(options.appProjectRoot, options.linter),
       addAppFiles(options),
-      addServerlessYMLFile(options),
+      // addServerlessYMLFile(options),
       updateWorkspaceJson(options),
       updateNxJson(options),
       options.unitTestRunner === 'jest'
