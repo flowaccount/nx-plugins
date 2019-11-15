@@ -26,7 +26,6 @@ function addDependencies(): Rule {
     }
   );
 }
-
 function moveDependency(): Rule {
   return updateJsonInTree('package.json', json => {
     json.dependencies = json.dependencies || {};

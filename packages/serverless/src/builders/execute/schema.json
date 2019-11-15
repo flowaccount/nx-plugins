@@ -7,6 +7,10 @@
         "type": "string",
         "description": "The serverless.yml location"
       },
+      "location": {
+        "type": "string",
+        "description": "The src file location"
+      },
       "host": {
         "type": "string",
         "description": "The host to inspect the process on"
@@ -18,7 +22,7 @@
       }
     },
     "additionalProperties": false,
-    "required": ["config"]
+    "required": ["config", "location"]
   }
   
   
