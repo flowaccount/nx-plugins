@@ -23,7 +23,8 @@ function addDependencies(): Rule {
       'serverless-plugin-typescript': serverlessTypescriptVersion,
       'aws-sdk': awsSdkVersion,
       '@types/aws-lambda': awsTypeLambdaVersion,
-    }
+    },
+    false
   );
 }
 function moveDependency(): Rule {
