@@ -135,6 +135,7 @@ function getTypescriptConfig(cwd, servicePath, logger) {
         }
 
         configParseResult.options.rootDir = './' ;
+        console.log(configParseResult.options);
         return configParseResult.options;
     }
     return makeDefaultTypescriptConfig();

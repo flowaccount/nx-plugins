@@ -8,7 +8,6 @@ import CircularDependencyPlugin = require('circular-dependency-plugin');
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import * as CopyWebpackPlugin from 'copy-webpack-plugin';
-import * as slsw from 'serverless-webpack';
 import { readTsConfig } from '@nrwl/workspace';
 import { BuildBuilderOptions } from './types';
 
@@ -24,8 +23,10 @@ export function getBaseWebpackPartial(
   const mainFields = [...(supportsEs2015 ? ['es2015'] : []), 'module', 'main'];
   const extensions = ['.ts', '.tsx', '.mjs', '.js', '.jsx'];
   const webpackConfig: Configuration = {
-    entry: slsw.lib.entries,
-    // devtool: options.sourceMap ? 'source-map' : false,
+    entry: {
+      main: [options.main]
+    },
+    devtool: options.sourceMap ? 'source-map' : false,
     mode: options.optimization ? 'production' : 'development',
     output: {
       path: options.outputPath,
@@ -90,30 +91,30 @@ export function getBaseWebpackPartial(
   }
 
   // process asset entries
-//   if (options.assets) {
-//     const copyWebpackPluginPatterns = options.assets.map((asset: any) => {
-//       return {
-//         context: asset.input,
-//         // Now we remove starting slash to make Webpack place it from the output root.
-//         to: asset.output,
-//         ignore: asset.ignore,
-//         from: {
-//           glob: asset.glob,
-//           dot: true
-//         }
-//       };
-//     });
+  if (options.assets) {
+    const copyWebpackPluginPatterns = options.assets.map((asset: any) => {
+      return {
+        context: asset.input,
+        // Now we remove starting slash to make Webpack place it from the output root.
+        to: asset.output,
+        ignore: asset.ignore,
+        from: {
+          glob: asset.glob,
+          dot: true
+        }
+      };
+    });
 
-//     const copyWebpackPluginOptions = {
-//       ignore: ['.gitkeep', '**/.DS_Store', '**/Thumbs.db']
-//     };
+    const copyWebpackPluginOptions = {
+      ignore: ['.gitkeep', '**/.DS_Store', '**/Thumbs.db']
+    };
 
-//     const copyWebpackPluginInstance = new CopyWebpackPlugin(
-//       copyWebpackPluginPatterns,
-//       copyWebpackPluginOptions
-//     );
-//     extraPlugins.push(copyWebpackPluginInstance);
-//   }
+    const copyWebpackPluginInstance = new CopyWebpackPlugin(
+      copyWebpackPluginPatterns,
+      copyWebpackPluginOptions
+    );
+    extraPlugins.push(copyWebpackPluginInstance);
+  }
 
   if (options.showCircularDependencies) {
     extraPlugins.push(

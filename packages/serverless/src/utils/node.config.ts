@@ -25,7 +25,7 @@ export function getBaseWebpackPartial(
   const extensions = ['.ts', '.tsx', '.mjs', '.js', '.jsx'];
   const webpackConfig: Configuration = {
     entry: slsw.lib.entries,
-    // devtool: options.sourceMap ? 'source-map' : false,
+    devtool: options.sourceMap ? 'source-map' : false,
     mode: options.optimization ? 'production' : 'development',
     output: {
       path: options.outputPath,
