@@ -3,6 +3,10 @@
     "description": "NodeJS execution options",
     "type": "object",
     "properties": {
+      "buildTarget": {
+        "type": "string",
+        "description": "The target to run to build you the app"
+      },
       "config": {
         "type": "string",
         "description": "The serverless.yml location"
@@ -22,7 +26,7 @@
       }
     },
     "additionalProperties": false,
-    "required": ["config", "location"]
+    "required": ["buildTarget", "config", "location"]
   }
   
   

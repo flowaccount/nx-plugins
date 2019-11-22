@@ -1,80 +1,66 @@
 import { BuilderContext, createBuilder, BuilderOutput } from '@angular-devkit/architect';
-import { JsonObject, workspaces } from '@angular-devkit/core';
-import { Observable } from 'rxjs';
+import { JsonObject, workspaces, resolve } from '@angular-devkit/core';
+import { runWebpack, BuildResult } from '@angular-devkit/build-webpack';
+import { Observable, from, observable } from 'rxjs';
 // import { NodeJsSyncHost } from '@angular-devkit/core/node';
-import { exec } from 'child_process';
-import { TEN_MEGABYTES } from '@nrwl/workspace/src/command-line/shared';
 import { BuildBuilderOptions, ServerlessOfflineOptions } from '../../utils/types';
-export interface ServerlessBuildBuilderOptions extends BuildBuilderOptions {
+import { map, concatMap, take, switchMap } from 'rxjs/operators';
+import { NodeJsSyncHost } from '@angular-devkit/core/node';
+import { getNodeWebpackConfig } from '../../utils/node.config';
+import { normalizeBuildOptions } from '../../utils/normalize';
+
+export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {
    
 }
-export default createBuilder<ServerlessBuildBuilderOptions & JsonObject>(run);
+export type ServerlessBuildEvent = BuildResult & {
+  outfile: string;
+};
+export default createBuilder<JsonObject & BuildServerlessBuilderOptions>(run);
 
-export function run(
-    options:  JsonObject & ServerlessBuildBuilderOptions,
-    context: BuilderContext
-): Observable<BuilderOutput> {
-    return Observable.create(async observer => { 
-        try {
-            const success = await runSerially(options, context)
-            observer.next({ success })
-        } catch (e) {
-            observer.next(
-              `ERROR: Something went wrong in @nx/serverless - ${e.message}`
-            );
+function run(
+  options: JsonObject & BuildServerlessBuilderOptions,
+  context: BuilderContext
+): Observable<ServerlessBuildEvent> {
+  return from(getSourceRoot(context)).pipe(
+    switchMap(sourceRoot =>
+      from(normalizeBuildOptions(options, context.workspaceRoot, sourceRoot))
+    ),
+    map(options => {
+      let config = getNodeWebpackConfig(options);
+      if (options.webpackConfig) {
+        config = require(options.webpackConfig)(config, {
+          options,
+          configuration: context.target.configuration
+        });
+      }
+      return config;
+    }),
+    concatMap(config =>
+      runWebpack(config, context, {
+        logging: stats => {
+          context.logger.info(stats.toString(config.stats));
         }
+      })
+    ),
+    map((buildEvent: BuildResult) => {
+      buildEvent.outfile = options.outputPath
+      return buildEvent as ServerlessBuildEvent;
     })
+  );
 }
-async function runSerially(
-    options: ServerlessBuildBuilderOptions,
-    context: BuilderContext
-  ) {
-    const failedCommand =  await createProcess(
-            "node_modules/.bin/serverless package",
-            options.readyWhen ? options.readyWhen : "success",
-            options.arguments
-          );
-    if (failedCommand) {
-      context.logger.warn(
-        `Warning: @nx/serverless command "${failedCommand}" exited with non-zero status code`
-      );
-      return false;
-    }
-    return true;
-  }
-  function createProcess(
-    command: string,
-    readyWhen: string,
-    parsedArgs: ServerlessOfflineOptions
-  ): Promise<boolean> {
-    command = transformCommand(command, parsedArgs);
-    return new Promise(res => {
-      const childProcess = exec(command, { maxBuffer: TEN_MEGABYTES });
-      /**
-       * Ensure the child process is killed when the parent exits
-       */
-      process.on('exit', () => childProcess.kill());
-      childProcess.stdout.on('data', data => {
-        process.stdout.write(data);
-        if (readyWhen && data.toString().indexOf(readyWhen) > -1) {
-          res(true);
-        }
-      });
-      childProcess.stderr.on('data', err => {
-        process.stderr.write(err);
-        if (readyWhen && err.toString().indexOf(readyWhen) > -1) {
-          res(true);
-        }
-      });
-      childProcess.on('close', code => {
-        if (!readyWhen) {
-          res(code === 0);
-        }
-      });
-    });
-  }
 
-  function transformCommand(command: string, args: any) {
-    const regex = /{args\.([^}]+)}/g;
-    return command.replace(regex, (_, group: string) => args[group]);
+async function getSourceRoot(context: BuilderContext) {
+  const workspaceHost = workspaces.createWorkspaceHost(new NodeJsSyncHost());
+  const { workspace } = await workspaces.readWorkspace(
+    context.workspaceRoot,
+    workspaceHost
+  );
+  if (workspace.projects.get(context.target.project).sourceRoot) {
+    return workspace.projects.get(context.target.project).sourceRoot;
+  } else {
+    context.reportStatus('Error');
+    const message = `${context.target.project} does not have a sourceRoot. Please define one.`;
+    context.logger.error(message);
+    throw new Error(message);
   }
+}

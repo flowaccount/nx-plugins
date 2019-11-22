@@ -48,22 +48,27 @@ export interface BuildBuilderOptions {
     region?: string;
     state?: string;
     serverlessConfig: string;
+    servicePath: string;
     tsConfig: string;
     outputPath: string;
-    optimization?: boolean  | OptimizationOptions;
     showCircularDependencies?: boolean;
     poll?: number;
     fileReplacements: FileReplacement[];
     webpackConfig?: string;
     root?: string;
     sourceRoot?: Path;
+    entry?: {};
     readyWhen?: string;
     arguments: ServerlessOfflineOptions;
     progress?: boolean;
     watch?: boolean;
+    assets? : any[];
     maxWorkers?: number;
     extractLicenses?: boolean;
     verbose?: boolean;
     statsJson?: boolean;
-    sourceMap?: boolean | SourceMapOptions;
+
+    optimization?: boolean;
+    sourceMap?: boolean;
+    externalDependencies: 'all' | 'none' | string[];
   }

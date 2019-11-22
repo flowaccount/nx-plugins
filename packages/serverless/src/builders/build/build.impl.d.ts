@@ -1,9 +1,10 @@
-import { BuilderContext, BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { Observable } from 'rxjs';
+import { BuildResult } from '@angular-devkit/build-webpack';
 import { BuildBuilderOptions } from '../../utils/types';
-export interface ServerlessBuildBuilderOptions extends BuildBuilderOptions {
+export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {
 }
-declare const _default: import("@angular-devkit/architect/src/internal").Builder<ServerlessBuildBuilderOptions & JsonObject>;
+export declare type ServerlessBuildEvent = BuildResult & {
+    outfile: string;
+};
+declare const _default: import("@angular-devkit/architect/src/internal").Builder<JsonObject & BuildServerlessBuilderOptions>;
 export default _default;
-export declare function run(options: JsonObject & ServerlessBuildBuilderOptions, context: BuilderContext): Observable<BuilderOutput>;

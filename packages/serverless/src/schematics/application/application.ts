@@ -121,9 +121,7 @@ function addServerlessYMLFile(options: NormalizedSchema): Rule {
             `service: ${options.name}
 frameworkVersion: ">=1.1.0 <2.0.0"
 plugins:
-  - serverless-plugin-typescript
   - serverless-offline
-  - serverless-dotenv-plugin
   - serverless-plugin-optimize
 package:
   individually: true

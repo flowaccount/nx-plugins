@@ -1,162 +1,45 @@
-import * as webpack from 'webpack';
-import { Configuration, ProgressPlugin, Stats } from 'webpack';
+import { Configuration, BannerPlugin } from 'webpack';
+import * as mergeWebpack from 'webpack-merge';
+import * as nodeExternals from 'webpack-node-externals';
 
-import * as ts from 'typescript';
 
-import { LicenseWebpackPlugin } from 'license-webpack-plugin';
-import CircularDependencyPlugin = require('circular-dependency-plugin');
-import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-import * as CopyWebpackPlugin from 'copy-webpack-plugin';
-import * as slsw from 'serverless-webpack';
-import { readTsConfig } from '@nrwl/workspace';
+import { getBaseWebpackPartial } from './config';
 import { BuildBuilderOptions } from './types';
 
-export const OUT_FILENAME = 'main.js';
-
-export function getBaseWebpackPartial(
-  options: BuildBuilderOptions
-): Configuration {
-  const { options: compilerOptions } = readTsConfig(options.tsConfig);
-  const supportsEs2015 =
-    compilerOptions.target !== ts.ScriptTarget.ES3 &&
-    compilerOptions.target !== ts.ScriptTarget.ES5;
-  const mainFields = [...(supportsEs2015 ? ['es2015'] : []), 'module', 'main'];
-  const extensions = ['.ts', '.tsx', '.mjs', '.js', '.jsx'];
+function getNodePartial(options: BuildBuilderOptions) {
   const webpackConfig: Configuration = {
-    entry: slsw.lib.entries,
-    devtool: options.sourceMap ? 'source-map' : false,
-    mode: options.optimization ? 'production' : 'development',
     output: {
-      path: options.outputPath,
-      filename: OUT_FILENAME
+      libraryTarget: 'commonjs'
     },
-    module: {
-      rules: [
-        {
-          test: /\.(j|t)sx?$/,
-          loader: `ts-loader`,
-          options: {
-            configFile: options.tsConfig,
-            transpileOnly: true,
-            // https://github.com/TypeStrong/ts-loader/pull/685
-            experimentalWatchApi: true
-          }
-        }
-      ]
-    },
-    resolve: {
-      extensions,
-      alias: getAliases(options),
-      plugins: [
-        new TsConfigPathsPlugin({
-          configFile: options.tsConfig,
-          extensions,
-          mainFields
-        })
-      ],
-      mainFields
-    },
-    performance: {
-      hints: false
-    },
-    plugins: [
-      new ForkTsCheckerWebpackPlugin({
-        tsconfig: options.tsConfig,
-        workers: options.maxWorkers || ForkTsCheckerWebpackPlugin.TWO_CPUS_FREE
-      })
-    ],
-    watch: options.watch,
-    watchOptions: {
-      poll: options.poll
-    },
-    stats: getStatsConfig(options)
+    target: 'node',
+    node: false
   };
 
-  const extraPlugins: webpack.Plugin[] = [];
-
-  if (options.progress) {
-    extraPlugins.push(new ProgressPlugin());
+  if (options.optimization) {
+    webpackConfig.optimization = {
+      minimize: false,
+      concatenateModules: false
+    };
   }
 
-  if (options.extractLicenses) {
-    extraPlugins.push((new LicenseWebpackPlugin({
-      stats: {
-        errors: false
-      },
-      perChunkOutput: false,
-      outputFilename: `3rdpartylicenses.txt`
-    }) as unknown) as webpack.Plugin);
+  if (options.externalDependencies === 'all') {
+    webpackConfig.externals = [nodeExternals()];
+  } else if (Array.isArray(options.externalDependencies)) {
+    webpackConfig.externals = [
+      function(context, request, callback: Function) {
+        if (options.externalDependencies.includes(request)) {
+          // not bundled
+          return callback(null, 'commonjs ' + request);
+        }
+        // bundled
+        callback();
+      }
+    ];
   }
-
-  // process asset entries
-//   if (options.assets) {
-//     const copyWebpackPluginPatterns = options.assets.map((asset: any) => {
-//       return {
-//         context: asset.input,
-//         // Now we remove starting slash to make Webpack place it from the output root.
-//         to: asset.output,
-//         ignore: asset.ignore,
-//         from: {
-//           glob: asset.glob,
-//           dot: true
-//         }
-//       };
-//     });
-
-//     const copyWebpackPluginOptions = {
-//       ignore: ['.gitkeep', '**/.DS_Store', '**/Thumbs.db']
-//     };
-
-//     const copyWebpackPluginInstance = new CopyWebpackPlugin(
-//       copyWebpackPluginPatterns,
-//       copyWebpackPluginOptions
-//     );
-//     extraPlugins.push(copyWebpackPluginInstance);
-//   }
-
-  if (options.showCircularDependencies) {
-    extraPlugins.push(
-      new CircularDependencyPlugin({
-        exclude: /[\\\/]node_modules[\\\/]/
-      })
-    );
-  }
-
-  webpackConfig.plugins = [...webpackConfig.plugins, ...extraPlugins];
 
   return webpackConfig;
 }
 
-function getAliases(options: BuildBuilderOptions): { [key: string]: string } {
-  return options.fileReplacements.reduce(
-    (aliases, replacement) => ({
-      ...aliases,
-      [replacement.replace]: replacement.with
-    }),
-    {}
-  );
-}
-
-function getStatsConfig(options: BuildBuilderOptions): Stats.ToStringOptions {
-  return {
-    hash: true,
-    timings: false,
-    cached: false,
-    cachedAssets: false,
-    modules: false,
-    warnings: true,
-    errors: true,
-    colors: !options.verbose && !options.statsJson,
-    chunks: !options.verbose,
-    assets: !!options.verbose,
-    chunkOrigins: !!options.verbose,
-    chunkModules: !!options.verbose,
-    children: !!options.verbose,
-    reasons: !!options.verbose,
-    version: !!options.verbose,
-    errorDetails: !!options.verbose,
-    moduleTrace: !!options.verbose,
-    usedExports: !!options.verbose
-  };
+export function getNodeWebpackConfig(options: BuildBuilderOptions) {
+  return mergeWebpack( getBaseWebpackPartial(options), getNodePartial(options));
 }
