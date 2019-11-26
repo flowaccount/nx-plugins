@@ -5,13 +5,11 @@ import {
   targetFromTargetString,
   scheduleTargetAndForget
 } from '@angular-devkit/architect';
-import { JsonObject, workspaces } from '@angular-devkit/core';
+import { JsonObject } from '@angular-devkit/core';
 import { Observable, bindCallback, of, zip, from, iif, observable } from 'rxjs';
 import { concatMap, tap, mapTo, first, map, filter } from 'rxjs/operators';
-import { runWebpack, BuildResult } from '@angular-devkit/build-webpack';
 import { stripIndents } from '@angular-devkit/core/src/utils/literals';
-import { exec, ChildProcess, fork  } from 'child_process';
-import { TEN_MEGABYTES } from '@nrwl/workspace/src/command-line/shared';
+import { ChildProcess, fork  } from 'child_process';
 import { ServerlessOfflineOptions } from '../../utils/types';
 import * as treeKill from 'tree-kill';
 import { ServerlessBuildEvent } from '../build/build.impl';
@@ -66,21 +64,6 @@ export function serverlessExecutionHandler(
       }
     }));
   }));
-  //   concatMap((event: ServerlessBuildEvent) => {
-  //     return new Observable<BuilderOutput>(observer => {
-  //       try {
-  //         context.logger.info("options sent in: " + options.location, options);
-  //         from(runSerially(options, context)).pipe(
-  //          map(success =>
-  //           observer.next({ success })
-  //          )
-  //        )
-  //       } catch (e) {
-  //         observer.next({error:`ERROR: Something went wrong in @nx/serverless - ${e.message}`, success:false });
-  //       }
-  //     }) 
-  //   }),
-  // );
 }
 
 async function runProcess(
@@ -90,16 +73,7 @@ async function runProcess(
   if (subProcess) {
     throw new Error('Already running');
   }
-  let args: string[] = new Array<string>();
-  args.push("offline");
-  for (var key in options) {
-    if (options.hasOwnProperty(key)) {
-      if (options[key] !== undefined) {
-        args.push(`--${key}=${options[key]}`);
-      }
-    }
-  }
-  subProcess = fork("node_modules\\serverless\\bin\\serverless.js", args);
+  subProcess = fork("node_modules\\serverless\\bin\\serverless.js", getExecArgv(options));
 }
 function startBuild(
   options: ServerlessExecuteBuilderOptions,
@@ -137,7 +111,6 @@ function startBuild(
 
 function getExecArgv(options: ServerlessExecuteBuilderOptions) {
   const args = ['-r', 'source-map-support/register'];
-
   if (options.inspect === true) {
     options.inspect = InspectType.Inspect;
   }
@@ -145,7 +118,14 @@ function getExecArgv(options: ServerlessExecuteBuilderOptions) {
   if (options.inspect) {
     args.push(`--${options.inspect}=${options.host}:${options.port}`);
   }
-
+  args.push("offline");
+  for (var key in options) {
+    if (options.hasOwnProperty(key)) {
+      if (options[key] !== undefined) {
+        args.push(`--${key}=${options[key]}`);
+      }
+    }
+  }
   return args;
 }
 

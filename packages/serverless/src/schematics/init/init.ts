@@ -21,7 +21,6 @@ function addDependencies(): Rule {
       'serverless-offline': serverlessOfflineVersion,
       'serverless-plugin-optimize': serverlessOptimizeVersion,
       'serverless-plugin-typescript': serverlessTypescriptVersion,
-      'aws-sdk': awsSdkVersion,
       '@types/aws-lambda': awsTypeLambdaVersion,
     },
     false

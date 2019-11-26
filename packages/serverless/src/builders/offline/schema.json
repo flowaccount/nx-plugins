@@ -1,0 +1,32 @@
+{
+    "title": "Schema for Executing Serverless offline apps",
+    "description": "Serverless offline execution options",
+    "type": "object",
+    "properties": {
+      "buildTarget": {
+        "type": "string",
+        "description": "The target to run to build you the app"
+      },
+      "config": {
+        "type": "string",
+        "description": "The serverless.yml location"
+      },
+      "location": {
+        "type": "string",
+        "description": "The src file location"
+      },
+      "host": {
+        "type": "string",
+        "description": "The host to inspect the process on"
+      },
+      "port": {
+        "type": "number",
+        "default": "7777",
+        "description": "The port to inspect the process on. Setting port to 0 will assign random free ports to all forked processes."
+      }
+    },
+    "additionalProperties": false,
+    "required": ["buildTarget", "config", "location"]
+  }
+  
+  

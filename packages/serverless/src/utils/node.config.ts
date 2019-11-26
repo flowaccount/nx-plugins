@@ -21,7 +21,6 @@ function getNodePartial(options: BuildBuilderOptions) {
       concatenateModules: false
     };
   }
-
   if (options.externalDependencies === 'all') {
     webpackConfig.externals = [nodeExternals()];
   } else if (Array.isArray(options.externalDependencies)) {

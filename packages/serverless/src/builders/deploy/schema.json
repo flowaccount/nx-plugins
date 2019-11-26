@@ -1,6 +1,6 @@
 {
-    "title": "Schema for Executing NodeJS apps",
-    "description": "NodeJS execution options",
+    "title": "Schema for Executing Serverless deploy apps",
+    "description": "Serverless deployment execution options",
     "type": "object",
     "properties": {
       "buildTarget": {
@@ -14,15 +14,6 @@
       "location": {
         "type": "string",
         "description": "The src file location"
-      },
-      "host": {
-        "type": "string",
-        "description": "The host to inspect the process on"
-      },
-      "port": {
-        "type": "number",
-        "default": "7777",
-        "description": "The port to inspect the process on. Setting port to 0 will assign random free ports to all forked processes."
       }
     },
     "additionalProperties": false,

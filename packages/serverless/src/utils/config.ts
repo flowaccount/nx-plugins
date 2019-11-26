@@ -24,6 +24,7 @@ export function getBaseWebpackPartial(
   const extensions = ['.ts', '.tsx', '.mjs', '.js', '.jsx'];
   const webpackConfig: Configuration = {
     entry: options.entry,
+    profile: true,
     // devtool: options.sourceMap ? 'source-map' : false,
     mode: options.optimization ? 'production' : 'development',
     output: {
@@ -144,7 +145,7 @@ function getStatsConfig(options: BuildBuilderOptions): Stats.ToStringOptions {
     timings: false,
     cached: false,
     cachedAssets: false,
-    modules: false,
+    modules: true,
     warnings: true,
     errors: true,
     colors: !options.verbose && !options.statsJson,

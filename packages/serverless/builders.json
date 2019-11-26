@@ -6,10 +6,15 @@
             "schema": "./src/builders/build/schema.json",
             "description": "Build a Serverless application"
         },
-        "execute": {
-            "implementation": "./src/builders/execute/execute.impl",
-            "schema": "./src/builders/execute/schema.json",
-            "description": "Execute a Serverless application"
+        "offline": {
+            "implementation": "./src/builders/offline/offline.impl",
+            "schema": "./src/builders/offline/schema.json",
+            "description": "Execute a Serverless application offline"
+        },
+        "deploy": {
+            "implementation": "./src/builders/deploy/deploy.impl",
+            "schema": "./src/builders/deploy/schema.json",
+            "description": "Execute a Serverless application deployment"
         }
     }
 }
