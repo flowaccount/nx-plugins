@@ -41,3 +41,7 @@ Add the following to your `angular.json`
     }
 }
 ```
+
+# deploy
+`tsc`
+`npm publish --access=public`
