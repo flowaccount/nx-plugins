@@ -2,10 +2,10 @@ import { Path, normalize } from '@angular-devkit/core';
 import { resolve, dirname, relative, basename } from 'path';
 import { BuildBuilderOptions } from './types';
 import { statSync } from 'fs';
-import * as Serverless from 'serverless/lib/Serverless';
 import * as glob from 'glob';
 import * as path from 'path';
 import * as _ from 'lodash';
+import { ServerlessWrapper } from './serverless';
 
 export interface FileReplacement {
   replace: string;
@@ -17,16 +17,12 @@ export async function normalizeBuildOptions<T extends BuildBuilderOptions>(
   root: string,
   sourceRoot: string
 ): Promise<T> {
-  const serverless = new Serverless({ config: options.serverlessConfig, servicePath: options.servicePath });
-  serverless.init()
-  serverless.cli.asciiGreeting()
-  serverless.cli.log("getting all functions")
-  await serverless.service.load({ config: options.serverlessConfig })
-  
-  const functions = serverless.service.getAllFunctions()
+  ServerlessWrapper.serverless.cli.log("getting all functions")
+  await ServerlessWrapper.serverless.service.load({ config: options.serverlessConfig })
+  const functions = ServerlessWrapper.serverless.service.getAllFunctions()
   const entries = {};
   _.forEach(functions, (func, index) => {
-    const entry = getEntryForFunction(functions[index], serverless.service.getFunction(func), serverless, sourceRoot, root);
+    const entry = getEntryForFunction(functions[index], ServerlessWrapper.serverless.service.getFunction(func), ServerlessWrapper.serverless, sourceRoot, root);
     _.merge(entries, entry);
   });
  

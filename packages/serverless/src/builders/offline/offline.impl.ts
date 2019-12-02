@@ -9,10 +9,11 @@ import { JsonObject } from '@angular-devkit/core';
 import { Observable, bindCallback, of, zip, from, iif, observable } from 'rxjs';
 import { concatMap, tap, mapTo, first, map, filter } from 'rxjs/operators';
 import { stripIndents } from '@angular-devkit/core/src/utils/literals';
-import { ChildProcess, fork  } from 'child_process';
+import { ChildProcess, fork } from 'child_process';
 import { ServerlessOfflineOptions } from '../../utils/types';
 import * as treeKill from 'tree-kill';
 import { ServerlessBuildEvent } from '../build/build.impl';
+import { ServerlessWrapper } from '../../utils/serverless';
 try {
   require('dotenv').config();
 } catch (e) { }
@@ -48,22 +49,22 @@ export function serverlessExecutionHandler(
         );
         return of({ success: false });
       }
-  // build into output path before running serverless offline.
-  return startBuild(options, context).pipe(
-    concatMap((event: ServerlessBuildEvent) => {
-      if (event.success) {
-        return restartProcess(event.outfile, options, context).pipe(
-          mapTo(event)
-        );
-      } else {
-        context.logger.error(
-          'There was an error with the build. See above.'
-        );
-        context.logger.info(`${event.outfile} was not restarted.`);
-        return of(event);
-      }
+      // build into output path before running serverless offline.
+      return startBuild(options, context).pipe(
+        concatMap((event: ServerlessBuildEvent) => {
+          if (event.success) {
+            return restartProcess(event.outfile, options, context).pipe(
+              mapTo(event)
+            );
+          } else {
+            context.logger.error(
+              'There was an error with the build. See above.'
+            );
+            context.logger.info(`${event.outfile} was not restarted.`);
+            return of(event);
+          }
+        }));
     }));
-  }));
 }
 
 async function runProcess(
@@ -104,7 +105,7 @@ function startBuild(
       () =>
         scheduleTargetAndForget(context, target, {
           watch: true
-        }) as Observable<ServerlessBuildEvent>
+        }) as unknown as Observable<ServerlessBuildEvent>
     )
   );
 }

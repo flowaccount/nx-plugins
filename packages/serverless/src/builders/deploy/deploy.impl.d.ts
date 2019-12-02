@@ -1,12 +1,12 @@
 import { BuilderContext, BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { Observable } from 'rxjs';
-import { ServerlessOfflineOptions } from '../../utils/types';
+import { BuildServerlessBuilderOptions } from '../build/build.impl';
 export declare const enum InspectType {
     Inspect = "inspect",
     InspectBrk = "inspect-brk"
 }
-export interface ServerlessDeployBuilderOptions extends ServerlessOfflineOptions {
+export interface ServerlessDeployBuilderOptions extends BuildServerlessBuilderOptions {
     inspect: boolean | InspectType;
     waitUntilTargets: string[];
     buildTarget: string;
@@ -14,7 +14,13 @@ export interface ServerlessDeployBuilderOptions extends ServerlessOfflineOptions
     port: number;
     watch: boolean;
     args: string[];
+    package: string;
 }
 declare const _default: import("@angular-devkit/architect/src/internal").Builder<ServerlessDeployBuilderOptions & JsonObject>;
 export default _default;
 export declare function serverlessExecutionHandler(options: JsonObject & ServerlessDeployBuilderOptions, context: BuilderContext): Observable<BuilderOutput>;
+/**
+ * Find the original module that required the transient dependency. Returns
+ * undefined if the module is a first level dependency.
+ * @param {Object} issuer - Module issuer
+ */

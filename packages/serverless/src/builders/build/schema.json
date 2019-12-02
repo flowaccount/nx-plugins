@@ -3,6 +3,10 @@
     "description": "Node application build target options for Build Facade",
     "type": "object",
     "properties": {
+      "servicePath" : {
+        "type": "string",
+        "description": "The path to the source file to get the .ts entry points"
+      },
       "tsConfig": {
         "type": "string",
         "description": "The name of the Typescript configuration file."
@@ -106,7 +110,7 @@
         "description": "Path to a function which takes a webpack config, context and returns the resulting webpack config"
       }
     },
-    "required": ["tsConfig"],
+    "required": ["tsConfig", "servicePath", "outputPath", "serverlessConfig"],
   
     "definitions": {
       "assetPattern": {

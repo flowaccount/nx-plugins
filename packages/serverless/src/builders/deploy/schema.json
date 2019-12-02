@@ -14,6 +14,11 @@
       "location": {
         "type": "string",
         "description": "The src file location"
+      },
+      "package": {
+        "type": "string",
+        "default": ".serverless",
+        "description": "The src file location"
       }
     },
     "additionalProperties": false,
