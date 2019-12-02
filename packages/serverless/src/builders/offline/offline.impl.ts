@@ -74,7 +74,7 @@ async function runProcess(
   if (subProcess) {
     throw new Error('Already running');
   }
-  subProcess = fork("node_modules\\serverless\\bin\\serverless.js", getExecArgv(options));
+  subProcess = fork("node_modules/serverless/bin/serverless.js", getExecArgv(options));
 }
 function startBuild(
   options: ServerlessExecuteBuilderOptions,

@@ -81,7 +81,7 @@ function runProcess(
   if (subProcess) {
     throw new Error('Already running');
   }
-  subProcess = fork("node_modules\\serverless\\bin\\serverless.js", getExecArgv(options));
+  subProcess = fork("node_modules/serverless/bin/serverless.js", getExecArgv(options));
   return of({ success: true })
 }
 function startBuild(
@@ -180,7 +180,7 @@ function getProdModules(externalModules, packageJson, packagePath, forceExcludes
       //     ServerlessWrapper.serverless.cli.log(`WARNING: Could not determine version of module ${module.external}`);
       //   }
       //   prodModules.push(moduleVersion ? `${module.external}@${moduleVersion}` : module.external);
-      // } else 
+      // } else
       if (packageJson.devDependencies && packageJson.devDependencies[module.external] && !_.includes(forceExcludes, module.external)) {
         // To minimize the chance of breaking setups we whitelist packages available on AWS here. These are due to the previously missing check
         // most likely set in devDependencies and should not lead to an error now.
