@@ -22,7 +22,7 @@ import { NPM } from './npm';
 import { Yarn } from './yarn';
 import { ServerlessWrapper } from '../../utils/serverless';
 
-export const registeredPackagers = {
+const registeredPackagers = {
   npm: NPM,
   yarn: Yarn
 };
@@ -32,7 +32,7 @@ export const registeredPackagers = {
  * @this ServerlessWebpack - Active plugin instance
  * @param {string} packagerId - Well known packager id.
  */
-export function get(packagerId) {
+export function packager(packagerId) {
   if (!_.has(registeredPackagers, packagerId)) {
     const message = `Could not find packager '${packagerId}'`;
     ServerlessWrapper.serverless.cli.log(`ERROR: ${message}`);

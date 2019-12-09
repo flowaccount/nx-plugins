@@ -16,15 +16,9 @@
  *
  * }
  */
-import { NPM } from './npm';
-import { Yarn } from './yarn';
-export declare const registeredPackagers: {
-    npm: typeof NPM;
-    yarn: typeof Yarn;
-};
 /**
  * Factory method.
  * @this ServerlessWebpack - Active plugin instance
  * @param {string} packagerId - Well known packager id.
  */
-export declare function get(packagerId: any): any;
+export declare function packager(packagerId: any): any;

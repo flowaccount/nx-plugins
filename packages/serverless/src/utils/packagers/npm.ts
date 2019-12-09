@@ -4,7 +4,7 @@ import { map } from "rxjs/operators";
  * NPM packager.
  */
 import * as _ from 'lodash';
-import { fork } from "child_process";
+import { spawn } from "child_process";
 
 
 export class NPM {
@@ -36,7 +36,7 @@ export class NPM {
       { npmError: 'peer dep missing', log: true },
     ];
 
-    return fork(command, args, {
+    return spawn(command, args, {
       cwd: cwd
     }).on('error', err  => {
       if (err instanceof Error) {
@@ -94,14 +94,14 @@ export class NPM {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     const args = ['install'];
 
-    return fork(command, args, { cwd })
+    return spawn(command, args, { cwd })
   }
 
   static prune(cwd) {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     const args = ['prune'];
 
-    return fork(command, args, { cwd })
+    return spawn(command, args, { cwd })
   }
 
   static runScripts(cwd, scriptNames) {
@@ -112,7 +112,7 @@ export class NPM {
         scriptName
       ];
   
-      return fork(command, args, { cwd });
+      return spawn(command, args, { cwd });
     })
   }
 }

@@ -7,7 +7,7 @@
  */
 
 import * as _ from 'lodash';
-import { fork } from 'child_process';
+import {  spawn } from 'child_process';
 import { from } from 'rxjs/internal/observable/from';
 import { map } from 'rxjs/operators';
 
@@ -36,7 +36,7 @@ export class Yarn {
     // If we need to ignore some errors add them here
     const ignoredYarnErrors = [];
 
-    return fork(command, args, {
+    return spawn(command, args, {
       cwd: cwd
     }).on('error', err  => {
       if (err instanceof Error) {
@@ -114,7 +114,7 @@ export class Yarn {
       args.push('--ignore-scripts');
     }
 
-    return fork(command, args, { cwd })
+    return spawn(command, args, { cwd })
   }
 
   // "Yarn install" prunes automatically
@@ -130,7 +130,7 @@ export class Yarn {
         scriptName
       ];
 
-      return fork(command, args, { cwd });
+      return spawn(command, args, { cwd });
     })
   }
 }

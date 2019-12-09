@@ -19,8 +19,3 @@ export interface ServerlessDeployBuilderOptions extends BuildServerlessBuilderOp
 declare const _default: import("@angular-devkit/architect/src/internal").Builder<ServerlessDeployBuilderOptions & JsonObject>;
 export default _default;
 export declare function serverlessExecutionHandler(options: JsonObject & ServerlessDeployBuilderOptions, context: BuilderContext): Observable<BuilderOutput>;
-/**
- * Find the original module that required the transient dependency. Returns
- * undefined if the module is a first level dependency.
- * @param {Object} issuer - Module issuer
- */
