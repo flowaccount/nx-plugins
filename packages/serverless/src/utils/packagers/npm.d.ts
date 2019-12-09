@@ -15,5 +15,5 @@ export declare class NPM {
     static rebaseLockfile(pathToPackageRoot: any, lockfile: any): any;
     static install(cwd: any): import("child_process").ChildProcess;
     static prune(cwd: any): import("child_process").ChildProcess;
-    static runScripts(cwd: any, scriptNames: any): import("rxjs").OperatorFunction<{}, {}>;
+    static runScripts(cwd: any, scriptNames: any): import("rxjs").OperatorFunction<unknown, unknown>;
 }
