@@ -135,7 +135,7 @@ export function serverlessExecutionHandler(
               return Promise.resolve({ success: true });
             }).catch(ex => {
               // returning error from run promise.
-              return Promise.resolve({ success: false, error: ex });
+              throw new Error(ex);
             });
           });
           packageList.stderr.on('data', error => {
@@ -144,9 +144,6 @@ export function serverlessExecutionHandler(
           packageList.on('exit', code => {
             return Promise.resolve({ success: false, error: `child exited with code ${code}` });
           });
-          packageList.on('close', (dependencyGraph) => {
-
-          })
         }
         ))
       }
