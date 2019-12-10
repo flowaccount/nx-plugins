@@ -7,7 +7,7 @@
  */
 
 import * as _ from 'lodash';
-import {  spawn } from 'child_process';
+import {  spawn, spawnSync } from 'child_process';
 import { from } from 'rxjs/internal/observable/from';
 import { map } from 'rxjs/operators';
 
@@ -22,6 +22,16 @@ export class Yarn {
 
   static get mustCopyModules() {  // eslint-disable-line lodash/prefer-constant
     return false;
+  }
+
+  static generateLockFile(cwd) {
+    const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
+    const args = [
+      'generate-lock-entry'
+    ];
+    return spawnSync(command, args, {
+      cwd: cwd
+    })
   }
 
   static getProdDependencies(cwd, depth) {
@@ -56,30 +66,6 @@ export class Yarn {
 
       return Promise.reject(err);
     })
-    // .then(processOutput => processOutput.stdout)
-    // .then(depJson => from(() => JSON.parse(depJson)))
-    // .then(parsedTree => {
-    //   const convertTrees = trees => _.reduce(trees, (__, tree) => {
-    //     const splitModule = _.split(tree.name, '@');
-    //     // If we have a scoped module we have to re-add the @
-    //     if (_.startsWith(tree.name, '@')) {
-    //       splitModule.splice(0, 1);
-    //       splitModule[0] = '@' + splitModule[0];
-    //     }
-    //     __[_.first(splitModule)] = {
-    //       version: _.join(_.tail(splitModule), '@'),
-    //       dependencies: convertTrees(tree.children)
-    //     };
-    //     return __;
-    //   }, {});
-
-    //   const trees = _.get(parsedTree, 'data.trees', []);
-    //   const result = {
-    //     problems: [],
-    //     dependencies: convertTrees(trees) 
-    //   };
-    //   return result;
-    // });
   }
 
   static rebaseLockfile(pathToPackageRoot, lockfile) {

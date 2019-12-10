@@ -18,6 +18,13 @@ import * as path from 'path';
 import { packager } from '../../utils/packagers/index';
 import { Yarn } from '../../utils/packagers/yarn';
 import { NPM } from '../../utils/packagers/npm';
+
+/* Fix for EMFILE: too many open files on serverless deploy */
+import * as fs from 'fs';
+import * as gracefulFs from 'graceful-fs';
+gracefulFs.gracefulify(fs)
+/* Fix for EMFILE: too many open files on serverless deploy */
+
 try {
   require('dotenv').config();
 } catch (e) { }
@@ -27,6 +34,7 @@ export const enum InspectType {
   InspectBrk = 'inspect-brk'
 }
 
+// review: Have to spin off options and clarify schema.json for deploy,build,serve
 export interface ServerlessDeployBuilderOptions extends BuildServerlessBuilderOptions {
   inspect: boolean | InspectType;
   waitUntilTargets: string[];
@@ -39,8 +47,6 @@ export interface ServerlessDeployBuilderOptions extends BuildServerlessBuilderOp
 }
 
 export default createBuilder<ServerlessDeployBuilderOptions & JsonObject>(serverlessExecutionHandler);
-let subProcess: ChildProcess = null;
-
 export function serverlessExecutionHandler(
   options: JsonObject & ServerlessDeployBuilderOptions,
   context: BuilderContext
@@ -53,43 +59,105 @@ export function serverlessExecutionHandler(
     }),
     concatMap((event: ServerlessBuildEvent) => {
       if (event.success) {
-        ServerlessWrapper.serverless.cli.log("getting external modules")
+        ServerlessWrapper.serverless.cli.log("getting external modules");
         var externals = getExternalModules(event.webpackStats);
         const originPackageJsonPath = path.join('./', 'package.json');
         const packageJsonPath = path.join(options.package, 'package.json');
         const packageJson = ServerlessWrapper.serverless.utils.readFileSync(originPackageJsonPath);
-        const prodModules = getProdModules(externals, packageJson, originPackageJsonPath, []);
+
+        //First create a package.json with first level dependencies
+        ServerlessWrapper.serverless.cli.log("create a package.json with first level dependencies");
+        const prodModules = getProdModules(externals, packageJson, originPackageJsonPath, [], {}, options.verbose);
         createPackageJson(prodModules, packageJsonPath, originPackageJsonPath);
+
+        // Get the packager for the current process.
+        let packagerInstance = null;
+        if (packager("yarn")) {
+          packagerInstance = Yarn;
+        } else if (packager("npm")) {
+          packagerInstance = NPM;
+        }
+        else {
+          throw Error("No Packager to process package.json, please install npm or yarn");
+        }
+
+        //got to generate lock entry for yarn for dependency graph to work.
+        if(packager("yarn")) {
+          ServerlessWrapper.serverless.cli.log("generate lock entry for yarn for dependency graph to work.");
+          const result = packagerInstance.generateLockFile(path.dirname(options.package));
+          if(result.error) {
+            ServerlessWrapper.serverless.cli.log("ERROR: generating lock file!");
+            throw Error(result.error.toString())
+          }
+          ServerlessWrapper.serverless.utils.writeFileSync(path.join(options.package, packagerInstance.lockfileName), result.stdout.toString());
+        }
+
+        // Get the packagelist with dependency graph and depth=2 level
+        // review: Change depth to options?
+        // review: Should I change everything to spawnsync for the pacakagers?
+        ServerlessWrapper.serverless.cli.log("get the packagelist with dependency graph and depth=2 level");
+        let packageList: ChildProcess = packagerInstance.getProdDependencies(path.dirname(packageJsonPath), 1, 2)
+        return from(new Promise<BuilderOutput>(() => {
+          let dependencyGraph = null;
+          packageList.stdout.on('data', data => {
+            if (packager("yarn")) {
+              dependencyGraph = convertDependencyTrees(JSON.parse(data.toString()));
+            } else if (packager("npm")) {
+              dependencyGraph = JSON.parse(data.toString());
+            }
+            const problems = _.get(dependencyGraph, 'problems', []);
+            if (options.verbose && !_.isEmpty(problems)) {
+              ServerlessWrapper.serverless.cli.log(`Ignoring ${_.size(problems)} NPM errors:`);
+              _.forEach(problems, problem => {
+                ServerlessWrapper.serverless.cli.log(`=> ${problem}`);
+              });
+            }
+            // re-writing package.json with dependency-graphs
+            ServerlessWrapper.serverless.cli.log("re-writing package.json with dependency-graphs");
+            const prodModules = getProdModules(externals, packageJson, originPackageJsonPath, [], dependencyGraph, options.verbose);
+            createPackageJson(prodModules, packageJsonPath, originPackageJsonPath);
             // run packager to  install node_modules
             let packagerProcess: ChildProcess = null;
-            if (packager("yarn")) {
-              packagerProcess = Yarn.install(options.package, {});
-            } else if (packager("npm")) {
-              packagerProcess = NPM.install(options.package);
-            }
-            else {
-              throw Error("No Packager to process package.json, please install npm or yarn");
-            }
-
+            packagerProcess = packagerInstance.install(options.package, { ignoreScripts: true });
             return from(new Promise<BuilderOutput>(() => {
-                packagerProcess.stdout.on('data', data => {
-                  return Promise.resolve({ success: false, data: `child exited with error ${data}` });
-                });
-                packagerProcess.stderr.on('data', error => {
-                  return Promise.resolve({ success: false, error: `child exited with error ${error}` });
-
-                });
-                packagerProcess.on('exit', code => {
-                  return Promise.resolve({ success: false, error: `child exited with code ${code}` });
-                });
-                packagerProcess.on('close', () => {
-                  ServerlessWrapper.serverless.config.servicePath = "dist/apps/api/lambda.subscription";
-                  ServerlessWrapper.serverless.processedInput = { commands: ['deploy'] , options: getExecArgv(options) };
-                  ServerlessWrapper.serverless.run();
+              packagerProcess.stdout.on('data', data => {
+                return Promise.resolve({ success: false, error: `child exited with error ${data}` });
+              });
+              packagerProcess.stderr.on('data', error => {
+                return Promise.resolve({ success: false, error: `child exited with error ${error}` });
+              });
+              packagerProcess.on('exit', code => {
+                return Promise.resolve({ success: false, error: `child exited with code ${code}` });
+              });
+              packagerProcess.on('close', () => {
+                // change servicePath to distribution location
+                // review: Change options from location to outputpath?
+                const servicePath = ServerlessWrapper.serverless.config.servicePath;
+                ServerlessWrapper.serverless.config.servicePath = options.location;
+                ServerlessWrapper.serverless.processedInput = { commands: ['deploy'], options: getExecArgv(options) };
+                return ServerlessWrapper.serverless.run().then((result) => {
+                  // change servicePath back for further processing.
+                  ServerlessWrapper.serverless.config.servicePath = servicePath;
                   return Promise.resolve({ success: true });
+                }).catch(ex => {
+                  // returning error from run promise.
+                  return Promise.resolve({ success: false, error: ex });
                 });
-              }
+              });
+            }
             ));
+          });
+          packageList.stderr.on('data', error => {
+            return Promise.resolve({ success: false, error: `child exited with error ${error}` });
+          });
+          packageList.on('exit', code => {
+            return Promise.resolve({ success: false, error: `child exited with code ${code}` });
+          });
+          packageList.on('close', (dependencyGraph) => {
+
+          })
+        }
+        ))
       }
       else {
         context.logger.error(
@@ -101,6 +169,50 @@ export function serverlessExecutionHandler(
     })
   );
 }
+
+/**
+ * Remove a given list of excluded modules from a module list
+ */
+// function removeExcludedModules(modules, packageForceExcludes, log) {
+//   const excludedModules = _.remove(modules, externalModule => {   // eslint-disable-line lodash/prefer-immutable-method
+//     const splitModule = _.split(externalModule, '@');
+//     console.log(splitModule);
+//     // If we have a scoped module we have to re-add the @
+//     if (_.startsWith(externalModule, '@')) {
+//       splitModule.splice(0, 1);
+//       splitModule[0] = '@' + splitModule[0];
+//     }
+//     const moduleName = _.first(splitModule);
+//     return _.includes(packageForceExcludes, moduleName);
+//   });
+
+//   console.log(excludedModules);
+//   if (log && !_.isEmpty(excludedModules)) {
+//     ServerlessWrapper.serverless.cli.log(`Excluding external modules: ${_.join(excludedModules, ', ')}`);
+//   }
+// }
+
+function convertDependencyTrees(parsedTree) {
+  const convertTrees = trees => _.reduce(trees, (__, tree) => {
+    const splitModule = _.split(tree.name, '@');
+    // If we have a scoped module we have to re-add the @
+    if (_.startsWith(tree.name, '@')) {
+      splitModule.splice(0, 1);
+      splitModule[0] = '@' + splitModule[0];
+    }
+    __[_.first(splitModule)] = {
+      version: _.join(_.tail(splitModule), '@'),
+      dependencies: convertTrees(tree.children)
+    };
+    return __;
+  }, {});
+  const trees = _.get(parsedTree, 'data.trees', []);
+  const result = {
+    problems: [],
+    dependencies: convertTrees(trees)
+  };
+  return result;
+};
 
 function startBuild(
   options: ServerlessDeployBuilderOptions,
@@ -160,7 +272,7 @@ function createPackageJson(externalModules, packageJsonPath, pathToPackageRoot) 
   ServerlessWrapper.serverless.utils.writeFileSync(packageJsonPath, JSON.stringify(compositePackage, null, 2));
 }
 
-function getProdModules(externalModules, packageJson, packagePath, forceExcludes) {
+function getProdModules(externalModules, packageJson, packagePath, forceExcludes, dependencyGraph, verbose = false) {
   const prodModules = [];
   // only process the module stated in dependencies section
   if (!packageJson.dependencies) {
@@ -179,27 +291,26 @@ function getProdModules(externalModules, packageJson, packagePath, forceExcludes
           module.external,
           'package.json'
         );
-        console.log(modulePackagePath);
         const peerDependencies = require(modulePackagePath).peerDependencies;
         if (!_.isEmpty(peerDependencies)) {
-          this.options.verbose && ServerlessWrapper.serverless.cli.log(`Adding explicit peers for dependency ${module.external}`);
-          const peerModules = getProdModules.call(this, _.map(peerDependencies, (value, key) => ({ external: key })), packagePath, forceExcludes);
+          verbose && ServerlessWrapper.serverless.cli.log(`Adding explicit peers for dependency ${module.external}`);
+          const peerModules = getProdModules.call(this, _.map(peerDependencies, (value, key) => ({ external: key })), packagePath, dependencyGraph, forceExcludes);
           Array.prototype.push.apply(prodModules, peerModules);
         }
       } catch (e) {
         ServerlessWrapper.serverless.cli.log(`WARNING: Could not check for peer dependencies of ${module.external}`);
       }
     } else {
-      // if (!packageJson.devDependencies || !packageJson.devDependencies[module.external]) {
-      //   // Add transient dependencies if they appear not in the service's dev dependencies
-      //   const originInfo = _.get(dependencyGraph, 'dependencies', {})[module.origin] || {};
-      //   moduleVersion = _.get(_.get(originInfo, 'dependencies', {})[module.external], 'version');
-      //   if (!moduleVersion) {
-      //     ServerlessWrapper.serverless.cli.log(`WARNING: Could not determine version of module ${module.external}`);
-      //   }
-      //   prodModules.push(moduleVersion ? `${module.external}@${moduleVersion}` : module.external);
-      // } else
-      if (packageJson.devDependencies && packageJson.devDependencies[module.external] && !_.includes(forceExcludes, module.external)) {
+      if (!packageJson.devDependencies || !packageJson.devDependencies[module.external] && dependencyGraph.dependencies) {
+        // Add transient dependencies if they appear not in the service's dev dependencies
+
+        const originInfo = _.get(dependencyGraph, 'dependencies', {})[module.external] || {};
+        moduleVersion = _.get(originInfo, 'version', null);
+        if (!moduleVersion) {
+          ServerlessWrapper.serverless.cli.log(`WARNING: Could not determine version of module ${module.external}`);
+        }
+        prodModules.push(moduleVersion ? `${module.external}@${moduleVersion}` : module.external);
+      } else if (packageJson.devDependencies && packageJson.devDependencies[module.external] && !_.includes(forceExcludes, module.external)) {
         // To minimize the chance of breaking setups we whitelist packages available on AWS here. These are due to the previously missing check
         // most likely set in devDependencies and should not lead to an error now.
         const ignoredDevDependencies = ['aws-sdk'];
@@ -208,7 +319,7 @@ function getProdModules(externalModules, packageJson, packagePath, forceExcludes
           ServerlessWrapper.serverless.cli.log(`ERROR: Runtime dependency '${module.external}' found in devDependencies. Move it to dependencies or use forceExclude to explicitly exclude it.`);
           throw new ServerlessWrapper.serverless.classes.Error(`Serverless-webpack dependency error: ${module.external}.`);
         }
-        this.options.verbose && ServerlessWrapper.serverless.cli.log(`INFO: Runtime dependency '${module.external}' found in devDependencies. It has been excluded automatically.`);
+        verbose && ServerlessWrapper.serverless.cli.log(`INFO: Runtime dependency '${module.external}' found in devDependencies. It has been excluded automatically.`);
       }
     }
   });

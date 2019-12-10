@@ -44,7 +44,7 @@
     "license-webpack-plugin": "^1.4.0",
     "prisma": "^1.34.10",
     "rxjs": "~6.4.0",
-    "serverless": "^1.58.0",
+    "serverless": "^1.59.3",
     "serverless-webpack": "5.3.1",
     "source-map-support": "0.5.12",
     "tree-kill": "1.2.1",

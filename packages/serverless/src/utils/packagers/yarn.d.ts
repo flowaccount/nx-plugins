@@ -10,9 +10,10 @@ export declare class Yarn {
     static readonly lockfileName: string;
     static readonly copyPackageSectionNames: string[];
     static readonly mustCopyModules: boolean;
+    static generateLockFile(cwd: any): import("child_process").SpawnSyncReturns<Buffer>;
     static getProdDependencies(cwd: any, depth: any): import("child_process").ChildProcess;
     static rebaseLockfile(pathToPackageRoot: any, lockfile: any): any;
     static install(cwd: any, packagerOptions: any): import("child_process").ChildProcess;
     static prune(cwd: any, packagerOptions: any): import("child_process").ChildProcess;
-    static runScripts(cwd: any, scriptNames: any): import("rxjs").OperatorFunction<unknown, unknown>;
+    static runScripts(cwd: any, scriptNames: any): import("rxjs").OperatorFunction<{}, {}>;
 }
