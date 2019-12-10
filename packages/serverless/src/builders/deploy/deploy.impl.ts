@@ -131,7 +131,7 @@ export function serverlessExecutionHandler(
               });
               packagerProcess.on('close', () => {
                 // change servicePath to distribution location
-                // review: Change options from location to outputpath?
+                // review: Change options from location to outputpath?\
                 const servicePath = ServerlessWrapper.serverless.config.servicePath;
                 ServerlessWrapper.serverless.config.servicePath = options.location;
                 ServerlessWrapper.serverless.processedInput = { commands: ['deploy'], options: getExecArgv(options) };

@@ -91,7 +91,7 @@ export class Yarn {
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
     const args = [
       'install',
-      '--frozen-lockfile',
+      // '--frozen-lockfile',
       '--non-interactive'
     ];
 
