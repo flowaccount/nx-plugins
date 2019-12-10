@@ -82,10 +82,10 @@ export function serverlessExecutionHandler(
         }
 
         //got to generate lock entry for yarn for dependency graph to work.
-        if(packager("yarn")) {
+        if (packager("yarn")) {
           ServerlessWrapper.serverless.cli.log("generate lock entry for yarn for dependency graph to work.");
-          const result = packagerInstance.generateLockFile(path.dirname(options.package));
-          if(result.error) {
+          const result = packagerInstance.generateLockFile(path.dirname(packageJsonPath));
+          if (result.error) {
             ServerlessWrapper.serverless.cli.log("ERROR: generating lock file!");
             throw Error(result.error.toString())
           }
@@ -117,35 +117,26 @@ export function serverlessExecutionHandler(
             const prodModules = getProdModules(externals, packageJson, originPackageJsonPath, [], dependencyGraph, options.verbose);
             createPackageJson(prodModules, packageJsonPath, originPackageJsonPath);
             // run packager to  install node_modules
-            let packagerProcess: ChildProcess = null;
-            packagerProcess = packagerInstance.install(options.package, { ignoreScripts: true });
-            return from(new Promise<BuilderOutput>(() => {
-              packagerProcess.stdout.on('data', data => {
-                return Promise.resolve({ success: false, error: `child exited with error ${data}` });
-              });
-              packagerProcess.stderr.on('data', error => {
-                return Promise.resolve({ success: false, error: `child exited with error ${error}` });
-              });
-              packagerProcess.on('exit', code => {
-                return Promise.resolve({ success: false, error: `child exited with code ${code}` });
-              });
-              packagerProcess.on('close', () => {
-                // change servicePath to distribution location
-                // review: Change options from location to outputpath?\
-                const servicePath = ServerlessWrapper.serverless.config.servicePath;
-                ServerlessWrapper.serverless.config.servicePath = options.location;
-                ServerlessWrapper.serverless.processedInput = { commands: ['deploy'], options: getExecArgv(options) };
-                return ServerlessWrapper.serverless.run().then((result) => {
-                  // change servicePath back for further processing.
-                  ServerlessWrapper.serverless.config.servicePath = servicePath;
-                  return Promise.resolve({ success: true });
-                }).catch(ex => {
-                  // returning error from run promise.
-                  return Promise.resolve({ success: false, error: ex });
-                });
-              });
+            ServerlessWrapper.serverless.cli.log("run packager to  install node_modules");
+            const packageInstallResult = packagerInstance.install(path.dirname(packageJsonPath), { ignoreScripts: true });
+            if (packageInstallResult.error) {
+              ServerlessWrapper.serverless.cli.log("ERROR: install package error!");
+              throw Error(packageInstallResult.error.toString())
             }
-            ));
+            ServerlessWrapper.serverless.cli.log(packageInstallResult.stdout.toString());
+            // change servicePath to distribution location
+            // review: Change options from location to outputpath?\
+            const servicePath = ServerlessWrapper.serverless.config.servicePath;
+            ServerlessWrapper.serverless.config.servicePath = options.location;
+            ServerlessWrapper.serverless.processedInput = { commands: ['deploy'], options: getExecArgv(options) };
+            return ServerlessWrapper.serverless.run().then((result) => {
+              // change servicePath back for further processing.
+              ServerlessWrapper.serverless.config.servicePath = servicePath;
+              return Promise.resolve({ success: true });
+            }).catch(ex => {
+              // returning error from run promise.
+              return Promise.resolve({ success: false, error: ex });
+            });
           });
           packageList.stderr.on('data', error => {
             return Promise.resolve({ success: false, error: `child exited with error ${error}` });

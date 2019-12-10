@@ -4,7 +4,7 @@ import { map } from "rxjs/operators";
  * NPM packager.
  */
 import * as _ from 'lodash';
-import { spawn } from "child_process";
+import { spawn, spawnSync } from "child_process";
 
 
 export class NPM {
@@ -94,7 +94,7 @@ export class NPM {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     const args = ['install'];
 
-    return spawn(command, args, { cwd })
+    return spawnSync(command, args, { cwd })
   }
 
   static prune(cwd) {

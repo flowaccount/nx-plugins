@@ -91,7 +91,7 @@ export class Yarn {
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
     const args = [
       'install',
-      // '--frozen-lockfile',
+      '--no-lockfile',
       '--non-interactive'
     ];
 
@@ -100,7 +100,7 @@ export class Yarn {
       args.push('--ignore-scripts');
     }
 
-    return spawn(command, args, { cwd })
+    return spawnSync(command, args, { cwd })
   }
 
   // "Yarn install" prunes automatically

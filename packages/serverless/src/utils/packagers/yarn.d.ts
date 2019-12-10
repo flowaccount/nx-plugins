@@ -13,7 +13,7 @@ export declare class Yarn {
     static generateLockFile(cwd: any): import("child_process").SpawnSyncReturns<Buffer>;
     static getProdDependencies(cwd: any, depth: any): import("child_process").ChildProcess;
     static rebaseLockfile(pathToPackageRoot: any, lockfile: any): any;
-    static install(cwd: any, packagerOptions: any): import("child_process").ChildProcess;
-    static prune(cwd: any, packagerOptions: any): import("child_process").ChildProcess;
+    static install(cwd: any, packagerOptions: any): import("child_process").SpawnSyncReturns<Buffer>;
+    static prune(cwd: any, packagerOptions: any): import("child_process").SpawnSyncReturns<Buffer>;
     static runScripts(cwd: any, scriptNames: any): import("rxjs").OperatorFunction<{}, {}>;
 }

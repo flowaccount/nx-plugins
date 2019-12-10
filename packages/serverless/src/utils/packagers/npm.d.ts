@@ -13,7 +13,7 @@ export declare class NPM {
      * removed as soon as https://github.com/npm/npm/issues/19183 gets fixed.
      */
     static rebaseLockfile(pathToPackageRoot: any, lockfile: any): any;
-    static install(cwd: any): import("child_process").ChildProcess;
+    static install(cwd: any): import("child_process").SpawnSyncReturns<Buffer>;
     static prune(cwd: any): import("child_process").ChildProcess;
     static runScripts(cwd: any, scriptNames: any): import("rxjs").OperatorFunction<{}, {}>;
 }
