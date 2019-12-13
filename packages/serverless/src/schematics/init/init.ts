@@ -15,12 +15,9 @@ function addDependencies(): Rule {
   return addDepsToPackageJson(
     {},
     {
-      '@nx/serverless': nxVersion,
+      '@flowaccount/nx-serverless': nxVersion,
       'serverless': serverlessVersion,
-      'serverless-dotenv-plugin': serverlessDotEnvVersion,
       'serverless-offline': serverlessOfflineVersion,
-      'serverless-plugin-optimize': serverlessOptimizeVersion,
-      'serverless-plugin-typescript': serverlessTypescriptVersion,
       '@types/aws-lambda': awsTypeLambdaVersion,
     },
     false

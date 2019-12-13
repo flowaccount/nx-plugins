@@ -44,16 +44,42 @@ function updateNxJson(options: NormalizedSchema): Rule {
 
 function getBuildConfig(project: any, options: NormalizedSchema) {
     return {
-        builder: '@nx/serverless:build',
+        builder: '@flowaccount/nx-serverless:build',
         options: {
-            package: join(normalize('.serverless'), options.appProjectRoot),
+            outputPath: join(normalize('dist'), options.appProjectRoot),
             serverlessConfig: join(options.appProjectRoot, 'serverless.yml'),
+            servicePath: options.appProjectRoot,
             tsConfig: join(options.appProjectRoot, 'tsconfig.app.json'),
-            provider: 'aws'
+            provider: options.provider,
+            watch: true,
+            progress: true
         },
         configurations: {
+            dev: {
+                optimization: false,
+                sourceMap: false,
+                budgets: [
+                  {
+                    type: "initial",
+                    maximumWarning: "2mb",
+                    maximumError: "5mb"
+                  }
+                ]
+            },
             production: {
                 optimization: true,
+                sourceMap: false,
+                extractCss: true,
+                namedChunks: false,
+                extractLicenses: true,
+                vendorChunk: false,
+                budgets: [
+                    {
+                        type: "initial",
+                        maximumWarning: "2mb",
+                        maximumError: "5mb"
+                    }
+                ],
                 fileReplacements: [
                     {
                         replace: join(options.appProjectRoot, 'environment.ts'),
@@ -67,10 +93,31 @@ function getBuildConfig(project: any, options: NormalizedSchema) {
 
 function getServeConfig(project: any, options: NormalizedSchema) {
     return {
-        builder: '@nx/serverless:execute',
+        builder: '@flowaccount/nx-serverless:offline',
         options: {
+            buildTarget: options.name + ':build',
             config: join(options.appProjectRoot, 'serverless.yml'),
-            location: options.appProjectRoot
+            location: join(normalize('dist'), options.appProjectRoot)
+        },
+        configurations: {
+            dev: {
+              buildTarget: options.name + ":build:dev"
+            },
+            production: {
+              buildTarget: options.name + ":build:production"
+            }
+          }
+    };
+}
+
+function getDeployConfig(project: any, options: NormalizedSchema) {
+    return {
+        builder: '@flowaccount/nx-serverless:deploy',
+        options: {
+            buildTarget: options.name + ":build:production",
+            config: join(options.appProjectRoot, 'serverless.yml'),
+            location: join(normalize('dist'), options.appProjectRoot),
+            package: join(normalize('dist'), options.appProjectRoot)
         }
     };
 }
@@ -88,6 +135,7 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
 
         project.architect.build = getBuildConfig(project, options);
         project.architect.serve = getServeConfig(project, options);
+        project.architect.deploy = getDeployConfig(project, options);
         project.architect.lint = generateProjectLint(
             normalize(project.root),
             join(normalize(project.root), 'tsconfig.app.json'),
@@ -122,10 +170,9 @@ function addServerlessYMLFile(options: NormalizedSchema): Rule {
 frameworkVersion: ">=1.1.0 <2.0.0"
 plugins:
   - serverless-offline
-  - serverless-plugin-optimize
 package:
   individually: true
-  excludeDevDependencies: true
+  excludeDevDependencies: false
   custom:
     enable_optimize:
       local: false

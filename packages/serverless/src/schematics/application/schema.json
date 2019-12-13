@@ -47,6 +47,11 @@
     "frontendProject": {
       "type": "string",
       "description": "Frontend project that needs to access this application. This sets up proxy configuration."
+    },
+    "provider": {
+      "type": "string",
+      "description": "The cloud provider for this serverless application.",
+      "x-prompt": "Which cloud provider are you using for this serverless application? ( aws | azure | google ) etc."
     }
   },
   "required": []
