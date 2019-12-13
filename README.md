@@ -6,7 +6,7 @@
 
 <div align="left">
 
-[![License](https://img.shields.io/npm/l/@flowaccount/nx-green)]()
+[![License](https://img.shields.io/npm/l/@flowaccount/nx-serverless.svg?style=flat-square)]()
 
 </div>
 
