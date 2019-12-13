@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/nx-serverless",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Serverless plugin for nx",
   "keywords": [
     "Serverless Framework",
