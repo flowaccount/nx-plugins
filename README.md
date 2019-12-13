@@ -4,8 +4,10 @@
 <!-- <img src="https://angular.io/generated/images/marketing/concept-icons/universal.png" height="120"> -->
 </p>
 
-<div align="center">
-[![@flowaccount/nx-serverless](https://img.shields.io/badge/%40flowaccount-nx--serverless-blue)(https://github.com/flowaccount/flowaccount-nx/tree/master/packages/serverless)]
+<div align="left">
+
+[![@flowaccount/nx-serverless](https://img.shields.io/badge/%40flowaccount-nx--serverless-blue)](https://github.com/flowaccount/flowaccount-nx/tree/master/packages/serverless)
+
 </div>
 
 <hr>
