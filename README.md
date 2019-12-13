@@ -6,6 +6,12 @@
 
 <div align="left">
 
+[![License](https://img.shields.io/npm/l/@flowaccount/nx-green)]()
+
+</div>
+
+<div align="left">
+
 [![@flowaccount/nx-serverless](https://img.shields.io/badge/%40flowaccount-nx--serverless-blue)](https://github.com/flowaccount/flowaccount-nx/tree/master/packages/serverless)
 
 </div>
