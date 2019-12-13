@@ -15,8 +15,10 @@ This project includes builders for that!
 -   @flowaccount/nx-Serverless:offline - runs your serverless application offline for debugging and development
 -   @flowaccount/nx-Serverless:deploy - deploys your CloudFormation template
 
-## @nx/Serverless:build
-Add the following to your `angular.json`
+```
+ng g @flowaccount/nx-serverless:api
+```
+This will Add the following to your `angular.json`
 
 ```json
 {
