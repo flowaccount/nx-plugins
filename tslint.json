@@ -1,0 +1,10 @@
+{
+    "extends": ["tslint:recommended", "tslint-config-prettier"],
+    "rules": {
+        "object-literal-sort-keys": false,
+        "variable-name": [true, "ban-keywords", "check-format", "allow-leading-underscore"],
+        "no-non-null-assertion": true,
+        "no-floating-promises": true,
+        "await-promise": true
+    }
+}
