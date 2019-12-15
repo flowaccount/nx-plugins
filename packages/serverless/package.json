@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/nx-serverless",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Serverless schematics for nx workspace",
   "keywords": [
     "Serverless Framework",
