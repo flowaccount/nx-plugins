@@ -25,9 +25,9 @@ However, what if your backend uses Serverless?
 
 This project includes toolsets for generating building, testing and deploying for that.
 
--   @flowaccount/nx-Serverless:build - builds your functions and layers
--   @flowaccount/nx-Serverless:offline - runs your serverless application offline for debugging and development
--   @flowaccount/nx-Serverless:deploy - deploys your serverless api
+-   ```ng build api``` - builds your functions and layers
+-   ```ng serve api``` - runs your serverless application offline for debugging and development
+-   ```ng deploy api``` - deploys your serverless api
 
 ```
 ng g @flowaccount/nx-serverless:api
