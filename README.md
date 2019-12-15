@@ -2,6 +2,7 @@
 <img src="https://raw.githubusercontent.com/nrwl/nx/master/nx-logo.png" height="100">
 <img src="https://angular.io/assets/images/logos/angular/angular.svg" height="145">
 <!-- <img src="https://angular.io/generated/images/marketing/concept-icons/universal.png" height="120"> -->
+<img src="https://miro.medium.com/max/900/1*dSqXPEWnNgUhEmCrjxRI4Q.png" height="145">
 </p>
 
 <div align="left">

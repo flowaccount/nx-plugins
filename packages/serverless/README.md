@@ -10,17 +10,24 @@ designed for use alongside [nx](https://nx.dev)
 
 </div>
 
+<p float="left">
+<img src="https://raw.githubusercontent.com/nrwl/nx/master/nx-logo.png" height="100">
+<img src="https://miro.medium.com/max/900/1*dSqXPEWnNgUhEmCrjxRI4Q.png" height="145">
+<img src="https://user-images.githubusercontent.com/2752551/30405068-a7733b34-989e-11e7-8f66-7badaf1373ed.png" height="120">
+</p>
+
+
 ## Why
 
 nx superpowers the angular CLI, to add support for a range of backend project types.
 
 However, what if your backend uses Serverless?
 
-This project includes builders for that!
+This project includes toolsets for generating building, testing and deploying for that.
 
 -   @flowaccount/nx-Serverless:build - builds your functions and layers
 -   @flowaccount/nx-Serverless:offline - runs your serverless application offline for debugging and development
--   @flowaccount/nx-Serverless:deploy - deploys your CloudFormation template
+-   @flowaccount/nx-Serverless:deploy - deploys your serverless api
 
 ```
 ng g @flowaccount/nx-serverless:api
