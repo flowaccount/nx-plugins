@@ -14,7 +14,7 @@
 <div align="left">
 
 [![@flowaccount/nx-serverless](https://img.shields.io/badge/%40flowaccount-nx--serverless-blue)](https://github.com/flowaccount/flowaccount-nx/tree/master/packages/serverless)
-[![NPM Version](https://badge.fury.io/js/%40flowaccount%2Fnx.svg)](https://www.npmjs.com/@flowaccount/nx-serverless)
+[![NPM Version](https://badge.fury.io/js/%40flowaccount%2Fnx-serverless.svg)](https://www.npmjs.com/@flowaccount/nx-serverless)
 
 </div>
 

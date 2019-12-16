@@ -6,7 +6,7 @@ designed for use alongside [nx](https://nx.dev)
 <div align="left">
 
 [![License](https://img.shields.io/npm/l/@flowaccount/nx-serverless.svg?style=flat-square)]()
-[![NPM Version](https://badge.fury.io/js/%40flowaccount%2Fnx.svg)](https://www.npmjs.com/@flowaccount/nx-serverless)
+[![NPM Version](https://badge.fury.io/js/%40flowaccount%2Fnx-serverless.svg)](https://www.npmjs.com/@flowaccount/nx-serverless)
 
 </div>
 
