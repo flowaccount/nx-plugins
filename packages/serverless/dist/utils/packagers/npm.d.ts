@@ -3,7 +3,9 @@ export declare class NPM {
     static readonly lockfileName: string;
     static readonly copyPackageSectionNames: any[];
     static readonly mustCopyModules: boolean;
-    static getProdDependencies(cwd: any, depth: any): import("child_process").ChildProcess;
+    static getProdDependencies(cwd: any, depth: any): import("child_process").SpawnSyncReturns<Buffer> | Promise<{
+        stdout: string;
+    }>;
     static _rebaseFileReferences(pathToPackageRoot: any, moduleVersion: any): any;
     /**
      * We should not be modifying 'package-lock.json'

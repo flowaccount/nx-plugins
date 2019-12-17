@@ -11,7 +11,9 @@ export declare class Yarn {
     static readonly copyPackageSectionNames: string[];
     static readonly mustCopyModules: boolean;
     static generateLockFile(cwd: any): import("child_process").SpawnSyncReturns<Buffer>;
-    static getProdDependencies(cwd: any, depth: any): import("child_process").ChildProcess;
+    static getProdDependencies(cwd: any, depth: any): import("child_process").SpawnSyncReturns<Buffer> | Promise<{
+        stdout: string;
+    }>;
     static rebaseLockfile(pathToPackageRoot: any, lockfile: any): any;
     static install(cwd: any, packagerOptions: any): import("child_process").SpawnSyncReturns<Buffer>;
     static prune(cwd: any, packagerOptions: any): import("child_process").SpawnSyncReturns<Buffer>;

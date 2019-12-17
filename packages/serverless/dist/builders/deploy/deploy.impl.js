@@ -40,7 +40,7 @@ function serverlessExecutionHandler(options, context) {
             const packageJson = serverless_1.ServerlessWrapper.serverless.utils.readFileSync(originPackageJsonPath);
             //First create a package.json with first level dependencies
             serverless_1.ServerlessWrapper.serverless.cli.log("create a package.json with first level dependencies");
-            const prodModules = getProdModules(externals, packageJson, originPackageJsonPath, [], {}, options.verbose);
+            let prodModules = getProdModules(externals, packageJson, originPackageJsonPath, [], {}, options.verbose);
             createPackageJson(prodModules, packageJsonPath, originPackageJsonPath);
             // Get the packager for the current process.
             let packagerInstance = null;
@@ -51,7 +51,7 @@ function serverlessExecutionHandler(options, context) {
                 packagerInstance = npm_1.NPM;
             }
             else {
-                throw Error("No Packager to process package.json, please install npm or yarn");
+                return rxjs_1.of({ success: false, error: "No Packager to process package.json, please install npm or yarn" });
             }
             //got to generate lock entry for yarn for dependency graph to work.
             if (index_1.packager("yarn")) {
@@ -59,7 +59,7 @@ function serverlessExecutionHandler(options, context) {
                 const result = packagerInstance.generateLockFile(path.dirname(packageJsonPath));
                 if (result.error) {
                     serverless_1.ServerlessWrapper.serverless.cli.log("ERROR: generating lock file!");
-                    throw Error(result.error.toString());
+                    return rxjs_1.of({ success: false, error: result.error.toString() });
                 }
                 serverless_1.ServerlessWrapper.serverless.utils.writeFileSync(path.join(options.package, packagerInstance.lockfileName), result.stdout.toString());
             }
@@ -67,56 +67,56 @@ function serverlessExecutionHandler(options, context) {
             // review: Change depth to options?
             // review: Should I change everything to spawnsync for the pacakagers?
             serverless_1.ServerlessWrapper.serverless.cli.log("get the packagelist with dependency graph and depth=2 level");
-            let packageList = packagerInstance.getProdDependencies(path.dirname(packageJsonPath), 1, 2);
-            return rxjs_1.from(new Promise(() => {
-                let dependencyGraph = null;
-                packageList.stdout.on('data', data => {
-                    if (index_1.packager("yarn")) {
-                        dependencyGraph = convertDependencyTrees(JSON.parse(data.toString()));
-                    }
-                    else if (index_1.packager("npm")) {
-                        dependencyGraph = JSON.parse(data.toString());
-                    }
-                    const problems = _.get(dependencyGraph, 'problems', []);
-                    if (options.verbose && !_.isEmpty(problems)) {
-                        serverless_1.ServerlessWrapper.serverless.cli.log(`Ignoring ${_.size(problems)} NPM errors:`);
-                        _.forEach(problems, problem => {
-                            serverless_1.ServerlessWrapper.serverless.cli.log(`=> ${problem}`);
-                        });
-                    }
-                    // re-writing package.json with dependency-graphs
-                    serverless_1.ServerlessWrapper.serverless.cli.log("re-writing package.json with dependency-graphs");
-                    const prodModules = getProdModules(externals, packageJson, originPackageJsonPath, [], dependencyGraph, options.verbose);
-                    createPackageJson(prodModules, packageJsonPath, originPackageJsonPath);
-                    // run packager to  install node_modules
-                    serverless_1.ServerlessWrapper.serverless.cli.log("run packager to  install node_modules");
-                    const packageInstallResult = packagerInstance.install(path.dirname(packageJsonPath), { ignoreScripts: true });
-                    if (packageInstallResult.error) {
-                        serverless_1.ServerlessWrapper.serverless.cli.log("ERROR: install package error!");
-                        throw Error(packageInstallResult.error.toString());
-                    }
-                    serverless_1.ServerlessWrapper.serverless.cli.log(packageInstallResult.stdout.toString());
-                    // change servicePath to distribution location
-                    // review: Change options from location to outputpath?\
-                    const servicePath = serverless_1.ServerlessWrapper.serverless.config.servicePath;
-                    serverless_1.ServerlessWrapper.serverless.config.servicePath = options.location;
-                    serverless_1.ServerlessWrapper.serverless.processedInput = { commands: ['deploy'], options: getExecArgv(options) };
-                    return serverless_1.ServerlessWrapper.serverless.run().then((result) => {
-                        // change servicePath back for further processing.
-                        serverless_1.ServerlessWrapper.serverless.config.servicePath = servicePath;
-                        return Promise.resolve({ success: true });
-                    }).catch(ex => {
-                        // returning error from run promise.
-                        throw new Error(ex);
-                    });
+            const getDependenciesResult = packagerInstance.getProdDependencies(path.dirname(packageJsonPath), 1, 2);
+            if (getDependenciesResult.error) {
+                serverless_1.ServerlessWrapper.serverless.cli.log("ERROR: getDependenciesResult!");
+                return rxjs_1.of({ success: false, error: getDependenciesResult.error.toString() });
+            }
+            let data = getDependenciesResult.stdout.toString();
+            let dependencyGraph = null;
+            if (index_1.packager("yarn")) {
+                dependencyGraph = convertDependencyTrees(JSON.parse(data.toString()));
+            }
+            else if (index_1.packager("npm")) {
+                dependencyGraph = JSON.parse(data.toString());
+            }
+            const problems = _.get(dependencyGraph, 'problems', []);
+            if (options.verbose && !_.isEmpty(problems)) {
+                serverless_1.ServerlessWrapper.serverless.cli.log(`Ignoring ${_.size(problems)} NPM errors:`);
+                _.forEach(problems, problem => {
+                    serverless_1.ServerlessWrapper.serverless.cli.log(`=> ${problem}`);
                 });
-                packageList.stderr.on('data', error => {
-                    return Promise.resolve({ success: false, error: `child exited with error ${error}` });
+            }
+            // re-writing package.json with dependency-graphs
+            serverless_1.ServerlessWrapper.serverless.cli.log("re-writing package.json with dependency-graphs");
+            prodModules = getProdModules(externals, packageJson, originPackageJsonPath, [], dependencyGraph, options.verbose);
+            createPackageJson(prodModules, packageJsonPath, originPackageJsonPath);
+            // run packager to  install node_modules
+            serverless_1.ServerlessWrapper.serverless.cli.log("run packager to  install node_modules");
+            const packageInstallResult = packagerInstance.install(path.dirname(packageJsonPath), { ignoreScripts: true });
+            if (packageInstallResult.error) {
+                serverless_1.ServerlessWrapper.serverless.cli.log("ERROR: install package error!");
+                return rxjs_1.of({ success: false, error: packageInstallResult.error.toString() });
+            }
+            serverless_1.ServerlessWrapper.serverless.cli.log(packageInstallResult.stdout.toString());
+            // change servicePath to distribution location
+            // review: Change options from location to outputpath?\
+            const servicePath = serverless_1.ServerlessWrapper.serverless.config.servicePath;
+            serverless_1.ServerlessWrapper.serverless.config.servicePath = options.location;
+            serverless_1.ServerlessWrapper.serverless.processedInput = { commands: ['deploy'], options: getExecArgv(options) };
+            return new rxjs_1.Observable((option) => {
+                serverless_1.ServerlessWrapper.serverless.run().then(() => {
+                    // change servicePath back for further processing.
+                    serverless_1.ServerlessWrapper.serverless.config.servicePath = servicePath;
+                    option.next({ success: true });
+                    option.complete();
+                }).catch(ex => {
+                    option.next({ success: false, error: ex });
+                    option.complete();
                 });
-                packageList.on('exit', code => {
-                    return Promise.resolve({ success: false, error: `child exited with code ${code}` });
-                });
-            }));
+            }).pipe(operators_1.concatMap((result => {
+                return rxjs_1.of(result);
+            })));
         }
         else {
             context.logger.error('There was an error with the build. See above.');

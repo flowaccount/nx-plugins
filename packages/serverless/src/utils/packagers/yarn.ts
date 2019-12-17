@@ -46,26 +46,29 @@ export class Yarn {
     // If we need to ignore some errors add them here
     const ignoredYarnErrors = [];
 
-    return spawn(command, args, {
+    var result = spawnSync(command, args, {
       cwd: cwd
-    }).on('error', err  => {
-      if (err instanceof Error) {
-        // Only exit with an error if we have critical npm errors for 2nd level inside
-        const errors = _.split(err.name, '\n');
-        const failed = _.reduce(errors, (failed, error) => {
-          if (failed) {
-            return true;
-          }
-          return !_.isEmpty(error) && !_.some(ignoredYarnErrors, ignoredError => _.startsWith(error, `npm ERR! ${ignoredError.npmError}`));
-        }, false);
-
-        if (!failed && !_.isEmpty(err.stack)) {
-          return Promise.resolve({ stdout: err.message });
-        }
-      }
-
-      return Promise.reject(err);
     })
+    if(result.error) {
+        const err = result.error;
+        if (err instanceof Error) {
+          // Only exit with an error if we have critical npm errors for 2nd level inside
+          const errors = _.split(err.name, '\n');
+          const failed = _.reduce(errors, (failed, error) => {
+            if (failed) {
+              return true;
+            }
+            return !_.isEmpty(error) && !_.some(ignoredYarnErrors, ignoredError => _.startsWith(error, `npm ERR! ${ignoredError.npmError}`));
+          }, false);
+  
+          if (!failed && !_.isEmpty(err.stack)) {
+            return Promise.resolve({ stdout: err.message });
+          }
+        }
+        return result
+    } else {
+      return result;
+    }
   }
 
   static rebaseLockfile(pathToPackageRoot, lockfile) {

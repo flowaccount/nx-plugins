@@ -39,9 +39,11 @@ class Yarn {
         ];
         // If we need to ignore some errors add them here
         const ignoredYarnErrors = [];
-        return child_process_1.spawn(command, args, {
+        var result = child_process_1.spawnSync(command, args, {
             cwd: cwd
-        }).on('error', err => {
+        });
+        if (result.error) {
+            const err = result.error;
             if (err instanceof Error) {
                 // Only exit with an error if we have critical npm errors for 2nd level inside
                 const errors = _.split(err.name, '\n');
@@ -55,8 +57,11 @@ class Yarn {
                     return Promise.resolve({ stdout: err.message });
                 }
             }
-            return Promise.reject(err);
-        });
+            return result;
+        }
+        else {
+            return result;
+        }
     }
     static rebaseLockfile(pathToPackageRoot, lockfile) {
         const fileVersionMatcher = /[^"/]@(?:file:)?((?:\.\/|\.\.\/).*?)[":,]/gm;

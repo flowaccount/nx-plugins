@@ -36,12 +36,15 @@ export class NPM {
       { npmError: 'peer dep missing', log: true },
     ];
 
-    return spawn(command, args, {
+    const result = spawnSync(command, args, {
       cwd: cwd
-    }).on('error', err  => {
+    })
+
+    if (result.error) {
+      const err = result.error;
       if (err instanceof Error) {
         // Only exit with an error if we have critical npm errors for 2nd level inside
-        const errors = _.split(err.message, '\n');
+        const errors = _.split(err.name, '\n');
         const failed = _.reduce(errors, (failed, error) => {
           if (failed) {
             return true;
@@ -53,9 +56,10 @@ export class NPM {
           return Promise.resolve({ stdout: err.message });
         }
       }
-
-      return Promise.reject(err);
-    })
+      return result
+    } else {
+      return result;
+    }
     // .then(processOutput => processOutput.stdout)
     // .then(depJson => Promise.try(() => JSON.parse(depJson)));
   }
@@ -65,10 +69,10 @@ export class NPM {
       const filePath = _.replace(moduleVersion, /^file:/, '');
       return _.replace(`file:${pathToPackageRoot}/${filePath}`, /\\/g, '/');
     }
-  
+
     return moduleVersion;
   }
-  
+
   /**
    * We should not be modifying 'package-lock.json'
    * because this file should be treated as internal to npm.
@@ -80,7 +84,7 @@ export class NPM {
     if (lockfile.version) {
       lockfile.version = NPM._rebaseFileReferences(pathToPackageRoot, lockfile.version);
     }
-  
+
     if (lockfile.dependencies) {
       _.forIn(lockfile.dependencies, lockedDependency => {
         NPM.rebaseLockfile(pathToPackageRoot, lockedDependency);
@@ -89,7 +93,7 @@ export class NPM {
 
     return lockfile;
   }
-  
+
   static install(cwd) {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     const args = ['install'];
@@ -111,7 +115,7 @@ export class NPM {
         'run',
         scriptName
       ];
-  
+
       return spawn(command, args, { cwd });
     })
   }

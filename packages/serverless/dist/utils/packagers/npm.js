@@ -30,12 +30,14 @@ class NPM {
             { npmError: 'missing', log: false },
             { npmError: 'peer dep missing', log: true },
         ];
-        return child_process_1.spawn(command, args, {
+        const result = child_process_1.spawnSync(command, args, {
             cwd: cwd
-        }).on('error', err => {
+        });
+        if (result.error) {
+            const err = result.error;
             if (err instanceof Error) {
                 // Only exit with an error if we have critical npm errors for 2nd level inside
-                const errors = _.split(err.message, '\n');
+                const errors = _.split(err.name, '\n');
                 const failed = _.reduce(errors, (failed, error) => {
                     if (failed) {
                         return true;
@@ -46,8 +48,11 @@ class NPM {
                     return Promise.resolve({ stdout: err.message });
                 }
             }
-            return Promise.reject(err);
-        });
+            return result;
+        }
+        else {
+            return result;
+        }
         // .then(processOutput => processOutput.stdout)
         // .then(depJson => Promise.try(() => JSON.parse(depJson)));
     }

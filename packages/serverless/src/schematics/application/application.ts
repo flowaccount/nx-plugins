@@ -173,6 +173,7 @@ plugins:
 package:
   individually: true
   excludeDevDependencies: false
+  path: ${join(normalize('dist'), options.appProjectRoot)}
   custom:
     enable_optimize:
       local: false
