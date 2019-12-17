@@ -10,6 +10,7 @@ export interface ServerlessDeployBuilderOptions extends BuildServerlessBuilderOp
     inspect: boolean | InspectType;
     waitUntilTargets: string[];
     buildTarget: string;
+    function: string;
     host: string;
     port: number;
     watch: boolean;

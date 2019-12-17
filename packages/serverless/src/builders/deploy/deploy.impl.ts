@@ -6,8 +6,8 @@ import {
   scheduleTargetAndForget
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { Observable, of, from } from 'rxjs';
-import { concatMap, tap, mergeMap, map } from 'rxjs/operators';
+import { Observable, of, from, zip } from 'rxjs';
+import { concatMap, tap, mergeMap, map, filter, first } from 'rxjs/operators';
 import { stripIndents } from '@angular-devkit/core/src/utils/literals';
 import { ChildProcess, fork } from 'child_process';
 import { ServerlessBuildEvent, BuildServerlessBuilderOptions } from '../build/build.impl';
@@ -39,6 +39,7 @@ export interface ServerlessDeployBuilderOptions extends BuildServerlessBuilderOp
   inspect: boolean | InspectType;
   waitUntilTargets: string[];
   buildTarget: string;
+  function: string;
   host: string;
   port: number;
   watch: boolean;
@@ -55,7 +56,16 @@ export function serverlessExecutionHandler(
 
   return ServerlessWrapper.init(options, context).pipe(
     mergeMap(() => {
-      return startBuild(options, context);
+      return runWaitUntilTargets(options, context).pipe(
+        concatMap(v => {
+          if (!v.success) {
+            context.logger.error(
+              `One of the tasks specified in waitUntilTargets failed`
+            );
+            return of({ success: false });
+          }
+        return startBuild(options, context);
+      }));
     }),
     concatMap((event: ServerlessBuildEvent) => {
       if (event.success) {
@@ -158,6 +168,27 @@ export function serverlessExecutionHandler(
   );
 }
 
+function runWaitUntilTargets(
+  options: ServerlessDeployBuilderOptions,
+  context: BuilderContext
+): Observable<BuilderOutput> {
+  if (!options.waitUntilTargets || options.waitUntilTargets.length === 0)
+    return of({ success: true });
+
+  return zip(
+    ...options.waitUntilTargets.map(b => {
+      return scheduleTargetAndForget(context, targetFromTargetString(b)).pipe(
+        filter(e => e.success !== undefined),
+        first()
+      );
+    })
+  ).pipe(
+    map(results => {
+      return { success: !results.some(r => !r.success) };
+    })
+  );
+}
+
 /**
  * Remove a given list of excluded modules from a module list
  */
@@ -226,7 +257,7 @@ function startBuild(
     concatMap(
       () =>
         scheduleTargetAndForget(context, target, {
-          watch: true
+          watch: false
         }) as unknown as Observable<ServerlessBuildEvent>
     )
   );
@@ -234,6 +265,9 @@ function startBuild(
 
 function getExecArgv(options: ServerlessDeployBuilderOptions) {
   const args = [];
+  if(options.function && options.function != '') {
+    args.push('function');
+  }
   for (var key in options) {
     if (options.hasOwnProperty(key)) {
       if (options[key] !== undefined && key !== 'buildTarget' && key !== 'package') {
@@ -241,7 +275,7 @@ function getExecArgv(options: ServerlessDeployBuilderOptions) {
       }
     }
   }
-
+ 
   return args;
 }
 
