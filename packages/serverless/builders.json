@@ -2,18 +2,18 @@
     "$schema": "@angular-devkit/architect/src/builders-schema.json",
     "builders": {
         "build": {
-            "implementation": "./src/builders/build/build.impl",
-            "schema": "./src/builders/build/schema.json",
+            "implementation": "./dist/builders/build/build.impl",
+            "schema": "./dist/builders/build/schema.json",
             "description": "Build a Serverless application"
         },
         "offline": {
-            "implementation": "./src/builders/offline/offline.impl",
-            "schema": "./src/builders/offline/schema.json",
+            "implementation": "./dist/builders/offline/offline.impl",
+            "schema": "./dist/builders/offline/schema.json",
             "description": "Execute a Serverless application offline"
         },
         "deploy": {
-            "implementation": "./src/builders/deploy/deploy.impl",
-            "schema": "./src/builders/deploy/schema.json",
+            "implementation": "./dist/builders/deploy/deploy.impl",
+            "schema": "./dist/builders/deploy/schema.json",
             "description": "Execute a Serverless application deployment"
         }
     }

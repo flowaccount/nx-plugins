@@ -8,7 +8,7 @@
     "emitDecoratorMetadata": true,
     "skipLibCheck": true,
     "types": ["node", "jest", "jasmine"],
-    "lib": ["es2017"],
+    "lib": ["es2018"],
     "declaration": true,
     "baseUrl": ".",
     "paths": {

@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/nx-serverless",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "description": "Serverless schematics for nx workspace",
   "keywords": [
     "Serverless Framework",
@@ -11,8 +11,8 @@
     "Nx",
     "Monorepo"
   ],
-  "main": "index.js",
-  "types": "index.d.ts",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
   "schematics": "./collection.json",
   "builders": "./builders.json",
   "author": "Wickstargazer",
