@@ -67,7 +67,7 @@ function serverlessExecutionHandler(options, context) {
             // review: Change depth to options?
             // review: Should I change everything to spawnsync for the pacakagers?
             serverless_1.ServerlessWrapper.serverless.cli.log("get the packagelist with dependency graph and depth=2 level");
-            const getDependenciesResult = packagerInstance.getProdDependencies(path.dirname(packageJsonPath), 1, 2);
+            const getDependenciesResult = packagerInstance.getProdDependencies(path.dirname(packageJsonPath), 1, 4);
             if (getDependenciesResult.error) {
                 serverless_1.ServerlessWrapper.serverless.cli.log("ERROR: getDependenciesResult!");
                 return rxjs_1.of({ success: false, error: getDependenciesResult.error.toString() });
@@ -111,7 +111,7 @@ function serverlessExecutionHandler(options, context) {
                     option.next({ success: true });
                     option.complete();
                 }).catch(ex => {
-                    option.next({ success: false, error: ex });
+                    option.next({ success: false, error: ex.toString() });
                     option.complete();
                 });
             }).pipe(operators_1.concatMap((result => {
