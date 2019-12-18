@@ -154,7 +154,7 @@ export function serverlessExecutionHandler(
             option.next({ success: true });
             option.complete();
           }).catch(ex => {
-            option.next({ success: false, error: ex });
+            option.next({ success: false, error: ex.toString() });
             option.complete();
           })
         }).pipe(concatMap((result => {
