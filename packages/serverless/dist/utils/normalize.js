@@ -18,7 +18,6 @@ const serverless_1 = require("./serverless");
 function normalizeBuildOptions(options, root, sourceRoot) {
     return __awaiter(this, void 0, void 0, function* () {
         serverless_1.ServerlessWrapper.serverless.cli.log("getting all functions");
-        yield serverless_1.ServerlessWrapper.serverless.service.load({ config: options.serverlessConfig });
         const functions = serverless_1.ServerlessWrapper.serverless.service.getAllFunctions();
         const entries = {};
         _.forEach(functions, (func, index) => {

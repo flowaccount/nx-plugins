@@ -18,14 +18,12 @@ export async function normalizeBuildOptions<T extends BuildBuilderOptions>(
   sourceRoot: string
 ): Promise<T> {
   ServerlessWrapper.serverless.cli.log("getting all functions")
-  await ServerlessWrapper.serverless.service.load({ config: options.serverlessConfig })
   const functions = ServerlessWrapper.serverless.service.getAllFunctions()
   const entries = {};
   _.forEach(functions, (func, index) => {
     const entry = getEntryForFunction(functions[index], ServerlessWrapper.serverless.service.getFunction(func), ServerlessWrapper.serverless, sourceRoot, root);
     _.merge(entries, entry);
   });
- 
   const result = {
     ...options,
     root: root,

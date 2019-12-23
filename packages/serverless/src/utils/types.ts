@@ -4,34 +4,6 @@ export interface FileReplacement {
     replace: string;
     with: string;
 }
-
-// https://www.npmjs.com/package/serverless-offline
-export interface ServerlessOfflineOptions {
-    verbose?: boolean;
-    binPath?: string;
-    host?: string;
-    location?: string;
-    noAuth?: boolean;
-    noEnvironment?: boolean;
-    port?: number;
-    region?: string;
-    printOutput?: boolean;
-    preserveTrailingSlash?: boolean;
-    stage?: string;
-    useSeparateProcesses?: boolean;
-    websocketPort?: number;
-    prefix?: string;
-    hideStackTraces?: boolean;
-    corsAllowHeaders?: string;
-    corsAllowOrigin?: string;
-    corsDisallowCredentials?: string;
-    corsExposedHeaders?: string;
-    disableCookieValidation?: boolean;
-    enforceSecureCookies?: boolean;
-    exec?: string;
-    readyWhen: string;
-}
-
 export interface SourceMapOptions {
     scripts: boolean;
     styles: boolean;
@@ -59,7 +31,6 @@ export interface BuildBuilderOptions {
     sourceRoot?: Path;
     entry?: {};
     readyWhen?: string;
-    arguments: ServerlessOfflineOptions;
     progress?: boolean;
     watch?: boolean;
     assets? : any[];
@@ -67,8 +38,9 @@ export interface BuildBuilderOptions {
     extractLicenses?: boolean;
     verbose?: boolean;
     statsJson?: boolean;
-
     optimization?: boolean;
     sourceMap?: boolean;
     externalDependencies: 'all' | 'none' | string[];
+    processEnvironmentFile: 'env.json' | 'string';
+    logGroupName?: string;
   }

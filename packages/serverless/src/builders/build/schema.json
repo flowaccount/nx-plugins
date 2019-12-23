@@ -108,10 +108,18 @@
       "webpackConfig": {
         "type": "string",
         "description": "Path to a function which takes a webpack config, context and returns the resulting webpack config"
+      },
+      "processEnvironmentFile": {
+        "type": "string",
+        "description": "The env.json you want to build serverless with",
+        "default": "env.json"
+      },
+      "logGroupName": {
+        "type": "string",
+        "description": "The cloud watch log group name to override all functions and log to"
       }
     },
     "required": ["tsConfig", "servicePath", "outputPath", "serverlessConfig"],
-  
     "definitions": {
       "assetPattern": {
         "oneOf": [

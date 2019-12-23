@@ -9,7 +9,6 @@ import { JsonObject } from '@angular-devkit/core';
 import { Observable, of, from, zip, concat } from 'rxjs';
 import { concatMap, tap, mergeMap, map, filter, first, switchMap, catchError } from 'rxjs/operators';
 import { stripIndents } from '@angular-devkit/core/src/utils/literals';
-import { ChildProcess, fork } from 'child_process';
 import { ServerlessBuildEvent, BuildServerlessBuilderOptions } from '../build/build.impl';
 import * as isBuiltinModule from 'is-builtin-module';
 import * as _ from 'lodash';
@@ -24,10 +23,6 @@ import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
 gracefulFs.gracefulify(fs)
 /* Fix for EMFILE: too many open files on serverless deploy */
-
-try {
-  require('dotenv').config();
-} catch (e) { }
 
 export const enum InspectType {
   Inspect = 'inspect',
@@ -45,6 +40,7 @@ export interface ServerlessDeployBuilderOptions extends BuildServerlessBuilderOp
   watch: boolean;
   args: string[];
   package: string;
+  location: string;
 }
 
 export default createBuilder<ServerlessDeployBuilderOptions & JsonObject>(serverlessExecutionHandler);
@@ -53,8 +49,6 @@ export function serverlessExecutionHandler(
   context: BuilderContext
 ): Observable<BuilderOutput> {
   // build into output path before running serverless offline.
-
-
   return ServerlessWrapper.init(options, context).pipe(
     mergeMap(() => {
       return runWaitUntilTargets(options, context).pipe(
@@ -182,6 +176,7 @@ function runWaitUntilTargets(
   return zip(
     ...options.waitUntilTargets.map(b => {
       return scheduleTargetAndForget(context, targetFromTargetString(b)).pipe(
+        
         filter(e => e.success !== undefined),
         first()
       );

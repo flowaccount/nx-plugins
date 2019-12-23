@@ -15,11 +15,6 @@ const npm_1 = require("../../utils/packagers/npm");
 const fs = require("fs");
 const gracefulFs = require("graceful-fs");
 gracefulFs.gracefulify(fs);
-/* Fix for EMFILE: too many open files on serverless deploy */
-try {
-    require('dotenv').config();
-}
-catch (e) { }
 exports.default = architect_1.createBuilder(serverlessExecutionHandler);
 function serverlessExecutionHandler(options, context) {
     // build into output path before running serverless offline.

@@ -16,6 +16,7 @@ export interface ServerlessDeployBuilderOptions extends BuildServerlessBuilderOp
     watch: boolean;
     args: string[];
     package: string;
+    location: string;
 }
 declare const _default: import("@angular-devkit/architect/src/internal").Builder<ServerlessDeployBuilderOptions & JsonObject>;
 export default _default;

@@ -17,10 +17,11 @@ const node_1 = require("@angular-devkit/core/node");
 const node_config_1 = require("../../utils/node.config");
 const normalize_1 = require("../../utils/normalize");
 const serverless_1 = require("../../utils/serverless");
+const middleware_1 = require("../../utils/middleware");
 exports.default = architect_1.createBuilder(run);
 function run(options, context) {
     return serverless_1.ServerlessWrapper.init(options, context)
-        .pipe(operators_1.mergeMap(() => rxjs_1.from(getSourceRoot(context))), operators_1.switchMap(sourceRoot => rxjs_1.from(normalize_1.normalizeBuildOptions(options, context.workspaceRoot, sourceRoot))), operators_1.map(options => {
+        .pipe(operators_1.mergeMap(() => rxjs_1.from(middleware_1.wrapMiddlewareBuildOptions(options))), operators_1.mergeMap(() => rxjs_1.from(getSourceRoot(context))), operators_1.switchMap(sourceRoot => rxjs_1.from(normalize_1.normalizeBuildOptions(options, context.workspaceRoot, sourceRoot))), operators_1.map(options => {
         let config = node_config_1.getNodeWebpackConfig(options);
         if (options.webpackConfig) {
             config = require(options.webpackConfig)(config, {

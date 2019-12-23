@@ -3,13 +3,14 @@ import { JsonObject, workspaces, resolve } from '@angular-devkit/core';
 import { runWebpack, BuildResult } from '@angular-devkit/build-webpack';
 import { Observable, from, observable } from 'rxjs';
 // import { NodeJsSyncHost } from '@angular-devkit/core/node';
-import { BuildBuilderOptions, ServerlessOfflineOptions } from '../../utils/types';
+import { BuildBuilderOptions } from '../../utils/types';
 import { map, concatMap, take, switchMap, mergeMap } from 'rxjs/operators';
 import { NodeJsSyncHost } from '@angular-devkit/core/node';
 import { getNodeWebpackConfig } from '../../utils/node.config';
 import { normalizeBuildOptions } from '../../utils/normalize';
 import { Stats } from 'webpack';
 import { ServerlessWrapper } from '../../utils/serverless';
+import { wrapMiddlewareBuildOptions } from '../../utils/middleware';
 
 export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {
 
@@ -26,7 +27,9 @@ function run(
 ): Observable<ServerlessBuildEvent> {
 
   return ServerlessWrapper.init(options, context)
-  .pipe(mergeMap(() => from(getSourceRoot(context))),
+  .pipe(
+        mergeMap(() => from(wrapMiddlewareBuildOptions(options))),
+        mergeMap(() => from(getSourceRoot(context))),
         switchMap(sourceRoot =>
           from(normalizeBuildOptions(options, context.workspaceRoot, sourceRoot))
         ),

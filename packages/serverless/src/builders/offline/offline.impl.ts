@@ -7,12 +7,11 @@ import {
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { Observable, bindCallback, of, zip, from, iif, observable } from 'rxjs';
-import { concatMap, tap, mapTo, first, map, filter } from 'rxjs/operators';
+import { concatMap, tap, mapTo, first, map, filter, mergeMap } from 'rxjs/operators';
 import { stripIndents } from '@angular-devkit/core/src/utils/literals';
 import { ChildProcess, fork } from 'child_process';
-import { ServerlessOfflineOptions } from '../../utils/types';
 import * as treeKill from 'tree-kill';
-import { ServerlessBuildEvent } from '../build/build.impl';
+import { ServerlessBuildEvent, BuildServerlessBuilderOptions } from '../build/build.impl';
 import { ServerlessWrapper } from '../../utils/serverless';
 try {
   require('dotenv').config();
@@ -22,15 +21,36 @@ export const enum InspectType {
   Inspect = 'inspect',
   InspectBrk = 'inspect-brk'
 }
-
-export interface ServerlessExecuteBuilderOptions extends ServerlessOfflineOptions {
+// https://www.npmjs.com/package/serverless-offline
+export interface ServerlessExecuteBuilderOptions extends BuildServerlessBuilderOptions { 
   inspect: boolean | InspectType;
   waitUntilTargets: string[];
   buildTarget: string;
-  host: string;
-  port: number;
   watch: boolean;
   args: string[];
+  verbose?: boolean;
+  binPath?: string;
+  host?: string;
+  location?: string;
+  noAuth?: boolean;
+  noEnvironment?: boolean;
+  port?: number;
+  region?: string;
+  printOutput?: boolean;
+  preserveTrailingSlash?: boolean;
+  stage?: string;
+  useSeparateProcesses?: boolean;
+  websocketPort?: number;
+  prefix?: string;
+  hideStackTraces?: boolean;
+  corsAllowHeaders?: string;
+  corsAllowOrigin?: string;
+  corsDisallowCredentials?: string;
+  corsExposedHeaders?: string;
+  disableCookieValidation?: boolean;
+  enforceSecureCookies?: boolean;
+  exec?: string;
+  readyWhen: string;
 }
 
 export default createBuilder<ServerlessExecuteBuilderOptions & JsonObject>(serverlessExecutionHandler);
@@ -41,29 +61,31 @@ export function serverlessExecutionHandler(
   context: BuilderContext
 ): Observable<BuilderOutput> {
 
-  return runWaitUntilTargets(options, context).pipe(
-    concatMap(v => {
-      if (!v.success) {
-        context.logger.error(
-          `One of the tasks specified in waitUntilTargets failed`
-        );
-        return of({ success: false });
-      }
-      // build into output path before running serverless offline.
-      return startBuild(options, context).pipe(
-        concatMap((event: ServerlessBuildEvent) => {
-          if (event.success) {
-            return restartProcess(event.outfile, options, context).pipe(
-              mapTo(event)
-            );
-          } else {
+  return ServerlessWrapper.init(options, context).pipe(
+    mergeMap(() => {
+      return runWaitUntilTargets(options, context).pipe(
+        concatMap(v => {
+          if (!v.success) {
             context.logger.error(
-              'There was an error with the build. See above.'
+              `One of the tasks specified in waitUntilTargets failed`
             );
-            context.logger.info(`${event.outfile} was not restarted.`);
-            return of(event);
+            return of({ success: false });
           }
+          return startBuild(options, context);
         }));
+    }),
+    concatMap((event: ServerlessBuildEvent) => {
+      if (event.success) {
+        return restartProcess(event.outfile, options, context).pipe(
+          mapTo(event)
+        );
+      } else {
+        context.logger.error(
+          'There was an error with the build. See above.'
+        );
+        context.logger.info(`${event.outfile} was not restarted.`);
+        return of(event);
+      }
     }));
 }
 

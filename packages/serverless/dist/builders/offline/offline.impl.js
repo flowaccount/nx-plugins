@@ -14,6 +14,7 @@ const operators_1 = require("rxjs/operators");
 const literals_1 = require("@angular-devkit/core/src/utils/literals");
 const child_process_1 = require("child_process");
 const treeKill = require("tree-kill");
+const serverless_1 = require("../../utils/serverless");
 try {
     require('dotenv').config();
 }
@@ -21,22 +22,23 @@ catch (e) { }
 exports.default = architect_1.createBuilder(serverlessExecutionHandler);
 let subProcess = null;
 function serverlessExecutionHandler(options, context) {
-    return runWaitUntilTargets(options, context).pipe(operators_1.concatMap(v => {
-        if (!v.success) {
-            context.logger.error(`One of the tasks specified in waitUntilTargets failed`);
-            return rxjs_1.of({ success: false });
-        }
-        // build into output path before running serverless offline.
-        return startBuild(options, context).pipe(operators_1.concatMap((event) => {
-            if (event.success) {
-                return restartProcess(event.outfile, options, context).pipe(operators_1.mapTo(event));
+    return serverless_1.ServerlessWrapper.init(options, context).pipe(operators_1.mergeMap(() => {
+        return runWaitUntilTargets(options, context).pipe(operators_1.concatMap(v => {
+            if (!v.success) {
+                context.logger.error(`One of the tasks specified in waitUntilTargets failed`);
+                return rxjs_1.of({ success: false });
             }
-            else {
-                context.logger.error('There was an error with the build. See above.');
-                context.logger.info(`${event.outfile} was not restarted.`);
-                return rxjs_1.of(event);
-            }
+            return startBuild(options, context);
         }));
+    }), operators_1.concatMap((event) => {
+        if (event.success) {
+            return restartProcess(event.outfile, options, context).pipe(operators_1.mapTo(event));
+        }
+        else {
+            context.logger.error('There was an error with the build. See above.');
+            context.logger.info(`${event.outfile} was not restarted.`);
+            return rxjs_1.of(event);
+        }
     }));
 }
 exports.serverlessExecutionHandler = serverlessExecutionHandler;

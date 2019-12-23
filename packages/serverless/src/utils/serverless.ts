@@ -2,11 +2,10 @@ import * as Serverless from 'serverless/lib/Serverless';
 import { BuildBuilderOptions } from './types';
 import { targetFromTargetString, BuilderContext } from '@angular-devkit/architect';
 import { from } from 'rxjs/internal/observable/from';
-import { map, merge, switchMap, tap, mergeMap } from 'rxjs/operators';
+import { tap, mergeMap, map, concatMap } from 'rxjs/operators';
 import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
-import { BuildServerlessBuilderOptions } from '../builders/build/build.impl';
 import { of, Observable } from 'rxjs';
-
+import * as path from 'path';
 export class ServerlessWrapper {
 
     constructor() {
@@ -46,10 +45,22 @@ export class ServerlessWrapper {
                 }
             }
             ),
-            tap((options: T) => {
+            map((options: T) => {
+                try {
+                  require('dotenv-json')({path: path.join(options.servicePath, options.processEnvironmentFile)});
+                } catch (e) { console.log(e) }
+               
                 this.serverless$ = new Serverless({ config: options.serverlessConfig, servicePath: options.servicePath });
-                this.serverless$.init()
+                return this.serverless$.init()
+                
+            }),
+            concatMap(() => {
+                return this.serverless$.service.load({ config: options.serverlessConfig })
+               }
+            ),
+            concatMap(() => {
                 this.serverless$.cli.asciiGreeting()
+                return of(null);
             }))
         } else { return of(null); }
     }

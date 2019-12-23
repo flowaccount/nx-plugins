@@ -5,6 +5,7 @@ const architect_1 = require("@angular-devkit/architect");
 const from_1 = require("rxjs/internal/observable/from");
 const operators_1 = require("rxjs/operators");
 const rxjs_1 = require("rxjs");
+const path = require("path");
 class ServerlessWrapper {
     constructor() {
     }
@@ -33,10 +34,20 @@ class ServerlessWrapper {
                 else {
                     return rxjs_1.of(options);
                 }
-            }), operators_1.tap((options) => {
+            }), operators_1.map((options) => {
+                try {
+                    require('dotenv-json')({ path: path.join(options.servicePath, options.processEnvironmentFile) });
+                }
+                catch (e) {
+                    console.log(e);
+                }
                 this.serverless$ = new Serverless({ config: options.serverlessConfig, servicePath: options.servicePath });
-                this.serverless$.init();
+                return this.serverless$.init();
+            }), operators_1.concatMap(() => {
+                return this.serverless$.service.load({ config: options.serverlessConfig });
+            }), operators_1.concatMap(() => {
                 this.serverless$.cli.asciiGreeting();
+                return rxjs_1.of(null);
             }));
         }
         else {
