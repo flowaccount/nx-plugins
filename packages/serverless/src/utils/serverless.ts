@@ -49,7 +49,6 @@ export class ServerlessWrapper {
                 try {
                   require('dotenv-json')({path: path.join(options.servicePath, options.processEnvironmentFile)});
                 } catch (e) { console.log(e) }
-               
                 this.serverless$ = new Serverless({ config: options.serverlessConfig, servicePath: options.servicePath });
                 return this.serverless$.init()
                 
@@ -60,6 +59,7 @@ export class ServerlessWrapper {
             ),
             concatMap(() => {
                 this.serverless$.cli.asciiGreeting()
+                console.log(this.serverless$)
                 return of(null);
             }))
         } else { return of(null); }

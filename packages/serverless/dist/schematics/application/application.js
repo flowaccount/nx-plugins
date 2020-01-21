@@ -17,6 +17,7 @@ function getBuildConfig(project, options) {
         builder: '@flowaccount/nx-serverless:build',
         options: {
             outputPath: core_1.join(core_1.normalize('dist'), options.appProjectRoot),
+            package: core_1.join(core_1.normalize('app'), options.appProjectRoot),
             serverlessConfig: core_1.join(options.appProjectRoot, 'serverless.yml'),
             servicePath: options.appProjectRoot,
             tsConfig: core_1.join(options.appProjectRoot, 'tsconfig.app.json'),
@@ -129,7 +130,7 @@ plugins:
 package:
   individually: true
   excludeDevDependencies: false
-  path: ${core_1.join(core_1.normalize('dist'), options.appProjectRoot)}
+  # path: ${core_1.join(core_1.normalize('dist'), options.appProjectRoot)}
   custom:
     enable_optimize:
       local: false

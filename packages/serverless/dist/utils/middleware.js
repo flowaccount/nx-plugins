@@ -13,7 +13,6 @@ function wrapMiddlewareBuildOptions(options) {
     return __awaiter(this, void 0, void 0, function* () {
         serverless_1.ServerlessWrapper.serverless.cli.log("getting all functions");
         const functionNames = yield serverless_1.ServerlessWrapper.serverless.service.getAllFunctions();
-        console.log(functionNames);
         functionNames.forEach(name => {
             if (serverless_1.ServerlessWrapper.serverless.service.functions[name]) {
                 var fn = serverless_1.ServerlessWrapper.serverless.service.getFunction(name);
@@ -21,10 +20,9 @@ function wrapMiddlewareBuildOptions(options) {
                     fn.events = [];
                 }
                 if (options.logGroupName) {
-                    fn.events.cloudwatchLog = '/aws/lambda/subscription';
+                    fn.events.push({ cloudwatchLog: { logGroup: options.logGroupName, filter: '' } });
                 }
                 serverless_1.ServerlessWrapper.serverless.service.functions[name] = fn;
-                console.log(serverless_1.ServerlessWrapper.serverless.service.functions[name]);
             }
         });
     });

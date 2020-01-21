@@ -7,7 +7,6 @@ export async function wrapMiddlewareBuildOptions<T extends BuildBuilderOptions>(
 
     ServerlessWrapper.serverless.cli.log("getting all functions")
     const functionNames: [] = await ServerlessWrapper.serverless.service.getAllFunctions()
-    console.log(functionNames)
     functionNames.forEach(name => {
         if(ServerlessWrapper.serverless.service.functions[name]){
             var fn = ServerlessWrapper.serverless.service.getFunction(name);
@@ -15,10 +14,9 @@ export async function wrapMiddlewareBuildOptions<T extends BuildBuilderOptions>(
                 fn.events = [];
             }
             if(options.logGroupName) {
-                fn.events.cloudwatchLog = '/aws/lambda/subscription';
+                fn.events.push({ cloudwatchLog: { logGroup: options.logGroupName, filter: '' } });
             }
             ServerlessWrapper.serverless.service.functions[name] = fn;
-            console.log(ServerlessWrapper.serverless.service.functions[name]);
         }
     });
   }

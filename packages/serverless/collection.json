@@ -4,15 +4,15 @@
     "extends": ["@nrwl/workspace"],
     "schematics": {
       "init": {
-        "factory": "./src/schematics/init/init",
-        "schema": "./src/schematics/init/schema.json",
+        "factory": "./dist/schematics/init/init",
+        "schema": "./dist/schematics/init/schema.json",
         "description": "Initialize the @nx/serverless plugin",
         "aliases": ["ng-add"]
       },
   
       "application": {
-        "factory": "./src/schematics/application/application",
-        "schema": "./src/schematics/application/schema.json",
+        "factory": "./dist/schematics/application/application",
+        "schema": "./dist/schematics/application/schema.json",
         "aliases": ["api"],
         "description": "Create a serverless-api application"
       }

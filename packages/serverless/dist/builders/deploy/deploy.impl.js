@@ -193,9 +193,12 @@ function getExecArgv(options) {
     if (options.function && options.function != '') {
         args.push('function');
     }
+    if (options.list) {
+        args.push('list');
+    }
     for (var key in options) {
         if (options.hasOwnProperty(key)) {
-            if (options[key] !== undefined && key !== 'buildTarget' && key !== 'package') {
+            if (options[key] !== undefined && key !== 'buildTarget' && key !== 'package' && key !== 'list') {
                 args.push(`--${key}=${options[key]}`);
             }
         }

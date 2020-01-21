@@ -6,7 +6,9 @@
   },
   "include": [
     "src/**/*.json",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.ts__tmpl__",
+    "src/**/*.json__tmpl__"
   ],
   "exclude": [
     "node_modules"

@@ -47,6 +47,7 @@ class ServerlessWrapper {
                 return this.serverless$.service.load({ config: options.serverlessConfig });
             }), operators_1.concatMap(() => {
                 this.serverless$.cli.asciiGreeting();
+                console.log(this.serverless$);
                 return rxjs_1.of(null);
             }));
         }
