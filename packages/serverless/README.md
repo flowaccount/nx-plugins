@@ -36,19 +36,21 @@ This will Add the following to your `angular.json`
 
 ```json
 {
-    "api": "root": "api",
-      "sourceRoot": "api/src",
+    "api-hello-world": {
+      "root": "apps/api/hello-world",
+      "sourceRoot": "apps/api/hello-world/src",
       "projectType": "application",
-      "prefix": "frontend-flowaccount-landing-ssr",
+      "prefix": "api-hello-world",
       "schematics": {},
       "architect": {
         "build": {
           "builder": "@flowaccount/nx-serverless:build",
           "options": {
-            "outputPath": "dist/ap",
-            "serverlessConfig": "api/serverless.yml",
-            "servicePath": "api",
-            "tsConfig": "api/tsconfig.app.json",
+            "outputPath": "dist/apps/api/hello-world",
+            "package": "app/apps/api/hello-world",
+            "serverlessConfig": "apps/api/hello-world/serverless.yml",
+            "servicePath": "apps/api/hello-world",
+            "tsConfig": "apps/api/hello-world/tsconfig.app.json",
             "provider": "aws",
             "watch": true,
             "progress": true
@@ -81,8 +83,8 @@ This will Add the following to your `angular.json`
               ],
               "fileReplacements": [
                 {
-                  "replace": "api/environment.ts",
-                  "with": "api/environment.prod.ts"
+                  "replace": "apps/api/hello-world/environment.ts",
+                  "with": "apps/api/hello-world/environment.prod.ts"
                 }
               ]
             }
@@ -91,50 +93,48 @@ This will Add the following to your `angular.json`
         "serve": {
           "builder": "@flowaccount/nx-serverless:offline",
           "options": {
-            "waitUntilTargets": [  "frontend-flowaccount-landing:build", "frontend-flowaccount-landing:server"],
-            "buildTarget": "frontend-flowaccount-landing-ssr:build",
-            "config": "api/serverless.yml",
-            "location": "dist/ap"
+            "buildTarget": "api-hello-world:build",
+            "config": "apps/api/hello-world/serverless.yml",
+            "location": "dist/apps/api/hello-world"
           },
           "configurations": {
             "dev": {
-              "buildTarget": "frontend-flowaccount-landing-ssr:build:dev"
+              "buildTarget": "api-hello-world:build:dev"
             },
             "production": {
-              "buildTarget": "frontend-flowaccount-landing-ssr:build:production"
+              "buildTarget": "api-hello-world:build:production"
             }
           }
         },
         "deploy": {
           "builder": "@flowaccount/nx-serverless:deploy",
           "options": {
-            "buildTarget": "frontend-flowaccount-landing-ssr:build:production",
-            "config": "api/serverless.yml",
-            "location": "dist/ap",
-            "package": "dist/ap"
+            "buildTarget": "api-hello-world:build:production",
+            "config": "apps/api/hello-world/serverless.yml",
+            "location": "dist/apps/api/hello-world",
+            "package": "dist/apps/api/hello-world"
           }
         },
         "lint": {
           "builder": "@angular-devkit/build-angular:tslint",
           "options": {
             "tsConfig": [
-              "api/tsconfig.app.json",
-              "api/tsconfig.spec.json"
+              "apps/api/hello-world/tsconfig.app.json",
+              "apps/api/hello-world/tsconfig.spec.json"
             ],
             "exclude": [
               "**/node_modules/**",
-              "!api/**"
+              "!apps/api/hello-world/**"
             ]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
-            "jestConfig": "api/jest.config.js",
-            "tsConfig": "api/tsconfig.spec.json"
+            "jestConfig": "apps/api/hello-world/jest.config.js",
+            "tsConfig": "apps/api/hello-world/tsconfig.spec.json"
           }
         }
       }
-    }
 }
 ```
