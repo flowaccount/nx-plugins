@@ -6,10 +6,10 @@
       "init": {
         "factory": "./dist/schematics/init/init",
         "schema": "./dist/schematics/init/schema.json",
-        "description": "Initialize the @nx/serverless plugin",
-        "aliases": ["ng-add"]
+        "description": "Initialize the @flowaccount/nx-serverless plugin",
+        "aliases": ["serverless-init"],
+        "hidden": true
       },
-  
       "application": {
         "factory": "./dist/schematics/application/application",
         "schema": "./dist/schematics/application/schema.json",

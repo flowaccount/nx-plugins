@@ -172,7 +172,7 @@ function default_1(schema) {
         const options = normalizeOptions(schema);
         return schematics_1.chain([
             init_1.default({
-                skipFormat: true
+                skipFormat: false
             }),
             workspace_1.addLintFiles(options.appProjectRoot, options.linter),
             addAppFiles(options),

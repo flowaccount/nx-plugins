@@ -9,12 +9,12 @@ function addDependencies() {
         'serverless': versions_1.serverlessVersion,
         'serverless-offline': versions_1.serverlessOfflineVersion,
         '@types/aws-lambda': versions_1.awsTypeLambdaVersion,
-    }, false);
+    });
 }
 function moveDependency() {
     return workspace_1.updateJsonInTree('package.json', json => {
         json.dependencies = json.dependencies || {};
-        delete json.dependencies['@nx/serverless'];
+        delete json.dependencies['@floaccount/nx-serverless'];
         return json;
     });
 }
@@ -24,7 +24,7 @@ function setDefault() {
         const defaultCollection = workspace.extensions.cli &&
             workspace.extensions.cli.defaultCollection;
         if (!defaultCollection || defaultCollection === '@nrwl/workspace') {
-            workspace.extensions.cli.defaultCollection = '@nx/serverless';
+            workspace.extensions.cli.defaultCollection = '@floaccount/nx-serverless';
         }
     });
 }

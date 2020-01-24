@@ -226,7 +226,7 @@ export default function(schema: Schema): Rule {
         const options = normalizeOptions(schema);
         return chain([
             init({
-                skipFormat: true
+                skipFormat: false
             }),
             addLintFiles(options.appProjectRoot, options.linter),
             addAppFiles(options),
