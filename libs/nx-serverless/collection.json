@@ -1,0 +1,26 @@
+{
+  "$schema": "../../../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "name": "nx-serverless",
+  "version": "0.0.1",
+  "schematics": {
+    "init": {
+      "factory": "./src/schematics/init/init",
+      "schema": "./src/schematics/init/schema.json",
+      "description": "Initialize the @flowaccount/nx-serverless plugin",
+      "aliases": ["init-serverless"],
+      "hidden": true
+    },
+    "api": {
+      "factory": "./src/schematics/api/api",
+      "schema": "./src/schematics/api/schema.json",
+      "aliases": ["api-serverless"],
+      "description": "Create a serverless nodejs api application"
+    },
+    "angular-universal": {
+      "factory": "./src/schematics/angular-universal/application",
+      "schema": "./src/schematics/angular-universal/schema.json",
+      "aliases": ["angular-serverless"],
+      "description": "Create a serverless nodejs api application"
+    }
+  }
+}

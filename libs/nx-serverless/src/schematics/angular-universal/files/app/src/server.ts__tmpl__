@@ -1,0 +1,88 @@
+// These are important and needed before anything else
+import 'zone.js/dist/zone-node';
+import 'reflect-metadata';
+
+import { enableProdMode } from '@angular/core';
+
+import * as compression from 'compression';
+import * as express from 'express';
+import * as device from 'express-device';
+import * as cache from 'memory-cache';
+import { join } from 'path';
+
+
+// Faster server renders w/ Prod mode (dev mode never needed)
+enableProdMode();
+
+// Express server
+export const app = express();
+
+const PORT =  process.env.PORT || 4000;
+const HOST = '0.0.0.0';
+
+
+const DIST_FOLDER = join(process.cwd(), 'dist/<%= root %><%= name %>');
+
+// * NOTE :: leave this as require() since this file is built Dynamically from webpack
+const { ServerAppModuleNgFactory, LAZY_MODULE_MAP } = require('<%= offset %>dist/<%= root %><%= name %>/server/main');
+const minifyHTML  = require('express-minify-html');
+
+// Express Engine
+import { ngExpressEngine } from '@nguniversal/express-engine';
+// Import module map for lazy loading
+import { provideModuleMap } from '@nguniversal/module-map-ngfactory-loader';
+
+app.use(compression());
+app.use(minifyHTML({
+  override:      true,
+  exception_url: false,
+  htmlMinifier: {
+      removeComments:            true,
+      collapseWhitespace:        true,
+      collapseBooleanAttributes: true,
+      removeAttributeQuotes:     true,
+      removeEmptyAttributes:     true,
+      minifyJS:                  true,
+      minifyCSS:                 true
+  }
+}));
+app.use(device.capture());
+app.engine('html', ngExpressEngine({
+    bootstrap: ServerAppModuleNgFactory,
+    providers: [
+      provideModuleMap(LAZY_MODULE_MAP)
+    ]
+  })
+);
+
+app.set('view engine', 'html');
+app.set('views', join(DIST_FOLDER, 'browser'));
+
+app.get('*.*', express.static(join(DIST_FOLDER, 'browser'), {
+  maxAge: '1y'
+}));
+
+// const configProvider = (req, res) => { 
+  // return {req,res,providers: [{ provide: 'IsMobile', useValue:  req.device.type === 'phone' }]};
+// }
+
+const allowedPages = ['/', '/_phone'];
+// All regular routes use the Universal engine
+app.get('/*', (req: any, res) => {
+  const _pathCache = req.device.type === 'phone' ? `${req.originalUrl}_phone` : req.originalUrl;
+  if (allowedPages.includes(_pathCache)) {
+    const entry = cache.get(_pathCache); // check if we have a cache entry
+    if (entry) {
+      res.send(entry);                        // send the cache entry
+    } else {
+      res.render(join(DIST_FOLDER, 'browser', 'index.html'), configProvider(req, res), (err, html) => {
+        cache.put(_pathCache, html);     // save the HTML in the cache
+        res.send(html);
+      });
+    }
+  } else {
+    res.render(join(DIST_FOLDER, 'browser', 'index.html'), configProvider(req, res));              // just render with no cache
+  }
+});
+
+

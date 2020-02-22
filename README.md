@@ -1,76 +1,56 @@
-# FlowaccountNxPlugins
+<p float="left">
+<img src="https://raw.githubusercontent.com/nrwl/nx/master/nx-logo.png" height="100">
+<img src="https://angular.io/assets/images/logos/angular/angular.svg" height="145">
+<!-- <img src="https://angular.io/generated/images/marketing/concept-icons/universal.png" height="120"> -->
+<img src="https://miro.medium.com/max/900/1*dSqXPEWnNgUhEmCrjxRI4Q.png" height="145">
+</p>
 
-This project was generated using [Nx](https://nx.dev).
+<div align="left">
 
-<p align="center"><img src="https://raw.githubusercontent.com/nrwl/nx/master/nx-logo.png" width="450"></p>
+[![License](https://img.shields.io/npm/l/@flowaccount/nx-serverless.svg?style=flat-square)]()
 
-🔎 **Nx is a set of Extensible Dev Tools for Monorepos.**
+</div>
 
-## Adding capabilities to your workspace
+<div align="left">
 
-Nx supports many plugins which add capabilities for developing different types of applications and different tools.
+[![@flowaccount/nx-serverless](https://img.shields.io/badge/%40flowaccount-nx--serverless-blue)](https://github.com/flowaccount/flowaccount-nx/tree/master/packages/serverless)
+[![NPM Version](https://badge.fury.io/js/%40flowaccount%2Fnx-serverless.svg)](https://www.npmjs.com/@flowaccount/nx-serverless)
 
-These capabilities include generating applications, libraries, etc as well as the devtools to test, and build projects as well.
+</div>
 
-Below are some plugins which you can add to your workspace:
+<hr>
 
-- [React](https://reactjs.org)
-  - `npm install --save-dev @nrwl/react`
-- Web (no framework frontends)
-  - `npm install --save-dev @nrwl/web`
-- [Angular](https://angular.io)
-  - `npm install --save-dev @nrwl/angular`
-- [Nest](https://nestjs.com)
-  - `npm install --save-dev @nrwl/nest`
-- [Express](https://expressjs.com)
-  - `npm install --save-dev @nrwl/express`
-- [Node](https://nodejs.org)
-  - `npm install --save-dev @nrwl/node`
+# What is Nx
 
-## Generate an application
+🔎 **Extensible Dev Tools for Monorepos.**
 
-Run `nx g @nrwl/react:app my-app` to generate an application.
+# What is @flowaccount/nx-plugins
 
-> You can use any of the plugins above to generate applications as well.
+🔎 **Extensible Continous Delivery/Depolyment Tools on top of Nx workspace for seamless deployments with frameworks like Serverless, Lambda, Azure Functions, Google Functions and AWS Cdk (Infrastructure as a code)**
 
-When using Nx, you can create multiple applications and libraries in the same workspace.
+## Our Mission
 
-## Generate a library
+Nx is great and simplifying the tool-chains for *continous integrations* inside a mono-repository. As a developer who has to do operations as well, we would like to see the delivery/deployment side of things to be super awsome as well!
 
-Run `nx g @nrwl/react:lib my-lib` to generate a library.
+**So we decided to build plugins on top of this great workspace to add the ability of seamless delivery/deployment of our projects to the designated cloud providers.**
 
-> You can also use any of the plugins above to generate libraries as well.
+## Feature sets to support
 
-Libraries are sharable across libraries and applications. They can be imported from `@flowaccount-nx-plugins/mylib`.
+Framework Name | AWS | Azure | GCP
+---------|----------|---------|---------
+ Serverless Framework | B1 | C1 | D1
+ Pulumi | B2 | C2 | D2
+ AWS-CDK | B3 | C3 | D3
 
-## Development server
+Application | Serverless | Pulumi | AWS-CDK
+---------|----------|---------|---------
+ Node | B1 | C1 | D1
+ Angular Universal | B2 | C2 | D2
 
-Run `nx serve my-app` for a dev server. Navigate to http://localhost:4200/. The app will automatically reload if you change any of the source files.
-
-## Code scaffolding
-
-Run `nx g @nrwl/react:component my-component --project=my-app` to generate a new component.
-
-## Build
-
-Run `nx build my-app` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `--prod` flag for a production build.
-
-## Running unit tests
-
-Run `nx test my-app` to execute the unit tests via [Jest](https://jestjs.io).
-
-Run `nx affected:test` to execute the unit tests affected by a change.
-
-## Running end-to-end tests
-
-Run `ng e2e my-app` to execute the end-to-end tests via [Cypress](https://www.cypress.io).
-
-Run `nx affected:e2e` to execute the end-to-end tests affected by a change.
-
-## Understand your workspace
-
-Run `nx dep-graph` to see a diagram of the dependencies of your projects.
-
-## Further help
-
-Visit the [Nx Documentation](https://nx.dev) to learn more.
+ I
+Infrastructure Elements | AWS | Azure | GCP
+---------|----------|---------|---------
+ Custom Domain | B1 | C1 | D1
+ Deploy | B2 | C2 | D2
+ Destroy | B2 | C2 | D2
+ 

@@ -1,5 +1,5 @@
 {
-  "npmScope": "flowaccount-nx-plugins",
+  "npmScope": "flowaccount",
   "implicitDependencies": {
     "workspace.json": "*",
     "package.json": {
@@ -10,5 +10,13 @@
     "tslint.json": "*",
     "nx.json": "*"
   },
-  "projects": {}
+  "projects": {
+    "nx-serverless": {
+      "tags": []
+    },
+    "nx-serverless-e2e": {
+      "tags": [],
+      "implicitDependencies": ["nx-serverless"]
+    }
+  }
 }
