@@ -45,7 +45,7 @@ Framework Name | AWS | Azure | GCP
 
 ### Angular Universal
 
-Application | Serverless | Pulumi | AWS-CDK
+Application | AWS | Azure | GCP
 ---------|----------|---------|---------
  Serverless Framework | :calendar: | :calendar: | :calendar:
  AWS-CDK | :calendar: | :x: | :x:
