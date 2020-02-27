@@ -2,7 +2,7 @@
 <img src="https://raw.githubusercontent.com/nrwl/nx/master/nx-logo.png" height="100">
 <img src="https://angular.io/assets/images/logos/angular/angular.svg" height="145">
 <!-- <img src="https://angular.io/generated/images/marketing/concept-icons/universal.png" height="120"> -->
-<img src="https://miro.medium.com/max/900/1*dSqXPEWnNgUhEmCrjxRI4Q.png" height="145">
+<img src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg" height="145">
 </p>
 
 <div align="left">
@@ -32,25 +32,29 @@
 
 Nx is great and simplifying the tool-chains for *continous integrations* inside a mono-repository. As a developer who has to do operations as well, we would like to see the delivery/deployment side of things to be super awsome as well!
 
-**So we decided to build plugins on top of this great workspace to add the ability of seamless delivery/deployment of our projects to the designated cloud providers.**
+**So we decided to build plugins on top of the nx workspace to add the ability of seamless delivery/deployment of our projects to the designated cloud providers. :metal:**
 
 ## Feature sets to support
 
+### Node-Typescript
+
 Framework Name | AWS | Azure | GCP
 ---------|----------|---------|---------
- Serverless Framework | B1 | C1 | D1
- Pulumi | B2 | C2 | D2
- AWS-CDK | B3 | C3 | D3
+ Serverless Framework | :calendar: | :calendar: | :calendar:
+ AWS-CDK | :calendar: | :x: | :x:
+
+### Angular Universal
 
 Application | Serverless | Pulumi | AWS-CDK
 ---------|----------|---------|---------
- Node | B1 | C1 | D1
- Angular Universal | B2 | C2 | D2
+ Serverless Framework | :calendar: | :calendar: | :calendar:
+ AWS-CDK | :calendar: | :x: | :x:
 
- I
+### Infrastructure as a code
+
 Infrastructure Elements | AWS | Azure | GCP
 ---------|----------|---------|---------
- Custom Domain | B1 | C1 | D1
- Deploy | B2 | C2 | D2
- Destroy | B2 | C2 | D2
+ Custom Domain | :calendar: | :calendar: | :calendar:
+ Deploy | :calendar: | :calendar: | :calendar:
+ Destroy | :calendar: | :calendar: | :calendar:
  
