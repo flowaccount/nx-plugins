@@ -28,9 +28,9 @@ describe('app', () => {
               dev: {
                 budgets: [
                   {
-                    maximumWarning: "2mb",
-                    maximumError: "5mb",
-                    type: "initial"
+                    maximumWarning: '2mb',
+                    maximumError: '5mb',
+                    type: 'initial'
                   }
                 ],
                 optimization: false,
@@ -39,17 +39,17 @@ describe('app', () => {
               production: {
                 budgets: [
                   {
-                    maximumWarning: "2mb",
-                    maximumError: "5mb",
-                    type: "initial"
+                    maximumWarning: '2mb',
+                    maximumError: '5mb',
+                    type: 'initial'
                   }
                 ],
                 extractCss: true,
                 extractLicenses: true,
                 fileReplacements: [
                   {
-                    replace: "apps/my-serveless-app/environment.ts",
-                    with: "apps/my-serveless-app/environment.prod.ts"
+                    replace: 'apps/my-serveless-app/environment.ts',
+                    with: 'apps/my-serveless-app/environment.prod.ts'
                   }
                 ],
                 namedChunks: false,
@@ -60,33 +60,33 @@ describe('app', () => {
             },
             options: {
               outputPath: 'dist/apps/my-serveless-app',
-              package: "apps/my-serveless-app",
+              package: 'apps/my-serveless-app',
               progress: true,
-              serverlessConfig: "apps/my-serveless-app/serverless.yml",
-              servicePath: "apps/my-serveless-app",
+              serverlessConfig: 'apps/my-serveless-app/serverless.yml',
+              servicePath: 'apps/my-serveless-app',
               tsConfig: 'apps/my-serveless-app/tsconfig.app.json',
               watch: true
             }
           },
           deploy: {
-            builder: "@flowaccount/nx-serverless:deploy",
+            builder: '@flowaccount/nx-serverless:deploy',
             options: {
               buildTarget: 'my-serveless-app:build:production',
-              config: "apps/my-serveless-app/serverless.yml",
-              location: "dist/apps/my-serveless-app",
-              package: "dist/apps/my-serveless-app"
+              config: 'apps/my-serveless-app/serverless.yml',
+              location: 'dist/apps/my-serveless-app',
+              package: 'dist/apps/my-serveless-app'
             }
           },
           lint: {
-            builder: "@angular-devkit/build-angular:tslint",
+            builder: '@angular-devkit/build-angular:tslint',
             options: {
               exclude: [
-                "**/node_modules/**",
-                "!apps/my-serveless-app/**"
+                '**/node_modules/**',
+                '!apps/my-serveless-app/**'
               ],
               tsConfig: [
-                "apps/my-serveless-app/tsconfig.app.json",
-                "apps/my-serveless-app/tsconfig.spec.json"
+                'apps/my-serveless-app/tsconfig.app.json',
+                'apps/my-serveless-app/tsconfig.spec.json'
               ]
             }
           },
@@ -94,24 +94,24 @@ describe('app', () => {
             builder: '@flowaccount/nx-serverless:offline',
             configurations: {
               dev: {
-                buildTarget: "my-serveless-app:build:dev"
+                buildTarget: 'my-serveless-app:build:dev'
               },
               production: {
-                buildTarget: "my-serveless-app:build:production"
+                buildTarget: 'my-serveless-app:build:production'
               }
             },
             options: {
               buildTarget: 'my-serveless-app:build',
-              config: "apps/my-serveless-app/serverless.yml",
-              location: "dist/apps/my-serveless-app"
+              config: 'apps/my-serveless-app/serverless.yml',
+              location: 'dist/apps/my-serveless-app'
             }
           },
           test: {
-            builder: "@nrwl/jest:jest",
+            builder: '@nrwl/jest:jest',
             options: {
-              jestConfig: "apps/my-serveless-app/jest.config.js",
+              jestConfig: 'apps/my-serveless-app/jest.config.js',
               passWithNoTests: true,
-              tsConfig: "apps/my-serveless-app/tsconfig.spec.json"
+              tsConfig: 'apps/my-serveless-app/tsconfig.spec.json'
             }
           }
         })
@@ -149,7 +149,7 @@ describe('app', () => {
 
     it('should generate files', async () => {
       const tree = await runSchematic('api-serverless', { name: 'myServelessApp' }, appTree);
-      expect(tree.exists(`apps/my-serveless-app/jest.config.js`)).toBeTruthy();
+      expect(tree.exists('apps/my-serveless-app/jest.config.js')).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/env.json')).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/environment.ts')).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/environment.prod.ts')).toBeTruthy();
@@ -239,12 +239,12 @@ describe('app', () => {
 
       // Make sure these exist
       [
-        `apps/my-dir/my-serveless-app/jest.config.js`,
-        `apps/my-dir/my-serveless-app/env.json`,
-        `apps/my-dir/my-serveless-app/environment.ts`,
-        `apps/my-dir/my-serveless-app/environment.prod.ts`,
+        'apps/my-dir/my-serveless-app/jest.config.js',
+        'apps/my-dir/my-serveless-app/env.json',
+        'apps/my-dir/my-serveless-app/environment.ts',
+        'apps/my-dir/my-serveless-app/environment.prod.ts',
         'apps/my-dir/my-serveless-app/src/handler.ts',
-        `apps/my-dir/my-serveless-app/serverless.yml`
+        'apps/my-dir/my-serveless-app/serverless.yml'
       ].forEach(path => {
         expect(tree.exists(path)).toBeTruthy();
       });

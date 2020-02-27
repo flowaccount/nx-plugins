@@ -17,6 +17,13 @@
     "nx-serverless-e2e": {
       "tags": [],
       "implicitDependencies": ["nx-serverless"]
+    },
+    "nx-aws-cdk": {
+      "tags": []
+    },
+    "nx-aws-cdk-e2e": {
+      "tags": [],
+      "implicitDependencies": ["nx-aws-cdk"]
     }
   }
 }

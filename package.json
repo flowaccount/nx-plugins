@@ -2,6 +2,10 @@
   "name": "flowaccount",
   "version": "0.0.0",
   "license": "MIT",
+  "workspaces": [
+    "libs/nx-serverless",
+    "libs/nx-aws-cdk"
+  ],
   "scripts": {
     "nx": "nx",
     "start": "nx serve",
@@ -26,16 +30,19 @@
     "help": "nx help"
   },
   "private": true,
-  "dependencies": {},
+  "dependencies": {
+    "@nguniversal/express-engine" : "^9.0.1",
+    "express" : "^4.17.1"
+  },
   "devDependencies": {
     "@nrwl/nx-plugin": "9.0.1",
     "@nrwl/workspace": "9.0.1",
     "@types/node": "~8.9.4",
+    "@types/express": "^4.17.2",
     "dotenv": "6.2.0",
     "eslint": "6.1.0",
     "prettier": "1.18.2",
     "ts-node": "~7.0.0",
-    "tslint": "~5.11.0",
     "typescript": "~3.7.4",
     "@nrwl/eslint-plugin-nx": "9.0.1",
     "@typescript-eslint/parser": "2.19.2",

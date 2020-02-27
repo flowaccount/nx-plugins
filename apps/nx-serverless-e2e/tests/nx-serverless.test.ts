@@ -5,15 +5,15 @@ import {
   runNxCommandAsync,
   uniq
 } from '@nrwl/nx-plugin/testing';
-describe('flowaccount-nx-serverless e2e', () => {
-  it('should create flowaccount-nx-serverless', async done => {
-    const plugin = uniq('flowaccount-nx-serverless');
+describe('nx-serverless e2e', () => {
+  it('should create nx-serverless', async done => {
+    const plugin = uniq('nx-serverless');
     ensureNxProject(
-      '@flowaccount-nx-plugins/flowaccount/nx-serverless',
+      '@flowaccount/nx-serverless',
       'dist/libs/nx-serverless'
     );
     await runNxCommandAsync(
-      `generate @flowaccount-nx-plugins/flowaccount/nx-serverless:flowaccountNxServerless ${plugin}`
+      `generate @flowaccount/nx-serverless:flowaccountNxServerless ${plugin}`
     );
 
     const result = await runNxCommandAsync(`build ${plugin}`);
@@ -24,13 +24,13 @@ describe('flowaccount-nx-serverless e2e', () => {
 
   describe('--directory', () => {
     it('should create src in the specified directory', async done => {
-      const plugin = uniq('flowaccount-nx-serverless');
+      const plugin = uniq('nx-serverless');
       ensureNxProject(
-        '@flowaccount-nx-plugins/flowaccount/nx-serverless',
+        '@flowaccount/nx-serverless',
         'dist/libs/nx-serverless'
       );
       await runNxCommandAsync(
-        `generate @flowaccount-nx-plugins/flowaccount/nx-serverless:flowaccountNxServerless ${plugin} --directory subdir`
+        `generate @flowaccount/nx-serverless:flowaccountNxServerless ${plugin} --directory subdir`
       );
       expect(() =>
         checkFilesExist(`libs/subdir/${plugin}/src/index.ts`)
@@ -41,13 +41,13 @@ describe('flowaccount-nx-serverless e2e', () => {
 
   describe('--tags', () => {
     it('should add tags to nx.json', async done => {
-      const plugin = uniq('flowaccount-nx-serverless');
+      const plugin = uniq('nx-serverless');
       ensureNxProject(
-        '@flowaccount-nx-plugins/flowaccount/nx-serverless',
+        '@flowaccount/nx-serverless',
         'dist/libs/nx-serverless'
       );
       await runNxCommandAsync(
-        `generate @flowaccount-nx-plugins/flowaccount/nx-serverless:flowaccountNxServerless ${plugin} --tags e2etag,e2ePackage`
+        `generate @flowaccount/nx-serverless:flowaccountNxServerless ${plugin} --tags e2etag,e2ePackage`
       );
       const nxJson = readJson('nx.json');
       expect(nxJson.projects[plugin].tags).toEqual(['e2etag', 'e2ePackage']);

@@ -31,7 +31,7 @@ interface NormalizedSchema extends Schema {
 }
 
 function updateNxJson(options: NormalizedSchema): Rule {
-    return updateJsonInTree(`/nx.json`, json => {
+    return updateJsonInTree('/nx.json', json => {
         return {
             ...json,
             projects: {
@@ -61,9 +61,9 @@ function getBuildConfig(project: any, options: NormalizedSchema) {
                 sourceMap: false,
                 budgets: [
                   {
-                    type: "initial",
-                    maximumWarning: "2mb",
-                    maximumError: "5mb"
+                    type: 'initial',
+                    maximumWarning: '2mb',
+                    maximumError: '5mb'
                   }
                 ]
             },
@@ -76,9 +76,9 @@ function getBuildConfig(project: any, options: NormalizedSchema) {
                 vendorChunk: false,
                 budgets: [
                     {
-                        type: "initial",
-                        maximumWarning: "2mb",
-                        maximumError: "5mb"
+                        type: 'initial',
+                        maximumWarning: '2mb',
+                        maximumError: '5mb'
                     }
                 ],
                 fileReplacements: [
@@ -102,10 +102,10 @@ function getServeConfig(project: any, options: NormalizedSchema) {
         },
         configurations: {
             dev: {
-              buildTarget: options.name + ":build:dev"
+              buildTarget: options.name + ':build:dev'
             },
             production: {
-              buildTarget: options.name + ":build:production"
+              buildTarget: options.name + ':build:production'
             }
           }
     };
@@ -115,7 +115,7 @@ function getDeployConfig(project: any, options: NormalizedSchema) {
     return {
         builder: '@flowaccount/nx-serverless:deploy',
         options: {
-            buildTarget: options.name + ":build:production",
+            buildTarget: options.name + ':build:production',
             config: join(options.appProjectRoot, 'serverless.yml'),
             location: join(normalize('dist'), options.appProjectRoot),
             package: join(normalize('dist'), options.appProjectRoot)
@@ -151,7 +151,7 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
 
 function addAppFiles(options: NormalizedSchema): Rule {
     return mergeWith(
-        apply(url(`./files/app`), [
+        apply(url('./files/app'), [
             template({
                 tmpl: '',
                 name: options.name,
@@ -198,7 +198,7 @@ function addProxy(options: NormalizedSchema): Rule {
         const projectConfig = getProjectConfig(host, options.frontendProject);
         if (projectConfig.architect && projectConfig.architect.serve) {
             const pathToProxyFile = `${projectConfig.root}/proxy.conf.json`;
-            var apiname = `/${options.name}-api`;
+            const apiname = `/${options.name}-api`;
             host.create(
                 pathToProxyFile,
                 JSON.stringify(

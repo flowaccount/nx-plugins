@@ -47,7 +47,7 @@ export class MockBuilderContext implements BuilderContext {
   // getProjectMetadata(projectName: string): Promise<JsonObject>;
   // getProjectMetadata(target: Target): Promise<JsonObject>;
   getProjectMetadata(target: any): Promise<JsonObject> {
-    throw new Error("Method not implemented.");
+    throw new Error('Method not implemented.');
   }
 
   id: 0;

@@ -35,7 +35,7 @@ export function getBaseWebpackPartial(
       rules: [
         {
           test: /\.(j|t)sx?$/,
-          loader: `ts-loader`,
+          loader: 'ts-loader',
           options: {
             configFile: options.tsConfig,
             transpileOnly: true,
@@ -86,7 +86,7 @@ export function getBaseWebpackPartial(
           errors: false
         },
         perChunkOutput: false,
-        outputFilename: `3rdpartylicenses.txt`
+        outputFilename: '3rdpartylicenses.txt'
       })
     );
   }

@@ -16,7 +16,7 @@ export class ServerlessWrapper {
 
     static get serverless() {
         if (this.serverless$ === null) {
-            throw new Error("Please initialize serverless before usage, or pass option for initialization.")
+            throw new Error('Please initialize serverless before usage, or pass option for initialization.')
         }
         return this.serverless$
     }
@@ -53,7 +53,7 @@ export class ServerlessWrapper {
                     console.log('Environment vairbales set according to ${options.processEnvironmentFile}')
                   }
                   else {
-                    console.log("No env.json found! no environment will be set!")
+                    console.log('No env.json found! no environment will be set!')
                   }
                 } catch (e) { console.log(e) }
                 this.serverless$ = new Serverless({ config: options.serverlessConfig, servicePath: options.servicePath });

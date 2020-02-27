@@ -10,12 +10,11 @@ import { Schema } from './schema';
 import { nxVersion, serverlessVersion, serverlessOfflineVersion, awsTypeLambdaVersion, awsServerlessExpressVersion } from '../../utils/versions';
 import { JsonObject } from '@angular-devkit/core';
 function addDependencies(universal: boolean): Rule {
-  var packages = {
+  const packages = {
     '@flowaccount/nx-serverless': nxVersion,
     'serverless': serverlessVersion,
     'serverless-offline': serverlessOfflineVersion,
   }
-
   if(universal) {
     packages['aws-serverless-express'] = awsServerlessExpressVersion;
   } else {
@@ -48,7 +47,6 @@ function setDefault(): Rule {
 }
 
 export default function(schema: Schema) {
-  if(!schema.skipFormat) {
     return chain([
       setDefault(),
       addPackageWithInit('@nrwl/jest'),
@@ -56,7 +54,4 @@ export default function(schema: Schema) {
       moveDependency(),
       formatFiles(schema)
     ]);
-  } else {
-    return noop();
-  }
 }

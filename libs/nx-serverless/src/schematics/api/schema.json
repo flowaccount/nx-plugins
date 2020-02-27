@@ -1,7 +1,7 @@
 {
-  "$schema": "http://json-schema.org/schema",
+  "$schema": "http://json-schema.org/draft-07/schema",
   "id": "SchematicsNxserverlessApp",
-  "title": "Nx Serverless Nodejs Api Options Schema",
+  "title": "Serverless Node-TypeScript Api Options Schema",
   "type": "object",
   "properties": {
     "name": {

@@ -1,0 +1,10 @@
+{
+  "$schema": "../../node_modules/@angular-devkit/architect/src/builders-schema.json",
+  "builders": {
+    "build": {
+      "implementation": "./src/builders/nx-aws-cdk/builder",
+      "schema": "./src/builders/nx-aws-cdk/schema.json",
+      "description": "nx-aws-cdk builder"
+    }
+  }
+}

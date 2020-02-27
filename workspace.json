@@ -16,10 +16,7 @@
               "libs/nx-serverless/tsconfig.lib.json",
               "libs/nx-serverless/tsconfig.spec.json"
             ],
-            "exclude": [
-              "**/node_modules/**",
-              "!libs/nx-serverless/**"
-            ]
+            "exclude": ["**/node_modules/**", "!libs/nx-serverless/**"]
           }
         },
         "test": {
@@ -62,17 +59,89 @@
     },
     "nx-serverless-e2e": {
       "projectType": "application",
-      "root": "apps\\flowaccount-nx-serverless-e2e",
-      "sourceRoot": "apps\\flowaccount-nx-serverless-e2e/src",
+      "root": "apps/nx-serverless-e2e",
+      "sourceRoot": "apps/nx-serverless-e2e/src",
       "architect": {
         "e2e": {
           "builder": "@nrwl/nx-plugin:e2e",
           "options": {
-            "target": "flowaccount-nx-serverless:build",
-            "npmPackageName": "@flowaccount-nx-plugins/flowaccount/nx-serverless",
+            "target": "nx-serverless:build",
+            "npmPackageName": "@flowaccount/nx-serverless",
             "pluginOutputPath": "dist/libs/nx-serverless",
-            "jestConfig": "apps/flowaccount-nx-serverless-e2e/jest.config.js",
-            "tsSpecConfig": "apps/flowaccount-nx-serverless-e2e/tsconfig.spec.json"
+            "jestConfig": "apps/nx-serverless-e2e/jest.config.js",
+            "tsSpecConfig": "apps/nx-serverless-e2e/tsconfig.spec.json"
+          }
+        }
+      }
+    },
+    "nx-aws-cdk": {
+      "root": "libs/nx-aws-cdk",
+      "sourceRoot": "libs/nx-aws-cdk/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "libs/nx-aws-cdk/.eslintrc",
+            "tsConfig": [
+              "libs/nx-aws-cdk/tsconfig.lib.json",
+              "libs/nx-aws-cdk/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/nx-aws-cdk/**"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/nx-aws-cdk/jest.config.js",
+            "tsConfig": "libs/nx-aws-cdk/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/nx-aws-cdk",
+            "tsConfig": "libs/nx-aws-cdk/tsconfig.lib.json",
+            "packageJson": "libs/nx-aws-cdk/package.json",
+            "main": "libs/nx-aws-cdk/src/index.ts",
+            "assets": [
+              "libs/nx-aws-cdk/*.md",
+              {
+                "input": "./libs/nx-aws-cdk/src",
+                "glob": "**/*.!(ts)",
+                "output": "./src"
+              },
+              {
+                "input": "./libs/nx-aws-cdk",
+                "glob": "collection.json",
+                "output": "."
+              },
+              {
+                "input": "./libs/nx-aws-cdk",
+                "glob": "builders.json",
+                "output": "."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "nx-aws-cdk-e2e": {
+      "projectType": "application",
+      "root": "apps/nx-aws-cdk-e2e",
+      "sourceRoot": "apps/nx-aws-cdk-e2e/src",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/nx-plugin:e2e",
+          "options": {
+            "target": "nx-aws-cdk:build",
+            "npmPackageName": "@flowaccount/nx-aws-cdk",
+            "pluginOutputPath": "dist/libs/nx-aws-cdk",
+            "jestConfig": "apps/nx-aws-cdk-e2e/jest.config.js",
+            "tsSpecConfig": "apps/nx-aws-cdk-e2e/tsconfig.spec.json"
           }
         }
       }

@@ -5,12 +5,12 @@ import {
   runNxCommandAsync,
   uniq
 } from '@nrwl/nx-plugin/testing';
-describe('aws-cdk e2e', () => {
-  it('should create aws-cdk', async done => {
-    const plugin = uniq('aws-cdk');
-    ensureNxProject('@flowaccount-nx-plugins/aws-cdk', 'dist/libs/aws-cdk');
+describe('nx-aws-cdk e2e', () => {
+  it('should create nx-aws-cdk', async done => {
+    const plugin = uniq('nx-aws-cdk');
+    ensureNxProject('@flowaccount/nx-aws-cdk', 'dist/libs/nx-aws-cdk');
     await runNxCommandAsync(
-      `generate @flowaccount-nx-plugins/aws-cdk:awsCdk ${plugin}`
+      `generate @flowaccount/nx-aws-cdk:nxAwsCdk ${plugin}`
     );
 
     const result = await runNxCommandAsync(`build ${plugin}`);
@@ -21,10 +21,10 @@ describe('aws-cdk e2e', () => {
 
   describe('--directory', () => {
     it('should create src in the specified directory', async done => {
-      const plugin = uniq('aws-cdk');
-      ensureNxProject('@flowaccount-nx-plugins/aws-cdk', 'dist/libs/aws-cdk');
+      const plugin = uniq('nx-aws-cdk');
+      ensureNxProject('@flowaccount/nx-aws-cdk', 'dist/libs/nx-aws-cdk');
       await runNxCommandAsync(
-        `generate @flowaccount-nx-plugins/aws-cdk:awsCdk ${plugin} --directory subdir`
+        `generate @flowaccount/nx-aws-cdk:nxAwsCdk ${plugin} --directory subdir`
       );
       expect(() =>
         checkFilesExist(`libs/subdir/${plugin}/src/index.ts`)
@@ -35,10 +35,10 @@ describe('aws-cdk e2e', () => {
 
   describe('--tags', () => {
     it('should add tags to nx.json', async done => {
-      const plugin = uniq('aws-cdk');
-      ensureNxProject('@flowaccount-nx-plugins/aws-cdk', 'dist/libs/aws-cdk');
+      const plugin = uniq('nx-aws-cdk');
+      ensureNxProject('@flowaccount/nx-aws-cdk', 'dist/libs/nx-aws-cdk');
       await runNxCommandAsync(
-        `generate @flowaccount-nx-plugins/aws-cdk:awsCdk ${plugin} --tags e2etag,e2ePackage`
+        `generate @flowaccount/nx-aws-cdk:nxAwsCdk ${plugin} --tags e2etag,e2ePackage`
       );
       const nxJson = readJson('nx.json');
       expect(nxJson.projects[plugin].tags).toEqual(['e2etag', 'e2ePackage']);

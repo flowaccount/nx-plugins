@@ -1,7 +1,0 @@
-{
-  "extends": "<%= offset %>tsconfig.json",
-  "compilerOptions": {
-    "types": ["node"]
-  },
-  "include": ["**/*.ts"]
-}

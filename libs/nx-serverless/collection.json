@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "$schema": "../../node_modules/@angular-devkit/schematics/collection-schema.json",
   "name": "nx-serverless",
   "version": "0.0.1",
   "schematics": {
@@ -16,11 +16,12 @@
       "aliases": ["api-serverless"],
       "description": "Create a serverless nodejs api application"
     },
-    "angular-universal": {
+    "universal-app": {
       "factory": "./src/schematics/angular-universal/application",
       "schema": "./src/schematics/angular-universal/schema.json",
-      "aliases": ["angular-serverless"],
-      "description": "Create a serverless nodejs api application"
+      "description": "Adds serverless schematics to current universal app and make it deployable",
+      "aliases": ["ng-add"],
+      "hidden": true
     }
   }
 }

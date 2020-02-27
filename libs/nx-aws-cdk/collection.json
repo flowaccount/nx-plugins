@@ -1,0 +1,12 @@
+{
+  "$schema": "../../node_modules/@angular-devkit/schematics/collection-schema.json",
+  "name": "nx-aws-cdk",
+  "version": "0.0.1",
+  "schematics": {
+    "nxAwsCdk": {
+      "factory": "./src/schematics/nx-aws-cdk/schematic",
+      "schema": "./src/schematics/nx-aws-cdk/schema.json",
+      "description": "nx-aws-cdk schematic"
+    }
+  }
+}
