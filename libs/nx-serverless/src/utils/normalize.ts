@@ -19,7 +19,7 @@ export function assignEntriesToFunctionsFromServerless<T extends BuildBuilderOpt
   ServerlessWrapper.serverless.cli.log('getting all functions')
   const functions = ServerlessWrapper.serverless.service.getAllFunctions()
   const entries = {};
-  _.forEach(functions, (func, index) => {
+  _.forEach(functions, (func, index) => {normalize
     const entry = getEntryForFunction(functions[index], ServerlessWrapper.serverless.service.getFunction(func), ServerlessWrapper.serverless, options.sourceRoot, root);
     _.merge(entries, entry);
   });
@@ -74,10 +74,15 @@ export const getEntryForFunction = (name, serverlessFunction, serverless, source
   const ext = getEntryExtension(handlerFile, serverless);
 
   // Create a valid entry key
-  const handlerFileFinal = handlerFile.replace('\src', '')
+  let handlerFileFinal = `${sourceroot.replace('/src', '')}/${handlerFile}${ext}`
  
+  if(handlerFile.match(/src/)) {
+    console.log(handlerFile.replace('src/', ''))
+    handlerFileFinal = `${sourceroot}/${handlerFile.replace('src/', '')}${ext}`
+  }
+  
   return {
-    [handlerFile]: resolve(root, `${sourceroot}${handlerFileFinal}${ext}`)
+    [handlerFile]: resolve(root, `${handlerFileFinal}`)
   };
 };
 
@@ -98,7 +103,7 @@ const getEntryExtension = (fileName, serverless) => {
 
   if (_.isEmpty(files)) {
     // If we cannot find any handler we should terminate with an error
-    throw new this.serverless.classes.Error(`No matching handler found for '${fileName}' in '${serverless.config.servicePath}'. Check your service definition.`);
+    throw new serverless.classes.Error(`No matching handler found for '${fileName}' in '${serverless.config.servicePath}'. Check your service definition.`);
   }
 
   // Move preferred file extensions to the beginning

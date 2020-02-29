@@ -2003,7 +2003,7 @@ cipher-base@^1.0.0, cipher-base@^1.0.1, cipher-base@^1.0.3:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-circular-dependency-plugin@5.2.0:
+circular-dependency-plugin@5.2.0, circular-dependency-plugin@^5.0.2:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/circular-dependency-plugin/-/circular-dependency-plugin-5.2.0.tgz#e09dbc2dd3e2928442403e2d45b41cea06bc0a93"
   integrity sha512-7p4Kn/gffhQaavNfyDFg7LS5S/UT1JAjyGd4UqR2+jzoYF02eDkj0Ec3+48TsIa4zghjLY87nQHIh/ecK9qLdw==
@@ -2780,6 +2780,11 @@ dot-prop@^4.1.0:
   integrity sha512-tUMXrxlExSW6U2EXiiKGSBVdYgtV8qlHL+C10TsW4PURY/ic+eaysnSkwB4kA/mBlCyy/IKDJ+Lc3wbWeaXtuQ==
   dependencies:
     is-obj "^1.0.0"
+
+dotenv-json@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv-json/-/dotenv-json-1.0.0.tgz#fc7f672aafea04bed33818733b9f94662332815c"
+  integrity sha512-jAssr+6r4nKhKRudQ0HOzMskOFFi9+ubXWwmrSGJFgTvpjyPXCXsCsYbjif6mXp7uxA7xY3/LGaiTQukZzSbOQ==
 
 dotenv@6.2.0:
   version "6.2.0"
@@ -8311,7 +8316,7 @@ ts-node@~7.0.0:
     source-map-support "^0.5.6"
     yn "^2.0.0"
 
-tsconfig-paths-webpack-plugin@3.2.0:
+tsconfig-paths-webpack-plugin@3.2.0, tsconfig-paths-webpack-plugin@^3.2.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/tsconfig-paths-webpack-plugin/-/tsconfig-paths-webpack-plugin-3.2.0.tgz#6e70bd42915ad0efb64d3385163f0c1270f3e04d"
   integrity sha512-S/gOOPOkV8rIL4LurZ1vUdYCVgo15iX9ZMJ6wx6w2OgcpT/G4wMyHB6WM+xheSqGMrWKuxFul+aXpCju3wmj/g==

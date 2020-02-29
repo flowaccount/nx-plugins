@@ -12,7 +12,7 @@ import { stripIndents } from '@angular-devkit/core/src/utils/literals';
 import { ChildProcess, fork } from 'child_process';
 import * as treeKill from 'tree-kill';
 import { ServerlessBuildEvent, BuildServerlessBuilderOptions } from '../build/build.impl';
-import { ServerlessWrapper } from '../../utils/serverless';
+
 try {
   require('dotenv').config();
 } catch (e) { }
@@ -51,40 +51,6 @@ export interface ServerlessExecuteBuilderOptions extends BuildServerlessBuilderO
   enforceSecureCookies?: boolean;
   exec?: string;
   readyWhen: string;
-}
-
-export default createBuilder<ServerlessExecuteBuilderOptions & JsonObject>(serverlessExecutionHandler);
-let subProcess: ChildProcess = null;
-
-export function serverlessExecutionHandler(
-  options: JsonObject & ServerlessExecuteBuilderOptions,
-  context: BuilderContext
-): Observable<BuilderOutput> {
-
-
-  return runWaitUntilTargets(options, context).pipe(
-    concatMap(v => {
-      if (!v.success) {
-        context.logger.error(
-          `One of the tasks specified in waitUntilTargets failed`
-        );
-        return of({ success: false });
-      }
-      return startBuild(options, context);
-    }),
-    concatMap((event: ServerlessBuildEvent) => {
-      if (event.success) {
-        return restartProcess(event.outfile, options, context).pipe(
-          mapTo(event)
-        );
-      } else {
-        context.logger.error(
-          'There was an error with the build. See above.'
-        );
-        context.logger.info(`${event.outfile} was not restarted.`);
-        return of(event);
-      }
-    }));
 }
 
 async function runProcess(
@@ -202,4 +168,38 @@ function runWaitUntilTargets(
       return { success: !results.some(r => !r.success) };
     })
   );
+}
+
+export default createBuilder<ServerlessExecuteBuilderOptions & JsonObject>(serverlessExecutionHandler);
+let subProcess: ChildProcess = null;
+
+export function serverlessExecutionHandler(
+  options: JsonObject & ServerlessExecuteBuilderOptions,
+  context: BuilderContext
+): Observable<BuilderOutput> {
+
+
+  return runWaitUntilTargets(options, context).pipe(
+    concatMap(v => {
+      if (!v.success) {
+        context.logger.error(
+          `One of the tasks specified in waitUntilTargets failed`
+        );
+        return of({ success: false });
+      }
+      return startBuild(options, context);
+    }),
+    concatMap((event: ServerlessBuildEvent) => {
+      if (event.success) {
+        return restartProcess(event.outfile, options, context).pipe(
+          mapTo(event)
+        );
+      } else {
+        context.logger.error(
+          'There was an error with the build. See above.'
+        );
+        context.logger.info(`${event.outfile} was not restarted.`);
+        return of(event);
+      }
+    }));
 }

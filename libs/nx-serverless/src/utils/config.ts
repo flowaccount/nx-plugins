@@ -13,6 +13,39 @@ import { BuildBuilderOptions } from './types';
 
 export const OUT_FILENAME = 'main.js';
 
+function getAliases(options: BuildBuilderOptions): { [key: string]: string } {
+  return options.fileReplacements.reduce(
+    (aliases, replacement) => ({
+      ...aliases,
+      [replacement.replace]: replacement.with
+    }),
+    {}
+  );
+}
+
+function getStatsConfig(options: BuildBuilderOptions): Stats.ToStringOptions {
+  return {
+    hash: true,
+    timings: false,
+    cached: false,
+    cachedAssets: false,
+    modules: true,
+    warnings: true,
+    errors: true,
+    colors: !options.verbose && !options.statsJson,
+    chunks: !options.verbose,
+    assets: !!options.verbose,
+    chunkOrigins: !!options.verbose,
+    chunkModules: !!options.verbose,
+    children: !!options.verbose,
+    reasons: !!options.verbose,
+    version: !!options.verbose,
+    errorDetails: !!options.verbose,
+    moduleTrace: !!options.verbose,
+    usedExports: !!options.verbose
+  };
+}
+
 export function getBaseWebpackPartial(
   options: BuildBuilderOptions
 ): Configuration {
@@ -63,7 +96,8 @@ export function getBaseWebpackPartial(
     plugins: [
       new ForkTsCheckerWebpackPlugin({
         tsconfig: options.tsConfig,
-        workers: options.maxWorkers || ForkTsCheckerWebpackPlugin.TWO_CPUS_FREE
+        workers: options.maxWorkers || ForkTsCheckerWebpackPlugin.TWO_CPUS_FREE,
+        useTypescriptIncrementalApi: false
       })
     ],
     watch: options.watch,
@@ -128,37 +162,4 @@ export function getBaseWebpackPartial(
   webpackConfig.plugins = [...webpackConfig.plugins, ...extraPlugins];
 
   return webpackConfig;
-}
-
-function getAliases(options: BuildBuilderOptions): { [key: string]: string } {
-  return options.fileReplacements.reduce(
-    (aliases, replacement) => ({
-      ...aliases,
-      [replacement.replace]: replacement.with
-    }),
-    {}
-  );
-}
-
-function getStatsConfig(options: BuildBuilderOptions): Stats.ToStringOptions {
-  return {
-    hash: true,
-    timings: false,
-    cached: false,
-    cachedAssets: false,
-    modules: true,
-    warnings: true,
-    errors: true,
-    colors: !options.verbose && !options.statsJson,
-    chunks: !options.verbose,
-    assets: !!options.verbose,
-    chunkOrigins: !!options.verbose,
-    chunkModules: !!options.verbose,
-    children: !!options.verbose,
-    reasons: !!options.verbose,
-    version: !!options.verbose,
-    errorDetails: !!options.verbose,
-    moduleTrace: !!options.verbose,
-    usedExports: !!options.verbose
-  };
 }

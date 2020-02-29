@@ -40,7 +40,7 @@ Nx is great and simplifying the tool-chains for *continous integrations* inside 
 
 Framework Name | AWS | Azure | GCP
 ---------|----------|---------|---------
- Serverless Framework | :calendar: | :calendar: | :calendar:
+ Serverless Framework | :white_check_mark: | :calendar: | :calendar:
  AWS-CDK | :calendar: | :x: | :x:
 
 ### Angular Universal

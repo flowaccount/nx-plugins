@@ -23,9 +23,9 @@ import { toFileName } from '@nrwl/workspace';
 import { getProjectConfig } from '@nrwl/workspace';
 import { offsetFromRoot } from '@nrwl/workspace';
 import init from '../init/init';
+import { getBuildConfig } from '../utils'
 
 interface NormalizedSchema extends Schema {
-    appProjectRoot: Path;
     parsedTags: string[];
     provider: string;
 }
@@ -40,56 +40,6 @@ function updateNxJson(options: NormalizedSchema): Rule {
             }
         };
     });
-}
-
-function getBuildConfig(project: any, options: NormalizedSchema) {
-    return {
-        builder: '@flowaccount/nx-serverless:build',
-        options: {
-            outputPath: join(normalize('dist'), options.appProjectRoot),
-            package: options.appProjectRoot,
-            serverlessConfig: join(options.appProjectRoot, 'serverless.yml'),
-            servicePath: options.appProjectRoot,
-            tsConfig: join(options.appProjectRoot, 'tsconfig.app.json'),
-            provider: options.provider,
-            watch: true,
-            progress: true
-        },
-        configurations: {
-            dev: {
-                optimization: false,
-                sourceMap: false,
-                budgets: [
-                  {
-                    type: 'initial',
-                    maximumWarning: '2mb',
-                    maximumError: '5mb'
-                  }
-                ]
-            },
-            production: {
-                optimization: true,
-                sourceMap: false,
-                extractCss: true,
-                namedChunks: false,
-                extractLicenses: true,
-                vendorChunk: false,
-                budgets: [
-                    {
-                        type: 'initial',
-                        maximumWarning: '2mb',
-                        maximumError: '5mb'
-                    }
-                ],
-                fileReplacements: [
-                    {
-                        replace: join(options.appProjectRoot, 'environment.ts'),
-                        with: join(options.appProjectRoot, 'environment.prod.ts')
-                    }
-                ]
-            }
-        }
-    };
 }
 
 function getServeConfig(project: any, options: NormalizedSchema) {
@@ -134,7 +84,7 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
             architect: <any>{}
         };
 
-        project.architect.build = getBuildConfig(project, options);
+        project.architect.build = getBuildConfig(options);
         project.architect.serve = getServeConfig(project, options);
         project.architect.deploy = getDeployConfig(project, options);
         project.architect.lint = generateProjectLint(

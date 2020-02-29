@@ -20,59 +20,10 @@ import {
 } from '@nrwl/workspace';
 import { offsetFromRoot } from '@nrwl/workspace';
 import init from '../init/init';
+import { getBuildConfig } from '../utils'
 
 interface NormalizedSchema extends Schema {
-    appProjectRoot: Path
-}
-
-function getBuildConfig(options: NormalizedSchema) {
-    return {
-        builder: '@flowaccount/nx-serverless:build',
-        options: {
-            outputPath: join(normalize('dist'), options.appProjectRoot),
-            package: options.appProjectRoot,
-            serverlessConfig: join(options.appProjectRoot, 'serverless.yml'),
-            servicePath: options.appProjectRoot,
-            tsConfig: join(options.appProjectRoot, 'tsconfig.app.json'),
-            provider: options.provider,
-            watch: true,
-            progress: true
-        },
-        configurations: {
-            dev: {
-                optimization: false,
-                sourceMap: false,
-                budgets: [
-                    {
-                        type: 'initial',
-                        maximumWarning: '2mb',
-                        maximumError: '5mb'
-                    }
-                ]
-            },
-            production: {
-                optimization: true,
-                sourceMap: false,
-                extractCss: true,
-                namedChunks: false,
-                extractLicenses: true,
-                vendorChunk: false,
-                budgets: [
-                    {
-                        type: 'initial',
-                        maximumWarning: '2mb',
-                        maximumError: '5mb'
-                    }
-                ],
-                fileReplacements: [
-                    {
-                        replace: join(options.appProjectRoot, 'environment.ts'),
-                        with: join(options.appProjectRoot, 'environment.prod.ts')
-                    }
-                ]
-            }
-        }
-    };
+    
 }
 
 function getServeConfig(options: NormalizedSchema) {
@@ -80,10 +31,10 @@ function getServeConfig(options: NormalizedSchema) {
         builder: '@flowaccount/nx-serverless:offline',
         options: {
             waitUntilTargets: [
-                options.project + ':build:production',
+                options.project + ':build',
                 options.project + ':server',
             ],
-            buildTarget: options.project + ':build',
+            buildTarget: options.project + ':buildServerless',
             config: join(options.appProjectRoot, 'serverless.yml'),
             location: join(normalize('dist'), options.appProjectRoot)
         },
@@ -104,9 +55,9 @@ function getDeployConfig(options: NormalizedSchema) {
         options: {
             waitUntilTargets: [
                 options.project + ':build:production',
-                options.project + ':server',
+                options.project + ':server:production',
             ],
-            buildTarget: options.project + ':serverless:production',
+            buildTarget: options.project + ':buildServerless:production',
             config: join(options.appProjectRoot, 'serverless.yml'),
             location: join(normalize('dist'), options.appProjectRoot),
             package: join(normalize('dist'), options.appProjectRoot)
@@ -165,7 +116,7 @@ custom:
       - '*/*'
 functions:
   web-app:
-    handler: src/handler.webApp
+    handler: handler.webApp
     events:
       - http: ANY {proxy+}
       - http: ANY /

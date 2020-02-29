@@ -17,6 +17,7 @@ function addDependencies(universal: boolean): Rule {
   }
   if(universal) {
     packages['aws-serverless-express'] = awsServerlessExpressVersion;
+    packages['@types/aws-serverless-express'] = awsServerlessExpressVersion;
   } else {
     packages['@types/aws-lambda'] = awsTypeLambdaVersion;
   }

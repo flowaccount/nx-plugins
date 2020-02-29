@@ -1,6 +1,6 @@
 import { createServer, proxy } from 'aws-serverless-express';
 import { eventContext } from 'aws-serverless-express/middleware';
-import { app } from './server';
+import { app } from '<%= offset %>dist/<%= root %>/main';
 
 
 const binaryMimeTypes = [
@@ -23,7 +23,7 @@ const binaryMimeTypes = [
   'text/xml'
 ]
 
-app.use(eventContext());
+app().use(eventContext());
 
 const server  = createServer(app, null, binaryMimeTypes)
 

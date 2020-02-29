@@ -1,13 +1,11 @@
 import { Linter } from '@nrwl/workspace';
-
-export interface Schema {
+import { BaseSchema } from '../utils'
+export interface Schema extends BaseSchema {
   name: string;
-  skipFormat: boolean;
   skipPackageJson: boolean;
   directory?: string;
   unitTestRunner: 'jest' | 'none';
   linter: Linter;
   tags?: string;
   frontendProject?: string;
-  provider: string;
 }
