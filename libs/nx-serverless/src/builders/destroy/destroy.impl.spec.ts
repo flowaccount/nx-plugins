@@ -3,17 +3,17 @@ import { join } from 'path';
 jest.mock('tsconfig-paths-webpack-plugin');
 import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import { of } from 'rxjs';
-import * as buildWebpack from '@angular-devkit/build-webpack';
+import * as compileTypscript from '../../utils/typescript';
 import { Architect } from '@angular-devkit/architect';
-import { BuildServerlessBuilderOptions } from './build.impl';
 import * as normalizeModule  from '../../utils/normalize';
 import { getTestArchitect } from '../../utils/testing';
 import { ServerlessWrapper } from '../../utils/serverless';
+import { ServerlessBaseOptions } from '../../utils/types';
 
 describe('ServerlessBuildBuilder', () => {
-  let testOptions: BuildServerlessBuilderOptions & JsonObject;
+  let testOptions: ServerlessBaseOptions & JsonObject;
   let architect: Architect;
-  let runWebpack: jest.Mock;
+  let compileTypeScriptFiles: jest.Mock;
 
   beforeEach(async () => {
     [architect] = await getTestArchitect();
@@ -36,15 +36,10 @@ describe('ServerlessBuildBuilder', () => {
       assets: [],
       statsJson: false
     };
-    runWebpack = jest.fn().mockImplementation((config, context, options) => {
-      options.logging({
-        toJson: () => ({
-          stats: 'stats'
-        })
-      });
+    compileTypeScriptFiles = jest.fn().mockImplementation(() => {
       return of({ success: true });
     });
-    (buildWebpack as any).runWebpack = runWebpack;
+    (compileTypscript as any).compileTypeScriptFiles = compileTypeScriptFiles;
     spyOn(workspaces, 'readWorkspace').and.returnValue({
       workspace: {
         projects: {
@@ -65,26 +60,26 @@ describe('ServerlessBuildBuilder', () => {
         }
       }
     });
-    jest.spyOn(normalizeModule, 'getEntryForFunction').mockReturnValue({ "handler": '/root/apps/serverlessapp/src/handler.ts' });
+    jest.spyOn(normalizeModule, 'getEntryForFunction').mockReturnValue({ 'handler': '/root/apps/serverlessapp/src/handler.ts' });
     (<any>TsConfigPathsPlugin).mockImplementation(
       function MockPathsPlugin() {}
     );
   });
 
   describe('run', () => {
-    it('should call runWebpack', async () => {
+    it('should call compileTypeScriptFiles', async () => {
       const run = await architect.scheduleBuilder(
-        '@flowaccount/nx-serverless:build',
+        '@flowaccount/nx-serverless:compile',
         testOptions
       );
       await run.output.toPromise();
       await run.stop();
-      expect(runWebpack).toHaveBeenCalled();
+      expect(compileTypeScriptFiles).toHaveBeenCalled();
     });
 
     it('should emit the outfile along with success', async () => {
       const run = await architect.scheduleBuilder(
-        '@flowaccount/nx-serverless:build',
+        '@flowaccount/nx-serverless:compile',
         testOptions
       );
       const output = await run.output.toPromise();
@@ -93,38 +88,5 @@ describe('ServerlessBuildBuilder', () => {
       expect(output.outfile).toEqual('/root/dist/apps/serverlessapp');
     });
 
-    describe('webpackConfig option', () => {
-      it('should require the specified function and use the return value', async () => {
-        const mockFunction = jest.fn(config => ({
-          config: 'config'
-        }));
-        jest.mock(
-            join(normalize('/root'), 'apps/serverlessapp/webpack.config.js'),
-          () => mockFunction,
-          {
-            virtual: true
-          }
-        );
-        testOptions.webpackConfig = 'apps/serverlessapp/webpack.config.js';
-        const run = await architect.scheduleBuilder(
-          '@flowaccount/nx-serverless:build',
-          testOptions
-        );
-        await run.output.toPromise();
-
-        await run.stop();
-        expect(mockFunction).toHaveBeenCalled();
-        expect(runWebpack).toHaveBeenCalledWith(
-          {
-            config: 'config'
-          },
-          jasmine.anything(),
-          jasmine.anything()
-        );
-        // expect(runWebpack.calls.first().args[0]).toEqual({
-        //   config: 'config'
-        // });
-      });
-    });
   });
 });

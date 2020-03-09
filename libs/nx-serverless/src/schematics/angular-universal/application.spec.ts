@@ -1,27 +1,52 @@
-import { Tree } from '@angular-devkit/schematics';
+import { Tree, SchematicContext } from '@angular-devkit/schematics';
 import { createEmptyWorkspace } from '@nrwl/workspace/testing';
-
-import { readJsonInTree } from '@nrwl/workspace';
+import { readJsonInTree, serializeJson, getWorkspacePath } from '@nrwl/workspace';
+import * as workspace from '@nrwl/workspace';
 import { runSchematic } from '../../utils/testing';
 // import { createApp } from '../../../../angular/src/utils/testing';
 
-fdescribe('app', () => {
+describe('app', () => {
   let appTree: Tree;
-
-  beforeEach(() => {
+  beforeEach(async () => {
     appTree = Tree.empty();
     appTree = createEmptyWorkspace(appTree);
+    jest.spyOn(workspace, 'getProjectConfig').mockReturnValue({
+        root: 'apps/my-app',
+        sourceRoot: 'apps/my-app/src',
+        prefix: 'my-app',
+    });
+    jest.spyOn(workspace, 'updateWorkspaceInTree').mockImplementation((callback) => {
+      return (host: Tree, context: SchematicContext): Tree => {
+        const path = getWorkspacePath(host);
+        host.overwrite(
+          path,
+          serializeJson(callback({
+            projects: {
+              'my-app': {
+              root: 'apps/my-app',
+              sourceRoot: 'apps/my-app/src',
+              prefix: 'my-app',
+              architect: {
+
+              }
+            }
+          }
+          }, context))
+        );
+        return host;
+      };
+    })
   });
 
   describe('not nested', () => {
     it('should update workspace.json', async () => {
-      const tree = await runSchematic('universal-app', { project: 'myServelessApp', addUniversal: false }, appTree);
+      const tree = await runSchematic('universal-app', { project: 'my-app', addUniversal: false }, appTree);
       const workspaceJson = readJsonInTree(tree, '/workspace.json');
-      const project = workspaceJson.projects['my-serveless-app'];
-      expect(project.root).toEqual('apps/my-serveless-app');
+      const project = workspaceJson.projects['my-app'];
+      expect(project.root).toEqual('apps/my-app');
       expect(project.architect).toEqual(
         jasmine.objectContaining({
-          build: {
+          buildServerless: {
             builder: '@flowaccount/nx-serverless:build',
             configurations: {
               dev: {
@@ -47,8 +72,8 @@ fdescribe('app', () => {
                 extractLicenses: true,
                 fileReplacements: [
                   {
-                    replace: 'apps/my-serveless-app/environment.ts',
-                    with: 'apps/my-serveless-app/environment.prod.ts'
+                    replace: 'apps/my-app/environment.ts',
+                    with: 'apps/my-app/environment.prod.ts'
                   }
                 ],
                 namedChunks: false,
@@ -58,107 +83,63 @@ fdescribe('app', () => {
               }
             },
             options: {
-              outputPath: 'dist/apps/my-serveless-app',
-              package: 'apps/my-serveless-app',
-              progress: true,
-              serverlessConfig: 'apps/my-serveless-app/serverless.yml',
-              servicePath: 'apps/my-serveless-app',
-              tsConfig: 'apps/my-serveless-app/tsconfig.app.json',
-              watch: true
+              outputPath: 'dist/apps/my-app',
+              package: 'apps/my-app',
+              processEnvironmentFile: 'env.json',
+              serverlessConfig: 'apps/my-app/serverless.yml',
+              servicePath: 'apps/my-app',
+              tsConfig: 'apps/my-app/tsconfig.app.json',
+              skipClean: true
             }
           },
           deploy: {
             builder: '@flowaccount/nx-serverless:deploy',
             options: {
               waitUntilTargets: [
-                'my-serveless-app:build:production',
-                'my-serveless-app:server',
+                'my-app:build:production',
+                'my-app:server:production',
               ],
-              buildTarget: 'my-serveless-app:build:production',
-              config: 'apps/my-serveless-app/serverless.yml',
-              location: 'dist/apps/my-serveless-app',
-              package: 'dist/apps/my-serveless-app'
+              buildTarget: 'my-app:buildServerless:production',
+              config: 'apps/my-app/serverless.yml',
+              location: 'dist/apps/my-app',
+              package: 'dist/apps/my-app'
             }
           },
-          lint: {
-            builder: '@angular-devkit/build-angular:tslint',
-            options: {
-              exclude: [
-                '**/node_modules/**',
-                '!apps/my-serveless-app/**'
-              ],
-              tsConfig: [
-                'apps/my-serveless-app/tsconfig.app.json',
-                'apps/my-serveless-app/tsconfig.spec.json'
-              ]
-            }
-          },
-          serve: {
+          offline: {
             builder: '@flowaccount/nx-serverless:offline',
             configurations: {
               dev: {
-                buildTarget: 'my-serveless-app:build:dev'
+                buildTarget: 'my-app:buildServerless:dev'
               },
               production: {
-                buildTarget: 'my-serveless-app:build:production'
+                buildTarget: 'my-app:buildServerless:production'
               }
             },
             options: {
               waitUntilTargets: [
-                'my-serveless-app:build:production',
-                'my-serveless-app:server',
+                'my-app:build',
+                'my-app:server',
               ],
-              buildTarget: 'my-serveless-app:build',
-              config: 'apps/my-serveless-app/serverless.yml',
-              location: 'dist/apps/my-serveless-app'
-            }
-          },
-          test: {
-            builder: '@nrwl/jest:jest',
-            options: {
-              jestConfig: 'apps/my-serveless-app/jest.config.js',
-              passWithNoTests: true,
-              tsConfig: 'apps/my-serveless-app/tsconfig.spec.json'
+              buildTarget: 'my-app:buildServerless',
+              config: 'apps/my-app/serverless.yml',
+              location: 'dist/apps/my-app'
             }
           }
         })
       );
-      expect(workspaceJson.projects['my-serveless-app'].architect.lint).toEqual({
-        builder: '@angular-devkit/build-angular:tslint',
-        options: {
-          tsConfig: [
-            'apps/my-serveless-app/tsconfig.app.json',
-            'apps/my-serveless-app/tsconfig.spec.json'
-          ],
-          exclude: ['**/node_modules/**', '!apps/my-serveless-app/**']
-        }
-      });
-      expect(workspaceJson.projects['my-serveless-app-e2e']).toBeUndefined();
-      expect(workspaceJson.defaultProject).toEqual('my-serveless-app');
     });
 
     it('should generate files', async () => {
-      const tree = await runSchematic('universal-app', { project: 'myServelessApp', addUniversal: false }, appTree);
-      expect(tree.exists('apps/my-serveless-app/env.json')).toBeTruthy();
-      expect(tree.exists('apps/my-serveless-app/src/handler.ts')).toBeTruthy();
-      expect(tree.exists('apps/my-serveless-app/serverless.yml')).toBeTruthy();
+      const tree = await runSchematic('universal-app', { project: 'my-app', addUniversal: false }, appTree);
+      expect(tree.exists('apps/my-app/env.json')).toBeTruthy();
+      expect(tree.exists('apps/my-app/handler.ts')).toBeTruthy();
+      expect(tree.exists('apps/my-app/tsconfig.serverless.json')).toBeTruthy();
+      expect(tree.exists('apps/my-app/serverless.yml')).toBeTruthy();
 
-      // const tsconfig = readJsonInTree(tree, 'apps/my-serveless-app/tsconfig.json');
-      // expect(tsconfig.compilerOptions.types).toContain('node');
-      // expect(tsconfig.compilerOptions.types).toContain('jest');
+      const tsconfig = readJsonInTree(tree, 'apps/my-app/tsconfig.serverless.json');
+      expect(tsconfig.compilerOptions.types).toContain('node');
 
-      // const tsconfigApp = JSON.parse(
-      //   stripJsonComments(
-      //     getFileContent(tree, 'apps/my-serveless-app/tsconfig.app.json')
-      //   )
-      // );
-      // expect(tsconfigApp.compilerOptions.outDir).toEqual('../../dist/out-tsc');
-      // expect(tsconfigApp.extends).toEqual('./tsconfig.json');
-
-      // const tslintJson = JSON.parse(
-      //   stripJsonComments(getFileContent(tree, 'apps/my-serveless-app/tslint.json'))
-      // );
-      // expect(tslintJson.extends).toEqual('../../tslint.json');
+      expect(tsconfig.files).toEqual(['handler.ts']);
     });
   });
 
@@ -214,24 +195,24 @@ fdescribe('app', () => {
   //   });
   // });
 
-//   describe('--unit-test-runner none', () => {
-//     it('should not generate test configuration', async () => {
-//       const tree = await runSchematic(
-//         'universal-app',
-//         { project: 'myServelessApp', addUniversal: false },
-//         appTree
-//       );
-//       expect(tree.exists('apps/my-serveless-app/src/test-setup.ts')).toBeFalsy();
-//       expect(tree.exists('apps/my-serveless-app/src/test.ts')).toBeFalsy();
-//       expect(tree.exists('apps/my-serveless-app/tsconfig.spec.json')).toBeFalsy();
-//       expect(tree.exists('apps/my-serveless-app/jest.config.js')).toBeFalsy();
-//       const workspaceJson = readJsonInTree(tree, 'workspace.json');
-//       expect(
-//         workspaceJson.projects['my-serveless-app'].architect.test
-//       ).toBeUndefined();
-//       expect(
-//         workspaceJson.projects['my-serveless-app'].architect.lint.options.tsConfig
-//       ).toEqual(['apps/my-serveless-app/tsconfig.app.json']);
-//     });
-//   });
-// });
+  //   describe('--unit-test-runner none', () => {
+  //     it('should not generate test configuration', async () => {
+  //       const tree = await runSchematic(
+  //         'universal-app',
+  //         { project: 'myServelessApp', addUniversal: false },
+  //         appTree
+  //       );
+  //       expect(tree.exists('apps/my-serveless-app/src/test-setup.ts')).toBeFalsy();
+  //       expect(tree.exists('apps/my-serveless-app/src/test.ts')).toBeFalsy();
+  //       expect(tree.exists('apps/my-serveless-app/tsconfig.spec.json')).toBeFalsy();
+  //       expect(tree.exists('apps/my-serveless-app/jest.config.js')).toBeFalsy();
+  //       const workspaceJson = readJsonInTree(tree, 'workspace.json');
+  //       expect(
+  //         workspaceJson.projects['my-serveless-app'].architect.test
+  //       ).toBeUndefined();
+  //       expect(
+  //         workspaceJson.projects['my-serveless-app'].architect.lint.options.tsConfig
+  //       ).toEqual(['apps/my-serveless-app/tsconfig.app.json']);
+  //     });
+  //   });
+});

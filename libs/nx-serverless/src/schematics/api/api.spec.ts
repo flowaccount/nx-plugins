@@ -61,11 +61,10 @@ describe('app', () => {
             options: {
               outputPath: 'dist/apps/my-serveless-app',
               package: 'apps/my-serveless-app',
-              progress: true,
+              processEnvironmentFile: 'env.json',
               serverlessConfig: 'apps/my-serveless-app/serverless.yml',
               servicePath: 'apps/my-serveless-app',
-              tsConfig: 'apps/my-serveless-app/tsconfig.app.json',
-              watch: true
+              tsConfig: 'apps/my-serveless-app/tsconfig.app.json'
             }
           },
           deploy: {

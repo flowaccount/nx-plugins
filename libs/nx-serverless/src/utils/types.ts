@@ -1,4 +1,6 @@
 import { Path } from '@angular-devkit/core';
+// import { JsonObject } from '@angular-devkit/core';
+import { Stats } from 'webpack'
 
 export interface FileReplacement {
     replace: string;
@@ -15,32 +17,59 @@ export interface SourceMapOptions {
     styles: boolean;
   }
 
-export interface BuildBuilderOptions {
-    package: string;
-    region?: string;
-    state?: string;
-    serverlessConfig: string;
-    servicePath: string;
-    tsConfig: string;
-    outputPath: string;
+  export type FileInputOutput = {
+    input: string;
+    output: string;
+  };
+  export type AssetGlob = FileInputOutput & {
+    glob: string;
+    ignore: string[];
+  };
+
+export interface ServerlessBaseOptions {
+  serverlessConfig: string;
+  servicePath: string;
+  processEnvironmentFile: 'env.json' | 'string';
+  tsConfig: string;
+  package: string;
+  outputPath: string;
+  logGroupName?: string;
+  region?: string;
+  state?: string;
+  assets? : Array<AssetGlob | string>;
+  fileReplacements?: Array<FileReplacement>;
+  webpackConfig?: string;
+  watch?: boolean;
+  sourceMap?: boolean;
+  files?: {};
+  sourceRoot?: Path;
+}
+
+export interface ServerlessCompileOptions extends ServerlessBaseOptions {
+  skipClean: boolean
+}
+
+export interface BuildBuilderOptions extends ServerlessBaseOptions {
     showCircularDependencies?: boolean;
     poll?: number;
-    fileReplacements: FileReplacement[];
-    webpackConfig?: string;
     root?: string;
-    sourceRoot?: Path;
     entry?: {};
     readyWhen?: string;
     progress?: boolean;
-    watch?: boolean;
-    assets? : any[];
     maxWorkers?: number;
     extractLicenses?: boolean;
     verbose?: boolean;
     statsJson?: boolean;
     optimization?: boolean;
-    sourceMap?: boolean;
     externalDependencies: 'all' | 'none' | string[];
-    processEnvironmentFile: 'env.json' | 'string';
-    logGroupName?: string;
   }
+
+type normalizeExternalDependencies = (packageJson: any, originPackageJsonPath: string, verbose: boolean, webpackStats?: Stats.ToJsonOutput, dependencyGraph?: any, sourceRoot?: string) => Array<string>;
+  
+export interface DependencyResolver {
+  normalizeExternalDependencies: normalizeExternalDependencies;
+}
+
+export interface ServerlessEventResult {
+  resolverName: string
+}

@@ -1,20 +1,25 @@
 {
   "$schema": "../../node_modules/@angular-devkit/architect/src/builders-schema.json",
-    "builders": {
-      "build": {
-        "implementation": "./src/builders/build/build.impl",
-        "schema": "./src/builders/build/schema.json",
-        "description": "Build a Serverless application"
+  "builders": {
+    "build": {
+      "implementation": "./src/builders/build/build.impl",
+      "schema": "./src/builders/build/schema.json",
+      "description": "Build a Serverless application"
+    },
+    "compile": {
+      "implementation": "./src/builders/compile/compile.impl",
+      "schema": "./src/builders/compile/schema.json",
+      "description": "Compiles a Serverless Typescripted application"
     },
     "offline": {
-        "implementation": "./src/builders/offline/offline.impl",
-        "schema": "./src/builders/offline/schema.json",
-        "description": "Execute a Serverless application offline"
+      "implementation": "./src/builders/offline/offline.impl",
+      "schema": "./src/builders/offline/schema.json",
+      "description": "Execute a Serverless application offline"
     },
     "deploy": {
-        "implementation": "./src/builders/deploy/deploy.impl",
-        "schema": "./src/builders/deploy/schema.json",
-        "description": "Execute a Serverless application deployment"
+      "implementation": "./src/builders/deploy/deploy.impl",
+      "schema": "./src/builders/deploy/schema.json",
+      "description": "Execute a Serverless application deployment"
     }
   }
 }

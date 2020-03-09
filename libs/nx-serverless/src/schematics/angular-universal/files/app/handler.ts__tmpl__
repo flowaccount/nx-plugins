@@ -1,6 +1,6 @@
 import { createServer, proxy } from 'aws-serverless-express';
 import { eventContext } from 'aws-serverless-express/middleware';
-import { app } from '<%= offset %>dist/<%= root %>/main';
+import { app } from '<%= offset %>dist/<%= root %>/server';
 
 
 const binaryMimeTypes = [

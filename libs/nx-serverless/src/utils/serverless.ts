@@ -1,8 +1,8 @@
 import * as Serverless from 'serverless/lib/Serverless';
-import { BuildBuilderOptions } from './types';
+import { ServerlessBaseOptions } from './types';
 import { targetFromTargetString, BuilderContext } from '@angular-devkit/architect';
 import { from } from 'rxjs/internal/observable/from';
-import { tap, mergeMap, map, concatMap } from 'rxjs/operators';
+import { mergeMap, concatMap } from 'rxjs/operators';
 import { of, Observable } from 'rxjs';
 import * as path from 'path';
 import * as fs from 'fs';
@@ -25,7 +25,7 @@ export class ServerlessWrapper {
         return arg.buildTarget !== undefined;
     }
 
-    static init<T extends BuildBuilderOptions>(options: T, context: BuilderContext): Observable<void> {
+    static init<T extends ServerlessBaseOptions>(options: T, context: BuilderContext): Observable<void> {
         
         if (this.serverless$ === null) {
             return from(Promise.resolve(options)).pipe(

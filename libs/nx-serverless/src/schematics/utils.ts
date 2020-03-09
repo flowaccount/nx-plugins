@@ -17,8 +17,6 @@ export function getBuildConfig(options: BaseSchema) {
             tsConfig: join(options.appProjectRoot, 'tsconfig.app.json'),
             provider: options.provider,
             processEnvironmentFile: 'env.json',
-            watch: true,
-            progress: true
         },
         configurations: {
             dev: {

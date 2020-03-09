@@ -1,20 +1,23 @@
-import { Path, normalize } from '@angular-devkit/core';
+import { normalize, workspaces } from '@angular-devkit/core';
+import {
+  BuilderContext
+} from '@angular-devkit/architect';
+import { NodeJsSyncHost } from '@angular-devkit/core/node';
 import { resolve, dirname, relative, basename } from 'path';
-import { BuildBuilderOptions } from './types';
+import { ServerlessBaseOptions } from './types';
 import { statSync } from 'fs';
 import * as glob from 'glob';
-import * as path from 'path';
+import { extname } from 'path';
 import * as _ from 'lodash';
 import { ServerlessWrapper } from './serverless';
-import { async } from 'rxjs/internal/scheduler/async';
 
 export interface FileReplacement {
   replace: string;
   with: string;
 }
 
-export function assignEntriesToFunctionsFromServerless<T extends BuildBuilderOptions>(options: T,
-  root: string
+export function assignEntriesToFunctionsFromServerless<T extends ServerlessBaseOptions>(options: T,
+  root: string,
 ): T {
   ServerlessWrapper.serverless.cli.log('getting all functions')
   const functions = ServerlessWrapper.serverless.service.getAllFunctions()
@@ -25,22 +28,36 @@ export function assignEntriesToFunctionsFromServerless<T extends BuildBuilderOpt
   });
   const result = {
     ...options,
-    entry: entries,
+    files: entries,
   }
   return result;
 }
 
-export function normalizeBuildOptions<T extends BuildBuilderOptions>(
+export async function getSourceRoot(context: BuilderContext) {
+  const workspaceHost = workspaces.createWorkspaceHost(new NodeJsSyncHost());
+  const { workspace } = await workspaces.readWorkspace(
+    context.workspaceRoot,
+    workspaceHost
+  );
+  if (workspace.projects.get(context.target.project).sourceRoot) {
+    return workspace.projects.get(context.target.project).sourceRoot;
+  } else {
+    context.reportStatus('Error');
+    const message = `${context.target.project} does not have a sourceRoot. Please define one.`;
+    context.logger.error(message);
+    throw new Error(message);
+  }
+}
+
+export function normalizeBuildOptions<T extends ServerlessBaseOptions>(
   options: T,
   root: string,
   sourceRoot: string
 ): T {
-  const entries = {};
   const result = {
     ...options,
     root: root,
     sourceRoot: sourceRoot,
-    entry: entries,
     package: resolve(root, options.package),
     serverlessConfig:  resolve(root, options.serverlessConfig),
     servicePath:  resolve(root, options.servicePath),
@@ -77,7 +94,6 @@ export const getEntryForFunction = (name, serverlessFunction, serverless, source
   let handlerFileFinal = `${sourceroot.replace('/src', '')}/${handlerFile}${ext}`
  
   if(handlerFile.match(/src/)) {
-    console.log(handlerFile.replace('src/', ''))
     handlerFileFinal = `${sourceroot}/${handlerFile.replace('src/', '')}${ext}`
   }
   
@@ -110,7 +126,7 @@ const getEntryExtension = (fileName, serverless) => {
   const sortedFiles = _.uniq(
     _.concat(
       _.sortBy(
-        _.filter(files, file => _.includes(preferredExtensions, path.extname(file))),
+        _.filter(files, file => _.includes(preferredExtensions, extname(file))),
         a => _.size(a)
       ),
       files
@@ -120,7 +136,7 @@ const getEntryExtension = (fileName, serverless) => {
   if (_.size(sortedFiles) > 1) {
     this.serverless.cli.log(`WARNING: More than one matching handlers found for '${fileName}'. Using '${_.first(sortedFiles)}'.`);
   }
-  return path.extname(_.first(sortedFiles));
+  return extname(_.first(sortedFiles));
 };
 
 
@@ -180,3 +196,7 @@ function normalizeFileReplacements(
     with: resolve(root, fileReplacement.with)
   }));
 }
+
+
+
+

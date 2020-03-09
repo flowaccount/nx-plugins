@@ -36,13 +36,16 @@
   },
   "peerDependencies": {
     "@nrwl/workspace": "^9.0.1",
-    "@nrwl/node": "^9.0.1"
+    "@nrwl/node": "^9.0.1",
+    "@nrwl/angular": "^9.0.1"
   },
   "devDependencies": {
+    "@nrwl/angular": "^9.0.1",
     "@nrwl/nx-plugin": "9.0.1",
     "@nrwl/workspace": "9.0.1",
     "@types/node": "~8.9.4",
     "@types/express": "^4.17.2",
+    "@types/fs-extra": "^8.1.0",
     "dotenv": "6.2.0",
     "dotenv-json": "^1.0.0",
     "eslint": "6.1.0",
@@ -67,6 +70,7 @@
     "webpack": "4.41.2",
     "webpack-merge": "4.2.1",
     "webpack-dev-server": "3.9.0",
-    "webpack-node-externals": "1.7.2"
+    "webpack-node-externals": "1.7.2",
+    "depcheck": "0.9.2"
   }
 }

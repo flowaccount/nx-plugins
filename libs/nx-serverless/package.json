@@ -5,9 +5,13 @@
   "schematics": "./collection.json",
   "builders": "./builders.json",
   "peerDependencies": {
-    "@nguniversal/express-engine" : "^9.0.1",
-    "express" : "^4.17.1",
+    "@nguniversal/express-engine": "^9.0.1",
+    "express": "^4.17.1",
     "@nrwl/workspace": "^9.0.1",
-    "@nrwl/node": "^9.0.1"
+    "@nrwl/node": "^9.0.1",
+    "@nrwl/angular": "^9.0.1"
+  },
+  "devDependencies": {
+   
   }
 }

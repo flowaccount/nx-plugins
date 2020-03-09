@@ -6,12 +6,12 @@ import {
   scheduleTargetAndForget
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { Observable, bindCallback, of, zip, from, iif, observable } from 'rxjs';
-import { concatMap, tap, mapTo, first, map, filter, mergeMap } from 'rxjs/operators';
+import { Observable, bindCallback, of, zip, from } from 'rxjs';
+import { concatMap, tap, mapTo, first, map, filter } from 'rxjs/operators';
 import { stripIndents } from '@angular-devkit/core/src/utils/literals';
 import { ChildProcess, fork } from 'child_process';
 import * as treeKill from 'tree-kill';
-import { ServerlessBuildEvent, BuildServerlessBuilderOptions } from '../build/build.impl';
+import { ServerlessBuildEvent } from '../build/build.impl';
 
 try {
   require('dotenv').config();
@@ -22,7 +22,7 @@ export const enum InspectType {
   InspectBrk = 'inspect-brk'
 }
 // https://www.npmjs.com/package/serverless-offline
-export interface ServerlessExecuteBuilderOptions extends BuildServerlessBuilderOptions {
+export interface ServerlessExecuteBuilderOptions extends JsonObject {
   inspect: boolean | InspectType;
   waitUntilTargets: string[];
   buildTarget: string;
@@ -106,7 +106,7 @@ function getExecArgv(options: ServerlessExecuteBuilderOptions) {
     args.push(`--${options.inspect}=${options.host}:${options.port}`);
   }
   args.push("offline");
-  for (var key in options) {
+  for (const key in options) {
     if (options.hasOwnProperty(key)) {
       if (options[key] !== undefined) {
         args.push(`--${key}=${options[key]}`);
@@ -158,7 +158,10 @@ function runWaitUntilTargets(
 
   return zip(
     ...options.waitUntilTargets.map(b => {
-      return scheduleTargetAndForget(context, targetFromTargetString(b)).pipe(
+      return scheduleTargetAndForget(context, targetFromTargetString(b), {
+          watch: true,
+          progress: options.progress
+        }).pipe(
         filter(e => e.success !== undefined),
         first()
       );
@@ -183,7 +186,7 @@ export function serverlessExecutionHandler(
     concatMap(v => {
       if (!v.success) {
         context.logger.error(
-          `One of the tasks specified in waitUntilTargets failed`
+          'One of the tasks specified in waitUntilTargets failed'
         );
         return of({ success: false });
       }

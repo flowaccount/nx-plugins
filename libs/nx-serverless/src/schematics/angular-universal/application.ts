@@ -15,7 +15,9 @@ import { join, normalize, Path } from '@angular-devkit/core';
 import { Schema } from './schema';
 import {
     updateWorkspaceInTree,
-    getProjectConfig
+    getProjectConfig,
+    readJsonInTree,
+    getWorkspacePath
 
 } from '@nrwl/workspace';
 import { offsetFromRoot } from '@nrwl/workspace';
@@ -40,10 +42,10 @@ function getServeConfig(options: NormalizedSchema) {
         },
         configurations: {
             dev: {
-                buildTarget: options.project + ':build:dev'
+                buildTarget: options.project + ':buildServerless:dev'
             },
             production: {
-                buildTarget: options.project + ':build:production'
+                buildTarget: options.project + ':buildServerless:production'
             }
         }
     };
@@ -68,7 +70,9 @@ function getDeployConfig(options: NormalizedSchema) {
 function updateWorkspaceJson(options: NormalizedSchema): Rule {
     return updateWorkspaceInTree(workspaceJson => {
         const project = workspaceJson.projects[options.project]
-        project.architect.buildServerless = getBuildConfig(options);
+        const buildConfig = getBuildConfig(options);
+        buildConfig.options['skipClean'] = true;
+        project.architect.buildServerless = buildConfig;
         project.architect.offline = getServeConfig(options);
         project.architect.deploy = getDeployConfig(options);
         workspaceJson.projects[options.project] = project;
