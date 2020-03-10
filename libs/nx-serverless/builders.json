@@ -20,6 +20,11 @@
       "implementation": "./src/builders/deploy/deploy.impl",
       "schema": "./src/builders/deploy/schema.json",
       "description": "Execute a Serverless application deployment"
+    },
+    "destroy": {
+      "implementation": "./src/builders/destroy/destroy.impl",
+      "schema": "./src/builders/destroy/schema.json",
+      "description": "Execute a Serverless application teardown"
     }
   }
 }

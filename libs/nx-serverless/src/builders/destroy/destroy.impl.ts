@@ -4,48 +4,67 @@ import {
     BuilderOutput
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { calculateLibraryDependencies } from '@nrwl/node/src/builders/package/package.impl'
-import { ServerlessCompileOptions } from '../../utils/types';
-import { compileTypeScriptFiles } from '../../utils/typescript';
-import { of, from, Observable, combineLatest } from 'rxjs';
-import { switchMap,  map, concatMap  } from 'rxjs/operators';
-import { normalizeBuildOptions, assignEntriesToFunctionsFromServerless, getSourceRoot } from '../../utils/normalize';
+import { of, Observable } from 'rxjs';
+import { concatMap } from 'rxjs/operators';
 import { ServerlessWrapper } from '../../utils/serverless';
-import { resolve } from 'path';
+import { ServerlessDeployBuilderOptions, startBuild } from '../deploy/deploy.impl';
+import { ServerlessBuildEvent } from '../build/build.impl';
 
 export type ServerlesCompiledEvent = {
     outfile: string;
 };
 
-export default createBuilder(run);
-
-export function run(
-    options: JsonObject & ServerlessCompileOptions,
+export default createBuilder<ServerlessDeployBuilderOptions & JsonObject>(serverlessExecutionHandler);
+export function serverlessExecutionHandler(
+    options: JsonObject & ServerlessDeployBuilderOptions,
     context: BuilderContext
-): Observable<ServerlesCompiledEvent> {
-
-    const libDependencies = calculateLibraryDependencies(context);
-    return from(getSourceRoot(context))
-        .pipe(
-            map(sourceRoot =>
-                normalizeBuildOptions(options, context.workspaceRoot, context.workspaceRoot + sourceRoot)
-            ),
-            switchMap((options) => combineLatest(of(options), from(ServerlessWrapper.init(options, context)))),
-            map(([options]) => { return assignEntriesToFunctionsFromServerless(options, context.workspaceRoot) }),
-            concatMap(options => {
-                ServerlessWrapper.serverless.cli.log('start compiling typescript')
-                return compileTypeScriptFiles(
-                    options,
-                    context,
-                    // libDependencies
-                )
+): Observable<BuilderOutput> {
+    return startBuild(options, context).pipe(
+        concatMap((event: ServerlessBuildEvent) => {
+            if (event.success) {
+                // build into output path before running serverless offline.
+                const servicePath = ServerlessWrapper.serverless.config.servicePath;
+                ServerlessWrapper.serverless.config.servicePath = options.location;
+                ServerlessWrapper.serverless.processedInput = { commands: ['remove'], options: getExecArgv(options) };
+                return new Observable<BuilderOutput>((option) => {
+                    ServerlessWrapper.serverless.run().then(() => {
+                        // change servicePath back for further processing.
+                        ServerlessWrapper.serverless.config.servicePath = servicePath;
+                        option.next({ success: true });
+                        option.complete();
+                    }).catch(ex => {
+                        option.next({ success: false, error: ex.toString() });
+                        option.complete();
+                    })
+                }).pipe(concatMap((result => {
+                    return of(result);
+                })))
             }
-            ),
-            map(( value: BuilderOutput) => {
-                return {
-                    ...value,
-                    outfile: resolve(context.workspaceRoot, options.outputPath),
-                    stats: {}
-                };
-            }));
+            else {
+                context.logger.error(
+                    'There was an error with the build. See above.'
+                );
+                context.logger.info(`${event.outfile} was not restarted.`);
+                return of({ success: false, error: `${event.outfile} was not restarted.` });
+            }
+        }))
+}
+
+function getExecArgv(options: ServerlessDeployBuilderOptions) {
+    const args = [];
+    if (options.function && options.function != '') {
+        args.push('function');
+    }
+    if (options.list) {
+        args.push('list');
+    }
+    for (const key in options) {
+        if (options.hasOwnProperty(key)) {
+            if (options[key] !== undefined && key !== 'buildTarget' && key !== 'package' && key !== 'list') {
+                args.push(`--${key}=${options[key]}`);
+            }
+        }
+    }
+
+    return args;
 }

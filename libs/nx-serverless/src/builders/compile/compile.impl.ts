@@ -42,7 +42,8 @@ export function run(
                 return {
                     ...value,
                     outfile: resolve(context.workspaceRoot, options.outputPath),
-                    resolverName: 'DependencyCheckResolver'
+                    resolverName: 'DependencyCheckResolver',
+                    tsconfig: resolve(context.workspaceRoot, options.tsConfig)
                 };
             }));
 }

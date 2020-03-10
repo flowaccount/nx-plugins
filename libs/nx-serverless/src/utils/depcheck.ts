@@ -1,6 +1,12 @@
 import * as depcheck from 'depcheck';
+import {
+  BuilderContext
+} from '@angular-devkit/architect';
+import { readJsonFile } from '@nrwl/workspace';
 import { DependencyResolver } from './types';
-
+import { getProdModules } from './normalize'
+import { from, Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 export class DependencyCheckResolver implements DependencyResolver {
   options = {
     ignoreBinPackage: false, // ignore the packages with bin entry
@@ -15,10 +21,7 @@ export class DependencyCheckResolver implements DependencyResolver {
       // ignore dependencies that matches these globs
       'grunt-*',
     ],
-    parsers: {
-      // the target parsers
-      'handler.ts': depcheck.parser.es6
-    },
+    parsers: {},
     detectors: [
       // the target detectors
       depcheck.detector.requireCallExpression,
@@ -31,21 +34,43 @@ export class DependencyCheckResolver implements DependencyResolver {
     ],
     package: {}
   };
-  constructor() {
+  constructor(private context: BuilderContext) {
   }
 
-  normalizeExternalDependencies(packageJson: any, originPackageJsonPath: string, verbose: boolean, webpackStats?: any, dependencyGraph?: any, sourceRoot?: string) {
-    const externals = this.dependencyCheck(packageJson, sourceRoot);
-    if (!dependencyGraph || dependencyGraph === null) {
-      dependencyGraph = {};
+  normalizeExternalDependencies(packageJson: any, originPackageJsonPath: string, verbose: boolean, webpackStats?: any, dependencyGraph?: any, sourceRoot?: string, tsconfig?: string) {
+    return this.dependencyCheck(packageJson, sourceRoot, tsconfig).pipe(
+      map((result: depcheck.Results) => {
+        if (!dependencyGraph || dependencyGraph === null) {
+          dependencyGraph = {};
+        }
+        const externals = [];
+        Object.keys(result.missing).forEach((key) => {
+          this.context.logger.warn(`Missing dependencies ${key} in ${result.missing[key]}`)
+        })
+        Object.keys(result.using).forEach((key) => {
+          externals.push({
+            origin: result.using[key],
+            external: key
+          })
+        })
+        return getProdModules(externals, packageJson, originPackageJsonPath, [], dependencyGraph, verbose);
+      }))
+  }
+  dependencyCheck(packageJson: any, sourceRoot: string, tsconfig: string): Observable<depcheck.Results> {
+    const tsconfigJson = readJsonFile(tsconfig);
+    const parsers = {};
+    if(tsconfigJson.files) {
+      tsconfigJson.files.forEach( fileName => {
+        parsers[fileName] = depcheck.parser.es6;
+      })
     }
-    return [];
-    // const prodModules = this.getProdModules(externals, packageJson, originPackageJsonPath, [], dependencyGraph, verbose);
-    // return prodModules;
-  }
-
-  async dependencyCheck(packageJson: any, sourceRoot: string): Promise<depcheck.Results> {
+    if(tsconfigJson.include) {
+      tsconfigJson.include.forEach( includePattern => {
+        parsers[includePattern] = depcheck.parser.es6;
+      })
+    }
+    this.options.parsers = parsers;
     this.options.package = packageJson;
-    return await depcheck(sourceRoot, this.options);
+    return from(depcheck(sourceRoot, this.options));
   }
 }
