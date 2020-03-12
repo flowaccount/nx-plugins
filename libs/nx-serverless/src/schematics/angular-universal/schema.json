@@ -19,13 +19,14 @@
       "type": "boolean",
       "x-prompt": "Do you want to bootstrap universal app on your project?"
     },
-    "skipFormat": {
-      "description": "Skips the prettier format of files",
-      "type": "boolean",
-      "default": false
-    },
     "skipInstall": {
       "description": "Skips the installation of universal packages",
+      "type": "boolean",
+      "x-prompt": "Would you like to skip installing universal packages?",
+      "default": true
+    },
+    "skipFormat": {
+      "description": "Skips the prettier format of files",
       "type": "boolean",
       "default": false
     }

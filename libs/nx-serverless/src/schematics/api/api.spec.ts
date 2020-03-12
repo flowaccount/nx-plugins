@@ -76,6 +76,15 @@ describe('app', () => {
               package: 'dist/apps/my-serveless-app'
             }
           },
+          destroy: {
+            builder: '@flowaccount/nx-serverless:destroy',
+            options: {
+              buildTarget: 'my-serveless-app:build:production',
+              config: 'apps/my-serveless-app/serverless.yml',
+              location: 'dist/apps/my-serveless-app',
+              package: 'dist/apps/my-serveless-app'
+            }
+          },
           lint: {
             builder: '@angular-devkit/build-angular:tslint',
             options: {

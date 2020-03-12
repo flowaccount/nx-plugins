@@ -46,8 +46,8 @@ describe('app', () => {
       expect(project.root).toEqual('apps/my-app');
       expect(project.architect).toEqual(
         jasmine.objectContaining({
-          buildServerless: {
-            builder: '@flowaccount/nx-serverless:build',
+          compileServerless: {
+            builder: '@flowaccount/nx-serverless:compile',
             configurations: {
               dev: {
                 budgets: [
@@ -83,12 +83,12 @@ describe('app', () => {
               }
             },
             options: {
-              outputPath: 'dist/apps/my-app',
+              outputPath: 'dist',
               package: 'apps/my-app',
               processEnvironmentFile: 'env.json',
               serverlessConfig: 'apps/my-app/serverless.yml',
               servicePath: 'apps/my-app',
-              tsConfig: 'apps/my-app/tsconfig.app.json',
+              tsConfig: 'apps/my-app/tsconfig.serverless.json',
               skipClean: true
             }
           },
@@ -99,7 +99,16 @@ describe('app', () => {
                 'my-app:build:production',
                 'my-app:server:production',
               ],
-              buildTarget: 'my-app:buildServerless:production',
+              buildTarget: 'my-app:compileServerless:production',
+              config: 'apps/my-app/serverless.yml',
+              location: 'dist/apps/my-app',
+              package: 'dist/apps/my-app'
+            }
+          },
+          destroy: {
+            builder: '@flowaccount/nx-serverless:destroy',
+            options: {
+              buildTarget: 'my-app:compileServerless:production',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app',
               package: 'dist/apps/my-app'
@@ -109,10 +118,10 @@ describe('app', () => {
             builder: '@flowaccount/nx-serverless:offline',
             configurations: {
               dev: {
-                buildTarget: 'my-app:buildServerless:dev'
+                buildTarget: 'my-app:compileServerless:dev'
               },
               production: {
-                buildTarget: 'my-app:buildServerless:production'
+                buildTarget: 'my-app:compileServerless:production'
               }
             },
             options: {
@@ -120,7 +129,7 @@ describe('app', () => {
                 'my-app:build',
                 'my-app:server',
               ],
-              buildTarget: 'my-app:buildServerless',
+              buildTarget: 'my-app:compileServerless',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app'
             }

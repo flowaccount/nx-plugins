@@ -1,45 +1,33 @@
-import { normalize, JsonObject, workspaces } from '@angular-devkit/core';
-import { join } from 'path';
+import { JsonObject, workspaces } from '@angular-devkit/core';
 jest.mock('tsconfig-paths-webpack-plugin');
-import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import { of } from 'rxjs';
-import * as compileTypscript from '../../utils/typescript';
+import * as deploy from '../deploy/deploy.impl';
 import { Architect } from '@angular-devkit/architect';
-import * as normalizeModule  from '../../utils/normalize';
 import { getTestArchitect } from '../../utils/testing';
 import { ServerlessWrapper } from '../../utils/serverless';
-import { ServerlessBaseOptions } from '../../utils/types';
+import { EventEmitter } from 'events';
 
 describe('ServerlessBuildBuilder', () => {
-  let testOptions: ServerlessBaseOptions & JsonObject;
+  let testOptions: JsonObject;
   let architect: Architect;
-  let compileTypeScriptFiles: jest.Mock;
-
+  let startBuild: jest.Mock;
+  let fakeEventEmitter: EventEmitter;
   beforeEach(async () => {
+    fakeEventEmitter = new EventEmitter();
+    (fakeEventEmitter as any).pid = 123;
+    
     [architect] = await getTestArchitect();
-
     testOptions = {
-      tsConfig: 'apps/serverlessapp/tsconfig.app.json',
-      outputPath: 'dist/apps/serverlessapp',
-      package: 'apps/serverlessapp',
-      serverlessConfig: 'apps/serverlessapp/serverless.yml',
-      servicePath: 'apps/serverlessapp',
-      provider: 'aws',
-      processEnvironmentFile: 'env.json',
-      externalDependencies: 'all',
-      fileReplacements: [
-        {
-          replace: 'apps/environment/environment.ts',
-          with: 'apps/environment/environment.prod.ts'
-        }
-      ],
-      assets: [],
-      statsJson: false
+      buildTarget: 'serverlessapp:build:production',
+      location: 'dist/apps/serverlessapp',
+      package: 'dist/apps/serverlessapp',
+      config: 'apps/serverlessapp/serverless.yml',
+      waitUntilTargets:[]
     };
-    compileTypeScriptFiles = jest.fn().mockImplementation(() => {
+    startBuild = jest.fn().mockImplementation(() => {
       return of({ success: true });
     });
-    (compileTypscript as any).compileTypeScriptFiles = compileTypeScriptFiles;
+    (deploy as any).startBuild = startBuild;
     spyOn(workspaces, 'readWorkspace').and.returnValue({
       workspace: {
         projects: {
@@ -54,39 +42,57 @@ describe('ServerlessBuildBuilder', () => {
       cli: {
         log: () => { return; }
       },
+      config: {
+        servicePath: '/root/apps/serverlessapp/src'
+      },
       service: {
         getAllFunctions: () => {
           return [];
         }
+      },
+      run: () => {
+        return new Promise(() => { 
+          Promise.resolve(fakeEventEmitter);
+        })
       }
     });
-    jest.spyOn(normalizeModule, 'getEntryForFunction').mockReturnValue({ 'handler': '/root/apps/serverlessapp/src/handler.ts' });
-    (<any>TsConfigPathsPlugin).mockImplementation(
-      function MockPathsPlugin() {}
-    );
   });
-
   describe('run', () => {
-    it('should call compileTypeScriptFiles', async () => {
-      const run = await architect.scheduleBuilder(
-        '@flowaccount/nx-serverless:compile',
+    it('should call startBuild', done => {
+      architect.scheduleBuilder(
+        '@flowaccount/nx-serverless:destroy',
         testOptions
-      );
-      await run.output.toPromise();
-      await run.stop();
-      expect(compileTypeScriptFiles).toHaveBeenCalled();
+      ).then((run) => {
+        run.output.subscribe({
+              next: output => {
+                expect(startBuild).toHaveBeenCalled();
+                run.stop();
+            },
+            complete: () => {
+            done();
+          }
+        })
+        fakeEventEmitter.emit('exit', 0);
+      })
+     
     });
 
-    it('should emit the outfile along with success', async () => {
-      const run = await architect.scheduleBuilder(
-        '@flowaccount/nx-serverless:compile',
+    it('should call serverless run with success', async (done) => {
+     const run = await architect.scheduleBuilder(
+        '@flowaccount/nx-serverless:destroy',
         testOptions
-      );
-      const output = await run.output.toPromise();
-      await run.stop();
-      expect(output.success).toEqual(true);
-      expect(output.outfile).toEqual('/root/dist/apps/serverlessapp');
-    });
-
+      )
+        run.output.subscribe({
+              next: output => {
+                expect(output.success).toEqual(true);
+                run.stop();
+            },
+            complete: () => {
+            done();
+          }
+        })
+        fakeEventEmitter.emit('exit', 0);
+      })
+    
   });
 });

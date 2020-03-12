@@ -73,6 +73,18 @@ function getDeployConfig(project: any, options: NormalizedSchema) {
     };
 }
 
+function getDestroyConfig(options: NormalizedSchema) {
+    return {
+        builder: '@flowaccount/nx-serverless:destroy',
+        options: {
+            buildTarget: options.name + ':build:production',
+            config: join(options.appProjectRoot, 'serverless.yml'),
+            location: join(normalize('dist'), options.appProjectRoot),
+            package: join(normalize('dist'), options.appProjectRoot)
+        }
+    };
+}
+
 function updateWorkspaceJson(options: NormalizedSchema): Rule {
     return updateWorkspaceInTree(workspaceJson => {
         const project = {
@@ -87,6 +99,7 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
         project.architect.build = getBuildConfig(options);
         project.architect.serve = getServeConfig(project, options);
         project.architect.deploy = getDeployConfig(project, options);
+        project.architect.destroy = getDestroyConfig(options);
         project.architect.lint = generateProjectLint(
             normalize(project.root),
             join(normalize(project.root), 'tsconfig.app.json'),

@@ -1,32 +1,57 @@
-import { Rule, chain, noop } from '@angular-devkit/schematics';
+import { Rule, chain, noop, Tree, SchematicContext } from '@angular-devkit/schematics';
 import {
   addDepsToPackageJson,
   updateJsonInTree,
   addPackageWithInit,
-  updateWorkspace,
-  formatFiles
+  formatFiles,
+  readJsonInTree
 } from '@nrwl/workspace';
 import { Schema } from './schema';
-import { nxVersion, serverlessVersion, serverlessOfflineVersion, awsTypeLambdaVersion, awsServerlessExpressVersion } from '../../utils/versions';
-import { JsonObject } from '@angular-devkit/core';
-function addDependencies(universal: boolean): Rule {
-  const packages = {
-    '@flowaccount/nx-serverless': nxVersion,
-    'serverless': serverlessVersion,
-    'serverless-offline': serverlessOfflineVersion,
-  }
-  if(universal) {
-    packages['aws-serverless-express'] = awsServerlessExpressVersion;
-    packages['@types/aws-serverless-express'] = awsServerlessExpressVersion;
-  } else {
-    packages['@types/aws-lambda'] = awsTypeLambdaVersion;
-  }
+import { 
+   nxVersion,
+   serverlessVersion,
+   serverlessOfflineVersion, awsTypeLambdaVersion, awsServerlessExpressVersion, serverlessApigwBinaryVersion } from '../../utils/versions';
 
-  return addDepsToPackageJson(
-    {},
-    packages
-  );
+function addDependencies(universal: boolean): Rule {
+  return (host: Tree, context: SchematicContext ): Rule => {
+    const dependencies = {}
+    const devDependencies  = {
+      '@flowaccount/nx-serverless': nxVersion,
+      'serverless': serverlessVersion,
+      'serverless-offline': serverlessOfflineVersion,
+    }
+    if(universal) {
+      dependencies['aws-serverless-express'] = awsServerlessExpressVersion;
+      devDependencies['@types/aws-serverless-express'] = awsServerlessExpressVersion;
+      devDependencies['serverless-apigw-binary'] = serverlessApigwBinaryVersion;
+    } else {
+      devDependencies['@types/aws-lambda'] = awsTypeLambdaVersion;
+    }
+
+    const packageJson = readJsonInTree(host, 'package.json');
+    Object.keys(dependencies).forEach(key => {
+      if(packageJson.dependencies[key]){
+        delete dependencies[key]
+      }
+    });
+
+    Object.keys(devDependencies).forEach(key => {
+      if(packageJson.devDependencies[key]){
+        delete devDependencies[key]
+      }
+    });
+
+    if (!Object.keys(dependencies).length && !Object.keys(devDependencies).length) {
+      context.logger.info('Skipping update package.json')
+      return noop();
+    }
+    return addDepsToPackageJson(
+      dependencies,
+      devDependencies
+    );
+  }
 }
+
 function moveDependency(): Rule {
   return updateJsonInTree('package.json', json => {
     json.dependencies = json.dependencies || {};
@@ -35,21 +60,8 @@ function moveDependency(): Rule {
   });
 }
 
-function setDefault(): Rule {
-  return updateWorkspace( workspace => {
-    workspace.extensions.cli = workspace.extensions.cli || {};
-    const defaultCollection: string =
-      workspace.extensions.cli &&
-      ((workspace.extensions.cli as JsonObject).defaultCollection as string);
-    if (!defaultCollection || defaultCollection === '@nrwl/workspace') {
-      (workspace.extensions.cli as JsonObject).defaultCollection = '@flowaccount/nx-serverless';
-    }
-  });
-}
-
 export default function(schema: Schema) {
     return chain([
-      setDefault(),
       addPackageWithInit('@nrwl/jest'),
       addDependencies(schema.universalApp),
       moveDependency(),

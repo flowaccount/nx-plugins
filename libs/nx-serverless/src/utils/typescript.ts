@@ -55,7 +55,6 @@ export function compileTypeScriptFiles(
     // projectDependencies: DependentLibraryNode[]
 ): Observable<BuilderOutput> {
     if (tscProcess) {
-        console.log('trying to kill invisible process?', tscProcess)
         killProcess(context);
     }
     // Cleaning the /dist folder

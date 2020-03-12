@@ -14,7 +14,11 @@ describe('ServerlessBuildBuilder', () => {
   let testOptions: ServerlessBaseOptions & JsonObject;
   let architect: Architect;
   let compileTypeScriptFiles: jest.Mock;
-  let dependencyCheck: jest.Mock;
+  // let dependencyCheck: jest.Mock;
+  // dependencyCheck = jest.fn().mockImplementation(() => {
+  //   return of({});
+  // });
+  // (depcheck as any).dependencyCheck = dependencyCheck;
   beforeEach(async () => {
     [architect] = await getTestArchitect();
 
@@ -39,10 +43,7 @@ describe('ServerlessBuildBuilder', () => {
     compileTypeScriptFiles = jest.fn().mockImplementation(() => {
       return of({ success: true });
     });
-    dependencyCheck = jest.fn().mockImplementation(() => {
-      return of({});
-    });
-    (depcheck as any).dependencyCheck = dependencyCheck;
+   
     (compileTypscript as any).compileTypeScriptFiles = compileTypeScriptFiles;
     spyOn(workspaces, 'readWorkspace').and.returnValue({
       workspace: {
@@ -80,17 +81,17 @@ describe('ServerlessBuildBuilder', () => {
       await run.stop();
       expect(compileTypeScriptFiles).toHaveBeenCalled();
     });
-    it('should call dependencyCheck function', async() => {
+    // it('should call dependencyCheck function', async() => {
 
-      const run = await architect.scheduleBuilder(
-        '@flowaccount/nx-serverless:compile',
-        testOptions
-      );
-      await run.output.toPromise();
-      await run.stop();
-      expect(dependencyCheck).toHaveBeenCalled();
+    //   const run = await architect.scheduleBuilder(
+    //     '@flowaccount/nx-serverless:compile',
+    //     testOptions
+    //   );
+    //   await run.output.toPromise();
+    //   await run.stop();
+    //   expect(dependencyCheck).toHaveBeenCalled();
 
-    });
+    // });
     it('should emit the outfile along with success', async () => {
       const run = await architect.scheduleBuilder(
         '@flowaccount/nx-serverless:compile',

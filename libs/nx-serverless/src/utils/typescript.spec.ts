@@ -1,12 +1,6 @@
 import { EventEmitter } from 'events';
-import { join } from 'path';
 import { getMockContext } from './testing';
 import { MockBuilderContext } from '@nrwl/workspace/testing';
-import {
-    ProjectGraph,
-    ProjectType
-} from '@nrwl/workspace/src/core/project-graph';
-import * as projectGraphUtils from '@nrwl/workspace/src/core/project-graph';
 import { removeSync } from 'fs-extra';
 jest.mock('fs-extra')
 
@@ -15,9 +9,9 @@ import {
 } from './typescript';
 jest.mock('glob');
 jest.mock('@nrwl/workspace/src/utils/fileutils');
-let fsUtility = require('@nrwl/workspace/src/utils/fileutils');
+const fsUtility = require('@nrwl/workspace/src/utils/fileutils');
 jest.mock('child_process');
-let { fork } = require('child_process');
+const { fork } = require('child_process');
 jest.mock('tree-kill');
 let treeKill = require('tree-kill');
 import * as fsMock from 'fs';

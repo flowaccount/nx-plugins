@@ -11,18 +11,19 @@ import {
     externalSchematic,
     noop
 } from '@angular-devkit/schematics';
-import { join, normalize, Path } from '@angular-devkit/core';
+import { join, normalize } from '@angular-devkit/core';
 import { Schema } from './schema';
 import {
     updateWorkspaceInTree,
     getProjectConfig,
-    readJsonInTree,
-    getWorkspacePath
+    replaceNodeValue
 
 } from '@nrwl/workspace';
 import { offsetFromRoot } from '@nrwl/workspace';
 import init from '../init/init';
 import { getBuildConfig } from '../utils'
+import * as ts from 'typescript';
+import { insertImport, insert } from '@nrwl/workspace/src/utils/ast-utils';
 
 interface NormalizedSchema extends Schema {
     
@@ -36,16 +37,16 @@ function getServeConfig(options: NormalizedSchema) {
                 options.project + ':build',
                 options.project + ':server',
             ],
-            buildTarget: options.project + ':buildServerless',
+            buildTarget: options.project + ':compileServerless',
             config: join(options.appProjectRoot, 'serverless.yml'),
             location: join(normalize('dist'), options.appProjectRoot)
         },
         configurations: {
             dev: {
-                buildTarget: options.project + ':buildServerless:dev'
+                buildTarget: options.project + ':compileServerless:dev'
             },
             production: {
-                buildTarget: options.project + ':buildServerless:production'
+                buildTarget: options.project + ':compileServerless:production'
             }
         }
     };
@@ -59,7 +60,19 @@ function getDeployConfig(options: NormalizedSchema) {
                 options.project + ':build:production',
                 options.project + ':server:production',
             ],
-            buildTarget: options.project + ':buildServerless:production',
+            buildTarget: options.project + ':compileServerless:production',
+            config: join(options.appProjectRoot, 'serverless.yml'),
+            location: join(normalize('dist'), options.appProjectRoot),
+            package: join(normalize('dist'), options.appProjectRoot)
+        }
+    };
+}
+
+function getDestroyConfig(options: NormalizedSchema) {
+    return {
+        builder: '@flowaccount/nx-serverless:destroy',
+        options: {
+            buildTarget: options.project + ':compileServerless:production',
             config: join(options.appProjectRoot, 'serverless.yml'),
             location: join(normalize('dist'), options.appProjectRoot),
             package: join(normalize('dist'), options.appProjectRoot)
@@ -72,9 +85,19 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
         const project = workspaceJson.projects[options.project]
         const buildConfig = getBuildConfig(options);
         buildConfig.options['skipClean'] = true;
-        project.architect.buildServerless = buildConfig;
+        buildConfig.options['outputPath'] = normalize('dist');
+        buildConfig.options['tsConfig'] = join(options.appProjectRoot, 'tsconfig.serverless.json');
+        buildConfig.builder = '@flowaccount/nx-serverless:compile';
+        project.architect.compileServerless = buildConfig;
         project.architect.offline = getServeConfig(options);
         project.architect.deploy = getDeployConfig(options);
+        project.architect.destroy = getDestroyConfig(options);
+        if(options.addUniversal) {
+            project.architect.server.options.outputPath = join(normalize('dist'), options.appProjectRoot, 'server');
+            // project.architect.server.configurations.production.fileReplacements[0].replace = join(options.appProjectRoot, 'environment.ts'),
+            // project.architect.server.configurations.production.fileReplacements[0].with = join(options.appProjectRoot, 'environment.prod.ts'),
+            project.architect.build.options.outputPath = join(normalize('dist'), options.appProjectRoot, 'browser');
+        }
         workspaceJson.projects[options.project] = project;
         return workspaceJson;
     });
@@ -94,6 +117,34 @@ function addAppFiles(options: NormalizedSchema): Rule {
     );
 }
 
+function updateServerTsFile(options: NormalizedSchema): Rule {
+    return (host: Tree, context: SchematicContext) => {
+
+        const modulePath = `${options.appProjectRoot}/server.ts`;
+        const content: Buffer | null = host.read(modulePath);
+        let moduleSource = '';
+        if(!content) {
+           context.logger.error('Cannot find server.ts to replace content!');
+           return host;
+        }
+        moduleSource = content.toString('utf-8');
+        const tsSourceFile = ts.createSourceFile(join(options.appProjectRoot, 'server.ts'), moduleSource,  ts.ScriptTarget.Latest,
+         true);
+        context.logger.info('updating server.ts to support serverless-express and production mode.');
+
+        host.overwrite(modulePath,
+            moduleSource.replace(`join(process.cwd(), 'dist/${options.appProjectRoot}')`,
+            `environment.production ? join(process.cwd(), './browser') : join(process.cwd(), 'dist/${options.appProjectRoot}/browser')`)
+        )
+
+        insert(host, modulePath, [
+            insertImport(tsSourceFile, modulePath, 'environment', './src/environments/environment')
+        ]);
+        
+        return host;
+    }
+}
+
 function addServerlessYMLFile(options: NormalizedSchema): Rule {
     return (host: Tree) => {
         host.create(
@@ -102,6 +153,7 @@ function addServerlessYMLFile(options: NormalizedSchema): Rule {
 frameworkVersion: ">=1.1.0 <2.0.0"
 plugins:
   - serverless-offline
+  - serverless-apigw-binary
 package:
   individually: true
   excludeDevDependencies: false
@@ -158,6 +210,7 @@ export default function (schema: Schema): Rule {
                 skipInstall: options.skipInstall
             }) : noop(),
             addAppFiles(options),
+            options.addUniversal ? updateServerTsFile(options) : noop(),
             addServerlessYMLFile(options),
             updateWorkspaceJson(options),
         ])(host, context);
