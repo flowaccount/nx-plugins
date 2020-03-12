@@ -68,3 +68,4 @@ export default function(schema: Schema) {
       formatFiles(schema)
     ]);
 }
+
