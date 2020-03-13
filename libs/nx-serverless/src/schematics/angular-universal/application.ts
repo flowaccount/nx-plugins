@@ -37,16 +37,16 @@ function getServeConfig(options: NormalizedSchema) {
                 options.project + ':build',
                 options.project + ':server',
             ],
-            buildTarget: options.project + ':compileServerless',
+            buildTarget: options.project + ':compile',
             config: join(options.appProjectRoot, 'serverless.yml'),
             location: join(normalize('dist'), options.appProjectRoot)
         },
         configurations: {
             dev: {
-                buildTarget: options.project + ':compileServerless:dev'
+                buildTarget: options.project + ':compile:dev'
             },
             production: {
-                buildTarget: options.project + ':compileServerless:production'
+                buildTarget: options.project + ':compile:production'
             }
         }
     };
@@ -60,7 +60,7 @@ function getDeployConfig(options: NormalizedSchema) {
                 options.project + ':build:production',
                 options.project + ':server:production',
             ],
-            buildTarget: options.project + ':compileServerless:production',
+            buildTarget: options.project + ':compile:production',
             config: join(options.appProjectRoot, 'serverless.yml'),
             location: join(normalize('dist'), options.appProjectRoot),
             package: join(normalize('dist'), options.appProjectRoot)
@@ -72,7 +72,7 @@ function getDestroyConfig(options: NormalizedSchema) {
     return {
         builder: '@flowaccount/nx-serverless:destroy',
         options: {
-            buildTarget: options.project + ':compileServerless:production',
+            buildTarget: options.project + ':compile:production',
             config: join(options.appProjectRoot, 'serverless.yml'),
             location: join(normalize('dist'), options.appProjectRoot),
             package: join(normalize('dist'), options.appProjectRoot)
@@ -88,7 +88,7 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
         buildConfig.options['outputPath'] = normalize('dist');
         buildConfig.options['tsConfig'] = join(options.appProjectRoot, 'tsconfig.serverless.json');
         buildConfig.builder = '@flowaccount/nx-serverless:compile';
-        project.architect.compileServerless = buildConfig;
+        project.architect.compile = buildConfig;
         project.architect.offline = getServeConfig(options);
         project.architect.deploy = getDeployConfig(options);
         project.architect.destroy = getDestroyConfig(options);

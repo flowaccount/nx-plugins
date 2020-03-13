@@ -46,7 +46,7 @@ describe('app', () => {
       expect(project.root).toEqual('apps/my-app');
       expect(project.architect).toEqual(
         jasmine.objectContaining({
-          compileServerless: {
+          compile: {
             builder: '@flowaccount/nx-serverless:compile',
             configurations: {
               dev: {
@@ -99,7 +99,7 @@ describe('app', () => {
                 'my-app:build:production',
                 'my-app:server:production',
               ],
-              buildTarget: 'my-app:compileServerless:production',
+              buildTarget: 'my-app:compile:production',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app',
               package: 'dist/apps/my-app'
@@ -108,7 +108,7 @@ describe('app', () => {
           destroy: {
             builder: '@flowaccount/nx-serverless:destroy',
             options: {
-              buildTarget: 'my-app:compileServerless:production',
+              buildTarget: 'my-app:compile:production',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app',
               package: 'dist/apps/my-app'
@@ -118,10 +118,10 @@ describe('app', () => {
             builder: '@flowaccount/nx-serverless:offline',
             configurations: {
               dev: {
-                buildTarget: 'my-app:compileServerless:dev'
+                buildTarget: 'my-app:compile:dev'
               },
               production: {
-                buildTarget: 'my-app:compileServerless:production'
+                buildTarget: 'my-app:compile:production'
               }
             },
             options: {
@@ -129,7 +129,7 @@ describe('app', () => {
                 'my-app:build',
                 'my-app:server',
               ],
-              buildTarget: 'my-app:compileServerless',
+              buildTarget: 'my-app:compile',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app'
             }

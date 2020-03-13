@@ -30,7 +30,7 @@
 
 ## Our Mission
 
-Nx is great and simplifying the tool-chains for *continous integrations* inside a mono-repository. As a developer who has to do operations as well, we would like to see the delivery/deployment side of things to be super awsome as well!
+Nx is great and simplifying the tool-chains for _continous integrations_ inside a mono-repository. As a developer who has to do operations as well, we would like to see the delivery/deployment side of things to be super awsome as well!
 
 **So we decided to build plugins on top of the nx workspace to add the ability of seamless delivery/deployment of our projects to the designated cloud providers. :metal:**
 
@@ -38,33 +38,33 @@ Nx is great and simplifying the tool-chains for *continous integrations* inside 
 
 ### Node-Typescript
 
-Framework Name | AWS | Azure | GCP
----------|----------|---------|---------
- Serverless Framework | :white_check_mark: | :calendar: | :calendar:
- AWS-CDK | :calendar: | :x: | :x:
+| Framework Name       | AWS                | Azure      | GCP        |
+| -------------------- | ------------------ | ---------- | ---------- |
+| Serverless Framework | :white_check_mark: | :calendar: | :calendar: |
+| AWS-CDK              | :calendar:         | :x:        | :x:        |
 
 ### Angular Universal
 
-Application | AWS | Azure | GCP
----------|----------|---------|---------
- Other Natives (e.g. Pulumi) | :x: | :calendar: | :calendar:
- AWS-CDK | :calendar: | :x: | :x:
+| Application                 | AWS        | Azure      | GCP        |
+| --------------------------- | ---------- | ---------- | ---------- |
+| Other Natives (e.g. Pulumi) | :x:        | :calendar: | :calendar: |
+| AWS-CDK                     | :calendar: | :x:        | :x:        |
 
 ### Serverless Framework
 
-Infrastructure Elements | AWS | Azure | GCP
----------|----------|---------|---------
- Custom Domain | :calendar: | :calendar: | :calendar:
- Deploy | :white_check_mark: | :calendar: | :calendar:
- Destroy | :white_check_mark: | :calendar: | :calendar:
+| Infrastructure Elements | AWS                | Azure      | GCP        |
+| ----------------------- | ------------------ | ---------- | ---------- |
+| Custom Domain           | :calendar:         | :calendar: | :calendar: |
+| Deploy                  | :white_check_mark: | :calendar: | :calendar: |
+| Destroy                 | :white_check_mark: | :calendar: | :calendar: |
 
 ### Infrastructure as a code
 
-Infrastructure Elements | AWS | Azure | GCP
----------|----------|---------|---------
- Custom Domain | :calendar: | :calendar: | :calendar:
- Deploy | :calendar: | :calendar: | :calendar:
- Destroy | :calendar: | :calendar: | :calendar:
+| Infrastructure Elements | AWS        | Azure      | GCP        |
+| ----------------------- | ---------- | ---------- | ---------- |
+| Custom Domain           | :calendar: | :calendar: | :calendar: |
+| Deploy                  | :calendar: | :calendar: | :calendar: |
+| Destroy                 | :calendar: | :calendar: | :calendar: |
 
 ## Getting Started
 
@@ -73,43 +73,50 @@ Infrastructure Elements | AWS | Azure | GCP
 First you need to create an nx workspace to get started!
 
 **Using npx to create workspace, then use yarn/npm to continue**
+
 ```
 npx create-nx-workspace # Then you got to use yarn/npm
 ```
+
 **Using npm**
+
 ```
 npm init nx-workspace
 npm nx add @flowaccount/nx-serverless # or with these options --project=myangularapp --provider=aws --addUniversal=yes
 npm nx run myangularapp:offline # to run the universal app offline checking serverless works locally
 npm nx deploy myangularapp # to deploy the app
 npm nx run myangularapp:destroy # to destroy the app
-npm nx run myangularapp:compileServerless # to compile only the serverless part of the app
+npm nx run myangularapp:compile # to compile only the serverless part of the app
 ```
+
 **Using yarn**
+
 ```
 yarn create nx-workspace
 yarn nx add @flowaccount/nx-serverless # or with these options --project=myangularapp --provider=aws --addUniversal=yes
 yarn nx run myangularapp:offline # to run the universal app offline checking serverless works locally
 yarn nx deploy myangularapp # to deploy the app
 yarn nx run myangularapp:destroy # to destroy the app
-yarn nx run myangularapp:compileServerless # to compile only the serverless part of the app
+yarn nx run myangularapp:compile # to compile only the serverless part of the app
 ```
 
 ### To Create and Deploy Node-Typescript Serverless Application
 
 **Using npm**
+
 ```
 npm nx generate @flowaccount/nx-serverless:api-serverless --name=myapi --provider=aws
 npm nx serve myapi --port=7777 # to serve the api locally on port 7777
-npm nx deploy myapi # to deploy the api
+npm nx deploy myapi --stage=dev# to deploy the api
 npm nx build myapi # to build the api
 ```
 
 **Using yarn**
+
 ```
 yarn nx generate @flowaccount/nx-serverless:api-serverless --name=myapi--provider=aws
 yarn nx serve myapi --port=7777 # to serve the api locally on port 7777
-yarn nx deploy myapi # to deploy the api
+yarn nx deploy myapi --stage=dev# to deploy the api
 yarn nx build myapi # to build the api
 ```
 
@@ -131,96 +138,40 @@ the resulting file tree will look like this:
 ├── tsconfig.json
 └── tslint.json
 ```
+
 The existing angular project in workspace.json/angular.json will be updated with these sections
+
 ```
-compileServerless: {
+compile: {
   builder: '@flowaccount/nx-serverless:compile',
-    configurations: {
-    dev: {
-      budgets: [
-        {
-          maximumWarning: '2mb',
-          maximumError: '5mb',
-          type: 'initial'
-        }
-      ],
-        optimization: false,
-          sourceMap: false
-    },
-    production: {
-      budgets: [
-        {
-          maximumWarning: '2mb',
-          maximumError: '5mb',
-          type: 'initial'
-        }
-      ],
-        extractCss: true,
-          extractLicenses: true,
-            fileReplacements: [
-              {
-                replace: 'apps/myangularapp/environment.ts',
-                with: 'apps/myangularapp/environment.prod.ts'
-              }
-            ],
-              namedChunks: false,
-                optimization: true,
-                  sourceMap: false,
-                    vendorChunk: false,
-    }
+  configurations: {
+   ...
   },
   options: {
-    outputPath: 'dist',
-      package: 'apps/myangularapp',
-        processEnvironmentFile: 'env.json',
-          serverlessConfig: 'apps/myangularapp/serverless.yml',
-            servicePath: 'apps/myangularapp',
-              tsConfig: 'apps/myangularapp/tsconfig.serverless.json',
-                skipClean: true
+   ...
   }
 },
 deploy: {
   builder: '@flowaccount/nx-serverless:deploy',
-    options: {
-    waitUntilTargets: [
-      'myangularapp:build:production',
-      'myangularapp:server:production',
-    ],
-      buildTarget: 'myangularapp:compileServerless:production',
-        config: 'apps/myangularapp/serverless.yml',
-          location: 'dist/apps/myangularapp',
-            package: 'dist/apps/myangularapp'
+  options: {
+    ...
   }
 },
 destroy: {
   builder: '@flowaccount/nx-serverless:destroy',
-    options: {
-    buildTarget: 'myangularapp:compileServerless:production',
-      config: 'apps/myangularapp/serverless.yml',
-        location: 'dist/apps/myangularapp',
-          package: 'dist/apps/myangularapp'
+  options: {
+  ...
   }
 },
 offline: {
   builder: '@flowaccount/nx-serverless:offline',
-    configurations: {
-    dev: {
-      buildTarget: 'myangularapp:compileServerless:dev'
-    },
-    production: {
-      buildTarget: 'myangularapp:compileServerless:production'
-    }
+  configurations: {
+   ...
   },
   options: {
-    waitUntilTargets: [
-      'myangularapp:build',
-      'myangularapp:server',
-    ],
-      buildTarget: 'myangularapp:compileServerless',
-        config: 'apps/myangularapp/serverless.yml',
-          location: 'dist/apps/myangularapp'
+   ...
   }
-}
+ }
 }
 ```
 
@@ -248,106 +199,53 @@ the resulting file tree will look like this:
 ```
 
 you workspace.json will be added with these
+
 ```
 build: {
   builder: '@flowaccount/nx-serverless:build',
-    configurations: {
-    dev: {
-      budgets: [
-        {
-          maximumWarning: '2mb',
-          maximumError: '5mb',
-          type: 'initial'
-        }
-      ],
-        optimization: false,
-          sourceMap: false
-    },
-    production: {
-      budgets: [
-        {
-          maximumWarning: '2mb',
-          maximumError: '5mb',
-          type: 'initial'
-        }
-      ],
-        extractCss: true,
-          extractLicenses: true,
-            fileReplacements: [
-              {
-                replace: 'apps/myapi/environment.ts',
-                with: 'apps/myapi/environment.prod.ts'
-              }
-            ],
-              namedChunks: false,
-                optimization: true,
-                  sourceMap: false,
-                    vendorChunk: false,
-    }
+  configurations: {
+   ...
   },
   options: {
-    outputPath: 'dist/apps/myapi',
-      package: 'apps/myapi',
-        processEnvironmentFile: 'env.json',
-          serverlessConfig: 'apps/myapi/serverless.yml',
-            servicePath: 'apps/myapi',
-              tsConfig: 'apps/myapi/tsconfig.app.json'
+    ...
   }
 },
 deploy: {
   builder: '@flowaccount/nx-serverless:deploy',
-    options: {
-    buildTarget: 'myapi:build:production',
-      config: 'apps/myapi/serverless.yml',
-        location: 'dist/apps/myapi',
-          package: 'dist/apps/myapi'
+  options: {
+   ...
   }
 },
 destroy: {
   builder: '@flowaccount/nx-serverless:destroy',
-    options: {
-    buildTarget: 'myapi:build:production',
-      config: 'apps/myapi/serverless.yml',
-        location: 'dist/apps/myapi',
-          package: 'dist/apps/myapi'
+  options: {
+   ...
   }
 },
 lint: {
   builder: '@angular-devkit/build-angular:tslint',
-    options: {
-    exclude: [
-      '**/node_modules/**',
-      '!apps/myapi/**'
-    ],
-      tsConfig: [
-        'apps/myapi/tsconfig.app.json',
-        'apps/myapi/tsconfig.spec.json'
-      ]
+  options: {
+   ...
   }
 },
 serve: {
   builder: '@flowaccount/nx-serverless:offline',
-    configurations: {
-    dev: {
-      buildTarget: 'myapi:build:dev'
-    },
-    production: {
-      buildTarget: 'myapi:build:production'
-    }
+  configurations: {
+    ...
   },
   options: {
-    buildTarget: 'myapi:build',
-      config: 'apps/myapi/serverless.yml',
-        location: 'dist/apps/myapi'
+    ...
   }
 },
 test: {
   builder: '@nrwl/jest:jest',
-    options: {
-    jestConfig: 'apps/myapi/jest.config.js',
-      passWithNoTests: true,
-        tsConfig: 'apps/myapi/tsconfig.spec.json'
+  options: {
+    ...
   }
-}
+ }
 }
 ```
+
+## Want to help?
+
+You are most welcome to help! Please file a bug or submit a PR, read the [guidelines for contributing](https://github.com/flowaccount/nx-plugins/blob/master/CONTRIBUTING.md) and start right on!

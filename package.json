@@ -7,6 +7,8 @@
     "libs/nx-aws-cdk"
   ],
   "scripts": {
+    "commit": "git-cz",
+    "checkcommit": "node ./scripts/commit-lint.js",
     "nx": "nx",
     "start": "nx serve",
     "build": "nx build",
@@ -71,6 +73,19 @@
     "webpack-merge": "4.2.1",
     "webpack-dev-server": "3.9.0",
     "webpack-node-externals": "1.7.2",
-    "depcheck": "0.9.2"
+    "depcheck": "0.9.2",
+    "cz-conventional-changelog": "^3.0.2",
+    "cz-customizable": "^6.2.0",
+    "husky": "^3.0.3"
+  },
+  "config": {
+    "commitizen": {
+      "path": "./node_modules/cz-customizable"
+    }
+  },
+  "husky": {
+    "hooks": {
+      "pre-push": "yarn checkcommit && yarn format:check"
+    }
   }
 }
