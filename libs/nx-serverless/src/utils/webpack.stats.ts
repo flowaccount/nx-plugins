@@ -1,31 +1,45 @@
-
 import * as isBuiltinModule from 'is-builtin-module';
 import * as _ from 'lodash';
 import { DependencyResolver } from './types';
-import { getProdModules } from './normalize'
+import { getProdModules } from './normalize';
 import { of } from 'rxjs';
-import {
-  BuilderContext
-} from '@angular-devkit/architect';
+import { BuilderContext } from '@angular-devkit/architect';
 
 export class WebpackDependencyResolver implements DependencyResolver {
+  constructor(private context: BuilderContext) {}
 
-  constructor(private context: BuilderContext) {
-  }
-
-  normalizeExternalDependencies(packageJson: any, originPackageJsonPath: string, verbose: boolean, webpackStats?: any, dependencyGraph?: any, sourceRoot?: string, tsconfig?: string) {
+  normalizeExternalDependencies(
+    packageJson: any,
+    originPackageJsonPath: string,
+    verbose: boolean,
+    webpackStats?: any,
+    dependencyGraph?: any,
+    sourceRoot?: string,
+    tsconfig?: string
+  ) {
     const externals = this.getExternalModules(webpackStats);
     if (!dependencyGraph || dependencyGraph === null) {
       dependencyGraph = {};
     }
-    const prodModules = of(getProdModules(externals, packageJson, originPackageJsonPath, [], dependencyGraph, verbose));
+    const prodModules = of(
+      getProdModules(
+        externals,
+        packageJson,
+        originPackageJsonPath,
+        [],
+        dependencyGraph,
+        verbose
+      )
+    );
     return prodModules;
   }
 
   isExternalModule(module) {
-    return _.startsWith(module.identifier, 'external ') && !isBuiltinModule(this.getExternalModuleName(module));
+    return (
+      _.startsWith(module.identifier, 'external ') &&
+      !isBuiltinModule(this.getExternalModuleName(module))
+    );
   }
-
 
   getExternalModuleName(module) {
     const path = /^external "(.*)"$/.exec(module.identifier)[1];

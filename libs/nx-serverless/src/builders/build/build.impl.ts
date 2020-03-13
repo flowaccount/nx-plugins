@@ -7,60 +7,63 @@ import { BuildBuilderOptions, ServerlessEventResult } from '../../utils/types';
 import { map, concatMap, switchMap, mergeMap } from 'rxjs/operators';
 
 import { getNodeWebpackConfig } from '../../utils/node.config';
-import { normalizeBuildOptions, assignEntriesToFunctionsFromServerless, getSourceRoot } from '../../utils/normalize';
+import {
+  normalizeBuildOptions,
+  assignEntriesToFunctionsFromServerless,
+  getSourceRoot
+} from '../../utils/normalize';
 import { Stats } from 'webpack';
 import { ServerlessWrapper } from '../../utils/serverless';
 // import { wrapMiddlewareBuildOptions } from '../../utils/middleware';
 import { resolve } from 'path';
 import { WebpackDependencyResolver } from '../../utils/webpack.stats';
-export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {
-
-}
-export type ServerlessBuildEvent = BuildResult & ServerlessEventResult & {
-  outfile: string;
-};
-
-
+export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {}
+export type ServerlessBuildEvent = BuildResult &
+  ServerlessEventResult & {
+    outfile: string;
+  };
 
 function run(
   options: JsonObject & BuildServerlessBuilderOptions,
   context: BuilderContext
 ): Observable<ServerlessBuildEvent> {
-
-  return from(getSourceRoot(context))
-    .pipe(
-      map(sourceRoot =>
-        normalizeBuildOptions(options, context.workspaceRoot, sourceRoot)
-      ),
-      switchMap((options) => combineLatest(of(options), from(ServerlessWrapper.init(options, context)))),
-      map(([options]) => { return assignEntriesToFunctionsFromServerless(options, context.workspaceRoot) }),
-      map(options => {
-        options.entry = options.files;
-        let config = getNodeWebpackConfig(options);
-        if (options.webpackConfig) {
-          config = require(options.webpackConfig)(config, {
-            options,
-            configuration: context.target.configuration
-          });
+  return from(getSourceRoot(context)).pipe(
+    map(sourceRoot =>
+      normalizeBuildOptions(options, context.workspaceRoot, sourceRoot)
+    ),
+    switchMap(options =>
+      combineLatest(of(options), from(ServerlessWrapper.init(options, context)))
+    ),
+    map(([options]) => {
+      return assignEntriesToFunctionsFromServerless(
+        options,
+        context.workspaceRoot
+      );
+    }),
+    map(options => {
+      options.entry = options.files;
+      let config = getNodeWebpackConfig(options);
+      if (options.webpackConfig) {
+        config = require(options.webpackConfig)(config, {
+          options,
+          configuration: context.target.configuration
+        });
+      }
+      return config;
+    }),
+    concatMap(config => {
+      ServerlessWrapper.serverless.cli.log('start compiling webpack');
+      return runWebpack(config, context, {
+        logging: stats => {
+          context.logger.info(stats.toString(config.stats));
         }
-        return config;
-      }),
-      concatMap(config => {
-          ServerlessWrapper.serverless.cli.log('start compiling webpack')
-          return runWebpack(config, context, {
-            logging: stats => {
-              context.logger.info(stats.toString(config.stats));
-            }
-          })
-        }
-      ),
-      map((buildEvent: BuildResult) => {
-        buildEvent.outfile = resolve(context.workspaceRoot, options.outputPath)
-        buildEvent.resolverName = 'WebpackDependencyResolver';
-        return buildEvent as ServerlessBuildEvent;
-      })
-    );
+      });
+    }),
+    map((buildEvent: BuildResult) => {
+      buildEvent.outfile = resolve(context.workspaceRoot, options.outputPath);
+      buildEvent.resolverName = 'WebpackDependencyResolver';
+      return buildEvent as ServerlessBuildEvent;
+    })
+  );
 }
 export default createBuilder<JsonObject & BuildServerlessBuilderOptions>(run);
-
-

@@ -130,4 +130,3 @@ Closes #999
 
 To simplify and automate the process of committing with this format,
 **@flowaccount/nx-plugins is a [Commitizen](https://github.com/commitizen/cz-cli) friendly repository**, just do `git add` and execute `yarn commit`.
-

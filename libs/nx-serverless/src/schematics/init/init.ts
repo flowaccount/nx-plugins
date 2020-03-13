@@ -1,4 +1,10 @@
-import { Rule, chain, noop, Tree, SchematicContext } from '@angular-devkit/schematics';
+import {
+  Rule,
+  chain,
+  noop,
+  Tree,
+  SchematicContext
+} from '@angular-devkit/schematics';
 import {
   addDepsToPackageJson,
   updateJsonInTree,
@@ -7,22 +13,28 @@ import {
   readJsonInTree
 } from '@nrwl/workspace';
 import { Schema } from './schema';
-import { 
-   nxVersion,
-   serverlessVersion,
-   serverlessOfflineVersion, awsTypeLambdaVersion, awsServerlessExpressVersion, serverlessApigwBinaryVersion } from '../../utils/versions';
+import {
+  nxVersion,
+  serverlessVersion,
+  serverlessOfflineVersion,
+  awsTypeLambdaVersion,
+  awsServerlessExpressVersion,
+  serverlessApigwBinaryVersion
+} from '../../utils/versions';
 
 function addDependencies(universal: boolean): Rule {
-  return (host: Tree, context: SchematicContext ): Rule => {
-    const dependencies = {}
-    const devDependencies  = {
+  return (host: Tree, context: SchematicContext): Rule => {
+    const dependencies = {};
+    const devDependencies = {
       '@flowaccount/nx-serverless': nxVersion,
-      'serverless': serverlessVersion,
-      'serverless-offline': serverlessOfflineVersion,
-    }
-    if(universal) {
+      serverless: serverlessVersion,
+      'serverless-offline': serverlessOfflineVersion
+    };
+    if (universal) {
       dependencies['aws-serverless-express'] = awsServerlessExpressVersion;
-      devDependencies['@types/aws-serverless-express'] = awsServerlessExpressVersion;
+      devDependencies[
+        '@types/aws-serverless-express'
+      ] = awsServerlessExpressVersion;
       devDependencies['serverless-apigw-binary'] = serverlessApigwBinaryVersion;
     } else {
       devDependencies['@types/aws-lambda'] = awsTypeLambdaVersion;
@@ -30,26 +42,26 @@ function addDependencies(universal: boolean): Rule {
 
     const packageJson = readJsonInTree(host, 'package.json');
     Object.keys(dependencies).forEach(key => {
-      if(packageJson.dependencies[key]){
-        delete dependencies[key]
+      if (packageJson.dependencies[key]) {
+        delete dependencies[key];
       }
     });
 
     Object.keys(devDependencies).forEach(key => {
-      if(packageJson.devDependencies[key]){
-        delete devDependencies[key]
+      if (packageJson.devDependencies[key]) {
+        delete devDependencies[key];
       }
     });
 
-    if (!Object.keys(dependencies).length && !Object.keys(devDependencies).length) {
-      context.logger.info('Skipping update package.json')
+    if (
+      !Object.keys(dependencies).length &&
+      !Object.keys(devDependencies).length
+    ) {
+      context.logger.info('Skipping update package.json');
       return noop();
     }
-    return addDepsToPackageJson(
-      dependencies,
-      devDependencies
-    );
-  }
+    return addDepsToPackageJson(dependencies, devDependencies);
+  };
 }
 
 function moveDependency(): Rule {
@@ -61,11 +73,10 @@ function moveDependency(): Rule {
 }
 
 export default function(schema: Schema) {
-    return chain([
-      addPackageWithInit('@nrwl/jest'),
-      addDependencies(schema.universalApp),
-      moveDependency(),
-      formatFiles(schema)
-    ]);
+  return chain([
+    addPackageWithInit('@nrwl/jest'),
+    addDependencies(schema.universalApp),
+    moveDependency(),
+    formatFiles(schema)
+  ]);
 }
-

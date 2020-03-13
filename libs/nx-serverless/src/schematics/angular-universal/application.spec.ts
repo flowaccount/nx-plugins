@@ -1,6 +1,10 @@
 import { Tree, SchematicContext } from '@angular-devkit/schematics';
 import { createEmptyWorkspace } from '@nrwl/workspace/testing';
-import { readJsonInTree, serializeJson, getWorkspacePath } from '@nrwl/workspace';
+import {
+  readJsonInTree,
+  serializeJson,
+  getWorkspacePath
+} from '@nrwl/workspace';
 import * as workspace from '@nrwl/workspace';
 import { runSchematic } from '../../utils/testing';
 // import { createApp } from '../../../../angular/src/utils/testing';
@@ -11,36 +15,45 @@ describe('app', () => {
     appTree = Tree.empty();
     appTree = createEmptyWorkspace(appTree);
     jest.spyOn(workspace, 'getProjectConfig').mockReturnValue({
-        root: 'apps/my-app',
-        sourceRoot: 'apps/my-app/src',
-        prefix: 'my-app',
+      root: 'apps/my-app',
+      sourceRoot: 'apps/my-app/src',
+      prefix: 'my-app'
     });
-    jest.spyOn(workspace, 'updateWorkspaceInTree').mockImplementation((callback) => {
-      return (host: Tree, context: SchematicContext): Tree => {
-        const path = getWorkspacePath(host);
-        host.overwrite(
-          path,
-          serializeJson(callback({
-            projects: {
-              'my-app': {
-              root: 'apps/my-app',
-              sourceRoot: 'apps/my-app/src',
-              prefix: 'my-app',
-              architect: {
-
-              }
-            }
-          }
-          }, context))
-        );
-        return host;
-      };
-    })
+    jest
+      .spyOn(workspace, 'updateWorkspaceInTree')
+      .mockImplementation(callback => {
+        return (host: Tree, context: SchematicContext): Tree => {
+          const path = getWorkspacePath(host);
+          host.overwrite(
+            path,
+            serializeJson(
+              callback(
+                {
+                  projects: {
+                    'my-app': {
+                      root: 'apps/my-app',
+                      sourceRoot: 'apps/my-app/src',
+                      prefix: 'my-app',
+                      architect: {}
+                    }
+                  }
+                },
+                context
+              )
+            )
+          );
+          return host;
+        };
+      });
   });
 
   describe('not nested', () => {
     it('should update workspace.json', async () => {
-      const tree = await runSchematic('universal-app', { project: 'my-app', addUniversal: false }, appTree);
+      const tree = await runSchematic(
+        'universal-app',
+        { project: 'my-app', addUniversal: false },
+        appTree
+      );
       const workspaceJson = readJsonInTree(tree, '/workspace.json');
       const project = workspaceJson.projects['my-app'];
       expect(project.root).toEqual('apps/my-app');
@@ -79,7 +92,7 @@ describe('app', () => {
                 namedChunks: false,
                 optimization: true,
                 sourceMap: false,
-                vendorChunk: false,
+                vendorChunk: false
               }
             },
             options: {
@@ -97,7 +110,7 @@ describe('app', () => {
             options: {
               waitUntilTargets: [
                 'my-app:build:production',
-                'my-app:server:production',
+                'my-app:server:production'
               ],
               buildTarget: 'my-app:compile:production',
               config: 'apps/my-app/serverless.yml',
@@ -125,10 +138,7 @@ describe('app', () => {
               }
             },
             options: {
-              waitUntilTargets: [
-                'my-app:build',
-                'my-app:server',
-              ],
+              waitUntilTargets: ['my-app:build', 'my-app:server'],
               buildTarget: 'my-app:compile',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app'
@@ -139,13 +149,20 @@ describe('app', () => {
     });
 
     it('should generate files', async () => {
-      const tree = await runSchematic('universal-app', { project: 'my-app', addUniversal: false }, appTree);
+      const tree = await runSchematic(
+        'universal-app',
+        { project: 'my-app', addUniversal: false },
+        appTree
+      );
       expect(tree.exists('apps/my-app/env.json')).toBeTruthy();
       expect(tree.exists('apps/my-app/handler.ts')).toBeTruthy();
       expect(tree.exists('apps/my-app/tsconfig.serverless.json')).toBeTruthy();
       expect(tree.exists('apps/my-app/serverless.yml')).toBeTruthy();
 
-      const tsconfig = readJsonInTree(tree, 'apps/my-app/tsconfig.serverless.json');
+      const tsconfig = readJsonInTree(
+        tree,
+        'apps/my-app/tsconfig.serverless.json'
+      );
       expect(tsconfig.compilerOptions.types).toContain('node');
 
       expect(tsconfig.files).toEqual(['handler.ts']);

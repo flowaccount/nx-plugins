@@ -1,5 +1,5 @@
 import { Linter } from '@nrwl/workspace';
-import { BaseSchema } from '../utils'
+import { BaseSchema } from '../utils';
 export interface Schema extends BaseSchema {
   name: string;
   skipPackageJson: boolean;

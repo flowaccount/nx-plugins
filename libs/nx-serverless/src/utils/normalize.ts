@@ -1,7 +1,5 @@
 import { normalize, workspaces } from '@angular-devkit/core';
-import {
-  BuilderContext
-} from '@angular-devkit/architect';
+import { BuilderContext } from '@angular-devkit/architect';
 import { NodeJsSyncHost } from '@angular-devkit/core/node';
 import { resolve, dirname, relative, basename } from 'path';
 import { ServerlessBaseOptions } from './types';
@@ -16,20 +14,27 @@ export interface FileReplacement {
   with: string;
 }
 
-export function assignEntriesToFunctionsFromServerless<T extends ServerlessBaseOptions>(options: T,
-  root: string,
-): T {
-  ServerlessWrapper.serverless.cli.log('getting all functions')
-  const functions = ServerlessWrapper.serverless.service.getAllFunctions()
+export function assignEntriesToFunctionsFromServerless<
+  T extends ServerlessBaseOptions
+>(options: T, root: string): T {
+  ServerlessWrapper.serverless.cli.log('getting all functions');
+  const functions = ServerlessWrapper.serverless.service.getAllFunctions();
   const entries = {};
-  _.forEach(functions, (func, index) => {normalize
-    const entry = getEntryForFunction(functions[index], ServerlessWrapper.serverless.service.getFunction(func), ServerlessWrapper.serverless, options.sourceRoot, root);
+  _.forEach(functions, (func, index) => {
+    normalize;
+    const entry = getEntryForFunction(
+      functions[index],
+      ServerlessWrapper.serverless.service.getFunction(func),
+      ServerlessWrapper.serverless,
+      options.sourceRoot,
+      root
+    );
     _.merge(entries, entry);
   });
   const result = {
     ...options,
-    files: entries,
-  }
+    files: entries
+  };
   return result;
 }
 
@@ -75,8 +80,8 @@ export function normalizeBuildOptions<T extends ServerlessBaseOptions>(
     root: root,
     sourceRoot: sourceRoot,
     package: resolve(root, options.package),
-    serverlessConfig:  resolve(root, options.serverlessConfig),
-    servicePath:  resolve(root, options.servicePath),
+    serverlessConfig: resolve(root, options.serverlessConfig),
+    servicePath: resolve(root, options.servicePath),
     outputPath: resolve(root, options.outputPath),
     tsConfig: resolve(root, options.tsConfig),
     fileReplacements: normalizeFileReplacements(root, options.fileReplacements),
@@ -85,34 +90,40 @@ export function normalizeBuildOptions<T extends ServerlessBaseOptions>(
       ? resolve(root, options.webpackConfig)
       : options.webpackConfig
   };
-  return result
+  return result;
 }
 
-const preferredExtensions = [
-  '.js',
-  '.ts',
-  '.jsx',
-  '.tsx'
-];
+const preferredExtensions = ['.js', '.ts', '.jsx', '.tsx'];
 
-export const getEntryForFunction = (name, serverlessFunction, serverless, sourceroot, root) => {
+export const getEntryForFunction = (
+  name,
+  serverlessFunction,
+  serverless,
+  sourceroot,
+  root
+) => {
   const handler = serverlessFunction.handler;
 
   const handlerFile = getHandlerFile(handler);
   if (!handlerFile) {
     _.get(this.serverless, 'service.provider.name') !== 'google' &&
-      serverless.cli.log(`\nWARNING: Entry for ${name}@${handler} could not be retrieved.\nPlease check your service config if you want to use lib.entries.`);
+      serverless.cli.log(
+        `\nWARNING: Entry for ${name}@${handler} could not be retrieved.\nPlease check your service config if you want to use lib.entries.`
+      );
     return {};
   }
   const ext = getEntryExtension(handlerFile, serverless);
 
   // Create a valid entry key
-  let handlerFileFinal = `${sourceroot.replace('/src', '')}/${handlerFile}${ext}`
- 
-  if(handlerFile.match(/src/)) {
-    handlerFileFinal = `${sourceroot}/${handlerFile.replace('src/', '')}${ext}`
+  let handlerFileFinal = `${sourceroot.replace(
+    '/src',
+    ''
+  )}/${handlerFile}${ext}`;
+
+  if (handlerFile.match(/src/)) {
+    handlerFileFinal = `${sourceroot}/${handlerFile.replace('src/', '')}${ext}`;
   }
-  
+
   return {
     [handlerFile]: resolve(root, `${handlerFileFinal}`)
   };
@@ -129,13 +140,15 @@ const getHandlerFile = handler => {
 const getEntryExtension = (fileName, serverless) => {
   const files = glob.sync(`${fileName}.*`, {
     cwd: serverless.config.servicePath,
-    nodir: true,
+    nodir: true
     // ignore: this.configuration.excludeFiles ? this.configuration.excludeFiles : undefined
   });
 
   if (_.isEmpty(files)) {
     // If we cannot find any handler we should terminate with an error
-    throw new serverless.classes.Error(`No matching handler found for '${fileName}' in '${serverless.config.servicePath}'. Check your service definition.`);
+    throw new serverless.classes.Error(
+      `No matching handler found for '${fileName}' in '${serverless.config.servicePath}'. Check your service definition.`
+    );
   }
 
   // Move preferred file extensions to the beginning
@@ -150,11 +163,14 @@ const getEntryExtension = (fileName, serverless) => {
   );
 
   if (_.size(sortedFiles) > 1) {
-    this.serverless.cli.log(`WARNING: More than one matching handlers found for '${fileName}'. Using '${_.first(sortedFiles)}'.`);
+    this.serverless.cli.log(
+      `WARNING: More than one matching handlers found for '${fileName}'. Using '${_.first(
+        sortedFiles
+      )}'.`
+    );
   }
   return extname(_.first(sortedFiles));
 };
-
 
 function normalizeAssets(
   assets: any[],
@@ -213,7 +229,14 @@ function normalizeFileReplacements(
   }));
 }
 
-export function getProdModules(externalModules, packageJson, packagePath, forceExcludes, dependencyGraph, verbose = false): string[] {
+export function getProdModules(
+  externalModules,
+  packageJson,
+  packagePath,
+  forceExcludes,
+  dependencyGraph,
+  verbose = false
+): string[] {
   const prodModules = [];
   // only process the module stated in dependencies section
   if (!packageJson.dependencies) {
@@ -234,37 +257,68 @@ export function getProdModules(externalModules, packageJson, packagePath, forceE
         );
         const peerDependencies = require(modulePackagePath).peerDependencies;
         if (!_.isEmpty(peerDependencies)) {
-          verbose && ServerlessWrapper.serverless.cli.log(`Adding explicit peers for dependency ${module.external}`);
-          const peerModules = this.getProdModules.call(this, _.map(peerDependencies, (value, key) => ({ external: key })), packagePath, dependencyGraph, forceExcludes);
+          verbose &&
+            ServerlessWrapper.serverless.cli.log(
+              `Adding explicit peers for dependency ${module.external}`
+            );
+          const peerModules = this.getProdModules.call(
+            this,
+            _.map(peerDependencies, (value, key) => ({ external: key })),
+            packagePath,
+            dependencyGraph,
+            forceExcludes
+          );
           Array.prototype.push.apply(prodModules, peerModules);
         }
       } catch (e) {
-        ServerlessWrapper.serverless.cli.log(`WARNING: Could not check for peer dependencies of ${module.external}`);
+        ServerlessWrapper.serverless.cli.log(
+          `WARNING: Could not check for peer dependencies of ${module.external}`
+        );
       }
     } else {
-      if (!packageJson.devDependencies || !packageJson.devDependencies[module.external] && dependencyGraph.dependencies) {
+      if (
+        !packageJson.devDependencies ||
+        (!packageJson.devDependencies[module.external] &&
+          dependencyGraph.dependencies)
+      ) {
         // Add transient dependencies if they appear not in the service's dev dependencies
 
-        const originInfo = _.get(dependencyGraph, 'dependencies', {})[module.external] || {};
+        const originInfo =
+          _.get(dependencyGraph, 'dependencies', {})[module.external] || {};
         moduleVersion = _.get(originInfo, 'version', null);
         if (!moduleVersion) {
-          ServerlessWrapper.serverless.cli.log(`WARNING: Could not determine version of module ${module.external}`);
+          ServerlessWrapper.serverless.cli.log(
+            `WARNING: Could not determine version of module ${module.external}`
+          );
         }
-        prodModules.push(moduleVersion ? `${module.external}@${moduleVersion}` : module.external);
-      } else if (packageJson.devDependencies && packageJson.devDependencies[module.external] && !_.includes(forceExcludes, module.external)) {
+        prodModules.push(
+          moduleVersion
+            ? `${module.external}@${moduleVersion}`
+            : module.external
+        );
+      } else if (
+        packageJson.devDependencies &&
+        packageJson.devDependencies[module.external] &&
+        !_.includes(forceExcludes, module.external)
+      ) {
         // To minimize the chance of breaking setups we whitelist packages available on AWS here. These are due to the previously missing check
         // most likely set in devDependencies and should not lead to an error now.
         const ignoredDevDependencies = ['aws-sdk'];
         if (!_.includes(ignoredDevDependencies, module.external)) {
           // Runtime dependency found in devDependencies but not forcefully excluded
-          ServerlessWrapper.serverless.cli.log(`ERROR: Runtime dependency '${module.external}' found in devDependencies. Move it to dependencies or use forceExclude to explicitly exclude it.`);
-          throw new ServerlessWrapper.serverless.classes.Error(`Serverless-webpack dependency error: ${module.external}.`);
+          ServerlessWrapper.serverless.cli.log(
+            `ERROR: Runtime dependency '${module.external}' found in devDependencies. Move it to dependencies or use forceExclude to explicitly exclude it.`
+          );
+          throw new ServerlessWrapper.serverless.classes.Error(
+            `Serverless-webpack dependency error: ${module.external}.`
+          );
         }
-        verbose && ServerlessWrapper.serverless.cli.log(`INFO: Runtime dependency '${module.external}' found in devDependencies. It has been excluded automatically.`);
+        verbose &&
+          ServerlessWrapper.serverless.cli.log(
+            `INFO: Runtime dependency '${module.external}' found in devDependencies. It has been excluded automatically.`
+          );
       }
     }
   });
   return prodModules;
 }
-
-

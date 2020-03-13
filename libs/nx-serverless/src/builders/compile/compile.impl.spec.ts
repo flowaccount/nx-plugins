@@ -5,7 +5,7 @@ import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import { of } from 'rxjs';
 import * as compileTypscript from '../../utils/typescript';
 import { Architect } from '@angular-devkit/architect';
-import * as normalizeModule  from '../../utils/normalize';
+import * as normalizeModule from '../../utils/normalize';
 import { getTestArchitect } from '../../utils/testing';
 import { ServerlessWrapper } from '../../utils/serverless';
 import { ServerlessBaseOptions } from '../../utils/types';
@@ -43,7 +43,7 @@ describe('ServerlessBuildBuilder', () => {
     compileTypeScriptFiles = jest.fn().mockImplementation(() => {
       return of({ success: true });
     });
-   
+
     (compileTypscript as any).compileTypeScriptFiles = compileTypeScriptFiles;
     spyOn(workspaces, 'readWorkspace').and.returnValue({
       workspace: {
@@ -57,7 +57,9 @@ describe('ServerlessBuildBuilder', () => {
     spyOn(ServerlessWrapper, 'init').and.returnValue(of(null));
     jest.spyOn(ServerlessWrapper, 'serverless', 'get').mockReturnValue({
       cli: {
-        log: () => { return; }
+        log: () => {
+          return;
+        }
       },
       service: {
         getAllFunctions: () => {
@@ -65,7 +67,9 @@ describe('ServerlessBuildBuilder', () => {
         }
       }
     });
-    jest.spyOn(normalizeModule, 'getEntryForFunction').mockReturnValue({ 'handler': '/root/apps/serverlessapp/src/handler.ts' });
+    jest
+      .spyOn(normalizeModule, 'getEntryForFunction')
+      .mockReturnValue({ handler: '/root/apps/serverlessapp/src/handler.ts' });
     (<any>TsConfigPathsPlugin).mockImplementation(
       function MockPathsPlugin() {}
     );
@@ -102,6 +106,5 @@ describe('ServerlessBuildBuilder', () => {
       expect(output.success).toEqual(true);
       expect(output.outfile).toEqual('/root/dist/apps/serverlessapp');
     });
-
   });
 });

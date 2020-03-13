@@ -11,7 +11,5 @@
     "@nrwl/node": "^9.0.1",
     "@nrwl/angular": "^9.0.1"
   },
-  "devDependencies": {
-   
-  }
+  "devDependencies": {}
 }

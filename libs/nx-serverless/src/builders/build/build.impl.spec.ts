@@ -6,7 +6,7 @@ import { of } from 'rxjs';
 import * as buildWebpack from '@angular-devkit/build-webpack';
 import { Architect } from '@angular-devkit/architect';
 import { BuildServerlessBuilderOptions } from './build.impl';
-import * as normalizeModule  from '../../utils/normalize';
+import * as normalizeModule from '../../utils/normalize';
 import { getTestArchitect } from '../../utils/testing';
 import { ServerlessWrapper } from '../../utils/serverless';
 
@@ -57,7 +57,9 @@ describe('ServerlessBuildBuilder', () => {
     spyOn(ServerlessWrapper, 'init').and.returnValue(of(null));
     jest.spyOn(ServerlessWrapper, 'serverless', 'get').mockReturnValue({
       cli: {
-        log: () => { return; }
+        log: () => {
+          return;
+        }
       },
       service: {
         getAllFunctions: () => {
@@ -65,7 +67,9 @@ describe('ServerlessBuildBuilder', () => {
         }
       }
     });
-    jest.spyOn(normalizeModule, 'getEntryForFunction').mockReturnValue({ "handler": '/root/apps/serverlessapp/src/handler.ts' });
+    jest
+      .spyOn(normalizeModule, 'getEntryForFunction')
+      .mockReturnValue({ handler: '/root/apps/serverlessapp/src/handler.ts' });
     (<any>TsConfigPathsPlugin).mockImplementation(
       function MockPathsPlugin() {}
     );
@@ -99,7 +103,7 @@ describe('ServerlessBuildBuilder', () => {
           config: 'config'
         }));
         jest.mock(
-            join(normalize('/root'), 'apps/serverlessapp/webpack.config.js'),
+          join(normalize('/root'), 'apps/serverlessapp/webpack.config.js'),
           () => mockFunction,
           {
             virtual: true

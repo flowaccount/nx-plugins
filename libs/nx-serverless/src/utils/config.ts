@@ -62,7 +62,7 @@ export function getBaseWebpackPartial(
     // devtool: options.sourceMap ? 'source-map' : false,
     mode: options.optimization ? 'production' : 'development',
     output: {
-      path: options.outputPath,
+      path: options.outputPath
       // filename: OUT_FILENAME,
       // chunkFilename: OUT_CHUNK_FILENAME
     },

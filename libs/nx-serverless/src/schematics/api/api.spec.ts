@@ -16,7 +16,11 @@ describe('app', () => {
 
   describe('not nested', () => {
     it('should update workspace.json', async () => {
-      const tree = await runSchematic('api-serverless', { name: 'myServelessApp' }, appTree);
+      const tree = await runSchematic(
+        'api-serverless',
+        { name: 'myServelessApp' },
+        appTree
+      );
       const workspaceJson = readJsonInTree(tree, '/workspace.json');
       const project = workspaceJson.projects['my-serveless-app'];
       expect(project.root).toEqual('apps/my-serveless-app');
@@ -55,7 +59,7 @@ describe('app', () => {
                 namedChunks: false,
                 optimization: true,
                 sourceMap: false,
-                vendorChunk: false,
+                vendorChunk: false
               }
             },
             options: {
@@ -88,10 +92,7 @@ describe('app', () => {
           lint: {
             builder: '@angular-devkit/build-angular:tslint',
             options: {
-              exclude: [
-                '**/node_modules/**',
-                '!apps/my-serveless-app/**'
-              ],
+              exclude: ['**/node_modules/**', '!apps/my-serveless-app/**'],
               tsConfig: [
                 'apps/my-serveless-app/tsconfig.app.json',
                 'apps/my-serveless-app/tsconfig.spec.json'
@@ -124,16 +125,18 @@ describe('app', () => {
           }
         })
       );
-      expect(workspaceJson.projects['my-serveless-app'].architect.lint).toEqual({
-        builder: '@angular-devkit/build-angular:tslint',
-        options: {
-          tsConfig: [
-            'apps/my-serveless-app/tsconfig.app.json',
-            'apps/my-serveless-app/tsconfig.spec.json'
-          ],
-          exclude: ['**/node_modules/**', '!apps/my-serveless-app/**']
+      expect(workspaceJson.projects['my-serveless-app'].architect.lint).toEqual(
+        {
+          builder: '@angular-devkit/build-angular:tslint',
+          options: {
+            tsConfig: [
+              'apps/my-serveless-app/tsconfig.app.json',
+              'apps/my-serveless-app/tsconfig.spec.json'
+            ],
+            exclude: ['**/node_modules/**', '!apps/my-serveless-app/**']
+          }
         }
-      });
+      );
       expect(workspaceJson.projects['my-serveless-app-e2e']).toBeUndefined();
       expect(workspaceJson.defaultProject).toEqual('my-serveless-app');
     });
@@ -156,16 +159,24 @@ describe('app', () => {
     });
 
     it('should generate files', async () => {
-      const tree = await runSchematic('api-serverless', { name: 'myServelessApp' }, appTree);
+      const tree = await runSchematic(
+        'api-serverless',
+        { name: 'myServelessApp' },
+        appTree
+      );
       expect(tree.exists('apps/my-serveless-app/jest.config.js')).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/env.json')).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/environment.ts')).toBeTruthy();
-      expect(tree.exists('apps/my-serveless-app/environment.prod.ts')).toBeTruthy();
+      expect(
+        tree.exists('apps/my-serveless-app/environment.prod.ts')
+      ).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/src/handler.ts')).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/serverless.yml')).toBeTruthy();
 
-
-      const tsconfig = readJsonInTree(tree, 'apps/my-serveless-app/tsconfig.json');
+      const tsconfig = readJsonInTree(
+        tree,
+        'apps/my-serveless-app/tsconfig.json'
+      );
       expect(tsconfig.extends).toEqual('../../tsconfig.json');
       expect(tsconfig.compilerOptions.types).toContain('node');
       expect(tsconfig.compilerOptions.types).toContain('jest');
@@ -179,7 +190,9 @@ describe('app', () => {
       expect(tsconfigApp.extends).toEqual('./tsconfig.json');
 
       const tslintJson = JSON.parse(
-        stripJsonComments(getFileContent(tree, 'apps/my-serveless-app/tslint.json'))
+        stripJsonComments(
+          getFileContent(tree, 'apps/my-serveless-app/tslint.json')
+        )
       );
       expect(tslintJson.extends).toEqual('../../tslint.json');
     });
@@ -211,7 +224,9 @@ describe('app', () => {
         }
       });
 
-      expect(workspaceJson.projects['my-dir-my-serveless-app-e2e']).toBeUndefined();
+      expect(
+        workspaceJson.projects['my-dir-my-serveless-app-e2e']
+      ).toBeUndefined();
       expect(workspaceJson.defaultProject).toEqual('my-dir-my-serveless-app');
     });
 
@@ -290,55 +305,60 @@ describe('app', () => {
         { name: 'myServelessApp', unitTestRunner: 'none' },
         appTree
       );
-      expect(tree.exists('apps/my-serveless-app/src/test-setup.ts')).toBeFalsy();
+      expect(
+        tree.exists('apps/my-serveless-app/src/test-setup.ts')
+      ).toBeFalsy();
       expect(tree.exists('apps/my-serveless-app/src/test.ts')).toBeFalsy();
-      expect(tree.exists('apps/my-serveless-app/tsconfig.spec.json')).toBeFalsy();
+      expect(
+        tree.exists('apps/my-serveless-app/tsconfig.spec.json')
+      ).toBeFalsy();
       expect(tree.exists('apps/my-serveless-app/jest.config.js')).toBeFalsy();
       const workspaceJson = readJsonInTree(tree, 'workspace.json');
       expect(
         workspaceJson.projects['my-serveless-app'].architect.test
       ).toBeUndefined();
       expect(
-        workspaceJson.projects['my-serveless-app'].architect.lint.options.tsConfig
+        workspaceJson.projects['my-serveless-app'].architect.lint.options
+          .tsConfig
       ).toEqual(['apps/my-serveless-app/tsconfig.app.json']);
     });
   });
 
-//   describe('frontendProject', () => {
-//     it('should configure proxy', async () => {
-//       appTree = createApp(appTree, 'my-frontend');
+  //   describe('frontendProject', () => {
+  //     it('should configure proxy', async () => {
+  //       appTree = createApp(appTree, 'my-frontend');
 
-//       const tree = await runSchematic(
-//         'app',
-//         { name: 'myServelessApp', frontendProject: 'my-frontend' },
-//         appTree
-//       );
+  //       const tree = await runSchematic(
+  //         'app',
+  //         { name: 'myServelessApp', frontendProject: 'my-frontend' },
+  //         appTree
+  //       );
 
-//       expect(tree.exists('apps/my-frontend/proxy.conf.json')).toBeTruthy();
-//       const serve = JSON.parse(tree.readContent('workspace.json')).projects[
-//         'my-frontend'
-//       ].architect.serve;
-//       expect(serve.options.proxyConfig).toEqual(
-//         'apps/my-frontend/proxy.conf.json'
-//       );
-//     });
+  //       expect(tree.exists('apps/my-frontend/proxy.conf.json')).toBeTruthy();
+  //       const serve = JSON.parse(tree.readContent('workspace.json')).projects[
+  //         'my-frontend'
+  //       ].architect.serve;
+  //       expect(serve.options.proxyConfig).toEqual(
+  //         'apps/my-frontend/proxy.conf.json'
+  //       );
+  //     });
 
-//     it('should work with unnormalized project names', async () => {
-//       appTree = createApp(appTree, 'myFrontend');
+  //     it('should work with unnormalized project names', async () => {
+  //       appTree = createApp(appTree, 'myFrontend');
 
-//       const tree = await runSchematic(
-//         'app',
-//         { name: 'myServelessApp', frontendProject: 'myFrontend' },
-//         appTree
-//       );
+  //       const tree = await runSchematic(
+  //         'app',
+  //         { name: 'myServelessApp', frontendProject: 'myFrontend' },
+  //         appTree
+  //       );
 
-//       expect(tree.exists('apps/my-frontend/proxy.conf.json')).toBeTruthy();
-//       const serve = JSON.parse(tree.readContent('workspace.json')).projects[
-//         'my-frontend'
-//       ].architect.serve;
-//       expect(serve.options.proxyConfig).toEqual(
-//         'apps/my-frontend/proxy.conf.json'
-//       );
-//     });
-//   });
+  //       expect(tree.exists('apps/my-frontend/proxy.conf.json')).toBeTruthy();
+  //       const serve = JSON.parse(tree.readContent('workspace.json')).projects[
+  //         'my-frontend'
+  //       ].architect.serve;
+  //       expect(serve.options.proxyConfig).toEqual(
+  //         'apps/my-frontend/proxy.conf.json'
+  //       );
+  //     });
+  //   });
 });

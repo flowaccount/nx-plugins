@@ -1,14 +1,14 @@
-import { map } from "rxjs/operators";
+import { map } from 'rxjs/operators';
 
 /**
  * NPM packager.
  */
 import * as _ from 'lodash';
-import { spawn, spawnSync } from "child_process";
-
+import { spawn, spawnSync } from 'child_process';
 
 export class NPM {
-  static get lockfileName() {  // eslint-disable-line lodash/prefer-constant
+  static get lockfileName() {
+    // eslint-disable-line lodash/prefer-constant
     return 'package-lock.json';
   }
 
@@ -16,7 +16,8 @@ export class NPM {
     return [];
   }
 
-  static get mustCopyModules() {  // eslint-disable-line lodash/prefer-constant
+  static get mustCopyModules() {
+    // eslint-disable-line lodash/prefer-constant
     return true;
   }
 
@@ -25,7 +26,7 @@ export class NPM {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     const args = [
       'ls',
-      '-prod',  // Only prod dependencies
+      '-prod', // Only prod dependencies
       '-json',
       `-depth=${depth || 1}`
     ];
@@ -33,30 +34,39 @@ export class NPM {
     const ignoredNpmErrors = [
       { npmError: 'extraneous', log: false },
       { npmError: 'missing', log: false },
-      { npmError: 'peer dep missing', log: true },
+      { npmError: 'peer dep missing', log: true }
     ];
 
     const result = spawnSync(command, args, {
       cwd: cwd
-    })
+    });
 
     if (result.error) {
       const err = result.error;
       if (err instanceof Error) {
         // Only exit with an error if we have critical npm errors for 2nd level inside
         const errors = _.split(err.name, '\n');
-        const failed = _.reduce(errors, (failed, error) => {
-          if (failed) {
-            return true;
-          }
-          return !_.isEmpty(error) && !_.some(ignoredNpmErrors, ignoredError => _.startsWith(error, `npm ERR! ${ignoredError.npmError}`));
-        }, false);
+        const failed = _.reduce(
+          errors,
+          (failed, error) => {
+            if (failed) {
+              return true;
+            }
+            return (
+              !_.isEmpty(error) &&
+              !_.some(ignoredNpmErrors, ignoredError =>
+                _.startsWith(error, `npm ERR! ${ignoredError.npmError}`)
+              )
+            );
+          },
+          false
+        );
 
         if (!failed && !_.isEmpty(err.stack)) {
           return Promise.resolve({ stdout: err.message });
         }
       }
-      return result
+      return result;
     } else {
       return result;
     }
@@ -76,13 +86,16 @@ export class NPM {
   /**
    * We should not be modifying 'package-lock.json'
    * because this file should be treated as internal to npm.
-   * 
+   *
    * Rebase package-lock is a temporary workaround and must be
    * removed as soon as https://github.com/npm/npm/issues/19183 gets fixed.
    */
   static rebaseLockfile(pathToPackageRoot, lockfile) {
     if (lockfile.version) {
-      lockfile.version = NPM._rebaseFileReferences(pathToPackageRoot, lockfile.version);
+      lockfile.version = NPM._rebaseFileReferences(
+        pathToPackageRoot,
+        lockfile.version
+      );
     }
 
     if (lockfile.dependencies) {
@@ -98,25 +111,22 @@ export class NPM {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     const args = ['install'];
 
-    return spawnSync(command, args, { cwd })
+    return spawnSync(command, args, { cwd });
   }
 
   static prune(cwd) {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     const args = ['prune'];
 
-    return spawn(command, args, { cwd })
+    return spawn(command, args, { cwd });
   }
 
   static runScripts(cwd, scriptNames) {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     return map(scriptNames, scriptName => {
-      const args = [
-        'run',
-        scriptName
-      ];
+      const args = ['run', scriptName];
 
       return spawn(command, args, { cwd });
-    })
+    });
   }
 }

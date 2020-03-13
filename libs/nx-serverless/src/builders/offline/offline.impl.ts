@@ -15,7 +15,7 @@ import { ServerlessBuildEvent } from '../build/build.impl';
 
 try {
   require('dotenv').config();
-} catch (e) { }
+} catch (e) {}
 
 export const enum InspectType {
   Inspect = 'inspect',
@@ -60,7 +60,10 @@ async function runProcess(
   if (subProcess) {
     throw new Error('Already running');
   }
-  subProcess = fork("node_modules/serverless/bin/serverless.js", getExecArgv(options));
+  subProcess = fork(
+    'node_modules/serverless/bin/serverless.js',
+    getExecArgv(options)
+  );
 }
 function startBuild(
   options: ServerlessExecuteBuilderOptions,
@@ -89,9 +92,9 @@ function startBuild(
     }),
     concatMap(
       () =>
-        scheduleTargetAndForget(context, target, {
+        (scheduleTargetAndForget(context, target, {
           watch: true
-        }) as unknown as Observable<ServerlessBuildEvent>
+        }) as unknown) as Observable<ServerlessBuildEvent>
     )
   );
 }
@@ -105,7 +108,7 @@ function getExecArgv(options: ServerlessExecuteBuilderOptions) {
   if (options.inspect) {
     args.push(`--${options.inspect}=${options.host}:${options.port}`);
   }
-  args.push("offline");
+  args.push('offline');
   for (const key in options) {
     if (options.hasOwnProperty(key)) {
       if (options[key] !== undefined) {
@@ -159,9 +162,9 @@ function runWaitUntilTargets(
   return zip(
     ...options.waitUntilTargets.map(b => {
       return scheduleTargetAndForget(context, targetFromTargetString(b), {
-          watch: true,
-          progress: options.progress
-        }).pipe(
+        watch: true,
+        progress: options.progress
+      }).pipe(
         filter(e => e.success !== undefined),
         first()
       );
@@ -173,15 +176,15 @@ function runWaitUntilTargets(
   );
 }
 
-export default createBuilder<ServerlessExecuteBuilderOptions & JsonObject>(serverlessExecutionHandler);
+export default createBuilder<ServerlessExecuteBuilderOptions & JsonObject>(
+  serverlessExecutionHandler
+);
 let subProcess: ChildProcess = null;
 
 export function serverlessExecutionHandler(
   options: JsonObject & ServerlessExecuteBuilderOptions,
   context: BuilderContext
 ): Observable<BuilderOutput> {
-
-
   return runWaitUntilTargets(options, context).pipe(
     concatMap(v => {
       if (!v.success) {
@@ -198,11 +201,10 @@ export function serverlessExecutionHandler(
           mapTo(event)
         );
       } else {
-        context.logger.error(
-          'There was an error with the build. See above.'
-        );
+        context.logger.error('There was an error with the build. See above.');
         context.logger.info(`${event.outfile} was not restarted.`);
         return of(event);
       }
-    }));
+    })
+  );
 }

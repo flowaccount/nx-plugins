@@ -16,7 +16,7 @@ import { ServerlessWrapper } from '../../utils/serverless';
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
-gracefulFs.gracefulify(fs)
+gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
   Inspect = 'inspect',
@@ -43,7 +43,9 @@ export interface ServerlessDeployBuilderOptions extends JsonObject {
   root?: string;
 }
 
-export default createBuilder<ServerlessDeployBuilderOptions & JsonObject>(serverlessExecutionHandler);
+export default createBuilder<ServerlessDeployBuilderOptions & JsonObject>(
+  serverlessExecutionHandler
+);
 export function serverlessExecutionHandler(
   options: JsonObject & ServerlessDeployBuilderOptions,
   context: BuilderContext
@@ -61,38 +63,51 @@ export function serverlessExecutionHandler(
     }),
     concatMap((event: ServerlessBuildEvent) => {
       if (event.success) {
-        return preparePackageJson(options, context, event.webpackStats, event.resolverName, event.tsconfig)
-      }
-      else {
-        context.logger.error(
-          'There was an error with the build. See above.'
+        return preparePackageJson(
+          options,
+          context,
+          event.webpackStats,
+          event.resolverName,
+          event.tsconfig
         );
+      } else {
+        context.logger.error('There was an error with the build. See above.');
         context.logger.info(`${event.outfile} was not restarted.`);
-        return of({ success: false, error: `${event.outfile} was not restarted.` });
+        return of({
+          success: false,
+          error: `${event.outfile} was not restarted.`
+        });
       }
     }),
-    concatMap((result) => {
+    concatMap(result => {
       if (result.success) {
         // change servicePath to distribution location
         // review: Change options from location to outputpath?\
         const servicePath = ServerlessWrapper.serverless.config.servicePath;
         ServerlessWrapper.serverless.config.servicePath = options.location;
-        ServerlessWrapper.serverless.processedInput = { commands: ['deploy'], options: getExecArgv(options) };
-        return new Observable<BuilderOutput>((option) => {
-          ServerlessWrapper.serverless.run().then(() => {
-            // change servicePath back for further processing.
-            ServerlessWrapper.serverless.config.servicePath = servicePath;
-            option.next({ success: true });
-            option.complete();
-          }).catch(ex => {
-            option.next({ success: false, error: ex.toString() });
-            option.complete();
+        ServerlessWrapper.serverless.processedInput = {
+          commands: ['deploy'],
+          options: getExecArgv(options)
+        };
+        return new Observable<BuilderOutput>(option => {
+          ServerlessWrapper.serverless
+            .run()
+            .then(() => {
+              // change servicePath back for further processing.
+              ServerlessWrapper.serverless.config.servicePath = servicePath;
+              option.next({ success: true });
+              option.complete();
+            })
+            .catch(ex => {
+              option.next({ success: false, error: ex.toString() });
+              option.complete();
+            });
+        }).pipe(
+          concatMap(result => {
+            return of(result);
           })
-        }).pipe(concatMap((result => {
-          return of(result);
-        })))
-      }
-      else {
+        );
+      } else {
         context.logger.error(
           `There was an error with the build. ${result.error}.`
         );
@@ -137,7 +152,6 @@ export function startBuild(
   ).pipe(
     tap(options => {
       if (options.optimization) {
-        
         context.logger.info(stripIndents`
               ************************************************
               This is a custom wrapper of serverless ${context.builder.builderName}
@@ -146,9 +160,9 @@ export function startBuild(
     }),
     concatMap(
       () =>
-        scheduleTargetAndForget(context, target, {
+        (scheduleTargetAndForget(context, target, {
           watch: false
-        }) as unknown as Observable<ServerlessBuildEvent>
+        }) as unknown) as Observable<ServerlessBuildEvent>
     )
   );
 }
@@ -163,7 +177,12 @@ function getExecArgv(options: ServerlessDeployBuilderOptions) {
   }
   for (const key in options) {
     if (options.hasOwnProperty(key)) {
-      if (options[key] !== undefined && key !== 'buildTarget' && key !== 'package' && key !== 'list') {
+      if (
+        options[key] !== undefined &&
+        key !== 'buildTarget' &&
+        key !== 'package' &&
+        key !== 'list'
+      ) {
         args.push(`--${key}=${options[key]}`);
       }
     }
@@ -171,8 +190,3 @@ function getExecArgv(options: ServerlessDeployBuilderOptions) {
 
   return args;
 }
-
-
-
-
-

@@ -15,14 +15,14 @@ describe('ServerlessBuildBuilder', () => {
   beforeEach(async () => {
     fakeEventEmitter = new EventEmitter();
     (fakeEventEmitter as any).pid = 123;
-    
+
     [architect] = await getTestArchitect();
     testOptions = {
       buildTarget: 'serverlessapp:build:production',
       location: 'dist/apps/serverlessapp',
       package: 'dist/apps/serverlessapp',
       config: 'apps/serverlessapp/serverless.yml',
-      waitUntilTargets:[]
+      waitUntilTargets: []
     };
     startBuild = jest.fn().mockImplementation(() => {
       return of({ success: true });
@@ -40,7 +40,9 @@ describe('ServerlessBuildBuilder', () => {
     spyOn(ServerlessWrapper, 'init').and.returnValue(of(null));
     jest.spyOn(ServerlessWrapper, 'serverless', 'get').mockReturnValue({
       cli: {
-        log: () => { return; }
+        log: () => {
+          return;
+        }
       },
       config: {
         servicePath: '/root/apps/serverlessapp/src'
@@ -51,48 +53,45 @@ describe('ServerlessBuildBuilder', () => {
         }
       },
       run: () => {
-        return new Promise(() => { 
+        return new Promise(() => {
           Promise.resolve(fakeEventEmitter);
-        })
+        });
       }
     });
   });
   describe('run', () => {
     it('should call startBuild', done => {
-      architect.scheduleBuilder(
-        '@flowaccount/nx-serverless:destroy',
-        testOptions
-      ).then((run) => {
-        run.output.subscribe({
-              next: output => {
-                expect(startBuild).toHaveBeenCalled();
-                run.stop();
+      architect
+        .scheduleBuilder('@flowaccount/nx-serverless:destroy', testOptions)
+        .then(run => {
+          run.output.subscribe({
+            next: output => {
+              expect(startBuild).toHaveBeenCalled();
+              run.stop();
             },
             complete: () => {
-            done();
-          }
-        })
-        fakeEventEmitter.emit('exit', 0);
-      })
-     
+              done();
+            }
+          });
+          fakeEventEmitter.emit('exit', 0);
+        });
     });
 
-    it('should call serverless run with success', async (done) => {
-     const run = await architect.scheduleBuilder(
+    it('should call serverless run with success', async done => {
+      const run = await architect.scheduleBuilder(
         '@flowaccount/nx-serverless:destroy',
         testOptions
-      )
-        run.output.subscribe({
-              next: output => {
-                expect(output.success).toEqual(true);
-                run.stop();
-            },
-            complete: () => {
-            done();
-          }
-        })
-        fakeEventEmitter.emit('exit', 0);
-      })
-    
+      );
+      run.output.subscribe({
+        next: output => {
+          expect(output.success).toEqual(true);
+          run.stop();
+        },
+        complete: () => {
+          done();
+        }
+      });
+      fakeEventEmitter.emit('exit', 0);
+    });
   });
 });
