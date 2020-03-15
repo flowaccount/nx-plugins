@@ -47,7 +47,7 @@ Nx is great and simplifying the tool-chains for _continous integrations_ inside 
 
 | Application                 | AWS        | Azure      | GCP        |
 | --------------------------- | ---------- | ---------- | ---------- |
-| Other Natives (e.g. Pulumi) | :x:        | :calendar: | :calendar: |
+| Other Natives | :x:        | :calendar: | :calendar: |
 | AWS-CDK                     | :calendar: | :x:        | :x:        |
 
 ### Serverless Framework
