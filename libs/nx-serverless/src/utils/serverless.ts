@@ -65,14 +65,14 @@ export class ServerlessWrapper {
                   options.processEnvironmentFile
                 )
               });
-              console.log(
-                'Environment vairbales set according to ${options.processEnvironmentFile}'
+              context.logger.info(
+                `Environment vairbales set according to ${options.processEnvironmentFile}`
               );
             } else {
-              console.log('No env.json found! no environment will be set!');
+              context.logger.error('No env.json found! no environment will be set!');
             }
           } catch (e) {
-            console.log(e);
+            context.logger.error(e);
           }
           this.serverless$ = new Serverless({
             config: options.serverlessConfig,

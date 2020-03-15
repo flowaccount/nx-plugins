@@ -6,6 +6,10 @@
     "libs/nx-serverless",
     "libs/nx-aws-cdk"
   ],
+  "repository": {
+    "type": "git",
+    "url": "ssh://git@github.com/flowaccount/nx-plugins.git"
+  },
   "scripts": {
     "commit": "git-cz",
     "checkcommit": "node ./scripts/commit-lint.js",
@@ -38,11 +42,9 @@
   },
   "peerDependencies": {
     "@nrwl/workspace": "^9.0.1",
-    "@nrwl/node": "^9.0.1",
-    "@nrwl/angular": "^9.0.1"
+    "@nrwl/node": "^9.0.1"
   },
   "devDependencies": {
-    "@nrwl/angular": "^9.0.1",
     "@nrwl/nx-plugin": "9.0.1",
     "@nrwl/workspace": "9.0.1",
     "@types/node": "~8.9.4",
