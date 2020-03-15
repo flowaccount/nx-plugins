@@ -19,7 +19,8 @@ import {
   serverlessOfflineVersion,
   awsTypeLambdaVersion,
   awsServerlessExpressVersion,
-  serverlessApigwBinaryVersion
+  serverlessApigwBinaryVersion,
+  expressVersion
 } from '../../utils/versions';
 
 function addDependencies(universal: boolean): Rule {
@@ -32,6 +33,7 @@ function addDependencies(universal: boolean): Rule {
     };
     if (universal) {
       dependencies['aws-serverless-express'] = awsServerlessExpressVersion;
+      dependencies['express'] = expressVersion;
       devDependencies[
         '@types/aws-serverless-express'
       ] = awsServerlessExpressVersion;

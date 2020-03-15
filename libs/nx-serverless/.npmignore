@@ -1,6 +1,6 @@
 **/*.spec.*
 *.ts
-tsconfig.json
+# tsconfig.json
 .*
 .
 *.tgz

@@ -69,7 +69,9 @@ export class ServerlessWrapper {
                 `Environment vairbales set according to ${options.processEnvironmentFile}`
               );
             } else {
-              context.logger.error('No env.json found! no environment will be set!');
+              context.logger.error(
+                'No env.json found! no environment will be set!'
+              );
             }
           } catch (e) {
             context.logger.error(e);

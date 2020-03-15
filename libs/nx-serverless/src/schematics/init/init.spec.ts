@@ -11,7 +11,7 @@ fdescribe('init', () => {
     tree = createEmptyWorkspace(tree);
   });
 
-  it('should add dependencies for non-universal', async () => {
+  it('should add dependencies for node apis', async () => {
     const result = await runSchematic('init', { universalApp: false }, tree);
     const packageJson = readJsonInTree(result, 'package.json');
     expect(
@@ -39,7 +39,11 @@ fdescribe('init', () => {
     expect(
       packageJson.devDependencies['serverless-apigw-binary']
     ).toBeDefined();
+    expect(
+      packageJson.devDependencies['@types/aws-serverless-express']
+    ).toBeDefined();
     expect(packageJson.dependencies['aws-serverless-express']).toBeDefined();
+    expect(packageJson.dependencies['express']).toBeDefined();
   });
 
   //   describe('defaultCollection', () => {

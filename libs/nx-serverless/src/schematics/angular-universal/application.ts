@@ -148,7 +148,7 @@ function updateServerTsFile(options: NormalizedSchema): Rule {
     host.overwrite(
       modulePath,
       moduleSource.replace(
-        `join(process.cwd(), 'dist/${options.appProjectRoot}')`,
+        `join(process.cwd(), 'dist/${options.project}/browser')`,
         `environment.production ? join(process.cwd(), './browser') : join(process.cwd(), 'dist/${options.appProjectRoot}/browser')`
       )
     );
@@ -233,8 +233,8 @@ export default function(schema: Schema): Rule {
           })
         : noop(),
       addAppFiles(options),
-      options.addUniversal ? updateServerTsFile(options) : noop(),
       addServerlessYMLFile(options),
+      options.addUniversal ? updateServerTsFile(options) : noop(),
       updateWorkspaceJson(options)
     ])(host, context);
   };

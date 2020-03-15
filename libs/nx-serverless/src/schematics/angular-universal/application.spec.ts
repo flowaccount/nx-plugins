@@ -163,9 +163,15 @@ describe('app', () => {
         tree,
         'apps/my-app/tsconfig.serverless.json'
       );
-      expect(tsconfig.compilerOptions.types).toContain('node');
 
+      expect(tsconfig.compilerOptions.types).toContain('node');
       expect(tsconfig.files).toEqual(['handler.ts']);
+      const servertsContent = tree.readContent('apps/my-app/server.ts');
+      expect(
+        servertsContent.indexOf(
+          "environment.production ? join(process.cwd(), './browser') : join(process.cwd(), 'dist/my-app/browser')"
+        ) > -1
+      );
     });
   });
 
