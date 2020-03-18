@@ -183,7 +183,7 @@ function getExecArgv(options: ServerlessDeployBuilderOptions) {
         key !== 'package' &&
         key !== 'list'
       ) {
-        args.push(`--${key}=${options[key]}`);
+        args.push(`--${key} ${options[key]}`);
       }
     }
   }

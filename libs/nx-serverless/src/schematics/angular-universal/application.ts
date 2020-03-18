@@ -15,8 +15,7 @@ import { join, normalize } from '@angular-devkit/core';
 import { Schema } from './schema';
 import {
   updateWorkspaceInTree,
-  getProjectConfig,
-  replaceNodeValue
+  getProjectConfig
 } from '@nrwl/workspace';
 import { offsetFromRoot } from '@nrwl/workspace';
 import init from '../init/init';

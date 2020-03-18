@@ -49,6 +49,9 @@ export class DependencyCheckResolver implements DependencyResolver {
           dependencyGraph = {};
         }
         const externals = [];
+        if(Object.keys(result.invalidFiles).length > 0) {
+          throw result.invalidFiles;
+        }
         Object.keys(result.missing).forEach(key => {
           this.context.logger.warn(
             `Missing dependencies ${key} in ${result.missing[key]}`
@@ -80,12 +83,12 @@ export class DependencyCheckResolver implements DependencyResolver {
     const parsers = {};
     if (tsconfigJson.files) {
       tsconfigJson.files.forEach(fileName => {
-        parsers[fileName] = depcheck.parser.es6;
+        parsers[fileName] = depcheck.parser.typescript;
       });
     }
     if (tsconfigJson.include) {
       tsconfigJson.include.forEach(includePattern => {
-        parsers[includePattern] = depcheck.parser.es6;
+        parsers[includePattern] = depcheck.parser.typescript;
       });
     }
     this.options.parsers = parsers;

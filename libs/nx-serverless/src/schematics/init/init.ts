@@ -3,7 +3,8 @@ import {
   chain,
   noop,
   Tree,
-  SchematicContext
+  SchematicContext,
+  externalSchematic
 } from '@angular-devkit/schematics';
 import {
   addDepsToPackageJson,

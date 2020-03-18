@@ -303,7 +303,7 @@ export function getProdModules(
       ) {
         // To minimize the chance of breaking setups we whitelist packages available on AWS here. These are due to the previously missing check
         // most likely set in devDependencies and should not lead to an error now.
-        const ignoredDevDependencies = ['aws-sdk'];
+        const ignoredDevDependencies = ['aws-sdk', '@types/aws-serverless-express', '@types/aws-lambda', '@types/node'];
         if (!_.includes(ignoredDevDependencies, module.external)) {
           // Runtime dependency found in devDependencies but not forcefully excluded
           ServerlessWrapper.serverless.cli.log(

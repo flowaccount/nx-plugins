@@ -8,6 +8,7 @@ const binaryMimeTypes = [
   'application/json',
   'application/octet-stream',
   'application/xml',
+  'font/ttf',
   'font/eot',
   'font/opentype',
   'font/otf',
