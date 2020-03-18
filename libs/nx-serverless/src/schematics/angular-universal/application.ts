@@ -13,10 +13,7 @@ import {
 } from '@angular-devkit/schematics';
 import { join, normalize } from '@angular-devkit/core';
 import { Schema } from './schema';
-import {
-  updateWorkspaceInTree,
-  getProjectConfig
-} from '@nrwl/workspace';
+import { updateWorkspaceInTree, getProjectConfig } from '@nrwl/workspace';
 import { offsetFromRoot } from '@nrwl/workspace';
 import init from '../init/init';
 import { getBuildConfig } from '../utils';

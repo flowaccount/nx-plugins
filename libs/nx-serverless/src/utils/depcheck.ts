@@ -49,7 +49,7 @@ export class DependencyCheckResolver implements DependencyResolver {
           dependencyGraph = {};
         }
         const externals = [];
-        if(Object.keys(result.invalidFiles).length > 0) {
+        if (Object.keys(result.invalidFiles).length > 0) {
           throw result.invalidFiles;
         }
         Object.keys(result.missing).forEach(key => {
