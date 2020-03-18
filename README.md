@@ -45,10 +45,10 @@ Nx is great and simplifying the tool-chains for _continous integrations_ inside 
 
 ### Angular Universal
 
-| Application                 | AWS        | Azure      | GCP        |
-| --------------------------- | ---------- | ---------- | ---------- |
+| Application   | AWS        | Azure      | GCP        |
+| ------------- | ---------- | ---------- | ---------- |
 | Other Natives | :x:        | :calendar: | :calendar: |
-| AWS-CDK                     | :calendar: | :x:        | :x:        |
+| AWS-CDK       | :calendar: | :x:        | :x:        |
 
 ### Serverless Framework
 
