@@ -1,5 +1,5 @@
 import { Tree } from '@angular-devkit/schematics';
-import * as stripJsonComments from 'strip-json-comments';
+import { stripJsonComments } from 'strip-json-comments';
 import { createEmptyWorkspace, getFileContent } from '@nrwl/workspace/testing';
 
 import { NxJson, readJsonInTree } from '@nrwl/workspace';
@@ -148,14 +148,16 @@ describe('app', () => {
         appTree
       );
       const nxJson = readJsonInTree<NxJson>(tree, '/nx.json');
-      expect(nxJson).toEqual({
-        npmScope: 'proj',
-        projects: {
-          'my-serveless-app': {
-            tags: ['one', 'two']
+      expect(nxJson).toEqual(
+        jasmine.objectContaining({
+          npmScope: 'proj',
+          projects: {
+            'my-serveless-app': {
+              tags: ['one', 'two']
+            }
           }
-        }
-      });
+        })
+      );
     });
 
     it('should generate files', async () => {
@@ -237,14 +239,16 @@ describe('app', () => {
         appTree
       );
       const nxJson = readJsonInTree<NxJson>(tree, '/nx.json');
-      expect(nxJson).toEqual({
-        npmScope: 'proj',
-        projects: {
-          'my-dir-my-serveless-app': {
-            tags: ['one', 'two']
+      expect(nxJson).toEqual(
+        jasmine.objectContaining({
+          npmScope: 'proj',
+          projects: {
+            'my-dir-my-serveless-app': {
+              tags: ['one', 'two']
+            }
           }
-        }
-      });
+        })
+      );
     });
 
     it('should generate files', async () => {

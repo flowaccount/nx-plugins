@@ -64,7 +64,9 @@ export function serverlessExecutionHandler(
   );
 }
 
-function getExecArgv(options: ServerlessDeployBuilderOptions) {
+export function getExecArgv(
+  options: ServerlessDeployBuilderOptions
+): Array<string> {
   const args = [];
   if (options.function && options.function != '') {
     args.push('function');

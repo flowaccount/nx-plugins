@@ -25,6 +25,11 @@
       "implementation": "./src/builders/destroy/destroy.impl",
       "schema": "./src/builders/destroy/schema.json",
       "description": "Execute a Serverless application teardown"
+    },
+    "scully": {
+      "implementation": "./src/builders/scully/scully.impl",
+      "schema": "./src/builders/scully/schema.json",
+      "description": "Execute scully command-line"
     }
   }
 }

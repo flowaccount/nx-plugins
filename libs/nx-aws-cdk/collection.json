@@ -3,10 +3,10 @@
   "name": "nx-aws-cdk",
   "version": "0.0.1",
   "schematics": {
-    "nxAwsCdk": {
-      "factory": "./src/schematics/nx-aws-cdk/schematic",
-      "schema": "./src/schematics/nx-aws-cdk/schema.json",
-      "description": "nx-aws-cdk schematic"
+    "web-app": {
+      "factory": "./src/schematics/web-app/schematic",
+      "schema": "./src/schematics/web-app/schema.json",
+      "description": "nx aws-cdk web-app schematic, to deploy web-app to selected target (S3 or Serverless)"
     }
   }
 }

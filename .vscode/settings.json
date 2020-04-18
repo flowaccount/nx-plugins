@@ -1,0 +1,7 @@
+{
+  "jest.autoEnable": false,
+  "debug.allowBreakpointsEverywhere": true,
+  "files.associations": {
+    "*.ts__tmpl__": "typescript"
+  }
+}

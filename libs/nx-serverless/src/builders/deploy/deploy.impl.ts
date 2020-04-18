@@ -6,8 +6,8 @@ import {
   scheduleTargetAndForget
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { Observable, of, from, zip } from 'rxjs';
-import { concatMap, tap, map, filter, first } from 'rxjs/operators';
+import { Observable, of, from } from 'rxjs';
+import { concatMap, tap } from 'rxjs/operators';
 import { stripIndents } from '@angular-devkit/core/src/utils/literals';
 import { ServerlessBuildEvent } from '../build/build.impl';
 import * as _ from 'lodash';
@@ -51,7 +51,7 @@ export function serverlessExecutionHandler(
   context: BuilderContext
 ): Observable<BuilderOutput> {
   // build into output path before running serverless offline.
-  return runWaitUntilTargets(options, context).pipe(
+  return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
     concatMap(v => {
       if (!v.success) {
         context.logger.error(
@@ -117,26 +117,6 @@ export function serverlessExecutionHandler(
   );
 }
 
-function runWaitUntilTargets(
-  options: ServerlessDeployBuilderOptions,
-  context: BuilderContext
-): Observable<BuilderOutput> {
-  if (!options.waitUntilTargets || options.waitUntilTargets.length === 0)
-    return of({ success: true });
-  return zip(
-    ...options.waitUntilTargets.map(b => {
-      return scheduleTargetAndForget(context, targetFromTargetString(b)).pipe(
-        filter(e => e.success !== undefined),
-        first()
-      );
-    })
-  ).pipe(
-    map(results => {
-      return { success: !results.some(r => !r.success) };
-    })
-  );
-}
-
 export function startBuild(
   options: ServerlessDeployBuilderOptions,
   context: BuilderContext
@@ -187,6 +167,5 @@ function getExecArgv(options: ServerlessDeployBuilderOptions) {
       }
     }
   }
-
   return args;
 }

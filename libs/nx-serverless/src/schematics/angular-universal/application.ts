@@ -180,6 +180,8 @@ package:
       local: false
 provider:
   name: ${options.provider}
+  region: ${options.region}
+  endpointType: ${options.endpointType}
   runtime: nodejs10.x
   memorySize: 192
   timeout: 10
@@ -212,7 +214,7 @@ export default function(schema: Schema): Rule {
     return chain([
       init({
         skipFormat: options.skipFormat,
-        universalApp: true
+        expressProxy: true
       }),
       options.addUniversal
         ? externalSchematic('@nguniversal/express-engine', 'ng-add', {

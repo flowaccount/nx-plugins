@@ -16,10 +16,10 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@flowaccount-nx-plugins/flowaccount/nx-serverless": [
+      "@flowaccount/flowaccount/nx-serverless": [
         "libs/nx-serverless/src/index.ts"
       ],
-      "@flowaccount-nx-plugins/aws-cdk": ["libs/aws-cdk/src/index.ts"],
+      "@flowaccount/aws-cdk": ["libs/aws-cdk/src/index.ts"],
       "@flowaccount/nx-aws-cdk": ["libs/nx-aws-cdk/src/index.ts"]
     }
   },

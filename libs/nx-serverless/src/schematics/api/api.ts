@@ -142,6 +142,8 @@ package:
       local: false
 provider:
   name: ${options.provider}
+  region: ${options.region}
+  endpointType: ${options.endpointType}
   runtime: nodejs10.x
 functions:
   hello-world:

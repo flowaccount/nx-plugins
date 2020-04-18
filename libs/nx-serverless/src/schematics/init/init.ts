@@ -24,7 +24,7 @@ import {
   expressVersion
 } from '../../utils/versions';
 
-function addDependencies(universal: boolean): Rule {
+function addDependencies(expressProxy: boolean): Rule {
   return (host: Tree, context: SchematicContext): Rule => {
     const dependencies = {};
     const devDependencies = {
@@ -32,7 +32,7 @@ function addDependencies(universal: boolean): Rule {
       serverless: serverlessVersion,
       'serverless-offline': serverlessOfflineVersion
     };
-    if (universal) {
+    if (expressProxy) {
       dependencies['aws-serverless-express'] = awsServerlessExpressVersion;
       dependencies['express'] = expressVersion;
       devDependencies[
@@ -42,7 +42,6 @@ function addDependencies(universal: boolean): Rule {
     } else {
       devDependencies['@types/aws-lambda'] = awsTypeLambdaVersion;
     }
-
     const packageJson = readJsonInTree(host, 'package.json');
     Object.keys(dependencies).forEach(key => {
       if (packageJson.dependencies[key]) {
@@ -67,10 +66,10 @@ function addDependencies(universal: boolean): Rule {
   };
 }
 
-function moveDependency(): Rule {
+function updateDependencies(): Rule {
   return updateJsonInTree('package.json', json => {
-    json.dependencies = json.dependencies || {};
     delete json.dependencies['@flowaccount/nx-serverless'];
+    json.devDependencies['@flowaccount/nx-serverless'] = nxVersion;
     return json;
   });
 }
@@ -78,8 +77,8 @@ function moveDependency(): Rule {
 export default function(schema: Schema) {
   return chain([
     addPackageWithInit('@nrwl/jest'),
-    addDependencies(schema.universalApp),
-    moveDependency(),
+    addDependencies(schema.expressProxy),
+    updateDependencies(),
     formatFiles(schema)
   ]);
 }

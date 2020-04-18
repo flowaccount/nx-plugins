@@ -71,12 +71,13 @@ describe('NodeCompileBuilder', () => {
     it('should call tsc to compile', done => {
       compileTypeScriptFiles(testOptions, context).subscribe({
         complete: () => {
-          expect(fork).toHaveBeenCalledWith(
+          expect(
+            fork
+          ).toHaveBeenCalledWith(
             `${context.workspaceRoot}/node_modules/typescript/bin/tsc`,
             ['-p', testOptions.tsConfig, '--outDir', testOptions.outputPath],
             { stdio: [0, 1, 2, 'ipc'] }
           );
-
           done();
         }
       });

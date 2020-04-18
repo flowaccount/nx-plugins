@@ -65,6 +65,7 @@ async function runProcess(
     getExecArgv(options)
   );
 }
+
 function startBuild(
   options: ServerlessExecuteBuilderOptions,
   context: BuilderContext
@@ -119,63 +120,6 @@ function getExecArgv(options: ServerlessExecuteBuilderOptions) {
   return args;
 }
 
-function restartProcess(
-  file: string,
-  options: ServerlessExecuteBuilderOptions,
-  context: BuilderContext
-) {
-  return killProcess(context).pipe(
-    tap(() => {
-      runProcess(file, options);
-    })
-  );
-}
-
-function killProcess(context: BuilderContext): Observable<void | Error> {
-  if (!subProcess) {
-    return of(undefined);
-  }
-
-  const observableTreeKill = bindCallback<number, string, Error>(treeKill);
-  return observableTreeKill(subProcess.pid, 'SIGTERM').pipe(
-    tap(err => {
-      subProcess = null;
-      if (err) {
-        if (Array.isArray(err) && err[0] && err[2]) {
-          const errorMessage = err[2];
-          context.logger.error(errorMessage);
-        } else if (err.message) {
-          context.logger.error(err.message);
-        }
-      }
-    })
-  );
-}
-
-function runWaitUntilTargets(
-  options: ServerlessExecuteBuilderOptions,
-  context: BuilderContext
-): Observable<BuilderOutput> {
-  if (!options.waitUntilTargets || options.waitUntilTargets.length === 0)
-    return of({ success: true });
-
-  return zip(
-    ...options.waitUntilTargets.map(b => {
-      return scheduleTargetAndForget(context, targetFromTargetString(b), {
-        watch: true,
-        progress: options.progress
-      }).pipe(
-        filter(e => e.success !== undefined),
-        first()
-      );
-    })
-  ).pipe(
-    map(results => {
-      return { success: !results.some(r => !r.success) };
-    })
-  );
-}
-
 export default createBuilder<ServerlessExecuteBuilderOptions & JsonObject>(
   serverlessExecutionHandler
 );
@@ -185,7 +129,7 @@ export function serverlessExecutionHandler(
   options: JsonObject & ServerlessExecuteBuilderOptions,
   context: BuilderContext
 ): Observable<BuilderOutput> {
-  return runWaitUntilTargets(options, context).pipe(
+  return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
     concatMap(v => {
       if (!v.success) {
         context.logger.error(

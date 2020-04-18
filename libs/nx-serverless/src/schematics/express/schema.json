@@ -1,0 +1,19 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "id": "SchematicsNgUniversalServerlessApp",
+  "title": "Expressjs Serverless Deployment Options Schema",
+  "type": "object",
+  "properties": {
+    "provider": {
+      "type": "string",
+      "description": "The cloud provider for this serverless application.",
+      "x-prompt": "Which cloud provider are you using for this serverless application? ( aws | azure | google )"
+    },
+    "skipFormat": {
+      "description": "Skips the prettier format of files",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": ["project", "addUniversal"]
+}

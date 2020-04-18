@@ -3,7 +3,7 @@ import { createEmptyWorkspace } from '@nrwl/workspace/testing';
 import { readJsonInTree, updateJsonInTree } from '@nrwl/workspace';
 import { callRule, runSchematic } from '../../utils/testing';
 
-fdescribe('init', () => {
+describe('init', () => {
   let tree: Tree;
 
   beforeEach(() => {

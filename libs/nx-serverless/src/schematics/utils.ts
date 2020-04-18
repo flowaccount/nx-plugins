@@ -3,6 +3,8 @@ import { join, normalize, Path } from '@angular-devkit/core';
 export interface BaseSchema {
   appProjectRoot: Path;
   provider: string;
+  region: string;
+  endpointType: string;
   skipFormat: boolean;
 }
 

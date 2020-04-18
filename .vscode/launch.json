@@ -1,0 +1,38 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug nx test nx-serverless",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/@nrwl/cli/bin/nx",
+      "args": [
+        "test",
+        "nx-serverless",
+        "--codeCoverage=false",
+        // "--testNamePattern=run",
+        "--testFile=libs/nx-serverless/src/builders/destroy/destroy.impl.spec.ts",
+        "--runInBand"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug jest nx-serverless",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/.bin/jest",
+      "args": [
+        "--config=libs/nx-serverless/jest.config.js",
+        "--codeCoverage=false",
+        "--runInBand",
+        "--watch",
+        "libs/nx-serverless/src/builders/destroy/destroy.impl.spec.ts"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}
