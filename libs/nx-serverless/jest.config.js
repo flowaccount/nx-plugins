@@ -8,9 +8,7 @@ module.exports = {
   coverageDirectory: '../../coverage/libs/nx-serverless',
   globals: {
     'ts-jest': {
-      diagnostics: false,
-      skipBabel: true
-    },
-    isolatedModules: true
+      diagnostics: false
+    }
   }
 };

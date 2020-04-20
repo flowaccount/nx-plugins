@@ -144,7 +144,7 @@ describe('app', () => {
               }
             },
             options: {
-              waitUntilTargets: ['my-app:build', 'my-app:server'],
+              waitUntilTargets: ['my-app:scully'],
               buildTarget: 'my-app:compile',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app'

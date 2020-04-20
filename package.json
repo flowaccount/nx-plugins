@@ -83,7 +83,8 @@
     "husky": "^3.0.3",
     "is-builtin-module": "^3.0.0",
     "strip-json-comments": "^3.1.0",
-    "@babel/code-frame": "^7.8.3"
+    "@babel/code-frame": "^7.8.3",
+    "tree-kill": "^1.2.2"
   },
   "config": {
     "commitizen": {

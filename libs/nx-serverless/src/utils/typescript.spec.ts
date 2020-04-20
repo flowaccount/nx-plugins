@@ -10,10 +10,14 @@ jest.mock('@nrwl/workspace/src/utils/fileutils');
 const fsUtility = require('@nrwl/workspace/src/utils/fileutils');
 jest.mock('child_process');
 const { fork } = require('child_process');
-jest.mock('tree-kill');
-let treeKill = require('tree-kill');
+
+jest.mock('tree-kill', () => jest.fn((pid, signal, callback) => {
+  return callback();
+}));
+
 import * as fsMock from 'fs';
 import { ServerlessCompileOptions } from './types';
+import { callbackify } from 'util';
 
 describe('NodeCompileBuilder', () => {
   let testOptions: ServerlessCompileOptions;
@@ -23,10 +27,6 @@ describe('NodeCompileBuilder', () => {
     fakeEventEmitter = new EventEmitter();
     (fakeEventEmitter as any).pid = 123;
     fork.mockReturnValue(fakeEventEmitter);
-    treeKill.mockImplementation((pid, signal, callback) => {
-      callback();
-    });
-
     fsUtility.readJsonFile.mockImplementation((arg: string) => {
       if (arg.endsWith('tsconfig.lib.json')) {
         return {

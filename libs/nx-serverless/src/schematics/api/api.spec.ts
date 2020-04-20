@@ -1,5 +1,5 @@
 import { Tree } from '@angular-devkit/schematics';
-import { stripJsonComments } from 'strip-json-comments';
+const stripJsonComments = require('strip-json-comments');
 import { createEmptyWorkspace, getFileContent } from '@nrwl/workspace/testing';
 
 import { NxJson, readJsonInTree } from '@nrwl/workspace';

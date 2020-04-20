@@ -90,7 +90,7 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
     );
     buildConfig.builder = '@flowaccount/nx-serverless:compile';
     project.architect.compile = buildConfig;
-    project.architect.scully = getScullyBuilderConfig;
+    project.architect.scully = getScullyBuilderConfig(options);
     project.architect.offline = getServeConfig(options);
     project.architect.deploy = getDeployConfig(options);
     project.architect.destroy = getDestroyConfig(options);
