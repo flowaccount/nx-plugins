@@ -68,8 +68,13 @@ function addDependencies(expressProxy: boolean): Rule {
 
 function updateDependencies(): Rule {
   return updateJsonInTree('package.json', json => {
-    delete json.dependencies['@flowaccount/nx-serverless'];
-    json.devDependencies['@flowaccount/nx-serverless'] = nxVersion;
+    if (json.dependencies['@flowaccount/nx-serverless']) {
+      json.devDependencies['@flowaccount/nx-serverless'] =
+        json.dependencies['@flowaccount/nx-serverless'];
+      delete json.dependencies['@flowaccount/nx-serverless'];
+    } else if (!json.devDependencies['@flowaccount/nx-serverless']) {
+      json.devDependencies['@flowaccount/nx-serverless'] = nxVersion;
+    }
     return json;
   });
 }

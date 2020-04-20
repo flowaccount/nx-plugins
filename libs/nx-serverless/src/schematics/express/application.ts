@@ -109,46 +109,46 @@ function addAppFiles(options: NormalizedSchema): Rule {
   );
 }
 
-function updateServerTsFile(options: NormalizedSchema): Rule {
-  return (host: Tree, context: SchematicContext) => {
-    const modulePath = `${options.appProjectRoot}/server.ts`;
-    const content: Buffer | null = host.read(modulePath);
-    let moduleSource = '';
-    if (!content) {
-      context.logger.error('Cannot find server.ts to replace content!');
-      return host;
-    }
-    moduleSource = content.toString('utf-8');
-    const tsSourceFile = ts.createSourceFile(
-      join(options.appProjectRoot, 'server.ts'),
-      moduleSource,
-      ts.ScriptTarget.Latest,
-      true
-    );
-    context.logger.info(
-      'updating server.ts to support serverless-express and production mode.'
-    );
+// function updateServerTsFile(options: NormalizedSchema): Rule {
+//   return (host: Tree, context: SchematicContext) => {
+//     const modulePath = `${options.appProjectRoot}/server.ts`;
+//     const content: Buffer | null = host.read(modulePath);
+//     let moduleSource = '';
+//     if (!content) {
+//       context.logger.error('Cannot find server.ts to replace content!');
+//       return host;
+//     }
+//     moduleSource = content.toString('utf-8');
+//     const tsSourceFile = ts.createSourceFile(
+//       join(options.appProjectRoot, 'server.ts'),
+//       moduleSource,
+//       ts.ScriptTarget.Latest,
+//       true
+//     );
+//     context.logger.info(
+//       'updating server.ts to support serverless-express and production mode.'
+//     );
 
-    host.overwrite(
-      modulePath,
-      moduleSource.replace(
-        `join(process.cwd(), 'dist/${options.name}/browser')`,
-        `environment.production ? join(process.cwd(), './browser') : join(process.cwd(), 'dist/${options.appProjectRoot}/browser')`
-      )
-    );
+//     host.overwrite(
+//       modulePath,
+//       moduleSource.replace(
+//         `join(process.cwd(), 'dist/${options.name}/browser')`,
+//         `environment.production ? join(process.cwd(), './browser') : join(process.cwd(), 'dist/${options.appProjectRoot}/browser')`
+//       )
+//     );
 
-    insert(host, modulePath, [
-      insertImport(
-        tsSourceFile,
-        modulePath,
-        'environment',
-        './src/environments/environment'
-      )
-    ]);
+//     insert(host, modulePath, [
+//       insertImport(
+//         tsSourceFile,
+//         modulePath,
+//         'environment',
+//         './src/environments/environment'
+//       )
+//     ]);
 
-    return host;
-  };
-}
+//     return host;
+//   };
+// }
 
 function addServerlessYMLFile(options: NormalizedSchema): Rule {
   return (host: Tree) => {
@@ -223,7 +223,7 @@ export default function(schema: Schema): Rule {
       }),
       options.initExpress ? addPackageWithInit('@nrwl/express') : noop(),
       options.initExpress
-        ? externalSchematic('@nrwl/express', 'init', {
+        ? externalSchematic('@nrwl/express', 'app', {
             name: options.name,
             skipFormat: options.skipFormat,
             skipPackageJson: options.skipPackageJson,
@@ -236,7 +236,7 @@ export default function(schema: Schema): Rule {
         : noop(),
       addAppFiles(options),
       addServerlessYMLFile(options),
-      updateServerTsFile(options),
+      // updateServerTsFile(options),
       updateWorkspaceJson(options)
     ])(host, context);
   };

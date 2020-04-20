@@ -84,12 +84,12 @@ jobs:
       - run:
           name: Run Unit Tests
           command: yarn affected:test
-  e2e-nx-serverless:
+  e2e-nx-plugins:
     executor: default
     steps:
       - setup
       - run:
-          name: nx-serverless E2E Tests
+          name: nx-plugins E2E Tests
           command: yarn affected:e2e
           no_output_timeout: 30m
 workflows:
@@ -100,6 +100,6 @@ workflows:
       - checks-and-unit-tests:
           requires:
             - install
-      - e2e-nx-serverless:
+      - e2e-nx-plugins:
           requires:
             - install

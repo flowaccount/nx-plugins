@@ -1,7 +1,7 @@
 <p float="left">
 <img src="https://raw.githubusercontent.com/nrwl/nx/master/nx-logo.png" height="100">
 <img src="https://angular.io/assets/images/logos/angular/angular.svg" height="145">
-<!-- <img src="https://angular.io/generated/images/marketing/concept-icons/universal.png" height="120"> -->
+<img src="https://res.cloudinary.com/practicaldev/image/fetch/s--ipV6F4tM--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://raw.githubusercontent.com/serverless/assets/master/Icon/Framework/PNG/Serverless_Framework-icon01.png" height="120">
 <img src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg" height="145">
 </p>
 
@@ -13,8 +13,11 @@
 
 <div align="left">
 
+[![serverless](http://public.serverless.com/badges/v3.svg)](https://www.serverless.com)
 [![@flowaccount/nx-serverless](https://img.shields.io/badge/%40flowaccount-nx--serverless-blue)](https://github.com/flowaccount/nx-plugins)
 [![NPM Version](https://badge.fury.io/js/%40flowaccount%2Fnx-serverless.svg)](https://www.npmjs.com/@flowaccount/nx-serverless)
+[![Typescript](https://badgen.net/badge/icon/typescript?icon=typescript&label)](https://www.typescriptlang.org/)
+[![CircleCI](https://circleci.com/gh/flowaccount/nx-plugins.svg?style=svg)](https://circleci.com/gh/flowaccount/nx-plugins)
 
 </div>
 

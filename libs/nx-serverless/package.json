@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@nguniversal/express-engine": "^9.0.1",
+    "@nrwl/express": "^9.2.2",
     "dotenv": "6.2.0",
     "dotenv-json": "^1.0.0",
     "copy-webpack-plugin": "5.1.1",

@@ -17,8 +17,8 @@
       "description": "Create a serverless nodejs api application"
     },
     "express": {
-      "factory": "./src/schematics/express/express",
-      "schema": "./src/schematics/api/schema.json",
+      "factory": "./src/schematics/express/application",
+      "schema": "./src/schematics/express/schema.json",
       "aliases": ["express-serverless"],
       "description": "Create a serverless nodejs express server application"
     },
