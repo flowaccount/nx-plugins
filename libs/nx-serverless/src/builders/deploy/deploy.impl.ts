@@ -54,7 +54,7 @@ export function serverlessExecutionHandler(
   // build into output path before running serverless offline.
   return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
     concatMap(v => {
-      if (!v.success) { 
+      if (!v.success) {
         context.logger.error(
           'One of the tasks specified in waitUntilTargets failed'
         );
@@ -85,7 +85,7 @@ export function serverlessExecutionHandler(
         // change servicePath to distribution location
         // review: Change options from location to outputpath?\
         const servicePath = ServerlessWrapper.serverless.config.servicePath;
-        console.log(getExecArgv)
+        console.log(getExecArgv);
         const args = getExecArgv(options);
         ServerlessWrapper.serverless.config.servicePath = options.location;
         ServerlessWrapper.serverless.processedInput = {

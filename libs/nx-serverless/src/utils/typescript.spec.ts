@@ -11,9 +11,11 @@ const fsUtility = require('@nrwl/workspace/src/utils/fileutils');
 jest.mock('child_process');
 const { fork } = require('child_process');
 
-jest.mock('tree-kill', () => jest.fn((pid, signal, callback) => {
-  return callback();
-}));
+jest.mock('tree-kill', () =>
+  jest.fn((pid, signal, callback) => {
+    return callback();
+  })
+);
 
 import * as fsMock from 'fs';
 import { ServerlessCompileOptions } from './types';

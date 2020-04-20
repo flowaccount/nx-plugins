@@ -175,9 +175,7 @@ describe('express app', () => {
         'apps/my-dir/my-app'
       );
 
-      expect(
-        workspaceJson.projects['my-dir-my-app'].architect.lint
-      ).toEqual({
+      expect(workspaceJson.projects['my-dir-my-app'].architect.lint).toEqual({
         builder: '@angular-devkit/build-angular:tslint',
         options: {
           tsConfig: [
@@ -215,24 +213,22 @@ describe('express app', () => {
     });
   });
 
-    describe('--unit-test-runner none', () => {
-      it('should not generate test configuration', async () => {
-        const tree = await runSchematic(
-          'express',
-          { project: 'my-App', initExpress: true },
-          appTree
-        );
-        expect(tree.exists('apps/my-app/src/test-setup.ts')).toBeFalsy();
-        expect(tree.exists('apps/my-app/src/test.ts')).toBeFalsy();
-        expect(tree.exists('apps/my-app/tsconfig.spec.json')).toBeFalsy();
-        expect(tree.exists('apps/my-app/jest.config.js')).toBeFalsy();
-        const workspaceJson = readJsonInTree(tree, 'workspace.json');
-        expect(
-          workspaceJson.projects['my-app'].architect.test
-        ).toBeUndefined();
-        expect(
-          workspaceJson.projects['my-app'].architect.lint.options.tsConfig
-        ).toEqual(['apps/my-app/tsconfig.app.json']);
-      });
+  describe('--unit-test-runner none', () => {
+    it('should not generate test configuration', async () => {
+      const tree = await runSchematic(
+        'express',
+        { project: 'my-App', initExpress: true },
+        appTree
+      );
+      expect(tree.exists('apps/my-app/src/test-setup.ts')).toBeFalsy();
+      expect(tree.exists('apps/my-app/src/test.ts')).toBeFalsy();
+      expect(tree.exists('apps/my-app/tsconfig.spec.json')).toBeFalsy();
+      expect(tree.exists('apps/my-app/jest.config.js')).toBeFalsy();
+      const workspaceJson = readJsonInTree(tree, 'workspace.json');
+      expect(workspaceJson.projects['my-app'].architect.test).toBeUndefined();
+      expect(
+        workspaceJson.projects['my-app'].architect.lint.options.tsConfig
+      ).toEqual(['apps/my-app/tsconfig.app.json']);
     });
+  });
 });

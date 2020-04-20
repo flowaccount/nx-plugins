@@ -70,9 +70,9 @@ describe('Serverless Compile Builder', () => {
     jest
       .spyOn(normalizeModule, 'getEntryForFunction')
       .mockReturnValue({ handler: '/root/apps/serverlessapp/src/handler.ts' });
-    (<any>TsConfigPathsPlugin).mockImplementation(
-      function MockPathsPlugin() {}
-    );
+    (<any>(
+      TsConfigPathsPlugin
+    )).mockImplementation(function MockPathsPlugin() {});
   });
 
   describe('run', () => {

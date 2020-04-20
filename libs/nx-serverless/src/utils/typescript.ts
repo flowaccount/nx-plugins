@@ -3,7 +3,7 @@ import { BuilderContext, BuilderOutput } from '@angular-devkit/architect';
 import { Observable, Subscriber } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { unlinkSync } from 'fs';
-const treeKill =  require('tree-kill');
+const treeKill = require('tree-kill');
 import { ChildProcess, fork } from 'child_process';
 import { ProjectGraphNode } from '@nrwl/workspace/src/core/project-graph';
 import { join } from 'path';

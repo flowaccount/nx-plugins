@@ -13,7 +13,12 @@ import {
 } from '@angular-devkit/schematics';
 import { join, normalize } from '@angular-devkit/core';
 import { Schema } from './schema';
-import { updateWorkspaceInTree, getProjectConfig, toFileName, addPackageWithInit } from '@nrwl/workspace';
+import {
+  updateWorkspaceInTree,
+  getProjectConfig,
+  toFileName,
+  addPackageWithInit
+} from '@nrwl/workspace';
 import { offsetFromRoot } from '@nrwl/workspace';
 import init from '../init/init';
 import { getBuildConfig } from '../utils';
@@ -29,9 +34,7 @@ function getServeConfig(options: NormalizedSchema) {
   return {
     builder: '@flowaccount/nx-serverless:offline',
     options: {
-      waitUntilTargets: [
-        options.name + ':build'
-      ],
+      waitUntilTargets: [options.name + ':build'],
       buildTarget: options.name + ':compile',
       config: join(options.appProjectRoot, 'serverless.yml'),
       location: join(normalize('dist'), options.appProjectRoot)
@@ -51,9 +54,7 @@ function getDeployConfig(options: NormalizedSchema) {
   return {
     builder: '@flowaccount/nx-serverless:deploy',
     options: {
-      waitUntilTargets: [
-        options.name + ':build:production'
-      ],
+      waitUntilTargets: [options.name + ':build:production'],
       buildTarget: options.name + ':compile:production',
       config: join(options.appProjectRoot, 'serverless.yml'),
       location: join(normalize('dist'), options.appProjectRoot),
@@ -221,16 +222,18 @@ export default function(schema: Schema): Rule {
         expressProxy: true
       }),
       options.initExpress ? addPackageWithInit('@nrwl/express') : noop(),
-      options.initExpress ? externalSchematic('@nrwl/express', 'init', {
-        name: options.name,
-        skipFormat: options.skipFormat,
-        skipPackageJson: options.skipPackageJson,
-        directory: options.directory,
-        unitTestRunner: options.unitTestRunner,
-        tags: options.tags,
-        linter: options.linter,
-        frontendProject: options.frontendProject
-      }) : noop(),
+      options.initExpress
+        ? externalSchematic('@nrwl/express', 'init', {
+            name: options.name,
+            skipFormat: options.skipFormat,
+            skipPackageJson: options.skipPackageJson,
+            directory: options.directory,
+            unitTestRunner: options.unitTestRunner,
+            tags: options.tags,
+            linter: options.linter,
+            frontendProject: options.frontendProject
+          })
+        : noop(),
       addAppFiles(options),
       addServerlessYMLFile(options),
       updateServerTsFile(options),

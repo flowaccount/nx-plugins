@@ -7,9 +7,8 @@ import { ServerlessWrapper } from '../../utils/serverless';
 import { serverlessExecutionHandler } from './deploy.impl';
 import { ServerlessDeployBuilderOptions } from './deploy.impl';
 import { MockBuilderContext } from '@nrwl/workspace/testing';
-import * as targetSchedulers from  '../../utils/target.schedulers';
+import * as targetSchedulers from '../../utils/target.schedulers';
 import * as packagers from '../../utils/packagers';
-
 
 describe('Serverless Deploy Builder', () => {
   let testOptions: JsonObject & ServerlessDeployBuilderOptions;
@@ -36,9 +35,17 @@ describe('Serverless Deploy Builder', () => {
       list: false
     };
     jest.spyOn(deploy, 'getExecArgv').mockReturnValue([]);
-    jest.spyOn(packagers,'preparePackageJson').mockReturnValue(of({success: true}))
-    jest.spyOn(targetSchedulers, 'runWaitUntilTargets').mockReturnValue(of({ success: true, resolverName: '', tsconfig: '', outfile: '' }));
-    jest.spyOn(targetSchedulers, 'startBuild').mockReturnValue(of({success: true}));
+    jest
+      .spyOn(packagers, 'preparePackageJson')
+      .mockReturnValue(of({ success: true }));
+    jest
+      .spyOn(targetSchedulers, 'runWaitUntilTargets')
+      .mockReturnValue(
+        of({ success: true, resolverName: '', tsconfig: '', outfile: '' })
+      );
+    jest
+      .spyOn(targetSchedulers, 'startBuild')
+      .mockReturnValue(of({ success: true }));
     jest.spyOn(ServerlessWrapper, 'init').mockReturnValue(of(null));
     jest.spyOn(ServerlessWrapper, 'serverless', 'get').mockReturnValue({
       cli: {
@@ -58,20 +65,20 @@ describe('Serverless Deploy Builder', () => {
       run: () => {
         return Promise.resolve({ success: true });
       }
-    }); 
+    });
   });
   describe('run', () => {
     it('should call runWaitUntilTargets', async () => {
-        await serverlessExecutionHandler(testOptions, context).toPromise();
-        expect(targetSchedulers.runWaitUntilTargets).toHaveBeenCalled();
+      await serverlessExecutionHandler(testOptions, context).toPromise();
+      expect(targetSchedulers.runWaitUntilTargets).toHaveBeenCalled();
     });
     it('should call startBuild', async () => {
       await serverlessExecutionHandler(testOptions, context).toPromise();
       expect(targetSchedulers.startBuild).toHaveBeenCalled();
     });
-    it('should call runWaitUntilTargets', async () => { 
-        await serverlessExecutionHandler(testOptions, context).toPromise();
-        expect(packagers.preparePackageJson).toHaveBeenCalled();
+    it('should call runWaitUntilTargets', async () => {
+      await serverlessExecutionHandler(testOptions, context).toPromise();
+      expect(packagers.preparePackageJson).toHaveBeenCalled();
     });
     // it('should call getExecArgv', async () => {
     //   await serverlessExecutionHandler(testOptions, context).toPromise();

@@ -8,7 +8,7 @@ import { ServerlessWrapper } from '../../utils/serverless';
 import { serverlessExecutionHandler } from './destroy.impl';
 import { ServerlessDeployBuilderOptions } from '../deploy/deploy.impl';
 import { MockBuilderContext } from '@nrwl/workspace/testing';
-import * as targetSchedulers from  '../../utils/target.schedulers';
+import * as targetSchedulers from '../../utils/target.schedulers';
 
 describe('Serverless Destroy Builder', () => {
   let testOptions: JsonObject & ServerlessDeployBuilderOptions;
@@ -32,8 +32,10 @@ describe('Serverless Destroy Builder', () => {
       args: [],
       list: false
     };
-    
-      jest.spyOn(targetSchedulers, 'startBuild').mockReturnValue(
+
+    jest
+      .spyOn(targetSchedulers, 'startBuild')
+      .mockReturnValue(
         of({ success: true, resolverName: '', tsconfig: '', outfile: '' })
       );
     jest.spyOn(destroy, 'getExecArgv').mockReturnValue([]);

@@ -36,8 +36,12 @@ describe('init', () => {
     ).toBeDefined();
     expect(packageJson.devDependencies['serverless']).toBeDefined();
     expect(packageJson.devDependencies['serverless-offline']).toBeDefined();
-    expect(packageJson.devDependencies['serverless-apigw-binary']).toBeDefined();
-    expect(packageJson.devDependencies['@types/aws-serverless-express']).toBeDefined();
+    expect(
+      packageJson.devDependencies['serverless-apigw-binary']
+    ).toBeDefined();
+    expect(
+      packageJson.devDependencies['@types/aws-serverless-express']
+    ).toBeDefined();
     expect(packageJson.dependencies['aws-serverless-express']).toBeDefined();
     expect(packageJson.dependencies['express']).toBeDefined();
   });

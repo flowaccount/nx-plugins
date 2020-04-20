@@ -5,7 +5,7 @@ import {
   scheduleTargetAndForget
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { Observable, of, from ,zip } from 'rxjs';
+import { Observable, of, from, zip } from 'rxjs';
 import { concatMap, tap, map, filter, first } from 'rxjs/operators';
 import { stripIndents } from '@angular-devkit/core/src/utils/literals';
 
@@ -30,7 +30,7 @@ export function runWaitUntilTargets(
 }
 
 export function startBuild(
-  options: { buildTarget: string} & JsonObject,
+  options: { buildTarget: string } & JsonObject,
   context: BuilderContext
 ): Observable<BuilderOutput> {
   const target = targetFromTargetString(options.buildTarget);
@@ -43,7 +43,7 @@ export function startBuild(
     )
   ).pipe(
     tap(options => {
-        context.logger.info(stripIndents`
+      context.logger.info(stripIndents`
               ************************************************
               This is a custom wrapper of serverless ${context.builder.builderName}
               ************************************************`);
