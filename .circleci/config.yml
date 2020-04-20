@@ -18,7 +18,7 @@ commands:
   yarn_install:
     description: 'Install Dependencies'
     steps:
-      - run: yarn install --frozen-lockfile --non-interactive
+      - run: yarn install --non-interactive #--frozen-lockfile 
       - run: ./node_modules/.bin/cypress verify
       - save_cache:
           key: flowaccount-nx-plugins-node12-yarn-{{ checksum "yarn.lock" }}
