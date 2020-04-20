@@ -30,18 +30,16 @@ describe('Scully Builder', () => {
     };
     startBuild = jest.fn().mockReturnValue(of({ success: true }));
     (targetSchedulers as any).startBuild = startBuild;
-    scheduleBuilder = jest
-      .spyOn(context, 'scheduleBuilder')
-      .mockReturnValue(
-        Promise.resolve({
-          id: 0,
-          stop: Promise.resolve,
-          info: null,
-          progress: null,
-          result: Promise.resolve({ success: true }),
-          output: of({ success: true })
-        })
-      );
+    scheduleBuilder = jest.spyOn(context, 'scheduleBuilder').mockReturnValue(
+      Promise.resolve({
+        id: 0,
+        stop: Promise.resolve,
+        info: null,
+        progress: null,
+        result: Promise.resolve({ success: true }),
+        output: of({ success: true })
+      })
+    );
     // getExecArgv = jest.spyOn(scullyRunner, 'getExecArgv').mockReturnValue([]);
     // scheduleBuilder = jest.fn().mockImplementation((waitUntilTargets, context)=> {
     //     return of({success: true});
