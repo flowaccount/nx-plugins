@@ -216,7 +216,7 @@ export default function(schema: Schema): Rule {
     return chain([
       init({
         skipFormat: false,
-        universalApp: false
+        expressProxy: false
       }),
       addLintFiles(options.appProjectRoot, options.linter),
       addAppFiles(options),

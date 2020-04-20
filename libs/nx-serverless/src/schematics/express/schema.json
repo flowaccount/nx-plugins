@@ -4,16 +4,60 @@
   "title": "Expressjs Serverless Deployment Options Schema",
   "type": "object",
   "properties": {
+    "name": {
+      "description": "The name of the express project to generator or add to.",
+      "type": "string",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "Name of your serverless express project to add to or generate?"
+    },
+    "directory": {
+      "description": "The directory of the new api.",
+      "type": "string",
+      "x-prompt": "In which directory should the serverless api be generated?"
+    },
     "provider": {
       "type": "string",
       "description": "The cloud provider for this serverless application.",
       "x-prompt": "Which cloud provider are you using for this serverless application? ( aws | azure | google )"
     },
+    "initExpress": {
+      "description": "Also run @nrwl/express schematic on your project?",
+      "type": "boolean",
+      "default": true
+    },
     "skipFormat": {
       "description": "Skips the prettier format of files",
       "type": "boolean",
       "default": false
+    },
+    "skipPackageJson": {
+      "type": "boolean",
+      "default": false,
+      "description": "Do not add dependencies to package.json."
+    },
+    "linter": {
+      "description": "The tool to use for running lint checks.",
+      "type": "string",
+      "enum": ["eslint", "tslint"],
+      "default": "tslint"
+    },
+    "unitTestRunner": {
+      "type": "string",
+      "enum": ["jest", "none"],
+      "description": "Test runner to use for unit tests",
+      "default": "jest"
+    },
+    "tags": {
+      "type": "string",
+      "description": "Add tags to the api (used for linting)"
+    },
+    "frontendProject": {
+      "type": "string",
+      "description": "Frontend project that needs to access this api. This sets up proxy configuration."
     }
   },
-  "required": ["project", "addUniversal"]
+  "required": ["name", "initExpress"]
 }

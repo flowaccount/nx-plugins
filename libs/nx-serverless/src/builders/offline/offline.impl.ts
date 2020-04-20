@@ -12,6 +12,7 @@ import { stripIndents } from '@angular-devkit/core/src/utils/literals';
 import { ChildProcess, fork } from 'child_process';
 import * as treeKill from 'tree-kill';
 import { ServerlessBuildEvent } from '../build/build.impl';
+import { runWaitUntilTargets } from '../../utils/target.schedulers';
 
 try {
   require('dotenv').config();
@@ -63,6 +64,39 @@ async function runProcess(
   subProcess = fork(
     'node_modules/serverless/bin/serverless.js',
     getExecArgv(options)
+  );
+}
+
+function restartProcess(
+  file: string,
+  options: ServerlessExecuteBuilderOptions,
+  context: BuilderContext
+) {
+  return killProcess(context).pipe(
+    tap(() => {
+      runProcess(file, options);
+    })
+  );
+}
+
+function killProcess(context: BuilderContext): Observable<void | Error> {
+  if (!subProcess) {
+    return of(undefined);
+  }
+
+  const observableTreeKill = bindCallback<number, string, Error>(treeKill);
+  return observableTreeKill(subProcess.pid, 'SIGTERM').pipe(
+    tap(err => {
+      subProcess = null;
+      if (err) {
+        if (Array.isArray(err) && err[0] && err[2]) {
+          const errorMessage = err[2];
+          context.logger.error(errorMessage);
+        } else if (err.message) {
+          context.logger.error(err.message);
+        }
+      }
+    })
   );
 }
 

@@ -11,6 +11,7 @@ import {
 import { JsonObject } from '@angular-devkit/core';
 import { Observable, of, from } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
+import { startBuild } from '../../utils/target.schedulers';
 
 export interface ScullyBuilderOptions extends JsonObject {
   buildTarget: string;
@@ -41,7 +42,6 @@ export function scullyCmdRunner(
         return of({ success: false });
       }
       const commands: { command: string }[] = [];
-
       const args = getExecArgv(options);
       options.configFiles.forEach(fileName => {
         commands.push({
@@ -57,41 +57,6 @@ export function scullyCmdRunner(
     }),
     concatMap((result: BuilderRun) => {
       return result.output;
-    })
-  );
-}
-
-export function startBuild(
-  options: ScullyBuilderOptions,
-  context: BuilderContext
-): Observable<BuilderOutput> {
-  const target = targetFromTargetString(options.buildTarget);
-  return from(
-    Promise.all([
-      context.getTargetOptions(target),
-      context.getBuilderNameForTarget(target)
-    ]).then(([options, builderName]) =>
-      context.validateOptions(options, builderName)
-    )
-  ).pipe(
-    tap(() => {
-      const art = `
-          _   ___  __     ___        ______         ____ ____  _  __ __        ______     _    ____  ____  _____ ____  
-         | \\ | \\ \\/ /    / \\ \\      / / ___|       / ___|  _ \\| |/ / \\ \\      / |  _ \\   / \\  |  _ \\|  _ \\| ____|  _ \\ 
-         |  \\| |\\  /    / _ \\ \\ /\\ / /\\___ \\ _____| |   | | | | ' /   \\ \\ /\\ / /| |_) | / _ \\ | |_) | |_) |  _| | |_) |
-         | |\\  |/  \\   / ___ \\ V  V /  ___) |_____| |___| |_| | . \\    \\ V  V / |  _ < / ___ \\|  __/|  __/| |___|  _ < 
-         |_| \\_/_/\\_\\ /_/   \\_\\_/\\_/  |____/       \\____|____/|_|\\_\\    \\_/\\_/  |_| \\_/_/   \\_|_|   |_|   |_____|_| \\_\\
-         
-         `;
-      context.logger.info(art);
-    }),
-    concatMap(() => {
-      if (options.skipBuild) {
-        return of({ success: true });
-      }
-      return (scheduleTargetAndForget(context, target, {
-        watch: false
-      }) as unknown) as Observable<BuilderOutput>;
     })
   );
 }

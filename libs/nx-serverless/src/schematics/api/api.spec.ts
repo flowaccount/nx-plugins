@@ -6,7 +6,7 @@ import { NxJson, readJsonInTree } from '@nrwl/workspace';
 import { runSchematic } from '../../utils/testing';
 // import { createApp } from '../../../../angular/src/utils/testing';
 
-describe('app', () => {
+describe('node api app', () => {
   let appTree: Tree;
 
   beforeEach(() => {

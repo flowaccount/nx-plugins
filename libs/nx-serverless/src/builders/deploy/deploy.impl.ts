@@ -16,6 +16,7 @@ import { ServerlessWrapper } from '../../utils/serverless';
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
+import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
@@ -53,7 +54,7 @@ export function serverlessExecutionHandler(
   // build into output path before running serverless offline.
   return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
     concatMap(v => {
-      if (!v.success) {
+      if (!v.success) { 
         context.logger.error(
           'One of the tasks specified in waitUntilTargets failed'
         );
@@ -84,10 +85,12 @@ export function serverlessExecutionHandler(
         // change servicePath to distribution location
         // review: Change options from location to outputpath?\
         const servicePath = ServerlessWrapper.serverless.config.servicePath;
+        console.log(getExecArgv)
+        const args = getExecArgv(options);
         ServerlessWrapper.serverless.config.servicePath = options.location;
         ServerlessWrapper.serverless.processedInput = {
           commands: ['deploy'],
-          options: getExecArgv(options)
+          options: args
         };
         return new Observable<BuilderOutput>(option => {
           ServerlessWrapper.serverless
@@ -117,37 +120,7 @@ export function serverlessExecutionHandler(
   );
 }
 
-export function startBuild(
-  options: ServerlessDeployBuilderOptions,
-  context: BuilderContext
-): Observable<ServerlessBuildEvent> {
-  const target = targetFromTargetString(options.buildTarget);
-  return from(
-    Promise.all([
-      context.getTargetOptions(target),
-      context.getBuilderNameForTarget(target)
-    ]).then(([options, builderName]) =>
-      context.validateOptions(options, builderName)
-    )
-  ).pipe(
-    tap(options => {
-      if (options.optimization) {
-        context.logger.info(stripIndents`
-              ************************************************
-              This is a custom wrapper of serverless ${context.builder.builderName}
-              ************************************************`);
-      }
-    }),
-    concatMap(
-      () =>
-        (scheduleTargetAndForget(context, target, {
-          watch: false
-        }) as unknown) as Observable<ServerlessBuildEvent>
-    )
-  );
-}
-
-function getExecArgv(options: ServerlessDeployBuilderOptions) {
+export function getExecArgv(options: ServerlessDeployBuilderOptions) {
   const args = [];
   if (options.function && options.function != '') {
     args.push('function');

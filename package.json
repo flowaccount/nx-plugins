@@ -43,7 +43,8 @@
   },
   "peerDependencies": {
     "@nrwl/workspace": "^9.2.2",
-    "@nrwl/node": "^9.2.2"
+    "@nrwl/node": "^9.2.2",
+    "@nrwl/express": "^9.2.2"
   },
   "devDependencies": {
     "@angular-devkit/build-webpack": "~0.901.0",

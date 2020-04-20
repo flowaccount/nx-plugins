@@ -7,9 +7,8 @@ import {
 } from '@nrwl/workspace';
 import * as workspace from '@nrwl/workspace';
 import { runSchematic } from '../../utils/testing';
-// import { createApp } from '../../../../angular/src/utils/testing';
 
-describe('app', () => {
+describe('express app', () => {
   let appTree: Tree;
   beforeEach(async () => {
     appTree = Tree.empty();
@@ -50,8 +49,8 @@ describe('app', () => {
   describe('not nested', () => {
     it('should update workspace.json', async () => {
       const tree = await runSchematic(
-        'express-app',
-        { project: 'my-app', addUniversal: false },
+        'express',
+        { project: 'my-app', initExpress: false },
         appTree
       );
       const workspaceJson = readJsonInTree(tree, '/workspace.json');
@@ -108,10 +107,7 @@ describe('app', () => {
           deploy: {
             builder: '@flowaccount/nx-serverless:deploy',
             options: {
-              waitUntilTargets: [
-                'my-app:build:production',
-                'my-app:server:production'
-              ],
+              waitUntilTargets: ['my-app:build:production'],
               buildTarget: 'my-app:compile:production',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app',
@@ -138,7 +134,7 @@ describe('app', () => {
               }
             },
             options: {
-              waitUntilTargets: ['my-app:build', 'my-app:server'],
+              waitUntilTargets: ['my-app:build'],
               buildTarget: 'my-app:compile',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app'
@@ -149,8 +145,8 @@ describe('app', () => {
     });
     it('should generate files', async () => {
       const tree = await runSchematic(
-        'express-app',
-        { project: 'my-app', addUniversal: false },
+        'express',
+        { project: 'my-app', initExpress: false },
         appTree
       );
       expect(tree.exists('apps/my-app/env.json')).toBeTruthy();
@@ -166,76 +162,77 @@ describe('app', () => {
     });
   });
 
-  // describe('nested', () => {
-  //   it('should update workspace.json', async () => {
-  //     const tree = await runSchematic(
-  //       'express-app',
-  //       { name: 'myServelessApp', directory: 'myDir' },
-  //       appTree
-  //     );
-  //     const workspaceJson = readJsonInTree(tree, '/workspace.json');
+  describe('nested', () => {
+    it('should update workspace.json', async () => {
+      const tree = await runSchematic(
+        'express',
+        { name: 'my-app', directory: 'myDir' },
+        appTree
+      );
+      const workspaceJson = readJsonInTree(tree, '/workspace.json');
 
-  //     expect(workspaceJson.projects['my-dir-my-serveless-app'].root).toEqual(
-  //       'apps/my-dir/my-serveless-app'
-  //     );
+      expect(workspaceJson.projects['my-dir-my-app'].root).toEqual(
+        'apps/my-dir/my-app'
+      );
 
-  //     expect(
-  //       workspaceJson.projects['my-dir-my-serveless-app'].architect.lint
-  //     ).toEqual({
-  //       builder: '@angular-devkit/build-angular:tslint',
-  //       options: {
-  //         tsConfig: [
-  //           'apps/my-dir/my-serveless-app/tsconfig.app.json',
-  //           'apps/my-dir/my-serveless-app/tsconfig.spec.json'
-  //         ],
-  //         exclude: ['**/node_modules/**', '!apps/my-dir/my-serveless-app/**']
-  //       }
-  //     });
+      expect(
+        workspaceJson.projects['my-dir-my-app'].architect.lint
+      ).toEqual({
+        builder: '@angular-devkit/build-angular:tslint',
+        options: {
+          tsConfig: [
+            'apps/my-dir/my-serveless-app/tsconfig.app.json',
+            'apps/my-dir/my-serveless-app/tsconfig.spec.json'
+          ],
+          exclude: ['**/node_modules/**', '!apps/my-dir/my-app/**']
+        }
+      });
 
-  //     expect(workspaceJson.projects['my-dir-my-serveless-app-e2e']).toBeUndefined();
-  //     expect(workspaceJson.defaultProject).toEqual('my-dir-my-serveless-app');
-  //   });
+      expect(workspaceJson.projects['my-dir-my-app-e2e']).toBeUndefined();
+      expect(workspaceJson.defaultProject).toEqual('my-dir-my-app');
+    });
 
-  //   it('should generate files', async () => {
-  //     const tree = await runSchematic(
-  //       'express-app',
-  //       { name: 'myServelessApp', directory: 'myDir' },
-  //       appTree
-  //     );
-  //     // const hasJsonValue = ({ path, expectedValue, lookupFn }) => {
-  //     //   const content = getFileContent(tree, path);
-  //     //   const config = JSON.parse(stripJsonComments(content));
-  //     //   expect(lookupFn(config)).toEqual(expectedValue);
-  //     // };
-  //     // Make sure these exist
-  //     [
-  //       'apps/my-dir/my-serveless-app/env.json',
-  //       'apps/my-dir/my-serveless-app/src/handler.ts',
-  //       'apps/my-dir/my-serveless-app/serverless.yml'
-  //     ].forEach(path => {
-  //       expect(tree.exists(path)).toBeTruthy();
-  //     });
-  //   });
-  // });
+    it('should generate files', async () => {
+      const tree = await runSchematic(
+        'express',
+        { name: 'my-app', directory: 'myDir' },
+        appTree
+      );
+      [
+        'apps/my-dir/my-app/env.json',
+        'apps/my-dir/my-app/src/handler.ts',
+        'apps/my-app/tsconfig.serverless.json',
+        'apps/my-dir/my-app/serverless.yml'
+      ].forEach(path => {
+        expect(tree.exists(path)).toBeTruthy();
+      });
+      const tsconfig = readJsonInTree(
+        tree,
+        'apps/my-dir/my-app/tsconfig.serverless.json'
+      );
+      expect(tsconfig.compilerOptions.types).toContain('node');
+      expect(tsconfig.files).toEqual(['handler.ts']);
+    });
+  });
 
-  //   describe('--unit-test-runner none', () => {
-  //     it('should not generate test configuration', async () => {
-  //       const tree = await runSchematic(
-  //         'express-app',
-  //         { project: 'myServelessApp', addUniversal: false },
-  //         appTree
-  //       );
-  //       expect(tree.exists('apps/my-serveless-app/src/test-setup.ts')).toBeFalsy();
-  //       expect(tree.exists('apps/my-serveless-app/src/test.ts')).toBeFalsy();
-  //       expect(tree.exists('apps/my-serveless-app/tsconfig.spec.json')).toBeFalsy();
-  //       expect(tree.exists('apps/my-serveless-app/jest.config.js')).toBeFalsy();
-  //       const workspaceJson = readJsonInTree(tree, 'workspace.json');
-  //       expect(
-  //         workspaceJson.projects['my-serveless-app'].architect.test
-  //       ).toBeUndefined();
-  //       expect(
-  //         workspaceJson.projects['my-serveless-app'].architect.lint.options.tsConfig
-  //       ).toEqual(['apps/my-serveless-app/tsconfig.app.json']);
-  //     });
-  //   });
+    describe('--unit-test-runner none', () => {
+      it('should not generate test configuration', async () => {
+        const tree = await runSchematic(
+          'express',
+          { project: 'my-App', initExpress: true },
+          appTree
+        );
+        expect(tree.exists('apps/my-app/src/test-setup.ts')).toBeFalsy();
+        expect(tree.exists('apps/my-app/src/test.ts')).toBeFalsy();
+        expect(tree.exists('apps/my-app/tsconfig.spec.json')).toBeFalsy();
+        expect(tree.exists('apps/my-app/jest.config.js')).toBeFalsy();
+        const workspaceJson = readJsonInTree(tree, 'workspace.json');
+        expect(
+          workspaceJson.projects['my-app'].architect.test
+        ).toBeUndefined();
+        expect(
+          workspaceJson.projects['my-app'].architect.lint.options.tsConfig
+        ).toEqual(['apps/my-app/tsconfig.app.json']);
+      });
+    });
 });

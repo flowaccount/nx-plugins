@@ -8,10 +8,10 @@ import { of, Observable } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { ServerlessWrapper } from '../../utils/serverless';
 import {
-  ServerlessDeployBuilderOptions,
-  startBuild
+  ServerlessDeployBuilderOptions
 } from '../deploy/deploy.impl';
 import { ServerlessBuildEvent } from '../build/build.impl';
+import { startBuild } from '../../utils/target.schedulers';
 
 export type ServerlesCompiledEvent = {
   outfile: string;

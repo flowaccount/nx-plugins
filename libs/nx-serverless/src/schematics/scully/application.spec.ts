@@ -8,7 +8,7 @@ import {
 import * as workspace from '@nrwl/workspace';
 import { runSchematic } from '../../utils/testing';
 
-describe('app', () => {
+describe('scully app', () => {
   let appTree: Tree;
   beforeEach(async () => {
     appTree = Tree.empty();

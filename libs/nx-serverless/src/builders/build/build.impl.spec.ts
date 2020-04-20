@@ -10,7 +10,7 @@ import * as normalizeModule from '../../utils/normalize';
 import { getTestArchitect } from '../../utils/testing';
 import { ServerlessWrapper } from '../../utils/serverless';
 
-describe('ServerlessBuildBuilder', () => {
+describe('Serverless Build Builder', () => {
   let testOptions: BuildServerlessBuilderOptions & JsonObject;
   let architect: Architect;
   let runWebpack: jest.Mock;

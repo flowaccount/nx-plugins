@@ -19,7 +19,7 @@ import * as fsMock from 'fs';
 import { ServerlessCompileOptions } from './types';
 import { callbackify } from 'util';
 
-describe('NodeCompileBuilder', () => {
+describe('Typescript Compiler', () => {
   let testOptions: ServerlessCompileOptions;
   let context: MockBuilderContext;
   let fakeEventEmitter: EventEmitter;

@@ -13,33 +13,35 @@ import {
 } from '@angular-devkit/schematics';
 import { join, normalize } from '@angular-devkit/core';
 import { Schema } from './schema';
-import { updateWorkspaceInTree, getProjectConfig } from '@nrwl/workspace';
+import { updateWorkspaceInTree, getProjectConfig, toFileName, addPackageWithInit } from '@nrwl/workspace';
 import { offsetFromRoot } from '@nrwl/workspace';
 import init from '../init/init';
 import { getBuildConfig } from '../utils';
 import * as ts from 'typescript';
 import { insertImport, insert } from '@nrwl/workspace/src/utils/ast-utils';
 
-interface NormalizedSchema extends Schema {}
+interface NormalizedSchema extends Schema {
+  parsedTags: string[];
+  provider: string;
+}
 
 function getServeConfig(options: NormalizedSchema) {
   return {
     builder: '@flowaccount/nx-serverless:offline',
     options: {
       waitUntilTargets: [
-        options.project + ':build',
-        options.project + ':server'
+        options.name + ':build'
       ],
-      buildTarget: options.project + ':compile',
+      buildTarget: options.name + ':compile',
       config: join(options.appProjectRoot, 'serverless.yml'),
       location: join(normalize('dist'), options.appProjectRoot)
     },
     configurations: {
       dev: {
-        buildTarget: options.project + ':compile:dev'
+        buildTarget: options.name + ':compile:dev'
       },
       production: {
-        buildTarget: options.project + ':compile:production'
+        buildTarget: options.name + ':compile:production'
       }
     }
   };
@@ -50,10 +52,9 @@ function getDeployConfig(options: NormalizedSchema) {
     builder: '@flowaccount/nx-serverless:deploy',
     options: {
       waitUntilTargets: [
-        options.project + ':build:production',
-        options.project + ':server:production'
+        options.name + ':build:production'
       ],
-      buildTarget: options.project + ':compile:production',
+      buildTarget: options.name + ':compile:production',
       config: join(options.appProjectRoot, 'serverless.yml'),
       location: join(normalize('dist'), options.appProjectRoot),
       package: join(normalize('dist'), options.appProjectRoot)
@@ -65,7 +66,7 @@ function getDestroyConfig(options: NormalizedSchema) {
   return {
     builder: '@flowaccount/nx-serverless:destroy',
     options: {
-      buildTarget: options.project + ':compile:production',
+      buildTarget: options.name + ':compile:production',
       config: join(options.appProjectRoot, 'serverless.yml'),
       location: join(normalize('dist'), options.appProjectRoot),
       package: join(normalize('dist'), options.appProjectRoot)
@@ -75,7 +76,7 @@ function getDestroyConfig(options: NormalizedSchema) {
 
 function updateWorkspaceJson(options: NormalizedSchema): Rule {
   return updateWorkspaceInTree(workspaceJson => {
-    const project = workspaceJson.projects[options.project];
+    const project = workspaceJson.projects[options.name];
     const buildConfig = getBuildConfig(options);
     buildConfig.options['skipClean'] = true;
     buildConfig.options['outputPath'] = normalize('dist');
@@ -88,7 +89,7 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
     project.architect.offline = getServeConfig(options);
     project.architect.deploy = getDeployConfig(options);
     project.architect.destroy = getDestroyConfig(options);
-    workspaceJson.projects[options.project] = project;
+    workspaceJson.projects[options.name] = project;
     return workspaceJson;
   });
 }
@@ -98,7 +99,7 @@ function addAppFiles(options: NormalizedSchema): Rule {
     apply(url('./files/app'), [
       template({
         tmpl: '',
-        name: options.project,
+        name: options.name,
         root: options.appProjectRoot,
         offset: offsetFromRoot(options.appProjectRoot)
       }),
@@ -130,7 +131,7 @@ function updateServerTsFile(options: NormalizedSchema): Rule {
     host.overwrite(
       modulePath,
       moduleSource.replace(
-        `join(process.cwd(), 'dist/${options.project}/browser')`,
+        `join(process.cwd(), 'dist/${options.name}/browser')`,
         `environment.production ? join(process.cwd(), './browser') : join(process.cwd(), 'dist/${options.appProjectRoot}/browser')`
       )
     );
@@ -152,7 +153,7 @@ function addServerlessYMLFile(options: NormalizedSchema): Rule {
   return (host: Tree) => {
     host.create(
       join(options.appProjectRoot, 'serverless.yml'),
-      `service: ${options.project}
+      `service: ${options.name}
 frameworkVersion: ">=1.1.0 <2.0.0"
 plugins:
   - serverless-offline
@@ -186,25 +187,50 @@ functions:
   };
 }
 
-function normalizeOptions(project: any, options: Schema): NormalizedSchema {
+function normalizeOptions(options: Schema): NormalizedSchema {
+  const appDirectory = options.directory
+    ? `${toFileName(options.directory)}/${toFileName(options.name)}`
+    : toFileName(options.name);
+
+  const appProjectName = appDirectory.replace(new RegExp('/', 'g'), '-');
+
+  const appProjectRoot = join(normalize('apps'), appDirectory);
+
+  const parsedTags = options.tags
+    ? options.tags.split(',').map(s => s.trim())
+    : [];
+
   return {
     ...options,
-    appProjectRoot: project.root
+    name: toFileName(appProjectName),
+    frontendProject: options.frontendProject
+      ? toFileName(options.frontendProject)
+      : undefined,
+    appProjectRoot,
+    provider: options.provider,
+    parsedTags
   };
 }
 
 export default function(schema: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
-    const project = getProjectConfig(host, schema.project);
-    const options = normalizeOptions(project, schema);
+    const options = normalizeOptions(schema);
     return chain([
       init({
         skipFormat: options.skipFormat,
         expressProxy: true
       }),
-      externalSchematic('@nrwl/express', 'init', {
-        clientProject: options.project
-      }),
+      options.initExpress ? addPackageWithInit('@nrwl/express') : noop(),
+      options.initExpress ? externalSchematic('@nrwl/express', 'init', {
+        name: options.name,
+        skipFormat: options.skipFormat,
+        skipPackageJson: options.skipPackageJson,
+        directory: options.directory,
+        unitTestRunner: options.unitTestRunner,
+        tags: options.tags,
+        linter: options.linter,
+        frontendProject: options.frontendProject
+      }) : noop(),
       addAppFiles(options),
       addServerlessYMLFile(options),
       updateServerTsFile(options),
