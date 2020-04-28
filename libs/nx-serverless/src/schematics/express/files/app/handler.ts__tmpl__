@@ -1,6 +1,6 @@
 import { createServer, proxy } from 'aws-serverless-express';
 import { eventContext } from 'aws-serverless-express/middleware';
-const app = require('./src/main').app;
+const app = require('./main').app;
 
 const binaryMimeTypes = [
   'application/javascript',

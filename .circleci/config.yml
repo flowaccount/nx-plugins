@@ -78,19 +78,19 @@ jobs:
       - run:
           name: Check Commit Message Format
           command: yarn checkcommit
-      - run:
-          name: Check Documentation
-          command: yarn documentation
+      # - run:
+      #     name: Check Documentation
+      #     command: yarn documentation
       - run:
           name: Run Unit Tests
-          command: yarn affected:test
+          command: yarn affected:test --base=origin/master~1 --parallel
   e2e-nx-plugins:
     executor: default
     steps:
       - setup
       - run:
           name: nx-plugins E2E Tests
-          command: yarn affected:e2e
+          command: yarn affected:e2e  --base=origin/master~1
           no_output_timeout: 30m
 workflows:
   version: 2.1

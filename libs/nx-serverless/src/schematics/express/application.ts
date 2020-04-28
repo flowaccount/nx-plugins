@@ -9,7 +9,9 @@ import {
   Tree,
   url,
   externalSchematic,
-  noop
+  noop,
+  forEach,
+  FileEntry
 } from '@angular-devkit/schematics';
 import { join, normalize } from '@angular-devkit/core';
 import { Schema } from './schema';
@@ -96,17 +98,26 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
 }
 
 function addAppFiles(options: NormalizedSchema): Rule {
-  return mergeWith(
-    apply(url('./files/app'), [
-      template({
-        tmpl: '',
-        name: options.name,
-        root: options.appProjectRoot,
-        offset: offsetFromRoot(options.appProjectRoot)
-      }),
-      move(options.appProjectRoot)
-    ])
-  );
+  return (tree: Tree, _context: SchematicContext) => {
+    const rule = mergeWith(
+      apply(url('./files/app'), [
+        template({
+          tmpl: '',
+          name: options.name,
+          root: options.appProjectRoot,
+          offset: offsetFromRoot(options.appProjectRoot)
+        }),
+        move(options.appProjectRoot),
+        forEach((fileEntry: FileEntry) => {
+          // Just by adding this is allows the file to be overwritten if it already exists
+          console.log(fileEntry.path, tree.exists(fileEntry.path))
+          if (tree.exists(fileEntry.path)) return null;
+          return fileEntry;
+        })
+      ])
+    );
+    return rule(tree, _context);
+  };
 }
 
 // function updateServerTsFile(options: NormalizedSchema): Rule {
@@ -213,26 +224,27 @@ function normalizeOptions(options: Schema): NormalizedSchema {
   };
 }
 
-export default function(schema: Schema): Rule {
+export default function (schema: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
     const options = normalizeOptions(schema);
+    
     return chain([
       init({
         skipFormat: options.skipFormat,
         expressProxy: true
       }),
-      options.initExpress ? addPackageWithInit('@nrwl/express') : noop(),
+      options.initExpress ? addPackageWithInit('@nrwl/express', { unitTestRunner: options.unitTestRunner }) : noop(),
       options.initExpress
         ? externalSchematic('@nrwl/express', 'app', {
-            name: options.name,
-            skipFormat: options.skipFormat,
-            skipPackageJson: options.skipPackageJson,
-            directory: options.directory,
-            unitTestRunner: options.unitTestRunner,
-            tags: options.tags,
-            linter: options.linter,
-            frontendProject: options.frontendProject
-          })
+          name: schema.name,
+          skipFormat: schema.skipFormat,
+          skipPackageJson: schema.skipPackageJson,
+          directory: schema.directory,
+          unitTestRunner: schema.unitTestRunner,
+          tags: schema.tags,
+          linter: schema.linter,
+          frontendProject: schema.frontendProject
+        })
         : noop(),
       addAppFiles(options),
       addServerlessYMLFile(options),
