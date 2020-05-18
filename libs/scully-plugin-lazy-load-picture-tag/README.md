@@ -24,19 +24,22 @@ yarn add scully-plugin-lazy-load-picture-tag --dev
 
 ## Usage
 
-* Add this to your `scully.config.ts` file
+- Add this to your `scully.config.ts` file
 
 ```javascript
 import { getLazyLoadPictureTagPlugin } from '@flowaccount/scully-plugin-lazy-load-picture-tag';
 
-const postRenderers = [getLazyLoadPictureTagPlugin({
-  imagePlaceholder: 'https://flowaccountcdn.com/new_landing/image/White_2px.jpg'
-})];
+const postRenderers = [
+  getLazyLoadPictureTagPlugin({
+    imagePlaceholder:
+      'https://flowaccountcdn.com/new_landing/image/White_2px.jpg'
+  })
+];
 
 export const config: ScullyConfig = {
   routes: {},
-  defaultPostRenderers: postRenderers,
-}
+  defaultPostRenderers: postRenderers
+};
 ```
 
 ```bash

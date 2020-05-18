@@ -46,12 +46,11 @@ async function scullyLazyLoadPictureTagPlugin(html, route) {
       const type = source.getAttribute('type');
       if (srcset) {
         const obj = {};
-        obj
+        obj;
         if (type) {
           obj[type] = srcset;
         } else {
           obj[0] = srcset;
-
         }
         srcsets.push(obj);
         source.remove();
@@ -61,7 +60,8 @@ async function scullyLazyLoadPictureTagPlugin(html, route) {
     entry[i].classList.add('lazyload');
   }
   const lib = doc.createElement('script');
-  lib.src = 'https://cdn.jsdelivr.net/npm/lazy-load-picture@0.0.1/lazy-load-picture.min.js';
+  lib.src =
+    'https://cdn.jsdelivr.net/npm/lazy-load-picture@0.0.1/lazy-load-picture.min.js';
   const s = doc.createElement('script');
   s.innerHTML = `
     (() => { 
@@ -77,4 +77,4 @@ async function scullyLazyLoadPictureTagPlugin(html, route) {
   doc.body.append(lib);
   doc.body.append(s);
   return dom.serialize();
-};
+}

@@ -1,4 +1,3 @@
-
 {
   "name": "@flowaccount/scully-plugin-lazy-load-picture-tag",
   "version": "0.0.1",
@@ -29,4 +28,3 @@
   "author": "Wickstargazer",
   "license": "MIT"
 }
-

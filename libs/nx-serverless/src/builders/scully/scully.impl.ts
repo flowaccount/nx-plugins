@@ -33,10 +33,12 @@ export function scullyCmdRunner(
   context: BuilderContext
 ): Observable<BuilderOutput> {
   //
-  if(options.skipBuild) {
-    return runScully(options, context).pipe(concatMap((result) => {
-      return result.output;
-    }));
+  if (options.skipBuild) {
+    return runScully(options, context).pipe(
+      concatMap(result => {
+        return result.output;
+      })
+    );
   } else {
     return startBuild(options, context).pipe(
       concatMap(v => {
@@ -53,20 +55,25 @@ export function scullyCmdRunner(
   }
 }
 
-function runScully(options: ScullyBuilderOptions, context: BuilderContext): Observable<BuilderRun> {
+function runScully(
+  options: ScullyBuilderOptions,
+  context: BuilderContext
+): Observable<BuilderRun> {
   const commands: { command: string }[] = [];
-      const args = getExecArgv(options);
-      options.configFiles.forEach(fileName => {
-        commands.push({
-          command: `scully --configFile=${fileName} ${args.join(' ')}`
-        });
-      });
-      return from(context.scheduleBuilder('@nrwl/workspace:run-commands', {
-        commands: commands,
-        cwd: options.root,
-        color: true,
-        parallel: false
-      }));
+  const args = getExecArgv(options);
+  options.configFiles.forEach(fileName => {
+    commands.push({
+      command: `scully --configFile=${fileName} ${args.join(' ')}`
+    });
+  });
+  return from(
+    context.scheduleBuilder('@nrwl/workspace:run-commands', {
+      commands: commands,
+      cwd: options.root,
+      color: true,
+      parallel: false
+    })
+  );
 }
 
 function getExecArgv(options: ScullyBuilderOptions) {

@@ -57,9 +57,9 @@ export function packager(packagerId) {
 
 export function preparePackageJson(
   options: JsonObject & {
-    package: string,
-    root?: string,
-    verbose?: boolean
+    package: string;
+    root?: string;
+    verbose?: boolean;
   },
   context: BuilderContext,
   stats: any,
@@ -89,7 +89,7 @@ export function preparePackageJson(
   return from(getProjectRoot(context)).pipe(
     switchMap(root => {
       options.root = join(context.workspaceRoot, root);
-      return  resolver.normalizeExternalDependencies(
+      return resolver.normalizeExternalDependencies(
         packageJson,
         workspacePackageJsonPath,
         options.verbose,

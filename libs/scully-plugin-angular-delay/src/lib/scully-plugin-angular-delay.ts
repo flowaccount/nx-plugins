@@ -7,7 +7,7 @@ const DelayAngular = 'delayAngular';
 registerPlugin('render', DelayAngular, delayAngularPlugin);
 
 interface DelayAngularPluginOptions {
-  routesBlacklist?: { route: string, removeAngular?: boolean }[];
+  routesBlacklist?: { route: string; removeAngular?: boolean }[];
   delayMilliseconds?: number;
 }
 
@@ -31,20 +31,26 @@ export function getDelayAngularPlugin({
 function escapeRegExp(string): string {
   // $& means the whole matched string
   return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-};
+}
 
 async function delayAngularPlugin(html, routeObj) {
-  const blacklistRoute = RoutesBlacklist.find(obj => obj.route === routeObj.route);
+  const blacklistRoute = RoutesBlacklist.find(
+    obj => obj.route === routeObj.route
+  );
   if (blacklistRoute && !blacklistRoute.removeAngular) {
     return Promise.resolve(html);
   }
-  const tsConfigPath = scullyConfig.projectRoot ? join(scullyConfig.projectRoot, 'tsconfig.json') : 'tsconfig.json';
+  const tsConfigPath = scullyConfig.projectRoot
+    ? join(scullyConfig.projectRoot, 'tsconfig.json')
+    : 'tsconfig.json';
   if (!existsSync(tsConfigPath)) {
-    const notsconfigError = `No tsconfig file ${tsConfigPath} found`
+    const notsconfigError = `No tsconfig file ${tsConfigPath} found`;
     console.error(notsconfigError);
     throw new Error(notsconfigError);
   }
-  const tsConfig = JSON.parse(readFileSync(tsConfigPath, { encoding: 'utf8' }).toString());
+  const tsConfig = JSON.parse(
+    readFileSync(tsConfigPath, { encoding: 'utf8' }).toString()
+  );
 
   let isEs5Config = false;
   let statsJsonPath = join(scullyConfig.distFolder, 'stats-es2015.json');
@@ -54,41 +60,67 @@ async function delayAngularPlugin(html, routeObj) {
   }
 
   if (!existsSync(statsJsonPath)) {
-    const noStatsJsonError = `A ${isEs5Config ? 'stats' : 'stats-es2015'}.json is required for the 'delayAngular' plugin.
+    const noStatsJsonError = `A ${
+      isEs5Config ? 'stats' : 'stats-es2015'
+    }.json is required for the 'delayAngular' plugin.
 Please run 'ng build' with the '--stats-json' flag`;
     console.error(noStatsJsonError);
     throw new Error(noStatsJsonError);
   }
 
-  const scullyDelayAngularStatsJsonPath = join(scullyConfig.distFolder, 'scully-plugin-angular-delay-stats.json');
+  const scullyDelayAngularStatsJsonPath = join(
+    scullyConfig.distFolder,
+    'scully-plugin-angular-delay-stats.json'
+  );
   let scullyDelayAngularStatsJson = [];
   if (!existsSync(scullyDelayAngularStatsJsonPath)) {
-    const errorCreatingScullyDelayAngularStatsJsonError = 'The scully-plugin-angular-delay-stats.json could not be created';
+    const errorCreatingScullyDelayAngularStatsJsonError =
+      'The scully-plugin-angular-delay-stats.json could not be created';
     try {
-      scullyDelayAngularStatsJson = JSON.parse(readFileSync(statsJsonPath, { encoding: 'utf8' }).toString()).assets;
-      writeFileSync(scullyDelayAngularStatsJsonPath, JSON.stringify(scullyDelayAngularStatsJson));
+      scullyDelayAngularStatsJson = JSON.parse(
+        readFileSync(statsJsonPath, { encoding: 'utf8' }).toString()
+      ).assets;
+      writeFileSync(
+        scullyDelayAngularStatsJsonPath,
+        JSON.stringify(scullyDelayAngularStatsJson)
+      );
     } catch (e) {
       console.error(e);
       console.error(errorCreatingScullyDelayAngularStatsJsonError);
       throw new Error(errorCreatingScullyDelayAngularStatsJsonError);
     }
   } else {
-    scullyDelayAngularStatsJson = JSON.parse(readFileSync(scullyDelayAngularStatsJsonPath, { encoding: 'utf8' }).toString());
+    scullyDelayAngularStatsJson = JSON.parse(
+      readFileSync(scullyDelayAngularStatsJsonPath, {
+        encoding: 'utf8'
+      }).toString()
+    );
   }
 
-  let assetsList = scullyDelayAngularStatsJson.filter(entry => {
-    return entry['name'].includes('.js') && (
-      entry['name'].includes('-es5') || entry['name'].includes('-es2015')
-    );
-  }).map(entry => entry['name']);
-  assetsList = [...assetsList, ...assetsList.map(asset => {
-    return asset.includes('-es5') ?
-      asset.replace('-es5', '-es2015') :
-      asset.replace('-es2015', '-es5');
-  })];
+  let assetsList = scullyDelayAngularStatsJson
+    .filter(entry => {
+      return (
+        entry['name'].includes('.js') &&
+        (entry['name'].includes('-es5') || entry['name'].includes('-es2015'))
+      );
+    })
+    .map(entry => entry['name']);
+  assetsList = [
+    ...assetsList,
+    ...assetsList.map(asset => {
+      return asset.includes('-es5')
+        ? asset.replace('-es5', '-es2015')
+        : asset.replace('-es2015', '-es5');
+    })
+  ];
   if (blacklistRoute && blacklistRoute.removeAngular) {
     assetsList.forEach(entry => {
-      const regex = new RegExp(`<script( charset="?utf-8"?)? src="?${escapeRegExp(entry)}"?( type="?module"?)?( nomodule(="")?)?( defer(="")?)?><\/script>`, 'gmi');
+      const regex = new RegExp(
+        `<script( charset="?utf-8"?)? src="?${escapeRegExp(
+          entry
+        )}"?( type="?module"?)?( nomodule(="")?)?( defer(="")?)?><\/script>`,
+        'gmi'
+      );
       html = html.replace(regex, '');
     });
     return Promise.resolve(html);
@@ -118,12 +150,21 @@ Please run 'ng build' with the '--stats-json' flag`;
           });
         }, ${DelayMilliseconds});
       });
-    `
+    `;
     assetsList.forEach(entry => {
-      const regex = new RegExp(`<script( charset="?utf-8"?)? src="?${escapeRegExp(entry)}"?( type="?module"?)?( nomodule(="")?)?( defer(="")?)?><\/script>`, 'gmi');
+      const regex = new RegExp(
+        `<script( charset="?utf-8"?)? src="?${escapeRegExp(
+          entry
+        )}"?( type="?module"?)?( nomodule(="")?)?( defer(="")?)?><\/script>`,
+        'gmi'
+      );
       html = html.replace(regex, '');
-      if (entry.indexOf('main-') > -1 || entry.indexOf('runtime-') > -1 || entry.indexOf('polyfills-') > -1) {
-        appendScript += `scriptsToLoad.push("${entry}");`
+      if (
+        entry.indexOf('main-') > -1 ||
+        entry.indexOf('runtime-') > -1 ||
+        entry.indexOf('polyfills-') > -1
+      ) {
+        appendScript += `scriptsToLoad.push("${entry}");`;
       }
     });
     const dom = new JSDOM(html);
@@ -133,4 +174,4 @@ Please run 'ng build' with the '--stats-json' flag`;
     doc.body.append(s);
     return Promise.resolve(dom.serialize());
   }
-};
+}

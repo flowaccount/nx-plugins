@@ -26,26 +26,28 @@ yarn add scully-plugin-angular-delay --dev
 
 ## Usage
 
-* Add this to your `scully.config.ts` file
+- Add this to your `scully.config.ts` file
 
 ```javascript
 import { getDelayAngularPlugin } from '@flowaccount/scully-plugin-angular-delay';
 
-const postRenderers = [getDelayAngularPlugin({
-  routesBlacklist: [
-    { route: '/pricing', removeAngular: false },
-    { route: '/functions', removeAngular: true }
-  ],
-  delayMilliseconds: 1500
-})];
+const postRenderers = [
+  getDelayAngularPlugin({
+    routesBlacklist: [
+      { route: '/pricing', removeAngular: false },
+      { route: '/functions', removeAngular: true }
+    ],
+    delayMilliseconds: 1500
+  })
+];
 
 export const config: ScullyConfig = {
   routes: {},
-  defaultPostRenderers: postRenderers,
-}
+  defaultPostRenderers: postRenderers
+};
 ```
 
-*Build your app with the `--stats-json` flag enabled as the plugin needs to know which assets have been build for your app. Then just run the Scully command.*
+_Build your app with the `--stats-json` flag enabled as the plugin needs to know which assets have been build for your app. Then just run the Scully command._
 
 ```bash
 yarn ng build --configuration=prod --stats-json
