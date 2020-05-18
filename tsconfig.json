@@ -20,7 +20,16 @@
         "libs/nx-serverless/src/index.ts"
       ],
       "@flowaccount/aws-cdk": ["libs/aws-cdk/src/index.ts"],
-      "@flowaccount/nx-aws-cdk": ["libs/nx-aws-cdk/src/index.ts"]
+      "@flowaccount/nx-aws-cdk": ["libs/nx-aws-cdk/src/index.ts"],
+      "@flowaccount/angular-paperclip-experiment": [
+        "libs/angular-paperclip-experiment/src/index.ts"
+      ],
+      "@flowaccount/scully-plugin-angular-delay": [
+        "libs/scully-plugin-angular-delay/src/index.ts"
+      ],
+      "@flowaccount/scully-plugin-lazy-load-picture-tag": [
+        "libs/scully-plugin-lazy-load-picture-tag/src/index.ts"
+      ]
     }
   },
   "exclude": ["node_modules", "tmp"]

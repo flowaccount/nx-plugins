@@ -4,13 +4,11 @@ import {
   BuilderContext,
   createBuilder,
   BuilderOutput,
-  targetFromTargetString,
-  scheduleTargetAndForget,
   BuilderRun
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { Observable, of, from } from 'rxjs';
-import { concatMap, tap } from 'rxjs/operators';
+import { concatMap } from 'rxjs/operators';
 import { startBuild } from '../../utils/target.schedulers';
 
 export interface ScullyBuilderOptions extends JsonObject {
@@ -35,30 +33,40 @@ export function scullyCmdRunner(
   context: BuilderContext
 ): Observable<BuilderOutput> {
   //
-  return startBuild(options, context).pipe(
-    concatMap(v => {
-      if (!v.success) {
-        context.logger.error('Build target failed!');
-        return of({ success: false });
-      }
-      const commands: { command: string }[] = [];
+  if(options.skipBuild) {
+    return runScully(options, context).pipe(concatMap((result) => {
+      return result.output;
+    }));
+  } else {
+    return startBuild(options, context).pipe(
+      concatMap(v => {
+        if (!v.success) {
+          context.logger.error('Build target failed!');
+          return of({ success: false });
+        }
+        return runScully(options, context);
+      }),
+      concatMap((result: BuilderRun) => {
+        return result.output;
+      })
+    );
+  }
+}
+
+function runScully(options: ScullyBuilderOptions, context: BuilderContext): Observable<BuilderRun> {
+  const commands: { command: string }[] = [];
       const args = getExecArgv(options);
       options.configFiles.forEach(fileName => {
         commands.push({
           command: `scully --configFile=${fileName} ${args.join(' ')}`
         });
       });
-      return context.scheduleBuilder('@nrwl/workspace:run-commands', {
+      return from(context.scheduleBuilder('@nrwl/workspace:run-commands', {
         commands: commands,
         cwd: options.root,
         color: true,
         parallel: false
-      });
-    }),
-    concatMap((result: BuilderRun) => {
-      return result.output;
-    })
-  );
+      }));
 }
 
 function getExecArgv(options: ScullyBuilderOptions) {

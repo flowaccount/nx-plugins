@@ -16,6 +16,11 @@
       "schema": "./src/builders/offline/schema.json",
       "description": "Execute a Serverless application offline"
     },
+    "sls": {
+      "implementation": "./src/builders/sls/sls.impl",
+      "schema": "./src/builders/sls/schema.json",
+      "description": "Execute the Serverless sls command"
+    },
     "deploy": {
       "implementation": "./src/builders/deploy/deploy.impl",
       "schema": "./src/builders/deploy/schema.json",

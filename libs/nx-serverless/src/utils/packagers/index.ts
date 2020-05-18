@@ -56,7 +56,11 @@ export function packager(packagerId) {
 }
 
 export function preparePackageJson(
-  options: JsonObject & ServerlessDeployBuilderOptions,
+  options: JsonObject & {
+    package: string,
+    root?: string,
+    verbose?: boolean
+  },
   context: BuilderContext,
   stats: any,
   resolverName: string,

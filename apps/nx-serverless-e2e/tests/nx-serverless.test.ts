@@ -71,9 +71,7 @@ describe('nx-serverless e2e', () => {
           `generate @flowaccount/nx-serverless:express ${plugin} --initExpress true`
         );
         const result = await runNxCommandAsync(`run ${plugin}:compile`);
-        expect(result.stdout).toContain(
-          `Done compiling TypeScript files`
-        );
+        expect(result.stdout).toContain(`Done compiling TypeScript files`);
         done();
       }, 90000);
       describe('--directory', () => {

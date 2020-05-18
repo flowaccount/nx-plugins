@@ -1,0 +1,30 @@
+{
+  "name": "@flowaccount/scully-plugin-angular-delay",
+  "version": "0.0.4",
+  "peerDependencies": {
+    "@scullyio/scully": "^0.0.91"
+  },
+  "dependencies": {
+    "jsdom": "^16.2.1"
+  },
+  "maintainers": [
+    "Wickstargazer <wickyorama@gmail.com> (https://wickstargazer.com)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flowaccount/flowaccount/nx-plugins/libs/scully-plugin-angular-delay"
+  },
+  "keywords": [
+    "angular",
+    "scully",
+    "seo",
+    "angular-paperclip-experiment",
+    "scully-plugin-angular-delay"
+  ],
+  "contributors": [
+    "Wickstargazer <wickyorama@gmail.com> (https://wickstargazer.com)"
+  ],
+  "author": "Wickstargazer",
+  "license": "MIT"
+}
+

@@ -145,6 +145,88 @@
           }
         }
       }
+    },
+    "scully-plugin-angular-delay": {
+      "root": "libs/scully-plugin-angular-delay",
+      "sourceRoot": "libs/scully-plugin-angular-delay/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "libs/scully-plugin-angular-delay/.eslintrc",
+            "tsConfig": [
+              "libs/scully-plugin-angular-delay/tsconfig.lib.json",
+              "libs/scully-plugin-angular-delay/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/scully-plugin-angular-delay/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/scully-plugin-angular-delay/jest.config.js",
+            "tsConfig": "libs/scully-plugin-angular-delay/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/scully-plugin-angular-delay",
+            "tsConfig": "libs/scully-plugin-angular-delay/tsconfig.lib.json",
+            "packageJson": "libs/scully-plugin-angular-delay/package.json",
+            "main": "libs/scully-plugin-angular-delay/src/index.ts",
+            "assets": ["libs/scully-plugin-angular-delay/*.md"]
+          }
+        }
+      }
+    },
+    "scully-plugin-lazy-load-picture-tag": {
+      "root": "libs/scully-plugin-lazy-load-picture-tag",
+      "sourceRoot": "libs/scully-plugin-lazy-load-picture-tag/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "libs/scully-plugin-lazy-load-picture-tag/.eslintrc",
+            "tsConfig": [
+              "libs/scully-plugin-lazy-load-picture-tag/tsconfig.lib.json",
+              "libs/scully-plugin-lazy-load-picture-tag/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/scully-plugin-lazy-load-picture-tag/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/scully-plugin-lazy-load-picture-tag/jest.config.js",
+            "tsConfig": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/scully-plugin-lazy-load-picture-tag",
+            "tsConfig": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.lib.json",
+            "packageJson": "libs/scully-plugin-lazy-load-picture-tag/package.json",
+            "main": "libs/scully-plugin-lazy-load-picture-tag/src/index.ts",
+            "assets": ["libs/scully-plugin-lazy-load-picture-tag/*.md"]
+          }
+        }
+      }
     }
   },
   "cli": {

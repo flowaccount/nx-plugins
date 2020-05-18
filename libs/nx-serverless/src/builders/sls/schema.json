@@ -1,0 +1,43 @@
+{
+  "title": "Schema for Executing Serverless sls cli",
+  "description": "Serverless deployment execution options",
+  "type": "object",
+  "properties": {
+    "buildTarget": {
+      "type": "string",
+      "description": "The target to run to build you the app"
+    },
+    "waitUntilTargets": {
+      "type": "array",
+      "description": "The targets to run to before starting the node app",
+      "default": [],
+      "items": {
+        "type": "string"
+      }
+    },
+    "config": {
+      "type": "string",
+      "description": "The serverless.yml location"
+    },
+    "location": {
+      "type": "string",
+      "description": "The src file location"
+    },
+    "package": {
+      "type": "string",
+      "default": ".serverless",
+      "description": "The src file location"
+    },
+    "stage": {
+      "type": "string",
+      "default": "dev",
+      "description": "The stage of the deployment"
+    },
+    "command": {
+      "type": "string",
+      "description": "Command for the sls cli to run"
+    }
+  },
+  "additionalProperties": false,
+  "required": ["buildTarget", "config", "location", "package", "command"]
+}

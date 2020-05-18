@@ -110,7 +110,7 @@ function addAppFiles(options: NormalizedSchema): Rule {
         move(options.appProjectRoot),
         forEach((fileEntry: FileEntry) => {
           // Just by adding this is allows the file to be overwritten if it already exists
-          console.log(fileEntry.path, tree.exists(fileEntry.path))
+          console.log(fileEntry.path, tree.exists(fileEntry.path));
           if (tree.exists(fileEntry.path)) return null;
           return fileEntry;
         })
@@ -224,27 +224,31 @@ function normalizeOptions(options: Schema): NormalizedSchema {
   };
 }
 
-export default function (schema: Schema): Rule {
+export default function(schema: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
     const options = normalizeOptions(schema);
-    
+
     return chain([
       init({
         skipFormat: options.skipFormat,
         expressProxy: true
       }),
-      options.initExpress ? addPackageWithInit('@nrwl/express', { unitTestRunner: options.unitTestRunner }) : noop(),
+      options.initExpress
+        ? addPackageWithInit('@nrwl/express', {
+            unitTestRunner: options.unitTestRunner
+          })
+        : noop(),
       options.initExpress
         ? externalSchematic('@nrwl/express', 'app', {
-          name: schema.name,
-          skipFormat: schema.skipFormat,
-          skipPackageJson: schema.skipPackageJson,
-          directory: schema.directory,
-          unitTestRunner: schema.unitTestRunner,
-          tags: schema.tags,
-          linter: schema.linter,
-          frontendProject: schema.frontendProject
-        })
+            name: schema.name,
+            skipFormat: schema.skipFormat,
+            skipPackageJson: schema.skipPackageJson,
+            directory: schema.directory,
+            unitTestRunner: schema.unitTestRunner,
+            tags: schema.tags,
+            linter: schema.linter,
+            frontendProject: schema.frontendProject
+          })
         : noop(),
       addAppFiles(options),
       addServerlessYMLFile(options),

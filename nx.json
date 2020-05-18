@@ -32,6 +32,12 @@
     "nx-aws-cdk-e2e": {
       "tags": [],
       "implicitDependencies": ["nx-aws-cdk"]
+    },
+    "scully-plugin-angular-delay": {
+      "tags": []
+    },
+    "scully-plugin-lazy-load-picture-tag": {
+      "tags": []
     }
   }
 }

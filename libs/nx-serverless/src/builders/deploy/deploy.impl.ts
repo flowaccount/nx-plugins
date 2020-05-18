@@ -85,7 +85,6 @@ export function serverlessExecutionHandler(
         // change servicePath to distribution location
         // review: Change options from location to outputpath?\
         const servicePath = ServerlessWrapper.serverless.config.servicePath;
-        console.log(getExecArgv);
         const args = getExecArgv(options);
         ServerlessWrapper.serverless.config.servicePath = options.location;
         ServerlessWrapper.serverless.processedInput = {
