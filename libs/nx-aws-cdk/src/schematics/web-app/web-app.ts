@@ -52,7 +52,8 @@ export default function(schema: Schema): Rule {
     return chain([
       init({
         skipFormat: options.skipFormat,
-        expressApp: true
+        expressApp: true,
+        ec2Instance: false
       }),
       updateWorkspaceJson(configAdapter, options),
       configAdapter.moveTemplateFiles(options)

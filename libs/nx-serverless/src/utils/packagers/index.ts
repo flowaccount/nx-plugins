@@ -34,7 +34,6 @@ import { concatMap, switchMap } from 'rxjs/operators';
 import { Observable, of, from } from 'rxjs';
 import { BuilderContext, BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { ServerlessDeployBuilderOptions } from '../../builders/deploy/deploy.impl';
 import { join, dirname } from 'path';
 
 const registeredPackagers = {

@@ -38,6 +38,9 @@
     },
     "scully-plugin-lazy-load-picture-tag": {
       "tags": []
+    },
+    "scully-plugin-google-analytics": {
+      "tags": []
     }
   }
 }

@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/scully-plugin-lazy-load-picture-tag",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "peerDependencies": {
     "@scullyio/scully": "latest"
   },
@@ -12,7 +12,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/flowaccount/flowaccount/nx-plugins/libs/scully-plugin-lazy-load-picture-tag"
+    "url": "https://github.com/flowaccount/nx-plugins/libs/scully-plugin-lazy-load-picture-tag"
   },
   "keywords": [
     "angular",

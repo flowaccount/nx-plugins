@@ -26,18 +26,17 @@ export interface ServerlessSlsBuilderOptions extends JsonObject {
   inspect: boolean | InspectType;
   waitUntilTargets: string[];
   buildTarget: string;
-  function: string;
   host: string;
   port: number;
   watch: boolean;
-  args: string[];
+  arguments: string[];
   package: string;
   location: string;
   stage: string;
-  list: boolean;
   verbose?: boolean;
   sourceRoot?: string;
   root?: string;
+  command: string;
 }
 
 export default createBuilder<ServerlessSlsBuilderOptions & JsonObject>(
@@ -81,7 +80,7 @@ export function serverlessExecutionHandler(
         // change servicePath to distribution location
         // review: Change options from location to outputpath?\
         const servicePath = ServerlessWrapper.serverless.config.servicePath;
-        const args = getExecArgv(options);
+        const args = getExecArgv(options.arguments);
         ServerlessWrapper.serverless.config.servicePath = options.location;
         ServerlessWrapper.serverless.processedInput = {
           commands: [options.command],
@@ -115,19 +114,10 @@ export function serverlessExecutionHandler(
   );
 }
 
-export function getExecArgv(options: ServerlessSlsBuilderOptions) {
+export function getExecArgv(commmandArguments: Array<string>) {
   const args = [];
-  for (const key in options) {
-    if (options.hasOwnProperty(key)) {
-      if (
-        options[key] !== undefined &&
-        key !== 'buildTarget' &&
-        key !== 'package' &&
-        key !== 'command'
-      ) {
-        args.push(`--${key} ${options[key]}`);
-      }
-    }
+  for (const key in commmandArguments) {
+    args.push(`--${key}`);
   }
   return args;
 }

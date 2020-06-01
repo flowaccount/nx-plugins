@@ -36,8 +36,12 @@
     "command": {
       "type": "string",
       "description": "Command for the sls cli to run"
+    },
+    "arguments": {
+      "type": "array",
+      "default": [],
+      "description": "string array of arguments for the sls command"
     }
   },
-  "additionalProperties": false,
   "required": ["buildTarget", "config", "location", "package", "command"]
 }

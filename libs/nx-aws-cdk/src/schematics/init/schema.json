@@ -9,7 +9,16 @@
       "type": "boolean",
       "default": false
     },
-    "expressApp": {}
+    "expressApp": {
+      "description": "Is an express application?",
+      "type": "boolean",
+      "default": false
+    },
+    "ec2Instance": {
+      "description": "Is an ec2 instance stack?",
+      "type": "boolean",
+      "default": false
+    }
   },
   "required": []
 }

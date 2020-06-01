@@ -135,9 +135,9 @@ Please run 'ng build' with the '--stats-json' flag`;
         s.setAttribute("defer", "");
       }
       s.src = entry;
-      s.onload = function () {
-        console.log('script is loaded!')
-      };
+      // s.onload = function () {
+      //   console.log('script is loaded!')
+      // };
       document.body.appendChild(s);
     }
     var scriptsToLoad = [];
@@ -151,6 +151,11 @@ Please run 'ng build' with the '--stats-json' flag`;
         }, ${DelayMilliseconds});
       });
     `;
+    let sorted = [];
+    const mainJs = [];
+    const polyFillsJs = [];
+    const otherJs = [];
+    const scriptsArray = [];
     assetsList.forEach(entry => {
       const regex = new RegExp(
         `<script( charset="?utf-8"?)? src="?${escapeRegExp(
@@ -158,15 +163,33 @@ Please run 'ng build' with the '--stats-json' flag`;
         )}"?( type="?module"?)?( nomodule(="")?)?( defer(="")?)?><\/script>`,
         'gmi'
       );
+      const match = html.match(regex);
+      if (match && match.length > 0) {
+        scriptsArray.push(entry);
+      }
       html = html.replace(regex, '');
-      if (
-        entry.indexOf('main-') > -1 ||
-        entry.indexOf('runtime-') > -1 ||
-        entry.indexOf('polyfills-') > -1
-      ) {
-        appendScript += `scriptsToLoad.push("${entry}");`;
+    });
+    scriptsArray.forEach(function(x, index) {
+      if (x.startsWith('runtime')) {
+        sorted.splice(0, 0, x);
+      } else if (x.startsWith('main')) {
+        mainJs.push(x);
+      } else if (x.startsWith('polyfills')) {
+        polyFillsJs.push(x);
+      } else if (x.startsWith('vendor')) {
+        sorted.splice(1, 0, x);
+      } else {
+        otherJs.push(x);
+      }
+      if (index === scriptsArray.length - 1) {
+        polyFillsJs.forEach(s => {
+          sorted.splice(1, 0, s);
+        });
+        sorted = sorted.concat(mainJs);
+        sorted = sorted.concat(otherJs);
       }
     });
+    appendScript += `scriptsToLoad = '${JSON.stringify(sorted)}'`;
     const dom = new JSDOM(html);
     const doc = dom.window.document;
     const s = doc.createElement('script');

@@ -1,0 +1,28 @@
+{
+  "name": "@flowaccount/scully-plugin-google-analytics",
+  "version": "0.0.1",
+  "peerDependencies": {
+    "@scullyio/scully": "^0.0.91"
+  },
+  "dependencies": {
+    "jsdom": "^16.2.1"
+  },
+  "maintainers": [
+    "Wickstargazer <wickyorama@gmail.com> (https://wickstargazer.com)"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/flowaccount/nx-plugins/libs/scully-plugin-google-analytics"
+  },
+  "keywords": [
+    "angular",
+    "scully",
+    "seo",
+    "scully-plugin-google-analytics"
+  ],
+  "contributors": [
+    "Wickstargazer <wickyorama@gmail.com> (https://wickstargazer.com)"
+  ],
+  "author": "Wickstargazer",
+  "license": "MIT"
+}

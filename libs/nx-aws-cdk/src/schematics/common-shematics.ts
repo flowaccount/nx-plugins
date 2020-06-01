@@ -6,8 +6,10 @@ import {
   updateWorkspace,
   toFileName,
   projectRootDir,
-  ProjectType
+  ProjectType,
+  updateWorkspaceInTree
 } from '@nrwl/workspace';
+import { join } from 'path';
 
 export function normalizeOptions(options: BaseSchema): BaseNormalizedSchema {
   const name = toFileName(options.project);
@@ -21,7 +23,7 @@ export function normalizeOptions(options: BaseSchema): BaseNormalizedSchema {
   const parsedTags = options.tags
     ? options.tags.split(',').map(s => s.trim())
     : [];
-
+  console.log(parsedTags, options.tags);
   return {
     ...options,
     projectName,
@@ -35,9 +37,18 @@ export function updateWorkspaceJson(
   applicationConfig: AwsCdkSchematicsAdapter,
   normalizedOptions: BaseNormalizedSchema
 ): Rule {
-  return updateWorkspace(workspace => {
-    const project = workspace.projects[normalizedOptions.projectName];
-    workspace.projects[normalizedOptions.projectName] = project;
+  return updateWorkspaceInTree(workspaceJson => {
+    let project = workspaceJson.projects[normalizedOptions.projectName];
+    if (!project) {
+      project = {
+        root: normalizedOptions.projectRoot,
+        sourceRoot: join(normalizedOptions.projectRoot, 'src'),
+        projectType: 'application',
+        prefix: normalizedOptions.projectName,
+        schematics: {},
+        architect: <any>{}
+      };
+    }
     project.architect.deploy = applicationConfig.getDeployConfiguration(
       normalizedOptions
     );
@@ -47,8 +58,14 @@ export function updateWorkspaceJson(
     project.architect.synth = applicationConfig.getSynthConfiguration(
       normalizedOptions
     );
-    project.architect.offline = applicationConfig.getOfflineConfiguration(
-      normalizedOptions
-    );
+    if (applicationConfig.getOfflineConfiguration) {
+      project.architect.offline = applicationConfig.getOfflineConfiguration(
+        normalizedOptions
+      );
+    }
+    workspaceJson.projects[normalizedOptions.projectName] = project;
+    workspaceJson.defaultProject =
+      workspaceJson.defaultProject || normalizedOptions.projectName;
+    return workspaceJson;
   });
 }

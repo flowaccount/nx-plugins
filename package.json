@@ -38,8 +38,7 @@
   "private": true,
   "dependencies": {
     "@nguniversal/express-engine": "^9.0.1",
-    "express": "^4.17.1",
-    "enquirer": "^2.3.5"
+    "express": "^4.17.1"
   },
   "peerDependencies": {
     "@nrwl/workspace": "^9.2.2",
@@ -88,7 +87,9 @@
     "tree-kill": "^1.2.2",
     "cypress": "^4.1.0",
     "rxjs": "6.5.4",
-    "@scullyio/scully": "^0.0.91"
+    "@scullyio/scully": "^0.0.93",
+    "upath": "^1.2.0",
+    "ignore": "^5.0.4"
   },
   "config": {
     "commitizen": {

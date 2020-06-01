@@ -24,7 +24,11 @@ fdescribe('init', () => {
   });
 
   it('should add dependencies for expressApp', async () => {
-    const result = await runSchematic('init', { expressApp: true }, tree);
+    const result = await runSchematic(
+      'init',
+      { expressApp: true, ec2Instance: false },
+      tree
+    );
     const packageJson = readJsonInTree(result, 'package.json');
     expect(packageJson.dependencies['@flowaccount/nx-aws-cdk']).toBeUndefined();
     expect(
@@ -40,6 +44,22 @@ fdescribe('init', () => {
     ).toBeDefined();
     expect(packageJson.dependencies['aws-serverless-express']).toBeDefined();
     expect(packageJson.dependencies['express']).toBeDefined();
+  });
+
+  it('should add dependencies for ec2Instance', async () => {
+    const result = await runSchematic(
+      'init',
+      { expressApp: false, ec2Instance: true },
+      tree
+    );
+    const packageJson = readJsonInTree(result, 'package.json');
+    expect(packageJson.dependencies['@flowaccount/nx-aws-cdk']).toBeUndefined();
+    expect(
+      packageJson.devDependencies['@flowaccount/nx-aws-cdk']
+    ).toBeDefined();
+    expect(packageJson.devDependencies['aws-cdk']).toBeDefined();
+    expect(packageJson.devDependencies['@aws-cdk/core']).toBeDefined();
+    expect(packageJson.devDependencies['@aws-cdk/aws-ec2']).toBeDefined();
   });
 
   //   describe('defaultCollection', () => {

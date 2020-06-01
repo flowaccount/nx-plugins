@@ -21,10 +21,11 @@ import {
   awsServerlessExpressVersion,
   serverlessApigwBinaryVersion,
   expressVersion,
-  awscdkCoreVersion
+  awscdkCoreVersion,
+  awscdkEc2Version
 } from '../../utils/versions';
 
-function addDependencies(expressApp: boolean): Rule {
+function addDependencies(expressApp: boolean, ec2Instance: boolean): Rule {
   return (host: Tree, context: SchematicContext): Rule => {
     const dependencies = {};
     const devDependencies = {
@@ -39,6 +40,8 @@ function addDependencies(expressApp: boolean): Rule {
         '@types/aws-serverless-express'
       ] = awsServerlessExpressVersion;
       devDependencies['serverless-apigw-binary'] = serverlessApigwBinaryVersion;
+    } else if (ec2Instance) {
+      devDependencies['@aws-cdk/aws-ec2'] = awscdkEc2Version;
     } else {
       devDependencies['@types/aws-lambda'] = awsTypeLambdaVersion;
     }
@@ -69,8 +72,13 @@ function addDependencies(expressApp: boolean): Rule {
 
 function updateDependencies(): Rule {
   return updateJsonInTree('package.json', json => {
-    delete json.dependencies['@flowaccount/nx-aws-cdk'];
-    json.devDependencies['@flowaccount/nx-aws-cdk'] = nxVersion;
+    if (json.dependencies['@flowaccount/nx-aws-cdk']) {
+      json.devDependencies['@flowaccount/nx-aws-cdk'] =
+        json.dependencies['@flowaccount/nx-aws-cdk'];
+      delete json.dependencies['@flowaccount/nx-aws-cdk'];
+    } else if (!json.devDependencies['@flowaccount/nx-aws-cdk']) {
+      json.devDependencies['@flowaccount/nx-aws-cdk'] = nxVersion;
+    }
     return json;
   });
 }
@@ -78,7 +86,7 @@ function updateDependencies(): Rule {
 export default function(schema: Schema) {
   return chain([
     addPackageWithInit('@nrwl/jest'),
-    addDependencies(schema.expressApp),
+    addDependencies(schema.expressApp, schema.ec2Instance),
     updateDependencies(),
     formatFiles(schema)
   ]);

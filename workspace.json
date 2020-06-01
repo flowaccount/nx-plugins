@@ -227,6 +227,47 @@
           }
         }
       }
+    },
+    "scully-plugin-google-analytics": {
+      "root": "libs/scully-plugin-google-analytics",
+      "sourceRoot": "libs/scully-plugin-google-analytics/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:lint",
+          "options": {
+            "linter": "eslint",
+            "config": "libs/scully-plugin-google-analytics/.eslintrc",
+            "tsConfig": [
+              "libs/scully-plugin-google-analytics/tsconfig.lib.json",
+              "libs/scully-plugin-google-analytics/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/scully-plugin-google-analytics/**"
+            ]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/scully-plugin-google-analytics/jest.config.js",
+            "tsConfig": "libs/scully-plugin-google-analytics/tsconfig.spec.json",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/scully-plugin-google-analytics",
+            "tsConfig": "libs/scully-plugin-google-analytics/tsconfig.lib.json",
+            "packageJson": "libs/scully-plugin-google-analytics/package.json",
+            "main": "libs/scully-plugin-google-analytics/src/index.ts",
+            "assets": ["libs/scully-plugin-google-analytics/*.md"]
+          }
+        }
+      }
     }
   },
   "cli": {

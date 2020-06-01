@@ -29,6 +29,9 @@
       ],
       "@flowaccount/scully-plugin-lazy-load-picture-tag": [
         "libs/scully-plugin-lazy-load-picture-tag/src/index.ts"
+      ],
+      "@flowaccount/scully-plugin-google-analytics": [
+        "libs/scully-plugin-google-analytics/src/index.ts"
       ]
     }
   },

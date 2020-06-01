@@ -1,4 +1,5 @@
 export interface BaseNormalizedSchema {
+  name: string;
   projectName: string;
   projectRoot: string;
   projectDirectory: string;

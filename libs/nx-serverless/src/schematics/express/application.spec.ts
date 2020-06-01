@@ -1,11 +1,6 @@
-import { Tree, SchematicContext } from '@angular-devkit/schematics';
+import { Tree } from '@angular-devkit/schematics';
 import { createEmptyWorkspace } from '@nrwl/workspace/testing';
-import {
-  readJsonInTree,
-  serializeJson,
-  getWorkspacePath
-} from '@nrwl/workspace';
-import * as workspace from '@nrwl/workspace';
+import { readJsonInTree } from '@nrwl/workspace';
 import { runSchematic } from '../../utils/testing';
 
 describe('express app', () => {
@@ -13,44 +8,13 @@ describe('express app', () => {
   beforeEach(async () => {
     appTree = Tree.empty();
     appTree = createEmptyWorkspace(appTree);
-    jest.spyOn(workspace, 'getProjectConfig').mockReturnValue({
-      root: 'apps/my-app',
-      sourceRoot: 'apps/my-app/src',
-      prefix: 'my-app'
-    });
-    jest
-      .spyOn(workspace, 'updateWorkspaceInTree')
-      .mockImplementation(callback => {
-        return (host: Tree, context: SchematicContext): Tree => {
-          const path = getWorkspacePath(host);
-          host.overwrite(
-            path,
-            serializeJson(
-              callback(
-                {
-                  projects: {
-                    'my-app': {
-                      root: 'apps/my-app',
-                      sourceRoot: 'apps/my-app/src',
-                      prefix: 'my-app',
-                      architect: {}
-                    }
-                  }
-                },
-                context
-              )
-            )
-          );
-          return host;
-        };
-      });
   });
 
   describe('not nested', () => {
     it('should update workspace.json', async () => {
       const tree = await runSchematic(
         'express',
-        { project: 'my-app', initExpress: false },
+        { name: 'my-app', initExpress: true },
         appTree
       );
       const workspaceJson = readJsonInTree(tree, '/workspace.json');
@@ -146,7 +110,7 @@ describe('express app', () => {
     it('should generate files', async () => {
       const tree = await runSchematic(
         'express',
-        { project: 'my-app', initExpress: false },
+        { name: 'my-app', initExpress: true },
         appTree
       );
       expect(tree.exists('apps/my-app/env.json')).toBeTruthy();
@@ -166,7 +130,7 @@ describe('express app', () => {
     it('should update workspace.json', async () => {
       const tree = await runSchematic(
         'express',
-        { name: 'my-app', directory: 'myDir' },
+        { name: 'my-app', directory: 'myDir', initExpress: true },
         appTree
       );
       const workspaceJson = readJsonInTree(tree, '/workspace.json');
@@ -178,28 +142,27 @@ describe('express app', () => {
       expect(workspaceJson.projects['my-dir-my-app'].architect.lint).toEqual({
         builder: '@angular-devkit/build-angular:tslint',
         options: {
+          exclude: ['**/node_modules/**', '!apps/my-dir/my-app/**'],
           tsConfig: [
-            'apps/my-dir/my-serveless-app/tsconfig.app.json',
-            'apps/my-dir/my-serveless-app/tsconfig.spec.json'
-          ],
-          exclude: ['**/node_modules/**', '!apps/my-dir/my-app/**']
+            'apps/my-dir/my-app/tsconfig.app.json',
+            'apps/my-dir/my-app/tsconfig.spec.json'
+          ]
         }
       });
-
       expect(workspaceJson.projects['my-dir-my-app-e2e']).toBeUndefined();
       expect(workspaceJson.defaultProject).toEqual('my-dir-my-app');
-    });
+    }, 90000);
 
     it('should generate files', async () => {
       const tree = await runSchematic(
         'express',
-        { name: 'my-app', directory: 'myDir' },
+        { name: 'my-app', directory: 'myDir', initExpress: true },
         appTree
       );
       [
         'apps/my-dir/my-app/env.json',
-        'apps/my-dir/my-app/src/handler.ts',
-        'apps/my-app/tsconfig.serverless.json',
+        'apps/my-dir/my-app/handler.ts',
+        'apps/my-dir/my-app/tsconfig.serverless.json',
         'apps/my-dir/my-app/serverless.yml'
       ].forEach(path => {
         expect(tree.exists(path)).toBeTruthy();
@@ -217,7 +180,7 @@ describe('express app', () => {
     it('should not generate test configuration', async () => {
       const tree = await runSchematic(
         'express',
-        { project: 'my-App', initExpress: true },
+        { name: 'my-app', initExpress: true, unitTestRunner: 'none' },
         appTree
       );
       expect(tree.exists('apps/my-app/src/test-setup.ts')).toBeFalsy();
