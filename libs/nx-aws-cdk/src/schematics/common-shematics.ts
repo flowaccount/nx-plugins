@@ -53,7 +53,7 @@ export function updateWorkspaceJson(
     );
     if (applicationConfig.getDeployConfiguration) {
       project.architect.deploy = applicationConfig.getDeployConfiguration(
-      normalizedOptions
+        normalizedOptions
       );
     }
     if (applicationConfig.getDestroyConfiguration) {

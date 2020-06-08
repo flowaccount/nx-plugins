@@ -56,9 +56,11 @@ describe('Serverless Build Builder', () => {
       }
     });
     spyOn(ServerlessWrapper, 'init').and.returnValue(of(null));
-    jest.spyOn(serverlessConfig, 'consolidateExcludes').mockImplementation((options, contex) => {
-      return options.tsConfig;
-    })
+    jest
+      .spyOn(serverlessConfig, 'consolidateExcludes')
+      .mockImplementation((options, contex) => {
+        return options.tsConfig;
+      });
     jest.spyOn(ServerlessWrapper, 'serverless', 'get').mockReturnValue({
       cli: {
         log: () => {

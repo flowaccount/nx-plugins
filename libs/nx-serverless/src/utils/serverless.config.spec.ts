@@ -51,7 +51,7 @@ describe('Serverless Config Manipulations', () => {
         }
       }
     });
-    fsUtility.writeJsonFile.mockImplementation(() => { });
+    fsUtility.writeJsonFile.mockImplementation(() => {});
     jest.spyOn(ServerlessWrapper, 'init').mockReturnValue(of(null));
     jest.spyOn(ServerlessWrapper, 'serverless', 'get').mockReturnValue({
       cli: {
@@ -64,15 +64,13 @@ describe('Serverless Config Manipulations', () => {
           return [];
         },
         package: {
-            exclude: [] 
+          exclude: []
         },
-        plugins: {
-
-        }
+        plugins: {}
       },
       pluginManager: {
         parsePluginsObject: () => {
-            return { localPath: '/.serverless_plugins/**'}
+          return { localPath: '/.serverless_plugins/**' };
         }
       }
     });
@@ -89,7 +87,7 @@ describe('Serverless Config Manipulations', () => {
       serverlessConfig: 'apps/serverlessapp/serverless.yml',
       servicePath: 'apps/serverlessapp',
       processEnvironmentFile: 'env.json',
-      externalDependencies: 'all',
+      externalDependencies: 'all'
       // files: { 'src/handler': '/src/handler.ts' }
     };
   });
@@ -98,10 +96,14 @@ describe('Serverless Config Manipulations', () => {
       // mock createProjectGraph without deps
     });
     it('should succeed without any excludes config', () => {
-        testOptions.files = { 'src/handler': '/root/apps/serverlessapp/src/handler.ts' }
-        testOptions.sourceRoot = '/root/apps/serverlessapp/src' as Path;
-        const result = consolidateExcludes(testOptions, context);
-        expect(result).toEqual('/root/apps/serverlessapp/tsconfig.serverless.nx-tmp')
-    }); 
+      testOptions.files = {
+        'src/handler': '/root/apps/serverlessapp/src/handler.ts'
+      };
+      testOptions.sourceRoot = '/root/apps/serverlessapp/src' as Path;
+      const result = consolidateExcludes(testOptions, context);
+      expect(result).toEqual(
+        '/root/apps/serverlessapp/tsconfig.serverless.nx-tmp'
+      );
+    });
   });
-}); 
+});

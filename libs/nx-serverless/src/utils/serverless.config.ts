@@ -79,15 +79,12 @@ export function consolidateExcludes(
     }
     /* Handle excludes for handlers */
     // check for overlapping of files being excluded here ...
-    if(!parsedTSConfig.exclude) {
-        parsedTSConfig.exclude = [];
+    if (!parsedTSConfig.exclude) {
+      parsedTSConfig.exclude = [];
     }
     parsedTSConfig.exclude = parsedTSConfig.exclude.concat(excludeList);
   } //  context.workspaceRoot,
-  const tmpTsConfigPath = join(
-    appRoot,
-    'tsconfig.serverless.nx-tmp'
-  );
+  const tmpTsConfigPath = join(appRoot, 'tsconfig.serverless.nx-tmp');
   context.logger.info(
     `writing tsconfig.serverless.nx-tmp with added excludeLists to ${tmpTsConfigPath}`
   );

@@ -2,8 +2,6 @@ import { getLazyLoadPictureTagPlugin } from './scully-plugin-lazy-load-picture-t
 
 describe('scullyLazyLoadPictureTagPlugin', () => {
   it('should work', () => {
-    expect(getLazyLoadPictureTagPlugin()).toEqual(
-      'lazyLoadPictureTag'
-    );
+    expect(getLazyLoadPictureTagPlugin()).toEqual('lazyLoadPictureTag');
   });
 });
