@@ -8,7 +8,7 @@
       "module": "commonjs",
       "types": [ "node" ]
     },
-    "include": [
+    "files": [
       "cdk.ts"
     ]
   }

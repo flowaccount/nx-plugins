@@ -226,7 +226,6 @@ function normalizeOptions(options: Schema): NormalizedSchema {
 export default function(schema: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
     const options = normalizeOptions(schema);
-    console.log('chaining');
     return chain([
       init({
         skipFormat: options.skipFormat,

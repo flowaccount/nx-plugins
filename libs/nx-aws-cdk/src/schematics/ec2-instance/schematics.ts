@@ -27,66 +27,33 @@ interface NormalizedSchema extends BaseNormalizedSchema {
   subnetId: string;
 }
 class EC2InstanceCdkSchematicsAdapter implements AwsCdkSchematicsAdapter {
-  getDeployConfiguration(options: BaseNormalizedSchema) {
+  getCdkConfiguration(options: BaseNormalizedSchema) {
     return {
       builder: '@flowaccount/nx-aws-cdk:run',
       options: {
-        waitUntilTargets: [options.name + ':build:production'],
-        buildTarget: options.name + ':compile:production',
+        waitUntilTargets: [],
+        buildTarget: options.projectName + ':build:production',
         skipBuild: false,
         main: 'cdk.ts',
         tsConfig: join(options.projectRoot, 'tsconfig.cdk.json'),
         outputFile: join(
           normalize('dist'),
           options.projectRoot,
-          options.name,
-          '.out'
+          options.projectName + '.out'
         ),
-        command: 'deploy',
         stackNames: ['OpenVpnStack'],
         processEnvironmentFile: 'env.json'
-      }
-    };
-  }
-  getDestroyConfiguration(options: BaseNormalizedSchema) {
-    return {
-      builder: '@flowaccount/nx-aws-cdk:run',
-      options: {
-        waitUntilTargets: [options.name + ':build:production'],
-        buildTarget: options.name + ':compile:production',
-        skipBuild: false,
-        main: 'cdk.ts',
-        tsConfig: join(options.projectRoot, 'tsconfig.cdk.json'),
-        outputFile: join(
-          normalize('dist'),
-          options.projectRoot,
-          options.name,
-          '.out'
-        ),
-        command: 'destroy',
-        stackNames: ['OpenVpnStack'],
-        processEnvironmentFile: 'env.json'
-      }
-    };
-  }
-  getSynthConfiguration(options: BaseNormalizedSchema) {
-    return {
-      builder: '@flowaccount/nx-aws-cdk:run',
-      options: {
-        waitUntilTargets: [options.name + ':build:production'],
-        buildTarget: options.name + ':compile:production',
-        skipBuild: false,
-        main: 'cdk.ts',
-        tsConfig: join(options.projectRoot, 'tsconfig.cdk.json'),
-        outputFile: join(
-          normalize('dist'),
-          options.projectRoot,
-          options.name,
-          '.out'
-        ),
-        command: 'synth',
-        stackNames: [`${options.name}Stack`],
-        processEnvironmentFile: 'env.json'
+      },
+      configurations: {
+        synth: {
+          command: 'synth'
+        },
+        deploy: {
+          command: 'deploy'
+        },
+        destroy: {
+          command: 'destroy'
+        }
       }
     };
   }
@@ -109,12 +76,11 @@ class EC2InstanceCdkSchematicsAdapter implements AwsCdkSchematicsAdapter {
   updateNxJson(baseOptions: BaseNormalizedSchema): Rule {
     return updateJsonInTree('/nx.json', json => {
       const options = baseOptions as NormalizedSchema;
-      console.log(options.parsedTags);
       return {
         ...json,
         projects: {
           ...json.projects,
-          [options.name]: { tags: options.parsedTags }
+          [options.projectName]: { tags: options.parsedTags }
         }
       };
     });

@@ -23,7 +23,6 @@ export function normalizeOptions(options: BaseSchema): BaseNormalizedSchema {
   const parsedTags = options.tags
     ? options.tags.split(',').map(s => s.trim())
     : [];
-  console.log(parsedTags, options.tags);
   return {
     ...options,
     projectName,
@@ -49,15 +48,19 @@ export function updateWorkspaceJson(
         architect: <any>{}
       };
     }
-    project.architect.deploy = applicationConfig.getDeployConfiguration(
+    project.architect.cdk = applicationConfig.getCdkConfiguration(
       normalizedOptions
     );
-    project.architect.destroy = applicationConfig.getDestroyConfiguration(
+    if (applicationConfig.getDeployConfiguration) {
+      project.architect.deploy = applicationConfig.getDeployConfiguration(
       normalizedOptions
-    );
-    project.architect.synth = applicationConfig.getSynthConfiguration(
-      normalizedOptions
-    );
+      );
+    }
+    if (applicationConfig.getDestroyConfiguration) {
+      project.architect.destroy = applicationConfig.getDestroyConfiguration(
+        normalizedOptions
+      );
+    }
     if (applicationConfig.getOfflineConfiguration) {
       project.architect.offline = applicationConfig.getOfflineConfiguration(
         normalizedOptions

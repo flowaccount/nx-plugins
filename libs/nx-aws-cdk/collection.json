@@ -7,6 +7,13 @@
       "factory": "./src/schematics/ec2-instance/schematics",
       "schema": "./src/schematics/ec2-instance/schema.json",
       "description": "nx aws-cdk ec2-instance schematic, to start ec2-instance on aws"
+    },
+    "init": {
+      "factory": "./src/schematics/init/init",
+      "schema": "./src/schematics/init/schema.json",
+      "description": "nx aws-cdk initiation schematic",
+      "aliases": ["init-aws-cdk"],
+      "hidden": true
     }
   }
 }

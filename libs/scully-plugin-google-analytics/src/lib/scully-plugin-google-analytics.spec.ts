@@ -1,9 +1,9 @@
-import { scullyPluginGoogleAnalytics } from './scully-plugin-google-analytics';
+import { getGoogleAnalyticsPlugin } from './scully-plugin-google-analytics';
 
 describe('scullyPluginGoogleAnalytics', () => {
   it('should work', () => {
-    expect(scullyPluginGoogleAnalytics()).toEqual(
-      'scully-plugin-google-analytics'
+    expect(getGoogleAnalyticsPlugin({ gaTrackingId: 'xx-xxxxxx-1' })).toEqual(
+      'googleAnalyticsPlugin'
     );
   });
 });

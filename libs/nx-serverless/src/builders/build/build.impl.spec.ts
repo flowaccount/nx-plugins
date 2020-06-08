@@ -9,6 +9,7 @@ import { BuildServerlessBuilderOptions } from './build.impl';
 import * as normalizeModule from '../../utils/normalize';
 import { getTestArchitect } from '../../utils/testing';
 import { ServerlessWrapper } from '../../utils/serverless';
+import * as serverlessConfig from '../../utils/serverless.config';
 
 describe('Serverless Build Builder', () => {
   let testOptions: BuildServerlessBuilderOptions & JsonObject;
@@ -55,6 +56,9 @@ describe('Serverless Build Builder', () => {
       }
     });
     spyOn(ServerlessWrapper, 'init').and.returnValue(of(null));
+    jest.spyOn(serverlessConfig, 'consolidateExcludes').mockImplementation((options, contex) => {
+      return options.tsConfig;
+    })
     jest.spyOn(ServerlessWrapper, 'serverless', 'get').mockReturnValue({
       cli: {
         log: () => {

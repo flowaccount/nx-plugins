@@ -20,6 +20,9 @@ class WebAppAwsCdkSchematicsAdapter implements AwsCdkSchematicsAdapter {
   getOfflineConfiguration(options: BaseNormalizedSchema) {
     return;
   }
+  getCdkConfiguration(options: BaseNormalizedSchema) {
+    return;
+  }
   getDeployConfiguration(options: BaseNormalizedSchema) {
     return;
   }

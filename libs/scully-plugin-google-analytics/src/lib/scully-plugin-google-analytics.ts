@@ -1,4 +1,4 @@
-import { registerPlugin, scullyConfig } from '@scullyio/scully';
+import { registerPlugin } from '@scullyio/scully';
 import { JSDOM } from 'jsdom';
 
 const GoogleAnalyticsPlugin = 'googleAnalyticsPlugin';
