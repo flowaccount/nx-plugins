@@ -83,7 +83,7 @@ jobs:
       #     command: yarn documentation
       - run:
           name: Run Unit Tests
-          command: yarn affected:test --base=origin/master~1 --parallel --maxParallel=4
+          command: yarn affected:test --base=origin/master~1 --parallel --maxParallel=2
   e2e-nx-plugins:
     executor: default
     steps:
