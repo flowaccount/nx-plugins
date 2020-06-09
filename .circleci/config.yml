@@ -11,7 +11,7 @@ executors:
       # install Cypress in Linux-like cache folder
       CYPRESS_CACHE_FOLDER: "~/.cache/Cypress"
       # set node max space
-      NODE_OPTIONS: "--max_old_space_size=8048"
+      NODE_OPTIONS: "--max_old_space_size=4096"
     docker:
       - image: circleci/node:12-browsers
 
