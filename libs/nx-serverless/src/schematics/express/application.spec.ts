@@ -11,7 +11,7 @@ describe('express app', () => {
   });
 
   describe('not nested', () => {
-    it('should update workspace.json', async (done) => {
+    it('should update workspace.json', async done => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', initExpress: true },
@@ -108,7 +108,7 @@ describe('express app', () => {
       );
       done();
     }, 90000);
-    it('should generate files', async (done) => {
+    it('should generate files', async done => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', initExpress: true },
@@ -129,7 +129,7 @@ describe('express app', () => {
   });
 
   describe('nested', () => {
-    it('should update workspace.json', async (done) => {
+    it('should update workspace.json', async done => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', directory: 'myDir', initExpress: true },
@@ -156,7 +156,7 @@ describe('express app', () => {
       done();
     }, 90000);
 
-    it('should generate files', async (done) => {
+    it('should generate files', async done => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', directory: 'myDir', initExpress: true },
@@ -181,7 +181,7 @@ describe('express app', () => {
   });
 
   describe('--unit-test-runner none', () => {
-    it('should not generate test configuration', async (done) => {
+    it('should not generate test configuration', async done => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', initExpress: true, unitTestRunner: 'none' },
