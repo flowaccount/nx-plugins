@@ -9,8 +9,9 @@ import { BuildServerlessBuilderOptions } from './build.impl';
 import * as normalizeModule from '../../utils/normalize';
 import { getTestArchitect } from '../../utils/testing';
 import { ServerlessWrapper } from '../../utils/serverless';
+import * as serverlessConfig from '../../utils/serverless.config';
 
-describe('ServerlessBuildBuilder', () => {
+describe('Serverless Build Builder', () => {
   let testOptions: BuildServerlessBuilderOptions & JsonObject;
   let architect: Architect;
   let runWebpack: jest.Mock;
@@ -55,6 +56,11 @@ describe('ServerlessBuildBuilder', () => {
       }
     });
     spyOn(ServerlessWrapper, 'init').and.returnValue(of(null));
+    jest
+      .spyOn(serverlessConfig, 'consolidateExcludes')
+      .mockImplementation((options, contex) => {
+        return options.tsConfig;
+      });
     jest.spyOn(ServerlessWrapper, 'serverless', 'get').mockReturnValue({
       cli: {
         log: () => {
@@ -70,9 +76,9 @@ describe('ServerlessBuildBuilder', () => {
     jest
       .spyOn(normalizeModule, 'getEntryForFunction')
       .mockReturnValue({ handler: '/root/apps/serverlessapp/src/handler.ts' });
-    (<any>TsConfigPathsPlugin).mockImplementation(
-      function MockPathsPlugin() {}
-    );
+    (<any>(
+      TsConfigPathsPlugin
+    )).mockImplementation(function MockPathsPlugin() {});
   });
 
   describe('run', () => {

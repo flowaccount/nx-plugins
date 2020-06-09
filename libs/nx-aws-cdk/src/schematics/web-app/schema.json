@@ -1,0 +1,46 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "id": "SchematicsAwsCdkWebAppDeployment",
+  "title": "Angular aws-cdk Deployment Options Schema",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The web application project that will use this infrastructure as a code",
+      "x-prompt": "Name of your web application projec to add aws-cdk to?"
+    },
+    "deploymentTarget": {
+      "type": "string",
+      "description": "The destination of the deployment",
+      "x-prompt": {
+        "message": "Please choose your deployment target",
+        "type": "list",
+        "items": [
+          {
+            "label": "S3 Static Site",
+            "value": "S3"
+          },
+          {
+            "label": "Api Gateway -> Lambda",
+            "value": "Lambda"
+          }
+        ]
+      }
+    },
+    "useCdn": {
+      "description": "Add cloud-front schematics to your infrastructure?",
+      "type": "boolean",
+      "default": false
+    },
+    "domainName": {
+      "description": "Your custom domain name for the deployment",
+      "type": "string"
+    },
+    "skipFormat": {
+      "description": "Skips the prettier format of files",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": ["project", "deploymentTarget"]
+}

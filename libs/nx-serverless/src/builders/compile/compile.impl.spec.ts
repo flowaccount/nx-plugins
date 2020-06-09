@@ -10,7 +10,7 @@ import { getTestArchitect } from '../../utils/testing';
 import { ServerlessWrapper } from '../../utils/serverless';
 import { ServerlessBaseOptions } from '../../utils/types';
 import * as depcheck from '../../utils/depcheck';
-describe('ServerlessBuildBuilder', () => {
+describe('Serverless Compile Builder', () => {
   let testOptions: ServerlessBaseOptions & JsonObject;
   let architect: Architect;
   let compileTypeScriptFiles: jest.Mock;
@@ -70,9 +70,9 @@ describe('ServerlessBuildBuilder', () => {
     jest
       .spyOn(normalizeModule, 'getEntryForFunction')
       .mockReturnValue({ handler: '/root/apps/serverlessapp/src/handler.ts' });
-    (<any>TsConfigPathsPlugin).mockImplementation(
-      function MockPathsPlugin() {}
-    );
+    (<any>(
+      TsConfigPathsPlugin
+    )).mockImplementation(function MockPathsPlugin() {});
   });
 
   describe('run', () => {

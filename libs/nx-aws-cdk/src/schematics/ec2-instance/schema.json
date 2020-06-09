@@ -1,0 +1,71 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "id": "SchematicsAwsCdkWebAppDeployment",
+  "title": "Angular aws-cdk Deployment Options Schema",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The stack name for your ec2-instance",
+      "x-prompt": "Stack Name for your ec2-instance to?"
+    },
+    "directory": {
+      "description": "The directory of the new api.",
+      "type": "string",
+      "x-prompt": "In which directory should the serverless api be generated?"
+    },
+    "project": {
+      "type": "string",
+      "description": "The application project to add ec2-instance to (if none, will create new)",
+      "x-prompt": "Name of your project to add ec2-instance to (if none, will create new)?"
+    },
+    "id": {
+      "description": "EC2 instance id, for the cdk template",
+      "type": "string"
+    },
+    "imageId": {
+      "description": "EC2 instance image-id, to create the instance from",
+      "type": "string"
+    },
+    "instanceType": {
+      "description": "The instance type you want to create",
+      "type": "string"
+    },
+    "keyName": {
+      "description": "The key name you want to use for the instance (this is the .pem file)",
+      "type": "string"
+    },
+    "monitoring": {
+      "description": "Do you want to enable detailed monitoring?",
+      "type": "boolean",
+      "default": false
+    },
+    "associatePublicIpAddress": {
+      "description": "Do you want to associate public ip?",
+      "type": "boolean",
+      "default": true
+    },
+    "subnetId": {
+      "description": "The subnet-id for your instance to live in.",
+      "type": "string"
+    },
+    "skipFormat": {
+      "description": "Skips the prettier format of files",
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "string",
+      "description": "Add tags to the api (used for linting)"
+    }
+  },
+  "required": [
+    "name",
+    "project",
+    "id",
+    "imageId",
+    "instanceType",
+    "keyName",
+    "subnetId"
+  ]
+}

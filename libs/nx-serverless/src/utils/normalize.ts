@@ -106,7 +106,7 @@ export const getEntryForFunction = (
 
   const handlerFile = getHandlerFile(handler);
   if (!handlerFile) {
-    _.get(this.serverless, 'service.provider.name') !== 'google' &&
+    _.get(serverless, 'service.provider.name') !== 'google' &&
       serverless.cli.log(
         `\nWARNING: Entry for ${name}@${handler} could not be retrieved.\nPlease check your service config if you want to use lib.entries.`
       );
@@ -163,7 +163,7 @@ const getEntryExtension = (fileName, serverless) => {
   );
 
   if (_.size(sortedFiles) > 1) {
-    this.serverless.cli.log(
+    serverless.cli.log(
       `WARNING: More than one matching handlers found for '${fileName}'. Using '${_.first(
         sortedFiles
       )}'.`
@@ -242,6 +242,12 @@ export function getProdModules(
   if (!packageJson.dependencies) {
     return [];
   }
+  const ignoredDevDependencies = [
+    'aws-sdk',
+    '@types/aws-serverless-express',
+    '@types/aws-lambda',
+    '@types/node'
+  ];
   // Get versions of all transient modules
   _.forEach(externalModules, module => {
     let moduleVersion = packageJson.dependencies[module.external];
@@ -281,21 +287,26 @@ export function getProdModules(
         (!packageJson.devDependencies[module.external] &&
           dependencyGraph.dependencies)
       ) {
-        // Add transient dependencies if they appear not in the service's dev dependencies
-
-        const originInfo =
-          _.get(dependencyGraph, 'dependencies', {})[module.external] || {};
-        moduleVersion = _.get(originInfo, 'version', null);
-        if (!moduleVersion) {
+        if (_.includes(ignoredDevDependencies, module.external)) {
           ServerlessWrapper.serverless.cli.log(
-            `WARNING: Could not determine version of module ${module.external}`
+            `INFO: Skipping addition of ${module.external} which is supposed to be devDependencies`
+          );
+        } else {
+          // Add transient dependencies if they appear not in the service's dev dependencies
+          const originInfo =
+            _.get(dependencyGraph, 'dependencies', {})[module.external] || {};
+          moduleVersion = _.get(originInfo, 'version', null);
+          if (!moduleVersion) {
+            ServerlessWrapper.serverless.cli.log(
+              `WARNING: Could not determine version of module ${module.external}`
+            );
+          }
+          prodModules.push(
+            moduleVersion
+              ? `${module.external}@${moduleVersion}`
+              : module.external
           );
         }
-        prodModules.push(
-          moduleVersion
-            ? `${module.external}@${moduleVersion}`
-            : module.external
-        );
       } else if (
         packageJson.devDependencies &&
         packageJson.devDependencies[module.external] &&
@@ -303,12 +314,7 @@ export function getProdModules(
       ) {
         // To minimize the chance of breaking setups we whitelist packages available on AWS here. These are due to the previously missing check
         // most likely set in devDependencies and should not lead to an error now.
-        const ignoredDevDependencies = [
-          'aws-sdk',
-          '@types/aws-serverless-express',
-          '@types/aws-lambda',
-          '@types/node'
-        ];
+
         if (!_.includes(ignoredDevDependencies, module.external)) {
           // Runtime dependency found in devDependencies but not forcefully excluded
           ServerlessWrapper.serverless.cli.log(

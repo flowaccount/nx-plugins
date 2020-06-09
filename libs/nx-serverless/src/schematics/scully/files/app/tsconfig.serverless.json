@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "<%= offset %>dist/out-tsc",
+    "types": ["node"],
+    "module": "commonjs"
+  },
+  "files": ["handler.ts", "server-prerender.ts"],
+  "include": []
+}

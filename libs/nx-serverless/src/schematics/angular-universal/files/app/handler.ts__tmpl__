@@ -24,9 +24,11 @@ const binaryMimeTypes = [
   'text/xml'
 ]
 
-const server = app();
-server.use(eventContext());
-
-const serverInstance  = createServer(server, null, binaryMimeTypes)
+let serverInstance;
+if (serverInstance === undefined){
+  const server = app();
+  server.use(eventContext());
+  serverInstance = createServer(server, null, binaryMimeTypes)
+}
 
 export const webApp = (event, context) => { proxy(serverInstance, event, context) }

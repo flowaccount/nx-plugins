@@ -1,6 +1,6 @@
 import { Configuration, BannerPlugin } from 'webpack';
-import * as mergeWebpack from 'webpack-merge';
-import * as nodeExternals from 'webpack-node-externals';
+const mergeWebpack = require('webpack-merge');
+const nodeExternals = require('webpack-node-externals');
 
 import { getBaseWebpackPartial } from './config';
 import { BuildBuilderOptions } from './types';

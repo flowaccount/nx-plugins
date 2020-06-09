@@ -1,0 +1,24 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "id": "NxAwsCdkInit",
+  "title": "Add Nx aws-cdk Schematics",
+  "type": "object",
+  "properties": {
+    "skipFormat": {
+      "description": "Skip formatting files",
+      "type": "boolean",
+      "default": false
+    },
+    "expressApp": {
+      "description": "Is an express application?",
+      "type": "boolean",
+      "default": false
+    },
+    "ec2Instance": {
+      "description": "Is an ec2 instance stack?",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": []
+}

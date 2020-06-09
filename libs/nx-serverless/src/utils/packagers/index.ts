@@ -34,7 +34,6 @@ import { concatMap, switchMap } from 'rxjs/operators';
 import { Observable, of, from } from 'rxjs';
 import { BuilderContext, BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { ServerlessDeployBuilderOptions } from '../../builders/deploy/deploy.impl';
 import { join, dirname } from 'path';
 
 const registeredPackagers = {
@@ -56,7 +55,11 @@ export function packager(packagerId) {
 }
 
 export function preparePackageJson(
-  options: JsonObject & ServerlessDeployBuilderOptions,
+  options: JsonObject & {
+    package: string;
+    root?: string;
+    verbose?: boolean;
+  },
   context: BuilderContext,
   stats: any,
   resolverName: string,

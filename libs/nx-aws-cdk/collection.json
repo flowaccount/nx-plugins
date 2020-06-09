@@ -3,10 +3,17 @@
   "name": "nx-aws-cdk",
   "version": "0.0.1",
   "schematics": {
-    "nxAwsCdk": {
-      "factory": "./src/schematics/nx-aws-cdk/schematic",
-      "schema": "./src/schematics/nx-aws-cdk/schema.json",
-      "description": "nx-aws-cdk schematic"
+    "ec2-instance": {
+      "factory": "./src/schematics/ec2-instance/schematics",
+      "schema": "./src/schematics/ec2-instance/schema.json",
+      "description": "nx aws-cdk ec2-instance schematic, to start ec2-instance on aws"
+    },
+    "init": {
+      "factory": "./src/schematics/init/init",
+      "schema": "./src/schematics/init/schema.json",
+      "description": "nx aws-cdk initiation schematic",
+      "aliases": ["init-aws-cdk"],
+      "hidden": true
     }
   }
 }

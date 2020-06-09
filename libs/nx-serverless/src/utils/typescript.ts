@@ -3,14 +3,9 @@ import { BuilderContext, BuilderOutput } from '@angular-devkit/architect';
 import { Observable, Subscriber } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { unlinkSync } from 'fs';
-import * as treeKill from 'tree-kill';
+const treeKill = require('tree-kill');
 import { ChildProcess, fork } from 'child_process';
-import * as ts from 'typescript';
-import { writeJsonFile } from '@nrwl/workspace/src/utils/fileutils';
-import {
-  createProjectGraph,
-  ProjectGraphNode
-} from '@nrwl/workspace/src/core/project-graph';
+import { ProjectGraphNode } from '@nrwl/workspace/src/core/project-graph';
 import { join } from 'path';
 import { removeSync } from 'fs-extra';
 import { ServerlessCompileOptions } from './types';

@@ -142,6 +142,8 @@ package:
       local: false
 provider:
   name: ${options.provider}
+  region: ${options.region}
+  endpointType: ${options.endpointType}
   runtime: nodejs10.x
 functions:
   hello-world:
@@ -214,7 +216,7 @@ export default function(schema: Schema): Rule {
     return chain([
       init({
         skipFormat: false,
-        universalApp: false
+        expressProxy: false
       }),
       addLintFiles(options.appProjectRoot, options.linter),
       addAppFiles(options),

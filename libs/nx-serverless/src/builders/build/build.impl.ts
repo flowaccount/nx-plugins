@@ -17,6 +17,7 @@ import { ServerlessWrapper } from '../../utils/serverless';
 // import { wrapMiddlewareBuildOptions } from '../../utils/middleware';
 import { resolve } from 'path';
 import { WebpackDependencyResolver } from '../../utils/webpack.stats';
+import { consolidateExcludes } from '../../utils/serverless.config';
 export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {}
 export type ServerlessBuildEvent = BuildResult &
   ServerlessEventResult & {
@@ -41,7 +42,9 @@ function run(
       );
     }),
     map(options => {
+      options.tsConfig = consolidateExcludes(options, context);
       options.entry = options.files;
+      console.log(options.tsConfig);
       let config = getNodeWebpackConfig(options);
       if (options.webpackConfig) {
         config = require(options.webpackConfig)(config, {

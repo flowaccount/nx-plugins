@@ -10,14 +10,6 @@
     "tslint.json": "*",
     "nx.json": "*"
   },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nrwl/workspace/src/tasks-runner/tasks-runner-v2",
-      "options": {
-        "cacheableOperations": ["build", "test", "lint"]
-      }
-    }
-  },
   "projects": {
     "nx-serverless": {
       "tags": []
@@ -32,6 +24,15 @@
     "nx-aws-cdk-e2e": {
       "tags": [],
       "implicitDependencies": ["nx-aws-cdk"]
+    },
+    "scully-plugin-angular-delay": {
+      "tags": []
+    },
+    "scully-plugin-lazy-load-picture-tag": {
+      "tags": []
+    },
+    "scully-plugin-google-analytics": {
+      "tags": []
     }
   }
 }

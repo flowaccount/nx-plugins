@@ -3,7 +3,7 @@ import { createEmptyWorkspace } from '@nrwl/workspace/testing';
 import { readJsonInTree, updateJsonInTree } from '@nrwl/workspace';
 import { callRule, runSchematic } from '../../utils/testing';
 
-fdescribe('init', () => {
+describe('init', () => {
   let tree: Tree;
 
   beforeEach(() => {
@@ -12,7 +12,7 @@ fdescribe('init', () => {
   });
 
   it('should add dependencies for node apis', async () => {
-    const result = await runSchematic('init', { universalApp: false }, tree);
+    const result = await runSchematic('init', { expressProxy: false }, tree);
     const packageJson = readJsonInTree(result, 'package.json');
     expect(
       packageJson.dependencies['@flowaccount/nx-serverless']
@@ -26,7 +26,7 @@ fdescribe('init', () => {
   });
 
   it('should add dependencies for universal', async () => {
-    const result = await runSchematic('init', { universalApp: true }, tree);
+    const result = await runSchematic('init', { expressProxy: true }, tree);
     const packageJson = readJsonInTree(result, 'package.json');
     expect(
       packageJson.dependencies['@flowaccount/nx-serverless']

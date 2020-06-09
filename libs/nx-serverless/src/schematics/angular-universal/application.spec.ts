@@ -9,7 +9,7 @@ import * as workspace from '@nrwl/workspace';
 import { runSchematic } from '../../utils/testing';
 // import { createApp } from '../../../../angular/src/utils/testing';
 
-describe('app', () => {
+describe('angular universal app', () => {
   let appTree: Tree;
   beforeEach(async () => {
     appTree = Tree.empty();

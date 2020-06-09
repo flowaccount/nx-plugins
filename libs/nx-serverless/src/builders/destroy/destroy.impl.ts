@@ -7,11 +7,9 @@ import { JsonObject } from '@angular-devkit/core';
 import { of, Observable } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { ServerlessWrapper } from '../../utils/serverless';
-import {
-  ServerlessDeployBuilderOptions,
-  startBuild
-} from '../deploy/deploy.impl';
+import { ServerlessDeployBuilderOptions } from '../deploy/deploy.impl';
 import { ServerlessBuildEvent } from '../build/build.impl';
+import { startBuild } from '../../utils/target.schedulers';
 
 export type ServerlesCompiledEvent = {
   outfile: string;
@@ -64,7 +62,9 @@ export function serverlessExecutionHandler(
   );
 }
 
-function getExecArgv(options: ServerlessDeployBuilderOptions) {
+export function getExecArgv(
+  options: ServerlessDeployBuilderOptions
+): Array<string> {
   const args = [];
   if (options.function && options.function != '') {
     args.push('function');

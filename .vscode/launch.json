@@ -1,0 +1,42 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug nx test nx-serverless",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/@nrwl/cli/bin/nx",
+      "env": {
+        "NODE_OPTIONS": "--inspect"
+      },
+      "args": [
+        "test",
+        "nx-serverless",
+        "--codeCoverage=false",
+        // "--testNamePattern=run",
+        "--testFile=libs/nx-serverless/src/schematics/express/application.spec.ts",
+        "--runInBand"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "port": 9229,
+      "internalConsoleOptions": "neverOpen"
+    },
+    {
+      "name": "Debug jest nx-serverless",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/node_modules/jest/bin/jest.js",
+      "args": [
+        "--config=libs/nx-serverless/jest.config.js",
+        "--codeCoverage=false",
+        "--runInBand",
+        "--watch",
+        "libs/nx-serverless/src/schematics/express/application.spec.ts"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "internalConsoleOptions": "neverOpen"
+    }
+  ]
+}

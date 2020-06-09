@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/nx-serverless",
-  "version": "0.4.6",
+  "version": "0.4.61",
   "main": "src/index.js",
   "description": "Serverless schematics for nx workspace",
   "keywords": [
@@ -14,12 +14,18 @@
   ],
   "schematics": "./collection.json",
   "builders": "./builders.json",
+  "ng-update": {
+    "requirements": {},
+    "migrations": "./migrations.json"
+  },
   "license": "MIT",
   "peerDependencies": {
-    "@nrwl/workspace": "^9.0.1"
+    "@nrwl/workspace": "9.2.2"
   },
   "dependencies": {
     "@nguniversal/express-engine": "^9.0.1",
+    "@nrwl/express": "9.2.2",
+    "@nrwl/node": "9.2.2",
     "dotenv": "6.2.0",
     "dotenv-json": "^1.0.0",
     "copy-webpack-plugin": "5.1.1",
@@ -32,8 +38,11 @@
     "webpack-dev-server": "3.9.0",
     "webpack-node-externals": "1.7.2",
     "depcheck": "0.9.2",
-    "serverless": "^1.66.0"
+    "serverless": "^1.66.0",
+    "is-builtin-module": "^3.0.0",
+    "ignore": "5.0.4"
   },
+  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "ssh://git@github.com/flowaccount/nx-plugins.git"
