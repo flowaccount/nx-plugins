@@ -11,7 +11,7 @@ describe('express app', () => {
   });
 
   describe('not nested', () => {
-    it('should update workspace.json', async () => {
+    it('should update workspace.json', async (done) => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', initExpress: true },
@@ -106,8 +106,9 @@ describe('express app', () => {
           }
         })
       );
-    });
-    it('should generate files', async () => {
+      done();
+    }, 90000);
+    it('should generate files', async (done) => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', initExpress: true },
@@ -123,11 +124,12 @@ describe('express app', () => {
       );
       expect(tsconfig.compilerOptions.types).toContain('node');
       expect(tsconfig.files).toEqual(['handler.ts']);
-    });
+      done();
+    }, 90000);
   });
 
   describe('nested', () => {
-    it('should update workspace.json', async () => {
+    it('should update workspace.json', async (done) => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', directory: 'myDir', initExpress: true },
@@ -151,9 +153,10 @@ describe('express app', () => {
       });
       expect(workspaceJson.projects['my-dir-my-app-e2e']).toBeUndefined();
       expect(workspaceJson.defaultProject).toEqual('my-dir-my-app');
+      done();
     }, 90000);
 
-    it('should generate files', async () => {
+    it('should generate files', async (done) => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', directory: 'myDir', initExpress: true },
@@ -173,11 +176,12 @@ describe('express app', () => {
       );
       expect(tsconfig.compilerOptions.types).toContain('node');
       expect(tsconfig.files).toEqual(['handler.ts']);
-    });
+      done();
+    }, 90000);
   });
 
   describe('--unit-test-runner none', () => {
-    it('should not generate test configuration', async () => {
+    it('should not generate test configuration', async (done) => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', initExpress: true, unitTestRunner: 'none' },
@@ -192,6 +196,7 @@ describe('express app', () => {
       expect(
         workspaceJson.projects['my-app'].architect.lint.options.tsConfig
       ).toEqual(['apps/my-app/tsconfig.app.json']);
-    });
+      done();
+    }, 90000);
   });
 });
