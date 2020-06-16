@@ -47,12 +47,13 @@ export const config: ScullyConfig = {
 };
 ```
 
-- If your tsconfig lives outside of the scully project root, you can specify the path to the tsconfig.json
+- If your tsconfig or dist folder lives outside of the scully project root, you can specify the paths
 
 ```javascript
 const postRenderers = [
   getDelayAngularPlugin({
-    tsConfigPath: '../../tsconfig.json'
+    tsConfigPath: '../../tsconfig.json',
+    distFolder: '../../dist/app'
   })
 ];
 ```

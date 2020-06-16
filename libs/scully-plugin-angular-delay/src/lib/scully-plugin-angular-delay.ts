@@ -10,16 +10,19 @@ interface DelayAngularPluginOptions {
   routesBlacklist?: { route: string; removeAngular?: boolean }[];
   delayMilliseconds?: number;
   tsConfigPath?: string;
+  distFolder?: string;
 }
 
 let RoutesBlacklist = [];
 let DelayMilliseconds = 0;
 let TSConfigPath: string | null = null;
+let DistFolder: string | null = null;
 
 export function getDelayAngularPlugin({
   routesBlacklist,
   delayMilliseconds,
-  tsConfigPath
+  tsConfigPath,
+  distFolder
 }: DelayAngularPluginOptions = {}) {
   if (routesBlacklist) {
     RoutesBlacklist = routesBlacklist;
@@ -29,6 +32,9 @@ export function getDelayAngularPlugin({
   }
   if (tsConfigPath) {
     TSConfigPath = tsConfigPath;
+  }
+  if (distFolder) {
+    DistFolder = distFolder;
   }
 
   return DelayAngular;
@@ -63,11 +69,12 @@ async function delayAngularPlugin(html, routeObj) {
     readFileSync(tsConfigPath, { encoding: 'utf8' }).toString()
   );
 
+  const distFolder = (DistFolder) ? DistFolder : scullyConfig.distFolder;
   let isEs5Config = false;
-  let statsJsonPath = join(scullyConfig.distFolder, 'stats-es2015.json');
+  let statsJsonPath = join(distFolder, 'stats-es2015.json');
   if (tsConfig.compilerOptions.target === 'es5') {
     isEs5Config = true;
-    statsJsonPath = join(scullyConfig.distFolder, 'stats.json');
+    statsJsonPath = join(distFolder, 'stats.json');
   }
 
   if (!existsSync(statsJsonPath)) {
@@ -80,7 +87,7 @@ Please run 'ng build' with the '--stats-json' flag`;
   }
 
   const scullyDelayAngularStatsJsonPath = join(
-    scullyConfig.distFolder,
+    distFolder,
     'scully-plugin-angular-delay-stats.json'
   );
   let scullyDelayAngularStatsJson = [];
