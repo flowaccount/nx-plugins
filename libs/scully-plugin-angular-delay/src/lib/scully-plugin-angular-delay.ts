@@ -9,20 +9,26 @@ registerPlugin('render', DelayAngular, delayAngularPlugin);
 interface DelayAngularPluginOptions {
   routesBlacklist?: { route: string; removeAngular?: boolean }[];
   delayMilliseconds?: number;
+  tsConfigPath?: string;
 }
 
 let RoutesBlacklist = [];
 let DelayMilliseconds = 0;
+let TSConfigPath: string | null = null;
 
 export function getDelayAngularPlugin({
   routesBlacklist,
-  delayMilliseconds
+  delayMilliseconds,
+  tsConfigPath
 }: DelayAngularPluginOptions = {}) {
   if (routesBlacklist) {
     RoutesBlacklist = routesBlacklist;
   }
   if (delayMilliseconds) {
     DelayMilliseconds = delayMilliseconds;
+  }
+  if (tsConfigPath) {
+    TSConfigPath = tsConfigPath;
   }
 
   return DelayAngular;
@@ -40,9 +46,14 @@ async function delayAngularPlugin(html, routeObj) {
   if (blacklistRoute && !blacklistRoute.removeAngular) {
     return Promise.resolve(html);
   }
-  const tsConfigPath = scullyConfig.projectRoot
-    ? join(scullyConfig.projectRoot, 'tsconfig.json')
-    : 'tsconfig.json';
+  let tsConfigPath: string;
+  if (TSConfigPath) {
+    tsConfigPath = TSConfigPath;
+  } else {
+    tsConfigPath = scullyConfig.projectRoot
+      ? join(scullyConfig.projectRoot, 'tsconfig.json')
+      : 'tsconfig.json';
+  }
   if (!existsSync(tsConfigPath)) {
     const notsconfigError = `No tsconfig file ${tsConfigPath} found`;
     console.error(notsconfigError);
@@ -62,7 +73,7 @@ async function delayAngularPlugin(html, routeObj) {
   if (!existsSync(statsJsonPath)) {
     const noStatsJsonError = `A ${
       isEs5Config ? 'stats' : 'stats-es2015'
-    }.json is required for the 'delayAngular' plugin.
+      }.json is required for the 'delayAngular' plugin.
 Please run 'ng build' with the '--stats-json' flag`;
     console.error(noStatsJsonError);
     throw new Error(noStatsJsonError);
@@ -169,7 +180,7 @@ Please run 'ng build' with the '--stats-json' flag`;
       }
       html = html.replace(regex, '');
     });
-    scriptsArray.forEach(function(x, index) {
+    scriptsArray.forEach(function (x, index) {
       if (x.startsWith('runtime')) {
         sorted.splice(0, 0, x);
       } else if (x.startsWith('main')) {

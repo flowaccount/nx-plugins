@@ -47,6 +47,16 @@ export const config: ScullyConfig = {
 };
 ```
 
+- If your tsconfig lives outside of the scully project root, you can specify the path to the tsconfig.json
+
+```javascript
+const postRenderers = [
+  getDelayAngularPlugin({
+    tsConfigPath: '../../tsconfig.json'
+  })
+];
+```
+
 _Build your app with the `--stats-json` flag enabled as the plugin needs to know which assets have been build for your app. Then just run the Scully command._
 
 ```bash
