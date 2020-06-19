@@ -9,20 +9,32 @@ registerPlugin('render', DelayAngular, delayAngularPlugin);
 interface DelayAngularPluginOptions {
   routesBlacklist?: { route: string; removeAngular?: boolean }[];
   delayMilliseconds?: number;
+  tsConfigPath?: string;
+  distFolder?: string;
 }
 
 let RoutesBlacklist = [];
 let DelayMilliseconds = 0;
+let TSConfigPath: string | null = null;
+let DistFolder: string | null = null;
 
 export function getDelayAngularPlugin({
   routesBlacklist,
-  delayMilliseconds
+  delayMilliseconds,
+  tsConfigPath,
+  distFolder
 }: DelayAngularPluginOptions = {}) {
   if (routesBlacklist) {
     RoutesBlacklist = routesBlacklist;
   }
   if (delayMilliseconds) {
     DelayMilliseconds = delayMilliseconds;
+  }
+  if (tsConfigPath) {
+    TSConfigPath = tsConfigPath;
+  }
+  if (distFolder) {
+    DistFolder = distFolder;
   }
 
   return DelayAngular;
@@ -40,9 +52,14 @@ async function delayAngularPlugin(html, routeObj) {
   if (blacklistRoute && !blacklistRoute.removeAngular) {
     return Promise.resolve(html);
   }
-  const tsConfigPath = scullyConfig.projectRoot
-    ? join(scullyConfig.projectRoot, 'tsconfig.json')
-    : 'tsconfig.json';
+  let tsConfigPath: string;
+  if (TSConfigPath) {
+    tsConfigPath = TSConfigPath;
+  } else {
+    tsConfigPath = scullyConfig.projectRoot
+      ? join(scullyConfig.projectRoot, 'tsconfig.json')
+      : 'tsconfig.json';
+  }
   if (!existsSync(tsConfigPath)) {
     const notsconfigError = `No tsconfig file ${tsConfigPath} found`;
     console.error(notsconfigError);
@@ -52,24 +69,25 @@ async function delayAngularPlugin(html, routeObj) {
     readFileSync(tsConfigPath, { encoding: 'utf8' }).toString()
   );
 
+  const distFolder = (DistFolder) ? DistFolder : scullyConfig.distFolder;
   let isEs5Config = false;
-  let statsJsonPath = join(scullyConfig.distFolder, 'stats-es2015.json');
+  let statsJsonPath = join(distFolder, 'stats-es2015.json');
   if (tsConfig.compilerOptions.target === 'es5') {
     isEs5Config = true;
-    statsJsonPath = join(scullyConfig.distFolder, 'stats.json');
+    statsJsonPath = join(distFolder, 'stats.json');
   }
 
   if (!existsSync(statsJsonPath)) {
     const noStatsJsonError = `A ${
       isEs5Config ? 'stats' : 'stats-es2015'
-    }.json is required for the 'delayAngular' plugin.
+      }.json is required for the 'delayAngular' plugin.
 Please run 'ng build' with the '--stats-json' flag`;
     console.error(noStatsJsonError);
     throw new Error(noStatsJsonError);
   }
 
   const scullyDelayAngularStatsJsonPath = join(
-    scullyConfig.distFolder,
+    distFolder,
     'scully-plugin-angular-delay-stats.json'
   );
   let scullyDelayAngularStatsJson = [];
@@ -169,7 +187,7 @@ Please run 'ng build' with the '--stats-json' flag`;
       }
       html = html.replace(regex, '');
     });
-    scriptsArray.forEach(function(x, index) {
+    scriptsArray.forEach(function (x, index) {
       if (x.startsWith('runtime')) {
         sorted.splice(0, 0, x);
       } else if (x.startsWith('main')) {
