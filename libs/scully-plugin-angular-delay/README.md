@@ -15,13 +15,13 @@ Read more at this article --> [Angular Paperclip Experiment](https://wickstargaz
 To install this library with `npm` run
 
 ```bash
-npm install scully-plugin-angular-delay --save-dev
+npm install @flowaccount/scully-plugin-angular-delay --save-dev
 ```
 
 or with `yarn`
 
 ```bash
-yarn add scully-plugin-angular-delay --dev
+yarn add @flowaccount/scully-plugin-angular-delay --dev
 ```
 
 ## Usage
