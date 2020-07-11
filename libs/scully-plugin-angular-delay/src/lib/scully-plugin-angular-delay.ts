@@ -207,7 +207,7 @@ Please run 'ng build' with the '--stats-json' flag`;
         sorted = sorted.concat(otherJs);
       }
     });
-    appendScript += `scriptsToLoad = '${JSON.stringify(sorted)}'`;
+    appendScript += `scriptsToLoad = ${JSON.stringify(sorted)}`;
     const dom = new JSDOM(html);
     const doc = dom.window.document;
     const s = doc.createElement('script');
