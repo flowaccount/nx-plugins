@@ -5,13 +5,13 @@
 To install this library with `npm` run
 
 ```bash
-npm install scully-plugin-google-analytics --save-dev
+npm install @flowaccount/scully-plugin-google-analytics --save-dev
 ```
 
 or with `yarn`
 
 ```bash
-yarn add scully-plugin-google-analytics --dev
+yarn add @flowaccount/scully-plugin-google-analytics --dev
 ```
 
 ## Usage
