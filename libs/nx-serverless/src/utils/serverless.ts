@@ -66,7 +66,7 @@ export class ServerlessWrapper {
                 )
               });
               context.logger.info(
-                `Environment vairbales set according to ${options.processEnvironmentFile}`
+                `Environment variables set according to ${options.processEnvironmentFile}`
               );
             } else {
               context.logger.error(
