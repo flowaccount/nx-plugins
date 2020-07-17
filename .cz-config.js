@@ -32,7 +32,11 @@ module.exports = {
       name: 'repo',
       description: 'anything related to managing the repo itself'
     },
-    { name: 'misc', description: 'misc stuff' }
+    { name: 'misc', description: 'misc stuff' },
+    {
+      name: 'scully-plugin-angular-delay',
+      description: 'anything related to Scully plugin for delaying Angular'
+    }
   ],
 
   allowTicketNumber: true,
