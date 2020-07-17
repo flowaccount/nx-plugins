@@ -22,6 +22,9 @@ module.exports = {
     { name: 'docs', description: 'anything related to docs infrastructure' },
     { name: 'nx-aws-cdk', description: 'anything aws-cdk specific' },
     { name: 'angular', description: 'anything angular specific' },
+    { name: 'scully-plugin-angular-delay', description: 'anything scully-plugin-angular-delay specific' },
+    { name: 'scully-plugin-google-analytics', description: 'anything scully-plugin-google-analytics specific' },
+    { name: 'scully-plugin-lazy-load-picture-tag', description: 'anything scully-plugin-lazy-load-picture-tag specific' },
     { name: 'node', description: 'anything Node specific' },
     { name: 'linter', description: 'anything Linter specific' },
     {
