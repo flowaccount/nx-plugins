@@ -256,7 +256,7 @@ export function getProdModules(
       // Check if the module has any peer dependencies and include them too
       try {
         const modulePackagePath = join(
-          dirname(join(process.cwd(), packagePath)),
+          dirname(packagePath),
           'node_modules',
           module.external,
           'package.json'
@@ -270,6 +270,7 @@ export function getProdModules(
           const peerModules = this.getProdModules.call(
             this,
             _.map(peerDependencies, (value, key) => ({ external: key })),
+            packageJson,
             packagePath,
             dependencyGraph,
             forceExcludes
