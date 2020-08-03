@@ -272,8 +272,8 @@ export function getProdModules(
             _.map(peerDependencies, (value, key) => ({ external: key })),
             packageJson,
             packagePath,
-            dependencyGraph,
-            forceExcludes
+            forceExcludes,
+            dependencyGraph
           );
           Array.prototype.push.apply(prodModules, peerModules);
         }

@@ -13,13 +13,13 @@ Read more about the experiment at this article --> [Angular Paperclip Experiment
 To install this library with `npm` run
 
 ```bash
-npm install scully-plugin-lazy-load-picture-tag --save-dev
+npm install @flowaccount/scully-plugin-lazy-load-picture-tag --save-dev
 ```
 
 or with `yarn`
 
 ```bash
-yarn add scully-plugin-lazy-load-picture-tag --dev
+yarn add @flowaccount/scully-plugin-lazy-load-picture-tag --dev
 ```
 
 ## Usage

@@ -6,7 +6,7 @@ const gitMessage = require('child_process')
   .toString()
   .trim();
 
-const matchCommit = /(chore|feat|fix|cleanup|docs)\((nx-serverless|core|docs|nx-aws-cdk|lint|angular|node|testing|repo|misc|scully-plugin-angular-delay)\):\s(([a-z0-9:\-\s])+)/g.test(
+const matchCommit = /(chore|feat|fix|cleanup|docs)\((nx-serverless|core|docs|nx-aws-cdk|lint|angular|scully-plugin-angular-delay|scully-plugin-google-analytics|scully-plugin-lazy-load-picture-tag|node|testing|repo|misc)\):\s(([a-z0-9:\-\s])+)/g.test(
   gitMessage
 );
 const matchRevert = /Revert/gi.test(gitMessage);
