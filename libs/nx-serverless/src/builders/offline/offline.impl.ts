@@ -135,7 +135,7 @@ function startBuild(
 }
 
 function getExecArgv(options: ServerlessExecuteBuilderOptions) {
-  const args = ['-r', 'source-map-support/register'];
+  const args = [];
   if (options.inspect === true) {
     options.inspect = InspectType.Inspect;
   }
