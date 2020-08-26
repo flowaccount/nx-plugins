@@ -5,7 +5,8 @@
   "properties": {
     "buildTarget": {
       "type": "string",
-      "description": "The target to run to build you the app"
+      "description": "The target to run to build you the app",
+      "default": ""
     },
     "waitUntilTargets": {
       "type": "array",
@@ -58,13 +59,10 @@
   },
   "additionalProperties": true,
   "required": [
-    "buildTarget",
-    "skipBuild",
     "main",
     "tsConfig",
     "outputFile",
     "command",
-    "stackNames",
     "processEnvironmentFile"
   ]
 }

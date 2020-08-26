@@ -78,7 +78,7 @@ function runCdk(
   commands.push({
     command: `cdk --o=${
       options.outputFile
-    } --app "npx ts-node -r dotenv/config ${options.main} dotenv_config_path=${
+    } --app "npx ts-node -r dotenv/config --project=${options.tsConfig} ${options.main} dotenv_config_path=${
       options.processEnvironmentFile
     }" ${options.command} ${options.stackNames.join(' ')}`
   });
@@ -153,31 +153,35 @@ export function startBuild(
   options: AwsCdkOptions,
   context: BuilderContext
 ): Observable<BuilderOutput> {
-  const target = targetFromTargetString(options.buildTarget);
-  return from(
-    Promise.all([
-      context.getTargetOptions(target),
-      context.getBuilderNameForTarget(target)
-    ]).then(([options, builderName]) =>
-      context.validateOptions(options, builderName)
-    )
-  ).pipe(
-    tap(options => {
-      if (options.optimization) {
-        const art = `
-        _   ___  __     ___        ______         ____ ____  _  __ __        ______     _    ____  ____  _____ ____  
-       | \\ | \\ \\/ /    / \\ \\      / / ___|       / ___|  _ \\| |/ / \\ \\      / |  _ \\   / \\  |  _ \\|  _ \\| ____|  _ \\ 
-       |  \\| |\\  /    / _ \\ \\ /\\ / /\\___ \\ _____| |   | | | | ' /   \\ \\ /\\ / /| |_) | / _ \\ | |_) | |_) |  _| | |_) |
-       | |\\  |/  \\   / ___ \\ V  V /  ___) |_____| |___| |_| | . \\    \\ V  V / |  _ < / ___ \\|  __/|  __/| |___|  _ < 
-       |_| \\_/_/\\_\\ /_/   \\_\\_/\\_/  |____/       \\____|____/|_|\\_\\    \\_/\\_/  |_| \\_/_/   \\_|_|   |_|   |_____|_| \\_\\`;
-        context.logger.info(art);
-      }
-    }),
-    concatMap(
-      () =>
-        (scheduleTargetAndForget(context, target, {
-          watch: false
-        }) as unknown) as Observable<BuilderOutput>
-    )
-  );
+  if(options.buildTarget) {
+      const target = targetFromTargetString(options.buildTarget);
+      return from(
+        Promise.all([
+          context.getTargetOptions(target),
+          context.getBuilderNameForTarget(target)
+        ]).then(([options, builderName]) =>
+          context.validateOptions(options, builderName)
+        )
+      ).pipe(
+        tap(options => {
+          if (options.optimization) {
+            const art = `
+            _   ___  __     ___        ______         ____ ____  _  __ __        ______     _    ____  ____  _____ ____  
+          | \\ | \\ \\/ /    / \\ \\      / / ___|       / ___|  _ \\| |/ / \\ \\      / |  _ \\   / \\  |  _ \\|  _ \\| ____|  _ \\ 
+          |  \\| |\\  /    / _ \\ \\ /\\ / /\\___ \\ _____| |   | | | | ' /   \\ \\ /\\ / /| |_) | / _ \\ | |_) | |_) |  _| | |_) |
+          | |\\  |/  \\   / ___ \\ V  V /  ___) |_____| |___| |_| | . \\    \\ V  V / |  _ < / ___ \\|  __/|  __/| |___|  _ < 
+          |_| \\_/_/\\_\\ /_/   \\_\\_/\\_/  |____/       \\____|____/|_|\\_\\    \\_/\\_/  |_| \\_/_/   \\_|_|   |_|   |_____|_| \\_\\`;
+            context.logger.info(art);
+          }
+        }),
+        concatMap(
+          () =>
+            (scheduleTargetAndForget(context, target, {
+              watch: false
+            }) as unknown) as Observable<BuilderOutput>
+        )
+      );
+    };
+
+    return of({ success: true });
 }
