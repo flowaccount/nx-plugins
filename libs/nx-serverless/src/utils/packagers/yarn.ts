@@ -7,43 +7,43 @@
  */
 
 import * as _ from 'lodash';
-import { spawn, spawnSync } from 'child_process';
-import { from } from 'rxjs/internal/observable/from';
+import { spawn, spawnSync, SpawnSyncReturns } from 'child_process';
 import { map } from 'rxjs/operators';
+import {
+  PackageManager,
+  PackageManagerInstallOptions
+} from './package-manager';
+import { OperatorFunction } from 'rxjs';
 
-export class Yarn {
-  static get lockfileName() {
-    // eslint-disable-line lodash/prefer-constant
+export class Yarn implements PackageManager {
+  private command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
+
+  get name(): string {
+    return 'yarn';
+  }
+
+  get lockfileName(): string {
     return 'yarn.lock';
   }
 
-  static get copyPackageSectionNames() {
+  get copyPackageSectionNames(): Array<string> {
     return ['resolutions'];
   }
 
-  static get mustCopyModules() {
-    // eslint-disable-line lodash/prefer-constant
+  get mustCopyModules(): boolean {
     return false;
   }
 
-  static generateLockFile(cwd) {
-    const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
-    const args = ['generate-lock-entry'];
-    return spawnSync(command, args, {
-      cwd: cwd
-    });
-  }
-
-  static getProdDependencies(cwd, depth) {
-    const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
+  getProdDependencies(cwd: string, depth?: number): SpawnSyncReturns<Buffer> {
     const args = ['list', `--depth=${depth || 1}`, '--json', '--production'];
 
     // If we need to ignore some errors add them here
     const ignoredYarnErrors = [];
 
-    var result = spawnSync(command, args, {
+    const result = spawnSync(this.command, args, {
       cwd: cwd
     });
+
     if (result.error) {
       const err = result.error;
       if (err instanceof Error) {
@@ -66,61 +66,50 @@ export class Yarn {
         );
 
         if (!failed && !_.isEmpty(err.stack)) {
-          return Promise.resolve({ stdout: err.message });
+          return Promise.resolve({ stdout: err.message }) as any;
         }
       }
-      return result;
-    } else {
-      return result;
     }
+    return result;
   }
 
-  static rebaseLockfile(pathToPackageRoot, lockfile) {
-    const fileVersionMatcher = /[^"/]@(?:file:)?((?:\.\/|\.\.\/).*?)[":,]/gm;
-    const replacements = [];
-    let match;
-
-    // Detect all references and create replacement line strings
-    while ((match = fileVersionMatcher.exec(lockfile)) !== null) {
-      replacements.push({
-        oldRef: match[1],
-        newRef: _.replace(`${pathToPackageRoot}/${match[1]}`, /\\/g, '/')
-      });
-    }
-
-    // Replace all lines in lockfile
-    return _.reduce(
-      replacements,
-      (__, replacement) => {
-        return _.replace(__, replacement.oldRef, replacement.newRef);
-      },
-      lockfile
-    );
-  }
-
-  static install(cwd, packagerOptions) {
-    const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
+  install(
+    cwd: string,
+    options?: PackageManagerInstallOptions
+  ): SpawnSyncReturns<Buffer> {
     const args = ['install', '--no-lockfile', '--non-interactive'];
 
     // Convert supported packagerOptions
-    if (packagerOptions.ignoreScripts) {
+    if (options.ignoreScripts) {
       args.push('--ignore-scripts');
     }
 
-    return spawnSync(command, args, { cwd });
+    return spawnSync(this.command, args, { cwd });
   }
 
-  // "Yarn install" prunes automatically
-  static prune(cwd, packagerOptions) {
-    return Yarn.install(cwd, packagerOptions);
+  prune(
+    cwd: string,
+    options?: PackageManagerInstallOptions
+  ): SpawnSyncReturns<Buffer> {
+    // "Yarn install" prunes automatically
+    return this.install(cwd, options);
   }
 
-  static runScripts(cwd, scriptNames) {
-    const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
+  runScripts(
+    cwd: string,
+    scriptNames: (value: string, index: number) => SpawnSyncReturns<Buffer>
+  ): OperatorFunction<string, SpawnSyncReturns<Buffer>> {
     return map(scriptNames, scriptName => {
       const args = ['run', scriptName];
 
-      return spawn(command, args, { cwd });
+      return spawn(this.command, args, { cwd });
+    });
+  }
+
+  generateLockFile(cwd: string): SpawnSyncReturns<Buffer> {
+    const args = ['generate-lock-entry'];
+    return spawnSync(this.command, args, {
+      cwd: cwd
     });
   }
 }

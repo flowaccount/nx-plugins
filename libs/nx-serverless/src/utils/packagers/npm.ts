@@ -1,29 +1,33 @@
-import { map } from 'rxjs/operators';
-
 /**
  * NPM packager.
  */
-import * as _ from 'lodash';
-import { spawn, spawnSync } from 'child_process';
 
-export class NPM {
-  static get lockfileName() {
-    // eslint-disable-line lodash/prefer-constant
+import { map } from 'rxjs/operators';
+import * as _ from 'lodash';
+import { spawn, spawnSync, SpawnSyncReturns } from 'child_process';
+import { PackageManager } from './package-manager';
+import { OperatorFunction } from 'rxjs';
+
+export class NPM implements PackageManager {
+  private command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+
+  get name() {
+    return 'npm';
+  }
+
+  get lockfileName() {
     return 'package-lock.json';
   }
-
-  static get copyPackageSectionNames() {
+  get copyPackageSectionNames() {
     return [];
   }
-
-  static get mustCopyModules() {
-    // eslint-disable-line lodash/prefer-constant
+  get mustCopyModules() {
     return true;
   }
 
-  static getProdDependencies(cwd, depth) {
+  getProdDependencies(cwd: string, depth?: number): SpawnSyncReturns<Buffer> {
     // Get first level dependency graph
-    const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+
     const args = [
       'ls',
       '-prod', // Only prod dependencies
@@ -37,9 +41,7 @@ export class NPM {
       { npmError: 'peer dep missing', log: true }
     ];
 
-    const result = spawnSync(command, args, {
-      cwd: cwd
-    });
+    const result = spawnSync(this.command, args, { cwd });
 
     if (result.error) {
       const err = result.error;
@@ -63,70 +65,44 @@ export class NPM {
         );
 
         if (!failed && !_.isEmpty(err.stack)) {
-          return Promise.resolve({ stdout: err.message });
+          return Promise.resolve({ stdout: err.message }) as any;
         }
       }
       return result;
     } else {
       return result;
     }
-    // .then(processOutput => processOutput.stdout)
-    // .then(depJson => Promise.try(() => JSON.parse(depJson)));
   }
 
-  static _rebaseFileReferences(pathToPackageRoot, moduleVersion) {
-    if (/^file:[^/]{2}/.test(moduleVersion)) {
-      const filePath = _.replace(moduleVersion, /^file:/, '');
-      return _.replace(`file:${pathToPackageRoot}/${filePath}`, /\\/g, '/');
-    }
-
-    return moduleVersion;
-  }
-
-  /**
-   * We should not be modifying 'package-lock.json'
-   * because this file should be treated as internal to npm.
-   *
-   * Rebase package-lock is a temporary workaround and must be
-   * removed as soon as https://github.com/npm/npm/issues/19183 gets fixed.
-   */
-  static rebaseLockfile(pathToPackageRoot, lockfile) {
-    if (lockfile.version) {
-      lockfile.version = NPM._rebaseFileReferences(
-        pathToPackageRoot,
-        lockfile.version
-      );
-    }
-
-    if (lockfile.dependencies) {
-      _.forIn(lockfile.dependencies, lockedDependency => {
-        NPM.rebaseLockfile(pathToPackageRoot, lockedDependency);
-      });
-    }
-
-    return lockfile;
-  }
-
-  static install(cwd) {
-    const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+  install(
+    cwd: string,
+    options?: Record<string, any>
+  ): SpawnSyncReturns<Buffer> {
     const args = ['install'];
 
-    return spawnSync(command, args, { cwd });
+    return spawnSync(this.command, args, { cwd, ...options });
   }
 
-  static prune(cwd) {
-    const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+  prune(cwd: string, options?: Record<string, any>): SpawnSyncReturns<Buffer> {
     const args = ['prune'];
 
-    return spawn(command, args, { cwd });
+    return spawnSync(this.command, args, { cwd, ...options });
   }
 
-  static runScripts(cwd, scriptNames) {
-    const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
+  runScripts(
+    cwd: string,
+    scriptNames: (value: string, index: number) => SpawnSyncReturns<Buffer>
+  ): OperatorFunction<string, SpawnSyncReturns<Buffer>> {
     return map(scriptNames, scriptName => {
       const args = ['run', scriptName];
 
-      return spawn(command, args, { cwd });
+      return spawn(this.command, args, { cwd });
     });
+  }
+
+  generateLockFile(cwd: string): SpawnSyncReturns<Buffer> {
+    const args = ['install', '--package-lock'];
+
+    return spawnSync(this.command, args, { cwd });
   }
 }

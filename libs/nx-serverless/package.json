@@ -40,7 +40,8 @@
     "depcheck": "0.9.2",
     "serverless": "^1.66.0",
     "is-builtin-module": "^3.0.0",
-    "ignore": "5.0.4"
+    "ignore": "5.0.4",
+    "detect-package-manager": "^1.1.0"
   },
   "devDependencies": {},
   "repository": {
