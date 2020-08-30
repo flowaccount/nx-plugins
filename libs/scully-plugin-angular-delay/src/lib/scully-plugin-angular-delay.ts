@@ -69,7 +69,7 @@ async function delayAngularPlugin(html, routeObj) {
     readFileSync(tsConfigPath, { encoding: 'utf8' }).toString()
   );
 
-  const distFolder = (DistFolder) ? DistFolder : scullyConfig.distFolder;
+  const distFolder = DistFolder ? DistFolder : scullyConfig.distFolder;
   let isEs5Config = false;
   let statsJsonPath = join(distFolder, 'stats-es2015.json');
   if (tsConfig.compilerOptions.target === 'es5') {
@@ -80,7 +80,7 @@ async function delayAngularPlugin(html, routeObj) {
   if (!existsSync(statsJsonPath)) {
     const noStatsJsonError = `A ${
       isEs5Config ? 'stats' : 'stats-es2015'
-      }.json is required for the 'delayAngular' plugin.
+    }.json is required for the 'delayAngular' plugin.
 Please run 'ng build' with the '--stats-json' flag`;
     console.error(noStatsJsonError);
     throw new Error(noStatsJsonError);
@@ -187,7 +187,7 @@ Please run 'ng build' with the '--stats-json' flag`;
       }
       html = html.replace(regex, '');
     });
-    scriptsArray.forEach(function (x, index) {
+    scriptsArray.forEach(function(x, index) {
       if (x.startsWith('runtime')) {
         sorted.splice(0, 0, x);
       } else if (x.startsWith('main')) {
