@@ -14,6 +14,7 @@ import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
+import { Packager } from '../../utils/enums';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
@@ -37,6 +38,7 @@ export interface ServerlessSlsBuilderOptions extends JsonObject {
   sourceRoot?: string;
   root?: string;
   command: string;
+  packager?: Packager;
 }
 
 export default createBuilder<ServerlessSlsBuilderOptions & JsonObject>(

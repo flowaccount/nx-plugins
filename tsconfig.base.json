@@ -32,7 +32,8 @@
       ],
       "@flowaccount/scully-plugin-google-analytics": [
         "libs/scully-plugin-google-analytics/src/index.ts"
-      ]
+      ],
+      "@flowaccount/nx-dotnet": ["libs/nx-dotnet/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

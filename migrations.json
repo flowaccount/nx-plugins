@@ -1,0 +1,11 @@
+{
+  "migrations": [
+    {
+      "version": "10.1.0-beta.1",
+      "description": "Removes rootDir from node libs' tsconfig",
+      "factory": "./src/migrations/update-10-1-0/remove-root-dir",
+      "package": "@nrwl/node",
+      "name": "remove-root-dir"
+    }
+  ]
+}

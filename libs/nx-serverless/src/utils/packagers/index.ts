@@ -73,11 +73,16 @@ export function preparePackageJson(
   context.logger.info('create a package.json with first level dependencies'); //First create a package.json with first level dependencies
   // Get the packager for the current process.
   let packagerInstance = null;
-  if (packager('yarn')) {
-    packagerInstance = Yarn;
-  } else if (packager('npm')) {
+  if(options.packager && options.packager == 'npm') {
     packagerInstance = NPM;
-  } else {
+  }  else if(options.packager && options.packager == 'yarn') {
+    packagerInstance = Yarn;
+  }  else if (packager('npm')) {
+    packagerInstance = NPM; 
+  }  else if (packager('yarn')) {
+    packagerInstance = Yarn;
+  }
+  else {
     return of({
       success: false,
       error: 'No Packager to process package.json, please install npm or yarn'
@@ -101,7 +106,7 @@ export function preparePackageJson(
     concatMap((prodModules: string[]) => {
       createPackageJson(prodModules, packageJsonPath, workspacePackageJsonPath);
       //got to generate lock entry for yarn for dependency graph to work.
-      if (packager('yarn')) {
+      if (packagerInstance === Yarn) {
         context.logger.info(
           'generate lock entry for yarn for dependency graph to work.'
         );
@@ -136,9 +141,9 @@ export function preparePackageJson(
         });
       }
       const data = getDependenciesResult.stdout.toString();
-      if (packager('yarn')) {
+      if (packagerInstance === Yarn) {
         dependencyGraph = convertDependencyTrees(JSON.parse(data.toString()));
-      } else if (packager('npm')) {
+      } else if (packagerInstance === NPM) {
         dependencyGraph = JSON.parse(data.toString());
       }
       const problems = _.get(dependencyGraph, 'problems', []);

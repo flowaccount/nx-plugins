@@ -10,6 +10,7 @@ import { of, Observable } from 'rxjs';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
+import { createDirectory } from '@nrwl/workspace' 
 export class ServerlessWrapper {
   constructor() {}
 
@@ -33,7 +34,7 @@ export class ServerlessWrapper {
   static init<T extends ServerlessBaseOptions>(
     options: T,
     context: BuilderContext
-  ): Observable<void> {
+  ): Observable<any> {
     if (this.serverless$ === null) {
       return from(Promise.resolve(options)).pipe(
         mergeMap((options: T) => {
@@ -80,6 +81,12 @@ export class ServerlessWrapper {
             config: options.serverlessConfig,
             servicePath: options.servicePath
           });
+
+          // NOTE: Create a packaging folder instead of being inside the normal folders. To fix cache and also de-couple the process
+          createDirectory( 'dist/serverlessPackages/')
+          this.serverless$.service.package = {
+            path:  'dist/serverlessPackages/' + options.servicePath
+          }
           return this.serverless$.init();
         }),
         concatMap(() => {

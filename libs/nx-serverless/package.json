@@ -20,12 +20,12 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@nrwl/workspace": "9.2.2"
+    "@nrwl/workspace": "11.0.4"
   },
   "dependencies": {
     "@nguniversal/express-engine": "^9.0.1",
-    "@nrwl/express": "9.2.2",
-    "@nrwl/node": "9.2.2",
+    "@nrwl/express": "11.0.4",
+    "@nrwl/node": "11.0.4",
     "dotenv": "6.2.0",
     "dotenv-json": "^1.0.0",
     "copy-webpack-plugin": "5.1.1",
