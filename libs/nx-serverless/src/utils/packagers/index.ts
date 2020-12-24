@@ -59,6 +59,7 @@ export function preparePackageJson(
     package: string;
     root?: string;
     verbose?: boolean;
+    ignoreScripts: boolean;
   },
   context: BuilderContext,
   stats: any,
@@ -95,7 +96,7 @@ export function preparePackageJson(
         stats,
         {},
         options.root,
-        tsconfig
+        tsconfig,
       );
     }),
     concatMap((prodModules: string[]) => {
@@ -166,7 +167,7 @@ export function preparePackageJson(
       context.logger.info('run packager to  install node_modules');
       const packageInstallResult = packagerInstance.install(
         dirname(packageJsonPath),
-        { ignoreScripts: true }
+        { ignoreScripts: options.ignoreScripts }
       );
       if (packageInstallResult.error) {
         context.logger.error('ERROR: install package error!');

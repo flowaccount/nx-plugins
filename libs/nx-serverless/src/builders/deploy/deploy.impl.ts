@@ -42,6 +42,7 @@ export interface ServerlessDeployBuilderOptions extends JsonObject {
   verbose?: boolean;
   sourceRoot?: string;
   root?: string;
+  ignoreScripts: boolean;
 }
 
 export default createBuilder<ServerlessDeployBuilderOptions & JsonObject>(
