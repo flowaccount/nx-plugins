@@ -14,7 +14,7 @@ import {
 } from '../../utils/normalize';
 import { Stats } from 'webpack';
 import { ServerlessWrapper } from '../../utils/serverless';
-// import { wrapMiddlewareBuildOptions } from '../../utils/middleware';
+// import { wrapMiddlewareBuildOptions } from '../../utils/middleware';;
 import { resolve } from 'path';
 import { WebpackDependencyResolver } from '../../utils/webpack.stats';
 import { consolidateExcludes } from '../../utils/serverless.config';
