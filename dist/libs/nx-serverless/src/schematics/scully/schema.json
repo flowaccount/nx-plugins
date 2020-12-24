@@ -1,0 +1,35 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "id": "SchematicsNgScullyServerlessApp",
+  "title": "Angular Scully Serverless Web Application Options Schema",
+  "type": "object",
+  "properties": {
+    "project": {
+      "type": "string",
+      "description": "The angular application project that is a parent to this scully serverless application.",
+      "x-prompt": "Name of your angular project to add scully prerendering and serverless deployment to?"
+    },
+    "provider": {
+      "type": "string",
+      "description": "The cloud provider for this serverless application.",
+      "x-prompt": "Which cloud provider are you using for this serverless application? ( aws | azure | google )"
+    },
+    "addScully": {
+      "description": "Also run scully schematic on your project?",
+      "type": "boolean",
+      "x-prompt": "Do you want to bootstrap scully app on your project?"
+    },
+    "skipInstall": {
+      "description": "Skips the installation of scully packages",
+      "type": "boolean",
+      "x-prompt": "Would you like to skip scully universal packages?",
+      "default": true
+    },
+    "skipFormat": {
+      "description": "Skips the prettier format of files",
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": ["project", "addScully"]
+}

@@ -57,9 +57,9 @@ export function packager(packagerId) {
 export function preparePackageJson(
   options: JsonObject & {
     package: string;
+    ignoreScripts: boolean;
     root?: string;
     verbose?: boolean;
-    ignoreScripts: boolean;
   },
   context: BuilderContext,
   stats: any,

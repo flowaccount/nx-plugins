@@ -43,6 +43,7 @@ export interface ServerlessBaseOptions {
   watch?: boolean;
   sourceMap?: boolean;
   files?: {};
+  assetFiles?: Array<FileInputOutput>;
   sourceRoot?: Path;
 }
 

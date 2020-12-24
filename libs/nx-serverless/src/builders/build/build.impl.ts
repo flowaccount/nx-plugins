@@ -4,7 +4,7 @@ import { runWebpack, BuildResult } from '@angular-devkit/build-webpack';
 import { Observable, from, combineLatest, of } from 'rxjs';
 // import { NodeJsSyncHost } from '@angular-devkit/core/node';
 import { BuildBuilderOptions, ServerlessEventResult } from '../../utils/types';
-import { map, concatMap, switchMap, mergeMap } from 'rxjs/operators';
+import { map, concatMap, switchMap, mergeMap, tap } from 'rxjs/operators';
 
 import { getNodeWebpackConfig } from '../../utils/node.config';
 import {
@@ -18,6 +18,8 @@ import { ServerlessWrapper } from '../../utils/serverless';
 import { resolve } from 'path';
 import { WebpackDependencyResolver } from '../../utils/webpack.stats';
 import { consolidateExcludes } from '../../utils/serverless.config';
+import copyAssetFiles from '../../utils/copy-asset-files'
+import normalizeAssetOptions from '../../utils/normalize-options'
 export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {}
 export type ServerlessBuildEvent = BuildResult &
   ServerlessEventResult & {
@@ -52,6 +54,8 @@ function run(
           configuration: context.target.configuration
         });
       }
+      // tap(() => copyAssetFiles(normalizeAssetOptions(options), context))
+      tap(() => copyAssetFiles(normalizeAssetOptions(options, context, ''), context)) // NOTE: Where libRoot?
       return config;
     }),
     concatMap(config => {
@@ -61,12 +65,15 @@ function run(
           context.logger.info(stats.toString(config.stats));
         }
       });
+     
     }),
     map((buildEvent: BuildResult) => {
+      
       buildEvent.outfile = resolve(context.workspaceRoot, options.outputPath);
       buildEvent.resolverName = 'WebpackDependencyResolver';
       return buildEvent as ServerlessBuildEvent;
-    })
+    }),
+    
   );
 }
 export default createBuilder<JsonObject & BuildServerlessBuilderOptions>(run);
