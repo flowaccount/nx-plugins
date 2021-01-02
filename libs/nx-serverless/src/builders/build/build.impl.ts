@@ -18,8 +18,8 @@ import { ServerlessWrapper } from '../../utils/serverless';
 import { resolve } from 'path';
 import { WebpackDependencyResolver } from '../../utils/webpack.stats';
 import { consolidateExcludes } from '../../utils/serverless.config';
-import copyAssetFiles from '../../utils/copy-asset-files'
-import normalizeAssetOptions from '../../utils/normalize-options'
+import copyAssetFiles from '../../utils/copy-asset-files';
+import normalizeAssetOptions from '../../utils/normalize-options';
 export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {}
 export type ServerlessBuildEvent = BuildResult &
   ServerlessEventResult & {
@@ -55,7 +55,9 @@ function run(
         });
       }
       // tap(() => copyAssetFiles(normalizeAssetOptions(options), context))
-      tap(() => copyAssetFiles(normalizeAssetOptions(options, context, ''), context)) // NOTE: Where libRoot?
+      tap(() =>
+        copyAssetFiles(normalizeAssetOptions(options, context, ''), context)
+      ); // NOTE: Where libRoot?
       return config;
     }),
     concatMap(config => {
@@ -65,15 +67,12 @@ function run(
           context.logger.info(stats.toString(config.stats));
         }
       });
-     
     }),
     map((buildEvent: BuildResult) => {
-      
       buildEvent.outfile = resolve(context.workspaceRoot, options.outputPath);
       buildEvent.resolverName = 'WebpackDependencyResolver';
       return buildEvent as ServerlessBuildEvent;
-    }),
-    
+    })
   );
 }
 export default createBuilder<JsonObject & BuildServerlessBuilderOptions>(run);

@@ -96,7 +96,7 @@ export function preparePackageJson(
         stats,
         {},
         options.root,
-        tsconfig,
+        tsconfig
       );
     }),
     concatMap((prodModules: string[]) => {
