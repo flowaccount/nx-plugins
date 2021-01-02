@@ -3,6 +3,7 @@ import * as glob from 'glob';
 import { basename, dirname, join, relative } from 'path';
 import { BuildBuilderOptions, FileInputOutput } from './types'
 
+
 export default function normalizeAssetOptions(
   options: BuildBuilderOptions,
   context: BuilderContext,
