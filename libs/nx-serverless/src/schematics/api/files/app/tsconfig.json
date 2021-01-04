@@ -1,5 +1,5 @@
 {
-  "extends": "<%= offset %>tsconfig.json",
+  "extends": "<%= offset %>tsconfig.<%= (baseWorkspaceTsConfig === true ? 'base.' : '') %>json",
   "compilerOptions": {
     "types": ["node"]
   },

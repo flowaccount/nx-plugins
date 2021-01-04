@@ -103,8 +103,7 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
     project.architect.lint = generateProjectLint(
       normalize(project.root),
       join(normalize(project.root), 'tsconfig.app.json'),
-      options.linter,
-      []
+      options.linter
     );
     workspaceJson.projects[options.name] = project;
     workspaceJson.defaultProject = workspaceJson.defaultProject || options.name;
@@ -119,7 +118,8 @@ function addAppFiles(options: NormalizedSchema): Rule {
         tmpl: '',
         name: options.name,
         root: options.appProjectRoot,
-        offset: offsetFromRoot(options.appProjectRoot),
+        baseWorkspaceTsConfig: options.baseWorkspaceTsConfig,
+        offset: offsetFromRoot(options.appProjectRoot)
       }),
       move(options.appProjectRoot),
     ])
