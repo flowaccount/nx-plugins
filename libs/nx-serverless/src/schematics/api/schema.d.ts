@@ -8,4 +8,5 @@ export interface Schema extends BaseSchema {
   linter: Linter;
   tags?: string;
   frontendProject?: string;
+  baseWorkspaceTsConfig?: boolean;
 }
