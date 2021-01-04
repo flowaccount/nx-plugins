@@ -14,15 +14,15 @@ export default function normalizeAssetOptions(
     return glob.sync(pattern, {
       cwd: input,
       nodir: true,
-      ignore
+      ignore,
     });
   };
-  options.assets.forEach(asset => {
+  options.assets.forEach((asset) => {
     if (typeof asset === 'string') {
-      globbedFiles(asset, context.workspaceRoot).forEach(globbedFile => {
+      globbedFiles(asset, context.workspaceRoot).forEach((globbedFile) => {
         files.push({
           input: join(context.workspaceRoot, globbedFile),
-          output: join(context.workspaceRoot, outDir, basename(globbedFile))
+          output: join(context.workspaceRoot, outDir, basename(globbedFile)),
         });
       });
     } else {
@@ -30,16 +30,21 @@ export default function normalizeAssetOptions(
         asset.glob,
         join(context.workspaceRoot, asset.input),
         asset.ignore
-      ).forEach(globbedFile => {
+      ).forEach((globbedFile) => {
         files.push({
           input: join(context.workspaceRoot, asset.input, globbedFile),
-          output: join(context.workspaceRoot, outDir, asset.output, globbedFile)
+          output: join(
+            context.workspaceRoot,
+            outDir,
+            asset.output,
+            globbedFile
+          ),
         });
       });
     }
   });
   return {
     ...options,
-    assetFiles: files
+    assetFiles: files,
   };
 }

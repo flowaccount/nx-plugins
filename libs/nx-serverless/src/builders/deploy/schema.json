@@ -52,6 +52,11 @@
       "type": "boolean",
       "default": true,
       "description": "Updates ignoreScripts false to use own package with dev environment"
+    },
+    "packager": {
+      "type": "string",
+      "default": "YARN",
+      "description": "the packager to use for resolving dependencies"
     }
   },
   "additionalProperties": false,

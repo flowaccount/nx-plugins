@@ -8,18 +8,18 @@ export default function copyAssetFiles(
 ): Promise<BuilderOutput> {
   context.logger.info('Copying asset files...');
   return Promise.all(
-    options.assetFiles.map(file => copy(file.input, file.output))
+    options.assetFiles.map((file) => copy(file.input, file.output))
   )
     .then(() => {
       context.logger.info('Done copying asset files.');
       return {
-        success: true
+        success: true,
       };
     })
     .catch((err: Error) => {
       return {
         error: err.message,
-        success: false
+        success: false,
       };
     });
 }

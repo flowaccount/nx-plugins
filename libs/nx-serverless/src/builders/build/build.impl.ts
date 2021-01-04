@@ -10,7 +10,7 @@ import { getNodeWebpackConfig } from '../../utils/node.config';
 import {
   normalizeBuildOptions,
   assignEntriesToFunctionsFromServerless,
-  getSourceRoot
+  getSourceRoot,
 } from '../../utils/normalize';
 import { Stats } from 'webpack';
 import { ServerlessWrapper } from '../../utils/serverless';
@@ -31,10 +31,10 @@ function run(
   context: BuilderContext
 ): Observable<ServerlessBuildEvent> {
   return from(getSourceRoot(context)).pipe(
-    map(sourceRoot =>
+    map((sourceRoot) =>
       normalizeBuildOptions(options, context.workspaceRoot, sourceRoot)
     ),
-    switchMap(options =>
+    switchMap((options) =>
       combineLatest(of(options), from(ServerlessWrapper.init(options, context)))
     ),
     map(([options]) => {
@@ -43,7 +43,7 @@ function run(
         context.workspaceRoot
       );
     }),
-    map(options => {
+    map((options) => {
       options.tsConfig = consolidateExcludes(options, context);
       options.entry = options.files;
       console.log(options.tsConfig);
@@ -51,7 +51,7 @@ function run(
       if (options.webpackConfig) {
         config = require(options.webpackConfig)(config, {
           options,
-          configuration: context.target.configuration
+          configuration: context.target.configuration,
         });
       }
       // tap(() => copyAssetFiles(normalizeAssetOptions(options), context))
@@ -60,12 +60,12 @@ function run(
       ); // NOTE: Where libRoot?
       return config;
     }),
-    concatMap(config => {
+    concatMap((config) => {
       ServerlessWrapper.serverless.cli.log('start compiling webpack');
       return runWebpack(config, context, {
-        logging: stats => {
+        logging: (stats) => {
           context.logger.info(stats.toString(config.stats));
-        }
+        },
       });
     }),
     map((buildEvent: BuildResult) => {
