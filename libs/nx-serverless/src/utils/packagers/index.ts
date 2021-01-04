@@ -74,16 +74,15 @@ export function preparePackageJson(
   context.logger.info('create a package.json with first level dependencies'); //First create a package.json with first level dependencies
   // Get the packager for the current process.
   let packagerInstance = null;
-  if(options.packager && options.packager == 'npm') {
+  if (options.packager && options.packager == 'npm') {
     packagerInstance = NPM;
-  }   else if(options.packager && options.packager == 'yarn') {
+  } else if (options.packager && options.packager == 'yarn') {
     packagerInstance = Yarn;
-  }  else if (packager('npm')) {
-    packagerInstance = NPM; 
-  }  else if (packager('yarn')) {
+  } else if (packager('npm')) {
+    packagerInstance = NPM;
+  } else if (packager('yarn')) {
     packagerInstance = Yarn;
-  }
-  else {
+  } else {
     return of({
       success: false,
       error: 'No Packager to process package.json, please install npm or yarn',
