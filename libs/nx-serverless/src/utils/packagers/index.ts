@@ -88,6 +88,7 @@ export function preparePackageJson(
       error: 'No Packager to process package.json, please install npm or yarn',
     });
   }
+  context.logger.info(`packager instance is -- ${options.packager}`);
   let dependencyGraph = null;
   // Get the packager for the current process.
   return from(getProjectRoot(context)).pipe(

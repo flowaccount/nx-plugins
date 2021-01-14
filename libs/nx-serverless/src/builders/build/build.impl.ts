@@ -46,7 +46,6 @@ function run(
     map((options) => {
       options.tsConfig = consolidateExcludes(options, context);
       options.entry = options.files;
-      console.log(options.tsConfig);
       let config = getNodeWebpackConfig(options);
       if (options.webpackConfig) {
         config = require(options.webpackConfig)(config, {

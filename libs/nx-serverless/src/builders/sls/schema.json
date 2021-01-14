@@ -30,18 +30,20 @@
     },
     "stage": {
       "type": "string",
-      "default": "dev",
       "description": "The stage of the deployment"
     },
     "command": {
       "type": "string",
       "description": "Command for the sls cli to run"
     },
-    "arguments": {
-      "type": "array",
-      "default": [],
-      "description": "string array of arguments for the sls command"
+    "args": {
+      "type": "string",
+      "description": "Extra arguments. You can pass them as follows: nx run project:target --args='--aws-profile=sit_profile'."
+    },
+    "serverlessPackagePath": {
+      "type": "string",
+      "description": "the packaging path for your serverless application (.severless folder)"
     }
   },
-  "required": ["buildTarget", "config", "location", "package", "command"]
+  "required": ["buildTarget", "config", "location", "package", "command", "stage"]
 }

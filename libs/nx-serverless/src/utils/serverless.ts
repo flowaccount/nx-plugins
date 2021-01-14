@@ -86,6 +86,17 @@ export class ServerlessWrapper {
           return this.serverless$.service.load({
             config: options.serverlessConfig
           });
+         
+        }),
+        concatMap(() => {
+          return this.serverless$.variables.populateService(this.serverless$.pluginManager.cliOptions).then(() => {
+            // merge arrays after variables have been populated
+            // (https://github.com/serverless/serverless/issues/3511)
+            this.serverless$.service.mergeArrays();
+            // validate the service configuration, now that variables are loaded
+            this.serverless$.service.validate();
+            
+          });
         }),
         concatMap(() => {
           this.serverless$.cli.asciiGreeting();

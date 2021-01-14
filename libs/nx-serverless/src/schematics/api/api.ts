@@ -119,7 +119,7 @@ function addAppFiles(options: NormalizedSchema): Rule {
         name: options.name,
         root: options.appProjectRoot,
         baseWorkspaceTsConfig: options.baseWorkspaceTsConfig,
-        offset: offsetFromRoot(options.appProjectRoot)
+        offset: offsetFromRoot(options.appProjectRoot),
       }),
       move(options.appProjectRoot),
     ])
