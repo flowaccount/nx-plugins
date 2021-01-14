@@ -77,7 +77,8 @@ describe('node api app', () => {
               buildTarget: 'my-serveless-app:build:production',
               config: 'apps/my-serveless-app/serverless.yml',
               location: 'dist/apps/my-serveless-app',
-              package: 'dist/apps/my-serveless-app'
+              package: 'dist/apps/my-serveless-app',
+              stage: 'dev'
             }
           },
           destroy: {

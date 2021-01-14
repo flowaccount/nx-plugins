@@ -24,7 +24,7 @@ import { getProjectRoot } from '../normalize';
 import { readJsonFile } from '@nrwl/workspace';
 import {
   writeJsonFile,
-  writeToFile,
+  writeToFile
 } from '@nrwl/workspace/src/utils/fileutils';
 import { DependencyResolver } from '../types';
 import { WebpackDependencyResolver } from '../webpack.stats';
@@ -38,7 +38,7 @@ import { join, dirname } from 'path';
 
 const registeredPackagers = {
   npm: NPM,
-  yarn: Yarn,
+  yarn: Yarn
 };
 
 /**
@@ -85,14 +85,14 @@ export function preparePackageJson(
   } else {
     return of({
       success: false,
-      error: 'No Packager to process package.json, please install npm or yarn',
+      error: 'No Packager to process package.json, please install npm or yarn'
     });
   }
   context.logger.info(`packager instance is -- ${options.packager}`);
   let dependencyGraph = null;
   // Get the packager for the current process.
   return from(getProjectRoot(context)).pipe(
-    switchMap((root) => {
+    switchMap(root => {
       options.root = join(context.workspaceRoot, root);
       return resolver.normalizeExternalDependencies(
         packageJson,
@@ -138,7 +138,7 @@ export function preparePackageJson(
         context.logger.error('ERROR: getDependenciesResult!');
         return of({
           success: false,
-          error: getDependenciesResult.error.toString(),
+          error: getDependenciesResult.error.toString()
         });
       }
       const data = getDependenciesResult.stdout.toString();
@@ -150,7 +150,7 @@ export function preparePackageJson(
       const problems = _.get(dependencyGraph, 'problems', []);
       if (options.verbose && !_.isEmpty(problems)) {
         context.logger.info(`Ignoring ${_.size(problems)} NPM errors:`);
-        _.forEach(problems, (problem) => {
+        _.forEach(problems, problem => {
           context.logger.info(`=> ${problem}`);
         });
       }
@@ -178,7 +178,7 @@ export function preparePackageJson(
         context.logger.error('ERROR: install package error!');
         return of({
           success: false,
-          error: packageInstallResult.error.toString(),
+          error: packageInstallResult.error.toString()
         });
       }
       context.logger.info(packageInstallResult.stdout.toString());
@@ -203,7 +203,7 @@ function resolverFactory(
 }
 
 function convertDependencyTrees(parsedTree) {
-  const convertTrees = (trees) =>
+  const convertTrees = trees =>
     _.reduce(
       trees,
       (__, tree) => {
@@ -215,7 +215,7 @@ function convertDependencyTrees(parsedTree) {
         }
         __[_.first(splitModule)] = {
           version: _.join(_.tail(splitModule), '@'),
-          dependencies: convertTrees(tree.children),
+          dependencies: convertTrees(tree.children)
         };
         return __;
       },
@@ -224,7 +224,7 @@ function convertDependencyTrees(parsedTree) {
   const trees = _.get(parsedTree, 'data.trees', []);
   const result = {
     problems: [],
-    dependencies: convertTrees(trees),
+    dependencies: convertTrees(trees)
   };
   return result;
 }
@@ -242,8 +242,8 @@ function createPackageJson(
       private: true,
       scripts: {
         'package-yarn': 'yarn',
-        'package-npm': 'npm install',
-      },
+        'package-npm': 'npm install'
+      }
     },
     {}
   );
@@ -257,7 +257,7 @@ function addModulesToPackageJson(
   pathToPackageRoot
 ) {
   // , pathToPackageRoot
-  _.forEach(externalModules, (externalModule) => {
+  _.forEach(externalModules, externalModule => {
     const splitModule = _.split(externalModule, '@');
     // If we have a scoped module we have to re-add the @
     if (_.startsWith(externalModule, '@')) {

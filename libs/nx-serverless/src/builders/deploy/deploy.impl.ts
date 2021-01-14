@@ -3,7 +3,7 @@ import {
   createBuilder,
   BuilderOutput,
   targetFromTargetString,
-  scheduleTargetAndForget,
+  scheduleTargetAndForget
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { Observable, of, from } from 'rxjs';
@@ -19,12 +19,15 @@ import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { Packager } from '../../utils/enums';
 import { resolve } from 'path';
-import { copyBuildOutputToBePackaged, parseArgs } from '../../utils/copy-asset-files';
+import {
+  copyBuildOutputToBePackaged,
+  parseArgs
+} from '../../utils/copy-asset-files';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
   Inspect = 'inspect',
-  InspectBrk = 'inspect-brk',
+  InspectBrk = 'inspect-brk'
 }
 
 // review: Have to spin off options and clarify schema.json for deploy,build,serve
@@ -50,8 +53,6 @@ export interface ServerlessDeployBuilderOptions extends JsonObject {
   args?: string;
 }
 
-
-
 export default createBuilder<ServerlessDeployBuilderOptions & JsonObject>(
   serverlessExecutionHandler
 );
@@ -62,7 +63,7 @@ export function serverlessExecutionHandler(
   // build into output path before running serverless offline.
   let packagePath = options.location;
   return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
-    concatMap((v) => {
+    concatMap(v => {
       if (!v.success) {
         context.logger.error(
           'One of the tasks specified in waitUntilTargets failed'
@@ -85,19 +86,25 @@ export function serverlessExecutionHandler(
         context.logger.info(`${event.outfile} was not restarted.`);
         return of({
           success: false,
-          error: `${event.outfile} was not restarted.`,
+          error: `${event.outfile} was not restarted.`
         });
       }
     }),
-    concatMap((result) => {
-      if(result.success) {
-        if(!options.serverlessPackagePath && options.location.indexOf('dist/') > -1) {
-          packagePath = options.location.replace('dist/', 'dist/.serverlessPackages/')
+    concatMap(result => {
+      if (result.success) {
+        if (
+          !options.serverlessPackagePath &&
+          options.location.indexOf('dist/') > -1
+        ) {
+          packagePath = options.location.replace(
+            'dist/',
+            'dist/.serverlessPackages/'
+          );
         } else if (options.serverlessPackagePath) {
-          packagePath = options.serverlessPackagePath
+          packagePath = options.serverlessPackagePath;
         }
         options.serverlessPackagePath = packagePath;
-        return copyBuildOutputToBePackaged(options, context)
+        return copyBuildOutputToBePackaged(options, context);
       } else {
         context.logger.error(
           `There was an error with the build. ${result.error}.`
@@ -105,17 +112,17 @@ export function serverlessExecutionHandler(
         return of(result);
       }
     }),
-    concatMap((result) => {
+    concatMap(result => {
       if (result.success) {
         // change servicePath to distribution location
         // review: Change options from location to outputpath?\
         const servicePath = ServerlessWrapper.serverless.config.servicePath;
         const args = getExecArgv(options);
         const commands = [];
-        commands.push('deploy')
+        commands.push('deploy');
         if (options.function && options.function != '') {
           commands.push('function');
-          args.push(`--function ${options.function}`)
+          args.push(`--function ${options.function}`);
         }
         if (options.list) {
           commands.push('list');
@@ -123,9 +130,9 @@ export function serverlessExecutionHandler(
         ServerlessWrapper.serverless.config.servicePath = packagePath;
         ServerlessWrapper.serverless.processedInput = {
           commands: commands,
-          options: args,
+          options: args
         };
-        return new Observable<BuilderOutput>((option) => {
+        return new Observable<BuilderOutput>(option => {
           ServerlessWrapper.serverless
             .run()
             .then(() => {
@@ -134,12 +141,12 @@ export function serverlessExecutionHandler(
               option.next({ success: true });
               option.complete();
             })
-            .catch((ex) => {
+            .catch(ex => {
               option.next({ success: false, error: ex.toString() });
               option.complete();
             });
         }).pipe(
-          concatMap((result) => {
+          concatMap(result => {
             return of(result);
           })
         );
@@ -156,8 +163,9 @@ export function serverlessExecutionHandler(
 export function getExecArgv(options: ServerlessDeployBuilderOptions) {
   const serverlessOptions = [];
   const extraArgs = parseArgs(options);
-  
-  Object.keys(extraArgs)
-  .map((a) => serverlessOptions.push(`--${a} ${extraArgs[a]}`))
+
+  Object.keys(extraArgs).map(a =>
+    serverlessOptions.push(`--${a} ${extraArgs[a]}`)
+  );
   return serverlessOptions;
 }

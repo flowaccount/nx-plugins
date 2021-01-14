@@ -31,7 +31,7 @@ describe('Serverless Deploy Builder', () => {
       watch: false,
       stage: 'dev',
       updateConfig: false,
-      args: [],
+      args: '',
       list: false
     };
     jest.spyOn(sls, 'getExecArgv').mockReturnValue([]);

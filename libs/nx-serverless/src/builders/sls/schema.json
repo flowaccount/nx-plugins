@@ -45,5 +45,12 @@
       "description": "the packaging path for your serverless application (.severless folder)"
     }
   },
-  "required": ["buildTarget", "config", "location", "package", "command", "stage"]
+  "required": [
+    "buildTarget",
+    "config",
+    "location",
+    "package",
+    "command",
+    "stage"
+  ]
 }

@@ -10,18 +10,18 @@ export default function copyAssetFiles(
 ): Promise<BuilderOutput> {
   context.logger.info('Copying asset files...');
   return Promise.all(
-    options.assetFiles.map((file) => copy(file.input, file.output))
+    options.assetFiles.map(file => copy(file.input, file.output))
   )
     .then(() => {
       context.logger.info('Done copying asset files.');
       return {
-        success: true,
+        success: true
       };
     })
     .catch((err: Error) => {
       return {
         error: err.message,
-        success: false,
+        success: false
       };
     });
 }
@@ -30,18 +30,20 @@ export function copyBuildOutputToBePackaged(
   options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions,
   context: BuilderContext
 ): Promise<BuilderOutput> {
-  context.logger.info(`Copying build output files from ${options.package} to ${options.serverlessPackagePath} to be packaged`);
+  context.logger.info(
+    `Copying build output files from ${options.package} to ${options.serverlessPackagePath} to be packaged`
+  );
   return copy(options.package, options.serverlessPackagePath)
     .then(() => {
       context.logger.info('Done copying build output files.');
       return {
-        success: true,
+        success: true
       };
     })
     .catch((err: Error) => {
       return {
         error: err.message,
-        success: false,
+        success: false
       };
     });
 }
@@ -55,20 +57,22 @@ const propKeys = [
   'function',
   'ignoreScripts',
   'serverlessPackagePath',
-  'root',
+  'root'
 ];
 
-export function parseArgs(options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions) {
+export function parseArgs(
+  options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions
+) {
   const args = options.args;
   if (!args) {
     const unknownOptionsTreatedAsArgs = Object.keys(options)
-      .filter((p) => propKeys.indexOf(p) === -1)
+      .filter(p => propKeys.indexOf(p) === -1)
       .reduce((m, c) => ((m[c] = options[c]), m), {});
     return unknownOptionsTreatedAsArgs;
   }
   return args
     .split(' ')
-    .map((t) => t.trim())
+    .map(t => t.trim())
     .reduce((m, c) => {
       if (!c.startsWith('--')) {
         throw new Error(`Invalid args: ${args}`);

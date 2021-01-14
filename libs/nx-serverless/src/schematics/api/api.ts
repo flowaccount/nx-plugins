@@ -9,7 +9,7 @@ import {
   SchematicContext,
   template,
   Tree,
-  url,
+  url
 } from '@angular-devkit/schematics';
 import { join, normalize, Path } from '@angular-devkit/core';
 import { Schema } from './schema';
@@ -17,7 +17,7 @@ import {
   updateJsonInTree,
   updateWorkspaceInTree,
   generateProjectLint,
-  addLintFiles,
+  addLintFiles
 } from '@nrwl/workspace';
 import { toFileName } from '@nrwl/workspace';
 import { getProjectConfig } from '@nrwl/workspace';
@@ -31,13 +31,13 @@ interface NormalizedSchema extends Schema {
 }
 
 function updateNxJson(options: NormalizedSchema): Rule {
-  return updateJsonInTree('/nx.json', (json) => {
+  return updateJsonInTree('/nx.json', json => {
     return {
       ...json,
       projects: {
         ...json.projects,
-        [options.name]: { tags: options.parsedTags },
-      },
+        [options.name]: { tags: options.parsedTags }
+      }
     };
   });
 }
@@ -48,16 +48,16 @@ function getServeConfig(project: any, options: NormalizedSchema) {
     options: {
       buildTarget: options.name + ':build',
       config: join(options.appProjectRoot, 'serverless.yml'),
-      location: join(normalize('dist'), options.appProjectRoot),
+      location: join(normalize('dist'), options.appProjectRoot)
     },
     configurations: {
       dev: {
-        buildTarget: options.name + ':build:dev',
+        buildTarget: options.name + ':build:dev'
       },
       production: {
-        buildTarget: options.name + ':build:production',
-      },
-    },
+        buildTarget: options.name + ':build:production'
+      }
+    }
   };
 }
 
@@ -69,7 +69,8 @@ function getDeployConfig(project: any, options: NormalizedSchema) {
       config: join(options.appProjectRoot, 'serverless.yml'),
       location: join(normalize('dist'), options.appProjectRoot),
       package: join(normalize('dist'), options.appProjectRoot),
-    },
+      stage: 'dev'
+    }
   };
 }
 
@@ -80,20 +81,20 @@ function getDestroyConfig(options: NormalizedSchema) {
       buildTarget: options.name + ':build:production',
       config: join(options.appProjectRoot, 'serverless.yml'),
       location: join(normalize('dist'), options.appProjectRoot),
-      package: join(normalize('dist'), options.appProjectRoot),
-    },
+      package: join(normalize('dist'), options.appProjectRoot)
+    }
   };
 }
 
 function updateWorkspaceJson(options: NormalizedSchema): Rule {
-  return updateWorkspaceInTree((workspaceJson) => {
+  return updateWorkspaceInTree(workspaceJson => {
     const project = {
       root: options.appProjectRoot,
       sourceRoot: join(options.appProjectRoot, 'src'),
       projectType: 'application',
       prefix: options.name,
       schematics: {},
-      architect: <any>{},
+      architect: <any>{}
     };
 
     project.architect.build = getBuildConfig(options);
@@ -119,9 +120,9 @@ function addAppFiles(options: NormalizedSchema): Rule {
         name: options.name,
         root: options.appProjectRoot,
         baseWorkspaceTsConfig: options.baseWorkspaceTsConfig,
-        offset: offsetFromRoot(options.appProjectRoot),
+        offset: offsetFromRoot(options.appProjectRoot)
       }),
-      move(options.appProjectRoot),
+      move(options.appProjectRoot)
     ])
   );
 }
@@ -170,14 +171,14 @@ function addProxy(options: NormalizedSchema): Rule {
           {
             apiname: {
               target: 'http://localhost:3333',
-              secure: false,
-            },
+              secure: false
+            }
           },
           null,
           2
         )
       );
-      updateWorkspaceInTree((json) => {
+      updateWorkspaceInTree(json => {
         projectConfig.architect.serve.options.proxyConfig = pathToProxyFile;
         json.projects[options.frontendProject] = projectConfig;
         return json;
@@ -196,7 +197,7 @@ function normalizeOptions(options: Schema): NormalizedSchema {
   const appProjectRoot = join(normalize('apps'), appDirectory);
 
   const parsedTags = options.tags
-    ? options.tags.split(',').map((s) => s.trim())
+    ? options.tags.split(',').map(s => s.trim())
     : [];
 
   return {
@@ -207,17 +208,17 @@ function normalizeOptions(options: Schema): NormalizedSchema {
       : undefined,
     appProjectRoot,
     provider: options.provider,
-    parsedTags,
+    parsedTags
   };
 }
 
-export default function (schema: Schema): Rule {
+export default function(schema: Schema): Rule {
   return (host: Tree, context: SchematicContext) => {
     const options = normalizeOptions(schema);
     return chain([
       init({
         skipFormat: false,
-        expressProxy: false,
+        expressProxy: false
       }),
       addLintFiles(options.appProjectRoot, options.linter),
       addAppFiles(options),
@@ -228,10 +229,10 @@ export default function (schema: Schema): Rule {
         ? externalSchematic('@nrwl/jest', 'jest-project', {
             project: options.name,
             setupFile: 'none',
-            skipSerializers: true,
+            skipSerializers: true
           })
         : noop(),
-      options.frontendProject ? addProxy(options) : noop(),
+      options.frontendProject ? addProxy(options) : noop()
     ])(host, context);
   };
 }
