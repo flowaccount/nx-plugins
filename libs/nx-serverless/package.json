@@ -38,7 +38,7 @@
     "webpack-dev-server": "3.9.0",
     "webpack-node-externals": "1.7.2",
     "depcheck": "0.9.2",
-    "serverless": "^1.66.0",
+    "serverless": "^2.29.0",
     "is-builtin-module": "^3.0.0",
     "ignore": "5.0.4"
   },
