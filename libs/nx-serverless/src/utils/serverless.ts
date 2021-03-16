@@ -80,7 +80,10 @@ export class ServerlessWrapper {
             config: options.serverlessConfig,
             servicePath: options.servicePath
           });
-          if (this.serverless$.version && this.serverless$.version.split('.')[0] > '1') {
+          if (
+            this.serverless$.version &&
+            this.serverless$.version.split('.')[0] > '1'
+          ) {
             context.logger.info(
               'Disable "Resolve Configuration Internally" for serverless 2.0+.'
             );
