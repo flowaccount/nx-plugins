@@ -1,27 +1,22 @@
 import {
   BuilderContext,
   createBuilder,
-  BuilderOutput,
-  targetFromTargetString,
-  scheduleTargetAndForget
+  BuilderOutput
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { Observable, of, from } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
-import { stripIndents } from '@angular-devkit/core/src/utils/literals';
 import { ServerlessBuildEvent } from '../build/build.impl';
 import * as _ from 'lodash';
-import { ServerlessWrapper } from '../../utils/serverless';
+import { getExecArgv, ServerlessWrapper } from '../../utils/serverless';
 /* Fix for EMFILE: too many open files on serverless deploy */
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { Packager } from '../../utils/enums';
-import { resolve } from 'path';
 import {
-  copyBuildOutputToBePackaged,
-  parseArgs
+  copyBuildOutputToBePackaged
 } from '../../utils/copy-asset-files';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
@@ -64,7 +59,7 @@ export function serverlessExecutionHandler(
   let packagePath = options.location;
   return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
     concatMap(v => {
-      if (!v.success) {
+           if (!v.success) {
         context.logger.error(
           'One of the tasks specified in waitUntilTargets failed'
         );
@@ -132,6 +127,7 @@ export function serverlessExecutionHandler(
           commands: commands,
           options: args
         };
+        
         return new Observable<BuilderOutput>(option => {
           ServerlessWrapper.serverless
             .run()
@@ -158,14 +154,4 @@ export function serverlessExecutionHandler(
       }
     })
   );
-}
-
-export function getExecArgv(options: ServerlessDeployBuilderOptions) {
-  const serverlessOptions = [];
-  const extraArgs = parseArgs(options);
-
-  Object.keys(extraArgs).map(a =>
-    serverlessOptions.push(`--${a} ${extraArgs[a]}`)
-  );
-  return serverlessOptions;
 }

@@ -1,7 +1,7 @@
 {
   "$schema": "../../node_modules/@angular-devkit/architect/src/builders-schema.json",
   "builders": {
-    "build": {
+    "   ": {
       "implementation": "./src/builders/build/build.impl",
       "schema": "./src/builders/build/schema.json",
       "description": "Build a Serverless application"

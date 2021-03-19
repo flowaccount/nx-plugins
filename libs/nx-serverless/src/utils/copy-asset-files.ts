@@ -64,12 +64,13 @@ export function parseArgs(
   options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions
 ) {
   const args = options.args;
-  if (!args) {
+  if (!args || args.length == 0) {
     const unknownOptionsTreatedAsArgs = Object.keys(options)
       .filter(p => propKeys.indexOf(p) === -1)
       .reduce((m, c) => ((m[c] = options[c]), m), {});
     return unknownOptionsTreatedAsArgs;
   }
+ 
   return args
     .split(' ')
     .map(t => t.trim())

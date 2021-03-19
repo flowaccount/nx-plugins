@@ -10,6 +10,7 @@ import { of, Observable } from 'rxjs';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
+import { parseArgs } from './copy-asset-files';
 export class ServerlessWrapper {
   constructor() {}
 
@@ -107,4 +108,14 @@ export class ServerlessWrapper {
       return of(null);
     }
   }
+}
+
+export function getExecArgv(options: ServerlessDeployBuilderOptions) {
+  const serverlessOptions = [];
+  const extraArgs = parseArgs(options);
+
+  Object.keys(extraArgs).map(a =>
+    serverlessOptions.push(`--${a} ${extraArgs[a]}`)
+  );
+  return serverlessOptions;
 }
