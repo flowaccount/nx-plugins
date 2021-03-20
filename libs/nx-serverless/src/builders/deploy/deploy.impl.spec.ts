@@ -35,7 +35,9 @@ describe('Serverless Deploy Builder', () => {
       args: null,
       list: false
     };
-    jest.spyOn(serverless, 'getExecArgv').mockImplementation(() => { return [] });
+    jest.spyOn(serverless, 'getExecArgv').mockImplementation(() => {
+      return [];
+    });
     jest
       .spyOn(packagers, 'preparePackageJson')
       .mockReturnValue(of({ success: true }));
@@ -67,8 +69,8 @@ describe('Serverless Deploy Builder', () => {
         return Promise.resolve({ success: true });
       }
     });
-    fsExtra.copy.mockImplementation( () => {
-      return Promise.resolve({success: true})
+    fsExtra.copy.mockImplementation(() => {
+      return Promise.resolve({ success: true });
     });
   });
   describe('run', () => {

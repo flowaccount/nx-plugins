@@ -15,9 +15,7 @@ import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { Packager } from '../../utils/enums';
-import {
-  copyBuildOutputToBePackaged
-} from '../../utils/copy-asset-files';
+import { copyBuildOutputToBePackaged } from '../../utils/copy-asset-files';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
@@ -59,7 +57,7 @@ export function serverlessExecutionHandler(
   let packagePath = options.location;
   return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
     concatMap(v => {
-           if (!v.success) {
+      if (!v.success) {
         context.logger.error(
           'One of the tasks specified in waitUntilTargets failed'
         );
@@ -127,7 +125,7 @@ export function serverlessExecutionHandler(
           commands: commands,
           options: args
         };
-        
+
         return new Observable<BuilderOutput>(option => {
           ServerlessWrapper.serverless
             .run()

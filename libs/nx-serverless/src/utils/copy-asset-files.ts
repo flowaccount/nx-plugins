@@ -70,7 +70,7 @@ export function parseArgs(
       .reduce((m, c) => ((m[c] = options[c]), m), {});
     return unknownOptionsTreatedAsArgs;
   }
- 
+
   return args
     .split(' ')
     .map(t => t.trim())
