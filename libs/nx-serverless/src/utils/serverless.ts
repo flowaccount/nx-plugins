@@ -110,7 +110,9 @@ export class ServerlessWrapper {
   }
 }
 
-export function getExecArgv(options: ServerlessDeployBuilderOptions) {
+export function getExecArgv(
+  options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions
+) {
   const serverlessOptions = [];
   const extraArgs = parseArgs(options);
 

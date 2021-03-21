@@ -8,7 +8,7 @@ import { Observable, of } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { ServerlessBuildEvent } from '../build/build.impl';
 import * as _ from 'lodash';
-import { ServerlessWrapper } from '../../utils/serverless';
+import { getExecArgv, ServerlessWrapper } from '../../utils/serverless';
 /* Fix for EMFILE: too many open files on serverless deploy */
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
@@ -153,14 +153,4 @@ export function serverlessExecutionHandler(
       }
     })
   );
-}
-
-export function getExecArgv(options: ServerlessSlsBuilderOptions) {
-  const serverlessOptions = [];
-  const extraArgs = parseArgs(options);
-
-  Object.keys(extraArgs).map(a =>
-    serverlessOptions.push(`--${a} ${extraArgs[a]}`)
-  );
-  return serverlessOptions;
 }
