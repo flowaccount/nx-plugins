@@ -11,6 +11,7 @@ import * as path from 'path';
 import * as fs from 'fs';
 import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
 import { parseArgs } from './copy-asset-files';
+import { ServerlessSlsBuilderOptions } from '../builders/sls/sls.impl';
 export class ServerlessWrapper {
   constructor() {}
 

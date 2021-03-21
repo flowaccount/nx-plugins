@@ -15,10 +15,7 @@ import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { Packager } from '../../utils/enums';
-import {
-  copyBuildOutputToBePackaged,
-  parseArgs
-} from '../../utils/copy-asset-files';
+import { copyBuildOutputToBePackaged } from '../../utils/copy-asset-files';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
