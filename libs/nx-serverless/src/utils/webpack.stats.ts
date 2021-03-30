@@ -21,6 +21,7 @@ export class WebpackDependencyResolver implements DependencyResolver {
     if (!dependencyGraph || dependencyGraph === null) {
       dependencyGraph = {};
     }
+    // TODO: issue #48
     const prodModules = of(
       getProdModules(
         externals,

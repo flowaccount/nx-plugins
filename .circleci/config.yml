@@ -22,11 +22,11 @@ commands:
       - run: yarn install --non-interactive #--frozen-lockfile 
       - run: ./node_modules/.bin/cypress verify
       - save_cache:
-          key: flowaccount-nx-plugins-node12-yarn-{{ checksum "yarn.lock" }}
+          key: flowaccount-nx-plugins-node12-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
       - save_cache:
-          key: flowaccount-nx-plugins-node12-cypress-{{ checksum "yarn.lock" }}
+          key: flowaccount-nx-plugins-node12-cypress-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/Cypress
   restore_cypress_cache:
@@ -34,7 +34,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - flowaccount-nx-plugins-node12-cypress-{{ checksum "yarn.lock" }}
+            - flowaccount-nx-plugins-node12-cypress-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
             - flowaccount-nx-plugins-node12-cypress-
   restore_yarn_cache:
@@ -42,7 +42,7 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - flowaccount-nx-plugins-node12-yarn-{{ checksum "yarn.lock" }}
+            - flowaccount-nx-plugins-node12-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
             - flowaccount-nx-plugins-node12-yarn-
   setup:

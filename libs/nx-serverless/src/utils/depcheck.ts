@@ -63,6 +63,7 @@ export class DependencyCheckResolver implements DependencyResolver {
             external: key
           });
         });
+        // TODO: issue #48
         return getProdModules(
           externals,
           packageJson,
