@@ -8,12 +8,14 @@ import { Observable, of } from 'rxjs';
 import { concatMap } from 'rxjs/operators';
 import { ServerlessBuildEvent } from '../build/build.impl';
 import * as _ from 'lodash';
-import { ServerlessWrapper } from '../../utils/serverless';
+import { getExecArgv, ServerlessWrapper } from '../../utils/serverless';
 /* Fix for EMFILE: too many open files on serverless deploy */
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
+import { Packager } from '../../utils/enums';
+import { copyBuildOutputToBePackaged } from '../../utils/copy-asset-files';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
@@ -29,7 +31,6 @@ export interface ServerlessSlsBuilderOptions extends JsonObject {
   host: string;
   port: number;
   watch: boolean;
-  arguments: string[];
   package: string;
   location: string;
   stage: string;
@@ -37,6 +38,10 @@ export interface ServerlessSlsBuilderOptions extends JsonObject {
   sourceRoot?: string;
   root?: string;
   command: string;
+  ignoreScripts: boolean;
+  packager?: Packager;
+  serverlessPackagePath?: string;
+  args?: string;
 }
 
 export default createBuilder<ServerlessSlsBuilderOptions & JsonObject>(
@@ -47,6 +52,7 @@ export function serverlessExecutionHandler(
   context: BuilderContext
 ): Observable<BuilderOutput> {
   // build into output path before running serverless offline.
+  let packagePath = options.location;
   return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
     concatMap(v => {
       if (!v.success) {
@@ -77,11 +83,43 @@ export function serverlessExecutionHandler(
     }),
     concatMap(result => {
       if (result.success) {
+        if (
+          !options.serverlessPackagePath &&
+          options.location.indexOf('dist/') > -1
+        ) {
+          packagePath = options.location.replace(
+            'dist/',
+            'dist/.serverlessPackages/'
+          );
+        } else if (options.serverlessPackagePath) {
+          packagePath = options.serverlessPackagePath;
+        }
+        options.serverlessPackagePath = packagePath;
+        return copyBuildOutputToBePackaged(options, context);
+      } else {
+        context.logger.error(
+          `There was an error with the build. ${result.error}.`
+        );
+        return of(result);
+      }
+    }),
+    concatMap(result => {
+      if (result.success) {
         // change servicePath to distribution location
         // review: Change options from location to outputpath?\
         const servicePath = ServerlessWrapper.serverless.config.servicePath;
-        const args = getExecArgv(options.arguments);
-        ServerlessWrapper.serverless.config.servicePath = options.location;
+        const args = getExecArgv(options);
+        let packagePath = options.location;
+        if (
+          !options.serverlessPackagePath &&
+          options.location.indexOf('dist/') > -1
+        ) {
+          packagePath = options.location.replace('dist/', 'dist/.serverless/');
+        } else if (options.serverlessPackagePath) {
+          packagePath = options.serverlessPackagePath;
+        }
+
+        ServerlessWrapper.serverless.config.servicePath = packagePath;
         ServerlessWrapper.serverless.processedInput = {
           commands: [options.command],
           options: args
@@ -112,12 +150,4 @@ export function serverlessExecutionHandler(
       }
     })
   );
-}
-
-export function getExecArgv(commmandArguments: Array<string>) {
-  const args = [];
-  for (const key in commmandArguments) {
-    args.push(`--${key}`);
-  }
-  return args;
 }

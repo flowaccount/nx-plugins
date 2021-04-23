@@ -56,7 +56,8 @@ function getDeployConfig(options: NormalizedSchema) {
       buildTarget: options.project + ':compile:production',
       config: join(options.appProjectRoot, 'serverless.yml'),
       location: join(normalize('dist'), options.appProjectRoot),
-      package: join(normalize('dist'), options.appProjectRoot)
+      package: join(normalize('dist'), options.appProjectRoot),
+      stage: 'dev'
     }
   };
 }

@@ -29,8 +29,9 @@ describe('Serverless Destroy Builder', () => {
       watch: false,
       stage: 'dev',
       updateConfig: false,
-      args: [],
-      list: false
+      args: '',
+      list: false,
+      ignoreScripts: false
     };
 
     jest

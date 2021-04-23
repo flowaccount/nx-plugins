@@ -282,54 +282,54 @@ export function getProdModules(
           `WARNING: Could not check for peer dependencies of ${module.external}`
         );
       }
-    } else {
-      if (
-        !packageJson.devDependencies ||
-        (!packageJson.devDependencies[module.external] &&
-          dependencyGraph.dependencies)
-      ) {
-        if (_.includes(ignoredDevDependencies, module.external)) {
-          ServerlessWrapper.serverless.cli.log(
-            `INFO: Skipping addition of ${module.external} which is supposed to be devDependencies`
-          );
-        } else {
-          // Add transient dependencies if they appear not in the service's dev dependencies
-          const originInfo =
-            _.get(dependencyGraph, 'dependencies', {})[module.external] || {};
-          moduleVersion = _.get(originInfo, 'version', null);
-          if (!moduleVersion) {
-            ServerlessWrapper.serverless.cli.log(
-              `WARNING: Could not determine version of module ${module.external}`
-            );
-          }
-          prodModules.push(
-            moduleVersion
-              ? `${module.external}@${moduleVersion}`
-              : module.external
-          );
-        }
-      } else if (
-        packageJson.devDependencies &&
-        packageJson.devDependencies[module.external] &&
-        !_.includes(forceExcludes, module.external)
-      ) {
-        // To minimize the chance of breaking setups we whitelist packages available on AWS here. These are due to the previously missing check
-        // most likely set in devDependencies and should not lead to an error now.
+    }
 
-        if (!_.includes(ignoredDevDependencies, module.external)) {
-          // Runtime dependency found in devDependencies but not forcefully excluded
+    if (
+      !packageJson.devDependencies ||
+      (!packageJson.devDependencies[module.external] &&
+        dependencyGraph.dependencies)
+    ) {
+      if (_.includes(ignoredDevDependencies, module.external)) {
+        ServerlessWrapper.serverless.cli.log(
+          `INFO: Skipping addition of ${module.external} which is supposed to be devDependencies`
+        );
+      } else {
+        // Add transient dependencies if they appear not in the service's dev dependencies
+        const originInfo =
+          _.get(dependencyGraph, 'dependencies', {})[module.external] || {};
+        moduleVersion = _.get(originInfo, 'version', null);
+        if (!moduleVersion) {
           ServerlessWrapper.serverless.cli.log(
-            `ERROR: Runtime dependency '${module.external}' found in devDependencies. Move it to dependencies or use forceExclude to explicitly exclude it.`
-          );
-          throw new ServerlessWrapper.serverless.classes.Error(
-            `Serverless-webpack dependency error: ${module.external}.`
+            `WARNING: Could not determine version of module ${module.external}`
           );
         }
-        verbose &&
-          ServerlessWrapper.serverless.cli.log(
-            `INFO: Runtime dependency '${module.external}' found in devDependencies. It has been excluded automatically.`
-          );
+        prodModules.push(
+          moduleVersion
+            ? `${module.external}@${moduleVersion}`
+            : module.external
+        );
       }
+    } else if (
+      packageJson.devDependencies &&
+      packageJson.devDependencies[module.external] &&
+      !_.includes(forceExcludes, module.external)
+    ) {
+      // To minimize the chance of breaking setups we whitelist packages available on AWS here. These are due to the previously missing check
+      // most likely set in devDependencies and should not lead to an error now.
+
+      if (!_.includes(ignoredDevDependencies, module.external)) {
+        // Runtime dependency found in devDependencies but not forcefully excluded
+        ServerlessWrapper.serverless.cli.log(
+          `ERROR: Runtime dependency '${module.external}' found in devDependencies. Move it to dependencies or use forceExclude to explicitly exclude it.`
+        );
+        throw new ServerlessWrapper.serverless.classes.Error(
+          `Serverless-webpack dependency error: ${module.external}.`
+        );
+      }
+      verbose &&
+        ServerlessWrapper.serverless.cli.log(
+          `INFO: Runtime dependency '${module.external}' found in devDependencies. It has been excluded automatically.`
+        );
     }
   });
   return prodModules;

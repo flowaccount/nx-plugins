@@ -75,7 +75,8 @@ describe('express app', () => {
               buildTarget: 'my-app:compile:production',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app',
-              package: 'dist/apps/my-app'
+              package: 'dist/apps/my-app',
+              stage: 'dev'
             }
           },
           destroy: {

@@ -1,22 +1,21 @@
 import {
   BuilderContext,
   createBuilder,
-  BuilderOutput,
-  targetFromTargetString,
-  scheduleTargetAndForget
+  BuilderOutput
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { Observable, of, from } from 'rxjs';
 import { concatMap, tap } from 'rxjs/operators';
-import { stripIndents } from '@angular-devkit/core/src/utils/literals';
 import { ServerlessBuildEvent } from '../build/build.impl';
 import * as _ from 'lodash';
-import { ServerlessWrapper } from '../../utils/serverless';
+import { getExecArgv, ServerlessWrapper } from '../../utils/serverless';
 /* Fix for EMFILE: too many open files on serverless deploy */
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
+import { Packager } from '../../utils/enums';
+import { copyBuildOutputToBePackaged } from '../../utils/copy-asset-files';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
@@ -29,19 +28,22 @@ export interface ServerlessDeployBuilderOptions extends JsonObject {
   inspect: boolean | InspectType;
   waitUntilTargets: string[];
   buildTarget: string;
-  function: string;
   host: string;
   port: number;
   watch: boolean;
-  args: string[];
   package: string;
   location: string;
   stage: string;
   list: boolean;
   updateConfig: boolean;
+  function?: string;
   verbose?: boolean;
   sourceRoot?: string;
   root?: string;
+  ignoreScripts: boolean;
+  packager?: Packager;
+  serverlessPackagePath?: string;
+  args?: string;
 }
 
 export default createBuilder<ServerlessDeployBuilderOptions & JsonObject>(
@@ -52,6 +54,7 @@ export function serverlessExecutionHandler(
   context: BuilderContext
 ): Observable<BuilderOutput> {
   // build into output path before running serverless offline.
+  let packagePath = options.location;
   return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
     concatMap(v => {
       if (!v.success) {
@@ -82,15 +85,47 @@ export function serverlessExecutionHandler(
     }),
     concatMap(result => {
       if (result.success) {
+        if (
+          !options.serverlessPackagePath &&
+          options.location.indexOf('dist/') > -1
+        ) {
+          packagePath = options.location.replace(
+            'dist/',
+            'dist/.serverlessPackages/'
+          );
+        } else if (options.serverlessPackagePath) {
+          packagePath = options.serverlessPackagePath;
+        }
+        options.serverlessPackagePath = packagePath;
+        return copyBuildOutputToBePackaged(options, context);
+      } else {
+        context.logger.error(
+          `There was an error with the build. ${result.error}.`
+        );
+        return of(result);
+      }
+    }),
+    concatMap(result => {
+      if (result.success) {
         // change servicePath to distribution location
         // review: Change options from location to outputpath?\
         const servicePath = ServerlessWrapper.serverless.config.servicePath;
         const args = getExecArgv(options);
-        ServerlessWrapper.serverless.config.servicePath = options.location;
+        const commands = [];
+        commands.push('deploy');
+        if (options.function && options.function != '') {
+          commands.push('function');
+          args.push(`--function ${options.function}`);
+        }
+        if (options.list) {
+          commands.push('list');
+        }
+        ServerlessWrapper.serverless.config.servicePath = packagePath;
         ServerlessWrapper.serverless.processedInput = {
-          commands: ['deploy'],
+          commands: commands,
           options: args
         };
+
         return new Observable<BuilderOutput>(option => {
           ServerlessWrapper.serverless
             .run()
@@ -117,27 +152,4 @@ export function serverlessExecutionHandler(
       }
     })
   );
-}
-
-export function getExecArgv(options: ServerlessDeployBuilderOptions) {
-  const args = [];
-  if (options.function && options.function != '') {
-    args.push('function');
-  }
-  if (options.list) {
-    args.push('list');
-  }
-  for (const key in options) {
-    if (options.hasOwnProperty(key)) {
-      if (
-        options[key] !== undefined &&
-        key !== 'buildTarget' &&
-        key !== 'package' &&
-        key !== 'list'
-      ) {
-        args.push(`--${key} ${options[key]}`);
-      }
-    }
-  }
-  return args;
 }

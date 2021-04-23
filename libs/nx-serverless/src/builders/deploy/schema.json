@@ -26,16 +26,14 @@
     "package": {
       "type": "string",
       "default": ".serverless",
-      "description": "The src file location"
+      "description": "The build output files location"
     },
     "stage": {
       "type": "string",
-      "default": "dev",
       "description": "The stage of the deployment"
     },
     "function": {
       "type": "string",
-      "default": ".serverless",
       "description": "The src file location"
     },
     "list": {
@@ -47,8 +45,26 @@
       "type": "boolean",
       "default": false,
       "description": "Updates function configuration, e.g. Timeout or Memory Size without deploying code (Works only with --function)"
+    },
+    "ignoreScripts": {
+      "type": "boolean",
+      "default": true,
+      "description": "Updates ignoreScripts false to use own package with dev environment"
+    },
+    "packager": {
+      "type": "string",
+      "default": "YARN",
+      "description": "the packager to use for resolving dependencies"
+    },
+    "serverlessPackagePath": {
+      "type": "string",
+      "description": "the packaging path for your serverless application (.severless folder)"
+    },
+    "args": {
+      "type": "string",
+      "description": "Extra arguments. You can pass them as follows: nx run project:target --args='--aws-profile=sit_profile'."
     }
   },
   "additionalProperties": false,
-  "required": ["buildTarget", "config", "location", "package"]
+  "required": ["buildTarget", "config", "location", "package", "stage"]
 }

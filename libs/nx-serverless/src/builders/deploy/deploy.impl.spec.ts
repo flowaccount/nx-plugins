@@ -1,7 +1,9 @@
 import { JsonObject, workspaces } from '@angular-devkit/core';
 jest.mock('tsconfig-paths-webpack-plugin');
+const fsExtra = require('fs-extra');
+jest.mock('fs-extra');
 import { of } from 'rxjs';
-import * as deploy from './deploy.impl';
+const serverless = require('../../utils/serverless');
 import { getMockContext } from '../../utils/testing';
 import { ServerlessWrapper } from '../../utils/serverless';
 import { serverlessExecutionHandler } from './deploy.impl';
@@ -13,7 +15,6 @@ import * as packagers from '../../utils/packagers';
 describe('Serverless Deploy Builder', () => {
   let testOptions: JsonObject & ServerlessDeployBuilderOptions;
   // let architect: Architect;
-  let getExecArgv: jest.SpyInstance;
   let context: MockBuilderContext;
   beforeEach(async () => {
     context = await getMockContext();
@@ -31,10 +32,12 @@ describe('Serverless Deploy Builder', () => {
       watch: false,
       stage: 'dev',
       updateConfig: false,
-      args: [],
+      args: null,
       list: false
     };
-    jest.spyOn(deploy, 'getExecArgv').mockReturnValue([]);
+    jest.spyOn(serverless, 'getExecArgv').mockImplementation(() => {
+      return [];
+    });
     jest
       .spyOn(packagers, 'preparePackageJson')
       .mockReturnValue(of({ success: true }));
@@ -66,6 +69,9 @@ describe('Serverless Deploy Builder', () => {
         return Promise.resolve({ success: true });
       }
     });
+    fsExtra.copy.mockImplementation(() => {
+      return Promise.resolve({ success: true });
+    });
   });
   describe('run', () => {
     it('should call runWaitUntilTargets', async () => {
@@ -80,10 +86,11 @@ describe('Serverless Deploy Builder', () => {
       await serverlessExecutionHandler(testOptions, context).toPromise();
       expect(packagers.preparePackageJson).toHaveBeenCalled();
     });
-    // it('should call getExecArgv', async () => {
-    //   await serverlessExecutionHandler(testOptions, context).toPromise();
-    //   expect(deploy.getExecArgv).toHaveBeenCalled();
-    // });
+    // How do i expect a mock function to be called?
+    it('should call getExecArgv', async () => {
+      await serverlessExecutionHandler(testOptions, context).toPromise();
+      expect(serverless.getExecArgv).toHaveBeenCalled();
+    });
     it('should call serverless run with success', async () => {
       const output = await serverlessExecutionHandler(
         testOptions,

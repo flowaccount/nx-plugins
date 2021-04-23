@@ -10,6 +10,8 @@ import { of, Observable } from 'rxjs';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
+import { parseArgs } from './copy-asset-files';
+import { ServerlessSlsBuilderOptions } from '../builders/sls/sls.impl';
 export class ServerlessWrapper {
   constructor() {}
 
@@ -88,6 +90,17 @@ export class ServerlessWrapper {
           });
         }),
         concatMap(() => {
+          return this.serverless$.variables
+            .populateService(this.serverless$.pluginManager.cliOptions)
+            .then(() => {
+              // merge arrays after variables have been populated
+              // (https://github.com/serverless/serverless/issues/3511)
+              this.serverless$.service.mergeArrays();
+              // validate the service configuration, now that variables are loaded
+              this.serverless$.service.validate();
+            });
+        }),
+        concatMap(() => {
           this.serverless$.cli.asciiGreeting();
           return of(null);
         })
@@ -96,4 +109,16 @@ export class ServerlessWrapper {
       return of(null);
     }
   }
+}
+
+export function getExecArgv(
+  options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions
+) {
+  const serverlessOptions = [];
+  const extraArgs = parseArgs(options);
+
+  Object.keys(extraArgs).map(a =>
+    serverlessOptions.push(`--${a} ${extraArgs[a]}`)
+  );
+  return serverlessOptions;
 }
