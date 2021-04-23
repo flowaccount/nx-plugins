@@ -136,7 +136,7 @@ nx g @flowaccount/nx-serverless:api-serverless --name=myapi --provider=aws
 
 ```bash
 yarn create nx-workspace
-nx g @flowaccount/nx-serverless:api-serverless --name=myapi--provider=aws
+nx g @flowaccount/nx-serverless:api-serverless --name=myapi --provider=aws
 ```
 
 **Deploying/Compiling application (Assuming you have nx added globally, otherwise use npx/npm/yarn!)**

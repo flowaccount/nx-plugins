@@ -3,7 +3,7 @@
 <img src="https://angular.io/assets/images/logos/angular/angular.svg" height="145">
 <!-- <img src="https://angular.io/generated/images/marketing/concept-icons/universal.png" height="120"> -->
 <img src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg" height="145">
-<img src="https://github.com/scullyio/scully/raw/master/assets/logos/PNG/scullyio-logo.png" height="145">
+<img src="https://raw.githubusercontent.com/scullyio/scully/main/assets/logos/PNG/scullyio-logo.png" height="145">
 </p>
 
 <div align="left">
