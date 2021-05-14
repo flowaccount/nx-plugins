@@ -41,14 +41,14 @@
     "express": "^4.17.1"
   },
   "peerDependencies": {
-    "@nrwl/workspace": "^9.2.2",
-    "@nrwl/node": "^9.2.2",
-    "@nrwl/express": "^9.2.2"
+    "@nrwl/workspace": "^9.7.1",
+    "@nrwl/node": "^9.7.1",
+    "@nrwl/express": "^9.7.1"
   },
   "devDependencies": {
     "@angular-devkit/build-webpack": "~0.901.0",
-    "@nrwl/nx-plugin": "9.2.2",
-    "@nrwl/workspace": "9.2.2",
+    "@nrwl/nx-plugin": "^9.7.1",
+    "@nrwl/workspace": "^9.7.1",
     "@types/node": "~8.9.4",
     "@types/express": "^4.17.2",
     "@types/fs-extra": "^8.1.0",
@@ -58,11 +58,11 @@
     "prettier": "1.19.1",
     "ts-node": "~7.0.0",
     "typescript": "3.8.3",
-    "@nrwl/eslint-plugin-nx": "9.2.2",
+    "@nrwl/eslint-plugin-nx": "9.7.1",
     "@typescript-eslint/parser": "2.19.2",
     "@typescript-eslint/eslint-plugin": "2.19.2",
     "eslint-config-prettier": "^6.10.1",
-    "@nrwl/jest": "9.2.2",
+    "@nrwl/jest": "9.7.1",
     "jest": "^25.3.0",
     "@types/jest": "^25.2.1",
     "ts-jest": "^25.4.0",
