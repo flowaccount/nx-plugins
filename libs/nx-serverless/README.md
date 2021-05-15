@@ -54,6 +54,13 @@ Simplify any workflow that can be abstracted into one command using the same con
 | Sls Command        | :white_check_mark: | :calendar: | :calendar: |
 | Serverless-offline | :white_check_mark: | :calendar: | :calendar: |
 
+### Supported Serverless Framework Versions
+
+| Versions | Status             |
+| -------- | ------------------ |
+| 1.0+     | :white_check_mark: |
+| 2.0+     | :white_check_mark: |
+
 ### Builders wrapped before packaging/deployment
 
 | Builder Names       |                    |

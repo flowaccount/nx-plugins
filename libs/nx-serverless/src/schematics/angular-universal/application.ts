@@ -168,7 +168,7 @@ function addServerlessYMLFile(options: NormalizedSchema): Rule {
     host.create(
       join(options.appProjectRoot, 'serverless.yml'),
       `service: ${options.project}
-frameworkVersion: ">=1.1.0 <2.0.0"
+frameworkVersion: ">=1.1.0"
 plugins:
   - serverless-offline
   - serverless-apigw-binary
