@@ -87,28 +87,37 @@ For typescript compilers it uses `dep-checks` to resolve the dependencies and wr
 
 First you need to create an nx workspace to get started!
 
-**Using npx**
+## Using npx
 
 ```bash
 npx create-nx-workspace # Then you got to use yarn/npm
+// if start with angular presets
 nx add @flowaccount/nx-serverless # or with these options --project=my-app --provider=aws --addUniversal=yes
+// else
+npm install @flowaccount/nx-serverless --save-dev
 ```
 
-**Using npm**
+## Using npm
 
 ```bash
 npm init nx-workspace
-nx add @flowaccount/nx-serverless # or with these options --project=my-app --provider=aws --addUniversal=yes
+// if start with angular presets
+npm run nx add @flowaccount/nx-serverless # or with these options --project=my-app --provider=aws --addUniversal=yes
+// else
+npm install @flowaccount/nx-serverless --save-dev
 ```
 
-**Using yarn**
+## Using yarn
 
 ```bash
 yarn create nx-workspace
-nx add @flowaccount/nx-serverless # or with these options --project=my-app --provider=aws --addUniversal=yes
+// if start with angular presets
+yarn nx add @flowaccount/nx-serverless # or with these options --project=my-app --provider=aws --addUniversal=yes
+// else
+yarn add --dev @flowaccount/nx-serverless
 ```
 
-**Deploying/Compiling application (Assuming you have nx added globally, otherwise use npx/npm/yarn!)**
+## Deploying/Compiling application (Assuming you have nx added globally, otherwise use npx/npm/yarn!)
 
 ```bash
 nx run my-app:offline # to run the universal app offline checking serverless works locally
@@ -117,13 +126,13 @@ nx run my-app:destroy # to destroy the app
 nx run my-app:compile # to compile only the serverless part of the app
 ```
 
-**Running custom sls commands application (Assuming you have nx added globally, otherwise use npx/npm/yarn!)**
+## Running custom sls commands application (Assuming you have nx added globally, otherwise use npx/npm/yarn!)
 
 ```bash
 nx run my-app:sls # to run the custom sls commands as per what you need!
 ```
 
-### To Create and Deploy Node-Typescript Serverless Application
+## To Create and Deploy Node-Typescript Serverless Application
 
 **Using npx**
 
