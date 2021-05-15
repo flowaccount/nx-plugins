@@ -66,7 +66,7 @@
     "jest": "^25.3.0",
     "@types/jest": "^25.2.1",
     "ts-jest": "^25.4.0",
-    "serverless": "^1.59.3",
+    "serverless": "^2.29.0",
     "serverless-webpack": "5.3.1",
     "copy-webpack-plugin": "5.1.1",
     "license-webpack-plugin": "2.1.2",
