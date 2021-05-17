@@ -1,31 +1,14 @@
-import {
-  apply,
-  chain,
-  mergeWith,
-  move,
-  Rule,
-  SchematicContext,
-  template,
-  Tree,
-  url,
-  externalSchematic,
-  noop,
-  forEach,
-  FileEntry
-} from '@angular-devkit/schematics';
-import { join, normalize } from '@angular-devkit/core';
 import { Schema } from './schema';
 import {
   updateWorkspaceInTree,
-  getProjectConfig,
   toFileName,
   addPackageWithInit
 } from '@nrwl/workspace';
 import { offsetFromRoot } from '@nrwl/workspace';
-import init from '../init/init';
+import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
-import * as ts from 'typescript';
-import { insertImport, insert } from '@nrwl/workspace/src/utils/ast-utils';
+import { join, normalize } from 'path';
+import { names, ProjectConfiguration, readProjectConfiguration, Tree, updateProjectConfiguration, generateFiles } from '@nrwl/devkit';
 
 interface NormalizedSchema extends Schema {
   parsedTags: string[];
@@ -34,7 +17,7 @@ interface NormalizedSchema extends Schema {
 
 function getServeConfig(options: NormalizedSchema) {
   return {
-    builder: '@flowaccount/nx-serverless:offline',
+    executor: '@flowaccount/nx-serverless:offline',
     options: {
       waitUntilTargets: [options.name + ':build'],
       buildTarget: options.name + ':compile',
@@ -54,7 +37,7 @@ function getServeConfig(options: NormalizedSchema) {
 
 function getDeployConfig(options: NormalizedSchema) {
   return {
-    builder: '@flowaccount/nx-serverless:deploy',
+    executor: '@flowaccount/nx-serverless:deploy',
     options: {
       waitUntilTargets: [options.name + ':build:production'],
       buildTarget: options.name + ':compile:production',
@@ -68,7 +51,7 @@ function getDeployConfig(options: NormalizedSchema) {
 
 function getDestroyConfig(options: NormalizedSchema) {
   return {
-    builder: '@flowaccount/nx-serverless:destroy',
+    executor: '@flowaccount/nx-serverless:destroy',
     options: {
       buildTarget: options.name + ':compile:production',
       config: join(options.appProjectRoot, 'serverless.yml'),
@@ -78,9 +61,8 @@ function getDestroyConfig(options: NormalizedSchema) {
   };
 }
 
-function updateWorkspaceJson(options: NormalizedSchema): Rule {
-  return updateWorkspaceInTree(workspaceJson => {
-    const project = workspaceJson.projects[options.name];
+function updateWorkspaceJson(host: Tree, options: NormalizedSchema, project: ProjectConfiguration) {
+ 
     const buildConfig = getBuildConfig(options);
     buildConfig.options['skipClean'] = true;
     buildConfig.options['outputPath'] = normalize('dist');
@@ -88,36 +70,48 @@ function updateWorkspaceJson(options: NormalizedSchema): Rule {
       options.appProjectRoot,
       'tsconfig.serverless.json'
     );
-    buildConfig.builder = '@flowaccount/nx-serverless:compile';
-    project.architect.compile = buildConfig;
-    project.architect.offline = getServeConfig(options);
-    project.architect.deploy = getDeployConfig(options);
-    project.architect.destroy = getDestroyConfig(options);
-    workspaceJson.projects[options.name] = project;
-    return workspaceJson;
-  });
+    buildConfig.executor = '@flowaccount/nx-serverless:compile';
+    project.targets.compile = buildConfig;
+    project.targets.offline = getServeConfig(options);
+    project.targets.deploy = getDeployConfig(options);
+    project.targets.destroy = getDestroyConfig(options);
+    updateProjectConfiguration(host, options.name, project) 
+ 
 }
 
-function addAppFiles(options: NormalizedSchema): Rule {
-  return (tree: Tree, _context: SchematicContext) => {
-    const rule = mergeWith(
-      apply(url('./files/app'), [
-        template({
-          tmpl: '',
-          name: options.name,
-          root: options.appProjectRoot,
-          offset: offsetFromRoot(options.appProjectRoot)
-        }),
-        move(options.appProjectRoot),
-        forEach((fileEntry: FileEntry) => {
-          // Just by adding this is allows the file to be overwritten if it already exists
-          if (tree.exists(fileEntry.path)) return null;
-          return fileEntry;
-        })
-      ])
-    );
-    return rule(tree, _context);
+function addAppFiles(host: Tree, options: NormalizedSchema) {
+  const templateOptions = {
+    ...options,
+    ...names(options.name), // name: options.name,
+    offsetFromRoot: offsetFromRoot(options.appProjectRoot),
+    template: '',
+    root: options.appProjectRoot
   };
+  generateFiles(
+    host,
+    join(__dirname, 'files'),
+    options.appProjectRoot,
+    templateOptions
+  );
+  // return (tree: Tree, _context: SchematicContext) => {
+  //   const rule = mergeWith(
+  //     apply(url('./files/app'), [
+  //       template({
+  //         tmpl: '',
+  //         name: options.name,
+  //         root: options.appProjectRoot,
+  //         offset: offsetFromRoot(options.appProjectRoot)
+  //       }),
+  //       move(options.appProjectRoot),
+  //       forEach((fileEntry: FileEntry) => {
+  //         // Just by adding this is allows the file to be overwritten if it already exists
+  //         if (tree.exists(fileEntry.path)) return null;
+  //         return fileEntry;
+  //       })
+  //     ])
+  //   );
+  //   return rule(tree, _context);
+  // };
 }
 
 // function updateServerTsFile(options: NormalizedSchema): Rule {
@@ -161,43 +155,43 @@ function addAppFiles(options: NormalizedSchema): Rule {
 //   };
 // }
 
-function addServerlessYMLFile(options: NormalizedSchema): Rule {
-  return (host: Tree) => {
-    host.create(
-      join(options.appProjectRoot, 'serverless.yml'),
-      `service: ${options.name}
-frameworkVersion: ">=1.1.0"
-plugins:
-  - serverless-offline
-  - serverless-apigw-binary
-package:
-  individually: true
-  excludeDevDependencies: false
-  # path: ${join(normalize('dist'), options.appProjectRoot)}
-  custom:
-    enable_optimize:
-      local: false
-provider:
-  name: ${options.provider}
-  region: ${options.region}
-  endpointType: ${options.endpointType}
-  runtime: nodejs10.x
-  memorySize: 192
-  timeout: 10
-custom:
-  apigwBinary:
-    types:
-      - '*/*'
-functions:
-  web-app:
-    handler: handler.webApp
-    events:
-      - http: ANY {proxy+}
-      - http: ANY /
-      `
-    );
-  };
-}
+// function addServerlessYMLFile(options: NormalizedSchema): Rule {
+//   return (host: Tree) => {
+//     host.create(
+//       join(options.appProjectRoot, 'serverless.yml'),
+//       `service: ${options.name}
+// frameworkVersion: ">=1.1.0"
+// plugins:
+//   - serverless-offline
+//   - serverless-apigw-binary
+// package:
+//   individually: true
+//   excludeDevDependencies: false
+//   # path: ${join(normalize('dist'), options.appProjectRoot)}
+//   custom:
+//     enable_optimize:
+//       local: false
+// provider:
+//   name: ${options.provider}
+//   region: ${options.region}
+//   endpointType: ${options.endpointType}
+//   runtime: nodejs10.x
+//   memorySize: 192
+//   timeout: 10
+// custom:
+//   apigwBinary:
+//     types:
+//       - '*/*'
+// functions:
+//   web-app:
+//     handler: handler.webApp
+//     events:
+//       - http: ANY {proxy+}
+//       - http: ANY /
+//       `
+//     );
+//   };
+// }
 
 function normalizeOptions(options: Schema): NormalizedSchema {
   const appDirectory = options.directory
@@ -224,35 +218,32 @@ function normalizeOptions(options: Schema): NormalizedSchema {
   };
 }
 
-export default function(schema: Schema): Rule {
-  return (host: Tree, context: SchematicContext) => {
+export default function(host: Tree, schema: Schema) {
     const options = normalizeOptions(schema);
-    return chain([
-      init({
-        skipFormat: options.skipFormat,
-        expressProxy: true
-      }),
-      options.initExpress
-        ? addPackageWithInit('@nrwl/express', {
-            unitTestRunner: options.unitTestRunner
-          })
-        : noop(),
-      options.initExpress
-        ? externalSchematic('@nrwl/express', 'app', {
-            name: schema.name,
-            skipFormat: schema.skipFormat,
-            skipPackageJson: schema.skipPackageJson,
-            directory: schema.directory,
-            unitTestRunner: schema.unitTestRunner,
-            tags: schema.tags,
-            linter: schema.linter,
-            frontendProject: schema.frontendProject
-          })
-        : noop(),
-      addAppFiles(options),
-      addServerlessYMLFile(options),
+    initGenerator(host, {
+      skipFormat: options.skipFormat,
+      expressProxy: true
+    });
+      // options.initExpress
+      //   ? addPackageWithInit('@nrwl/express', {
+      //       unitTestRunner: options.unitTestRunner
+      //     })
+      //   : noop(),
+      // options.initExpress
+      //   ? externalSchematic('@nrwl/express', 'app', {
+      //       name: schema.name,
+      //       skipFormat: schema.skipFormat,
+      //       skipPackageJson: schema.skipPackageJson,
+      //       directory: schema.directory,
+      //       unitTestRunner: schema.unitTestRunner,
+      //       tags: schema.tags,
+      //       linter: schema.linter,
+      //       frontendProject: schema.frontendProject
+      //     })
+      //   : noop(),
+      addAppFiles(host, options);
+      // addServerlessYMLFile(options),
       // updateServerTsFile(options),
-      updateWorkspaceJson(options)
-    ])(host, context);
-  };
+      const project = readProjectConfiguration(host, schema.name);
+      updateWorkspaceJson(host, options, project)
 }

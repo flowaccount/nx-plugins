@@ -48,6 +48,7 @@
   "devDependencies": {
     "@angular-devkit/build-webpack": "~0.901.0",
     "@nrwl/nx-plugin": "^9.7.1",
+    "@nrwl/devkit": "^12.3.3",
     "@nrwl/workspace": "^9.7.1",
     "@types/node": "~8.9.4",
     "@types/express": "^4.17.2",

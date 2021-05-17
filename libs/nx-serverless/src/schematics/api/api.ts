@@ -1,46 +1,38 @@
+import * as path from 'path';
 import {
-  apply,
-  chain,
-  externalSchematic,
-  mergeWith,
-  move,
-  noop,
-  Rule,
-  SchematicContext,
-  template,
+  addProjectConfiguration,
+  formatFiles,
+  generateFiles,
+  getWorkspaceLayout,
+  names,
+  offsetFromRoot,
   Tree,
-  url
-} from '@angular-devkit/schematics';
-import { join, normalize, Path } from '@angular-devkit/core';
+} from '@nrwl/devkit';
 import { Schema } from './schema';
 import {
-  updateJsonInTree,
-  updateWorkspaceInTree,
-  generateProjectLint,
-  addLintFiles
+  ProjectType
 } from '@nrwl/workspace';
 import { toFileName } from '@nrwl/workspace';
-import { getProjectConfig } from '@nrwl/workspace';
-import { offsetFromRoot } from '@nrwl/workspace';
-import init from '../init/init';
+import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
+import { join, normalize } from 'path';
 
 interface NormalizedSchema extends Schema {
   parsedTags: string[];
   provider: string;
 }
 
-function updateNxJson(options: NormalizedSchema): Rule {
-  return updateJsonInTree('/nx.json', json => {
-    return {
-      ...json,
-      projects: {
-        ...json.projects,
-        [options.name]: { tags: options.parsedTags }
-      }
-    };
-  });
-}
+// function updateNxJson(options: NormalizedSchema) {
+//   return updateJsonInTree('/nx.json', json => {
+//     return {
+//       ...json,
+//       projects: {
+//         ...json.projects,
+//         [options.name]: { tags: options.parsedTags }
+//       }
+//     };
+//   });
+// }
 
 function getServeConfig(project: any, options: NormalizedSchema) {
   return {
@@ -86,103 +78,123 @@ function getDestroyConfig(options: NormalizedSchema) {
   };
 }
 
-function updateWorkspaceJson(options: NormalizedSchema): Rule {
-  return updateWorkspaceInTree(workspaceJson => {
-    const project = {
+function updateWorkspaceJson(host: Tree, options: NormalizedSchema): void {
+  const project = {
+    root: options.appProjectRoot,
+    sourceRoot: join(options.appProjectRoot, 'src'),
+    projectType: ProjectType.Application,
+    prefix: options.name,
+    schematics: {},
+    targets: <any>{},
+    tags: <any>{}
+  };
+
+  project.targets.build = getBuildConfig(options);
+  project.targets.serve = getServeConfig(project, options);
+  project.targets.deploy = getDeployConfig(project, options);
+  project.targets.destroy = getDestroyConfig(options);
+  // project.targets.lint = generateProjectLint(
+  //   normalize(project.root),
+  //   join(normalize(project.root), 'tsconfig.app.json'),
+  //   options.linter
+  // );
+  project.tags = options.parsedTags
+ 
+   addProjectConfiguration(host, options.name, project);
+
+  // return updateWorkspaceInTree(workspaceJson => {
+    // workspaceJson.projects[options.name] = project;
+    // workspaceJson.defaultProject = workspaceJson.defaultProject || options.name;
+    // return workspaceJson;
+  // });
+}
+
+function addAppFiles(host: Tree, options: NormalizedSchema) {
+    const templateOptions = {
+      ...options,
+      ...names(options.name), // name: options.name,
+      offsetFromRoot: offsetFromRoot(options.appProjectRoot),
+      template: '',
       root: options.appProjectRoot,
-      sourceRoot: join(options.appProjectRoot, 'src'),
-      projectType: 'application',
-      prefix: options.name,
-      schematics: {},
-      architect: <any>{}
+      baseWorkspaceTsConfig: options.baseWorkspaceTsConfig,
     };
-
-    project.architect.build = getBuildConfig(options);
-    project.architect.serve = getServeConfig(project, options);
-    project.architect.deploy = getDeployConfig(project, options);
-    project.architect.destroy = getDestroyConfig(options);
-    project.architect.lint = generateProjectLint(
-      normalize(project.root),
-      join(normalize(project.root), 'tsconfig.app.json'),
-      options.linter
+    generateFiles(
+      host,
+      path.join(__dirname, 'files'),
+      options.appProjectRoot,
+      templateOptions
     );
-    workspaceJson.projects[options.name] = project;
-    workspaceJson.defaultProject = workspaceJson.defaultProject || options.name;
-    return workspaceJson;
-  });
+  //   mergeWith(
+  //   apply(url('./files/app'), [
+  //     template({
+  //       tmpl: '',
+  //       name: options.name,
+  //       root: options.appProjectRoot,
+  //       baseWorkspaceTsConfig: options.baseWorkspaceTsConfig,
+  //       offset: offsetFromRoot(options.appProjectRoot)
+  //     }),
+  //     move(options.appProjectRoot)
+  //   ])
+  // );
 }
 
-function addAppFiles(options: NormalizedSchema): Rule {
-  return mergeWith(
-    apply(url('./files/app'), [
-      template({
-        tmpl: '',
-        name: options.name,
-        root: options.appProjectRoot,
-        baseWorkspaceTsConfig: options.baseWorkspaceTsConfig,
-        offset: offsetFromRoot(options.appProjectRoot)
-      }),
-      move(options.appProjectRoot)
-    ])
-  );
-}
+// function addServerlessYMLFile(host: Tree, options: NormalizedSchema) {
+//   // return (host: Tree) => {
+//     host.create(
+//       join(options.appProjectRoot, 'serverless.yml'),
+//       `service: ${options.name}
+// frameworkVersion: ">=1.1.0"
+// plugins:
+//   - serverless-offline
+// package:
+//   individually: true
+//   excludeDevDependencies: false
+//   # path: ${join(normalize('dist'), options.appProjectRoot)}
+// provider:
+//   name: ${options.provider}
+//   region: ${options.region}
+//   endpointType: ${options.endpointType}
+//   runtime: nodejs10.x
+// functions:
+//   hello-world:
+//     handler: src/handler.helloWorld
+//     events:
+//       - http:
+//           path: hello-world
+//           method: get
+//       `
+//     );
+//   // };
+// }
 
-function addServerlessYMLFile(options: NormalizedSchema): Rule {
-  return (host: Tree) => {
-    host.create(
-      join(options.appProjectRoot, 'serverless.yml'),
-      `service: ${options.name}
-frameworkVersion: ">=1.1.0"
-plugins:
-  - serverless-offline
-package:
-  individually: true
-  excludeDevDependencies: false
-  # path: ${join(normalize('dist'), options.appProjectRoot)}
-provider:
-  name: ${options.provider}
-  region: ${options.region}
-  endpointType: ${options.endpointType}
-  runtime: nodejs10.x
-functions:
-  hello-world:
-    handler: src/handler.helloWorld
-    events:
-      - http:
-          path: hello-world
-          method: get
-      `
-    );
-  };
-}
-
-function addProxy(options: NormalizedSchema): Rule {
-  return (host: Tree, context: SchematicContext) => {
-    const projectConfig = getProjectConfig(host, options.frontendProject);
-    if (projectConfig.architect && projectConfig.architect.serve) {
-      const pathToProxyFile = `${projectConfig.root}/proxy.conf.json`;
-      const apiname = `/${options.name}-api`;
-      host.create(
-        pathToProxyFile,
-        JSON.stringify(
-          {
-            apiname: {
-              target: 'http://localhost:3333',
-              secure: false
-            }
-          },
-          null,
-          2
-        )
-      );
-      updateWorkspaceInTree(json => {
-        projectConfig.architect.serve.options.proxyConfig = pathToProxyFile;
-        json.projects[options.frontendProject] = projectConfig;
-        return json;
-      })(host, context);
-    }
-  };
-}
+// function addProxy(host: Tree, options: NormalizedSchema) {
+//   // return (host: Tree, context: SchematicContext) => {
+//     const projectConfig = getProjectConfig(host, options.frontendProject);
+//     if (projectConfig.architect && projectConfig.architect.serve) {
+//       const pathToProxyFile = `${projectConfig.root}/proxy.conf.json`;
+//       const apiname = `/${options.name}-api`;
+//       host.create(
+//         pathToProxyFile,
+//         JSON.stringify(
+//           {
+//             apiname: {
+//               target: 'http://localhost:3333',
+//               secure: false
+//             }
+//           },
+//           null,
+//           2
+//         )
+//       );
+//       updateWorkspaceInTree(json => {
+//         projectConfig.architect.serve.options.proxyConfig = pathToProxyFile;
+//         json.projects[options.frontendProject] = projectConfig;
+//         return json;
+//       })
+//       //(host, context);
+//     //}
+//   };
+// }
 
 function normalizeOptions(options: Schema): NormalizedSchema {
   const appDirectory = options.directory
@@ -209,27 +221,24 @@ function normalizeOptions(options: Schema): NormalizedSchema {
   };
 }
 
-export default function(schema: Schema): Rule {
-  return (host: Tree, context: SchematicContext) => {
+  export default async function (host: Tree, schema: Schema) {
     const options = normalizeOptions(schema);
-    return chain([
-      init({
+      initGenerator(host, {
         skipFormat: false,
         expressProxy: false
-      }),
-      addLintFiles(options.appProjectRoot, options.linter),
-      addAppFiles(options),
-      addServerlessYMLFile(options),
-      updateWorkspaceJson(options),
-      updateNxJson(options),
-      options.unitTestRunner === 'jest'
-        ? externalSchematic('@nrwl/jest', 'jest-project', {
-            project: options.name,
-            setupFile: 'none',
-            skipSerializers: true
-          })
-        : noop(),
-      options.frontendProject ? addProxy(options) : noop()
-    ])(host, context);
-  };
+      });
+      // addLintFiles(options.appProjectRoot, options.linter),
+      addAppFiles(host, options);
+      // addServerlessYMLFile(host, options);
+      updateWorkspaceJson(host, options);
+      // updateNxJson(options);
+      // options.unitTestRunner === 'jest'
+      //   ? externalSchematic('@nrwl/jest', 'jest-project', {
+      //       project: options.name,
+      //       setupFile: 'none',
+      //       skipSerializers: true
+      //     })
+      //   : noop();
+      // options.frontendProject ? addProxy(host, options) : noop();
+      await formatFiles(host);
 }

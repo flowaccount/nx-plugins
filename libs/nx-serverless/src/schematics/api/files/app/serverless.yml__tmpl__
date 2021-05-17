@@ -1,0 +1,19 @@
+service: <%= name %>
+frameworkVersion: ">=1.1.0"
+plugins:
+  - serverless-offline
+package:
+  individually: true
+  excludeDevDependencies: false
+provider:
+  name: <%= provider %> 
+  region: <%= region %> 
+  endpointType: <%= endpointType %>
+  runtime: nodejs10.x
+functions:
+  hello-world:
+    handler: src/handler.helloWorld
+    events:
+      - http:
+          path: hello-world
+          method: get

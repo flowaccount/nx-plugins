@@ -1,7 +1,8 @@
-import { join, normalize, Path } from '@angular-devkit/core';
+import { join, normalize } from "path";
+
 
 export interface BaseSchema {
-  appProjectRoot: Path;
+  appProjectRoot: string;
   provider: string;
   region: string;
   endpointType: string;
@@ -10,7 +11,7 @@ export interface BaseSchema {
 
 export function getBuildConfig(options: BaseSchema) {
   return {
-    builder: '@flowaccount/nx-serverless:build',
+    executor: '@flowaccount/nx-serverless:build',
     options: {
       outputPath: join(normalize('dist'), options.appProjectRoot),
       package: options.appProjectRoot,

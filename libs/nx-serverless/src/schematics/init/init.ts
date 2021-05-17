@@ -1,18 +1,15 @@
-import {
-  Rule,
-  chain,
-  noop,
-  Tree,
-  SchematicContext,
-  externalSchematic
-} from '@angular-devkit/schematics';
-import {
-  addDepsToPackageJson,
-  updateJsonInTree,
-  addPackageWithInit,
+import { 
+  Tree, 
+  updateJson,
+  addDependenciesToPackageJson, 
+  GeneratorCallback, 
+  readJson, 
   formatFiles,
-  readJsonInTree
-} from '@nrwl/workspace';
+  convertNxGenerator,
+  logger, 
+} from '@nrwl/devkit';
+import { runTasksInSerial } from '@nrwl/workspace';
+import { jestInitGenerator } from '@nrwl/jest';
 import { Schema } from './schema';
 import {
   nxVersion,
@@ -24,9 +21,9 @@ import {
   expressVersion
 } from '../../utils/versions';
 
-function addDependencies(expressProxy: boolean): Rule {
-  return (host: Tree, context: SchematicContext): Rule => {
+function addDependencies(host: Tree, expressProxy: boolean): GeneratorCallback[] {
     const dependencies = {};
+    const tasks: GeneratorCallback[] = [];
     const devDependencies = {
       '@flowaccount/nx-serverless': nxVersion,
       serverless: serverlessVersion,
@@ -42,7 +39,7 @@ function addDependencies(expressProxy: boolean): Rule {
     } else {
       devDependencies['@types/aws-lambda'] = awsTypeLambdaVersion;
     }
-    const packageJson = readJsonInTree(host, 'package.json');
+    const packageJson = readJson(host, 'package.json');
     Object.keys(dependencies).forEach(key => {
       if (packageJson.dependencies[key]) {
         delete dependencies[key];
@@ -59,15 +56,15 @@ function addDependencies(expressProxy: boolean): Rule {
       !Object.keys(dependencies).length &&
       !Object.keys(devDependencies).length
     ) {
-      context.logger.info('Skipping update package.json');
-      return noop();
+      logger.info('Skipping update package.json');
+      return tasks;
     }
-    return addDepsToPackageJson(dependencies, devDependencies);
-  };
+    tasks.push(addDependenciesToPackageJson(host, dependencies, devDependencies));
+    return tasks;
 }
 
-function updateDependencies(): Rule {
-  return updateJsonInTree('package.json', json => {
+function updateDependencies(tree: Tree) {
+  updateJson(tree, '/package.json', json => {
     if (json.dependencies['@flowaccount/nx-serverless']) {
       json.devDependencies['@flowaccount/nx-serverless'] =
         json.dependencies['@flowaccount/nx-serverless'];
@@ -79,11 +76,16 @@ function updateDependencies(): Rule {
   });
 }
 
-export default function(schema: Schema) {
-  return chain([
-    addPackageWithInit('@nrwl/jest'),
-    addDependencies(schema.expressProxy),
-    updateDependencies(),
-    formatFiles(schema)
-  ]);
+export async function initGenerator<T extends Schema>(
+  tree: Tree,
+  options: T
+) {
+
+  const tasks: GeneratorCallback[] = [];
+  updateDependencies(tree);
+  tasks.push(jestInitGenerator(tree, {}));
+  tasks.push(...addDependencies(tree, options.expressProxy)),
+  return runTasksInSerial(...tasks);
 }
+
+export const initSchematic = convertNxGenerator(initGenerator);
