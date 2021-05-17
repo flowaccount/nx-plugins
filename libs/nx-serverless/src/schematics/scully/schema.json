@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "http://json-schema.org/schema",
   "id": "SchematicsNgScullyServerlessApp",
   "title": "Angular Scully Serverless Web Application Options Schema",
   "type": "object",
@@ -31,5 +31,8 @@
       "default": false
     }
   },
-  "required": ["project", "addScully"]
+  "required": [
+    "project",
+    "addScully"
+  ]
 }

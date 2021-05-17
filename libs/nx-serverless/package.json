@@ -20,7 +20,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@nrwl/workspace": "9.2.2"
+    "@nrwl/workspace": "^12.0.0"
   },
   "dependencies": {
     "@nguniversal/express-engine": "12.0.0",
@@ -28,9 +28,9 @@
     "ignore": "^5.1.8",
     "@angular-devkit/core": "^11.0.0",
     "@angular-devkit/schematics": "^11.0.0",
-    "@nrwl/express": "9.2.2",
-    "@nrwl/node": "9.2.2",
-    "@nrwl/jest": "9.7.1",
+    "@nrwl/express": "12.3.3",
+    "@nrwl/node": "12.3.3",
+    "@nrwl/jest": "12.3.3",
     "dotenv": "6.2.0",
     "dotenv-json": "^1.0.0",
     "copy-webpack-plugin": "5.1.1",

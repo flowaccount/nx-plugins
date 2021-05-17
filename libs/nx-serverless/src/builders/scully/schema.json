@@ -54,5 +54,8 @@
     }
   },
   "additionalProperties": false,
-  "required": ["buildTarget", "configFiles"]
+  "required": [
+    "buildTarget",
+    "configFiles"
+  ]
 }

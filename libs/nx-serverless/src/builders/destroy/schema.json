@@ -50,5 +50,10 @@
     }
   },
   "additionalProperties": false,
-  "required": ["buildTarget", "config", "location", "package"]
+  "required": [
+    "buildTarget",
+    "config",
+    "location",
+    "package"
+  ]
 }

@@ -1,5 +1,5 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
+  "$schema": "http://json-schema.org/schema",
   "id": "SchematicsNgUniversalServerlessApp",
   "title": "Expressjs Serverless Deployment Options Schema",
   "type": "object",
@@ -41,12 +41,18 @@
     "linter": {
       "description": "The tool to use for running lint checks.",
       "type": "string",
-      "enum": ["eslint", "tslint"],
+      "enum": [
+        "eslint",
+        "tslint"
+      ],
       "default": "tslint"
     },
     "unitTestRunner": {
       "type": "string",
-      "enum": ["jest", "none"],
+      "enum": [
+        "jest",
+        "none"
+      ],
       "description": "Test runner to use for unit tests",
       "default": "jest"
     },
@@ -59,5 +65,8 @@
       "description": "Frontend project that needs to access this api. This sets up proxy configuration."
     }
   },
-  "required": ["name", "initExpress"]
+  "required": [
+    "name",
+    "initExpress"
+  ]
 }

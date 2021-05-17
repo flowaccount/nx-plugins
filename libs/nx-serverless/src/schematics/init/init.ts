@@ -8,7 +8,7 @@ import {
   convertNxGenerator,
   logger, 
 } from '@nrwl/devkit';
-import { runTasksInSerial } from '@nrwl/workspace';
+import { runTasksInSerial } from '@nrwl/workspace/src/utilities/run-tasks-in-serial';
 import { jestInitGenerator } from '@nrwl/jest';
 import { Schema } from './schema';
 import {
@@ -84,7 +84,7 @@ export async function initGenerator<T extends Schema>(
   const tasks: GeneratorCallback[] = [];
   updateDependencies(tree);
   tasks.push(jestInitGenerator(tree, {}));
-  tasks.push(...addDependencies(tree, options.expressProxy)),
+  tasks.push(...addDependencies(tree, options.expressProxy));
   return runTasksInSerial(...tasks);
 }
 
