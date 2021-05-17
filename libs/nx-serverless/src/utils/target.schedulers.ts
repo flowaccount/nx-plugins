@@ -18,7 +18,7 @@ export function runWaitUntilTargets(
   return zip(
     ...waitUntilTargets.map(b => {
       return scheduleTargetAndForget(context, targetFromTargetString(b)).pipe(
-        filter(e: => e.success !== undefined),
+        filter(e => e.success !== undefined),
         first()
       );
     })
