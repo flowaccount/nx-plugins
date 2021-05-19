@@ -29,6 +29,12 @@
       "description": "Skips the prettier format of files",
       "type": "boolean",
       "default": false
+    },
+    "region": {
+      "type": "string",
+      "description": "The region to deploy to",
+      "default": "ap-southeast-1",
+      "x-prompt": "Which region do you want to default your deployment to?"
     }
   },
   "required": [

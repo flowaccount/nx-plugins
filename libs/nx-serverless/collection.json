@@ -11,7 +11,7 @@
       "hidden": true
     },
     "api": {
-      "factory": "./src/schematics/api/api",
+      "factory": "./src/schematics/api/api#apiSchematic",
       "schema": "./src/schematics/api/schema.json",
       "aliases": ["api-serverless"],
       "description": "Create a serverless nodejs api application"

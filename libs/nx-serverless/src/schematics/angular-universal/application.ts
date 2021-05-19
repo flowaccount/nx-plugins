@@ -96,7 +96,7 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
   const templateOptions = {
     ...options,
     ...names(options.project), // name: options.name,
-    offsetFromRoot: offsetFromRoot(options.appProjectRoot),
+    offset: offsetFromRoot(options.appProjectRoot),
     template: '',
     root: options.appProjectRoot
   };
@@ -201,7 +201,8 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
 function normalizeOptions(project: any, options: Schema): NormalizedSchema {
   return {
     ...options,
-    appProjectRoot: project.root
+    appProjectRoot: project.root,
+    endpointType: options.endpointType ? undefined : options.endpointType
   };
 }
 
@@ -211,7 +212,8 @@ export default function(host: Tree, schema: Schema) {
     const options = normalizeOptions(project, schema);
     initGenerator(host, {
       skipFormat: options.skipFormat,
-      expressProxy: true
+      expressProxy: true,
+      unitTestRunner: ""
     });
       // options.addUniversal
       //   ? externalSchematic('@nguniversal/express-engine', 'ng-add', {

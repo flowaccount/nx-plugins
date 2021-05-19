@@ -20,6 +20,8 @@ import {
   serverlessApigwBinaryVersion,
   expressVersion
 } from '../../utils/versions';
+import { addJestPlugin } from './lib/add-jest-plugin';
+import { addLinterPlugin } from './lib/add-linter-plugin';
 
 function addDependencies(host: Tree, expressProxy: boolean): GeneratorCallback[] {
     const dependencies = {};
@@ -82,9 +84,19 @@ export async function initGenerator<T extends Schema>(
 ) {
 
   const tasks: GeneratorCallback[] = [];
+
+  if (!options.unitTestRunner || options.unitTestRunner === 'jest') {
+    const jestTask = addJestPlugin(tree);
+    tasks.push(jestTask);
+  }
+  const linterTask = addLinterPlugin(tree);
+  tasks.push(linterTask);
+  
   updateDependencies(tree);
-  tasks.push(jestInitGenerator(tree, {}));
   tasks.push(...addDependencies(tree, options.expressProxy));
+  if (!options.skipFormat) {
+    await formatFiles(tree);
+  }
   return runTasksInSerial(...tasks);
 }
 

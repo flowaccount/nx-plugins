@@ -12,6 +12,18 @@ describe('node api app', () => {
   beforeEach(() => {
     appTree = Tree.empty();
     appTree = createEmptyWorkspace(appTree);
+    appTree.overwrite(
+      'package.json',
+      `
+      {
+        "name": "test-name",
+        "dependencies": {},
+        "devDependencies": {
+          "@nrwl/workspace": "0.0.0"
+        }
+      }
+    `
+    );
   });
 
   describe('not nested', () => {
@@ -167,6 +179,7 @@ describe('node api app', () => {
         { name: 'myServelessApp' },
         appTree
       );
+      console.log(tree.files)
       expect(tree.exists('apps/my-serveless-app/jest.config.js')).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/env.json')).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/environment.ts')).toBeTruthy();
@@ -264,7 +277,7 @@ describe('node api app', () => {
         { name: 'myServelessApp', directory: 'myDir' },
         appTree
       );
-
+     
       // Make sure these exist
       [
         'apps/my-dir/my-serveless-app/jest.config.js',

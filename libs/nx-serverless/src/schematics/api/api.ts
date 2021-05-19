@@ -1,6 +1,7 @@
 import * as path from 'path';
 import {
   addProjectConfiguration,
+  convertNxGenerator,
   formatFiles,
   generateFiles,
   getWorkspaceLayout,
@@ -113,7 +114,7 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
     const templateOptions = {
       ...options,
       ...names(options.name), // name: options.name,
-      offsetFromRoot: offsetFromRoot(options.appProjectRoot),
+      offset: offsetFromRoot(options.appProjectRoot),
       template: '',
       root: options.appProjectRoot,
       baseWorkspaceTsConfig: options.baseWorkspaceTsConfig,
@@ -217,15 +218,17 @@ function normalizeOptions(options: Schema): NormalizedSchema {
       : undefined,
     appProjectRoot,
     provider: options.provider,
-    parsedTags
+    parsedTags,
+    endpointType: options.endpointType ? undefined : options.endpointType
   };
 }
 
-  export default async function (host: Tree, schema: Schema) {
+export async function apiGenerator(host: Tree, schema: Schema) {
     const options = normalizeOptions(schema);
       initGenerator(host, {
         skipFormat: false,
-        expressProxy: false
+        expressProxy: false,
+        unitTestRunner: options.unitTestRunner
       });
       // addLintFiles(options.appProjectRoot, options.linter),
       addAppFiles(host, options);
@@ -242,3 +245,6 @@ function normalizeOptions(options: Schema): NormalizedSchema {
       // options.frontendProject ? addProxy(host, options) : noop();
       await formatFiles(host);
 }
+
+export default apiGenerator;
+export const apiSchematic = convertNxGenerator(apiGenerator);

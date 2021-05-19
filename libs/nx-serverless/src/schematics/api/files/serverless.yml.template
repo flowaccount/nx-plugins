@@ -8,7 +8,7 @@ package:
 provider:
   name: <%= provider %> 
   region: <%= region %> 
-  endpointType: <%= endpointType %>
+  <% if(endpointType) { %> ? endpointType: <%= endpointType %> <% } %>
   runtime: nodejs10.x
 functions:
   hello-world:

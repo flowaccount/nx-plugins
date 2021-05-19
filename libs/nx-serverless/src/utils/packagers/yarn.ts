@@ -8,7 +8,6 @@
 
 import * as _ from 'lodash';
 import { spawn, spawnSync } from 'child_process';
-import { from } from 'rxjs/internal/observable/from';
 import { map } from 'rxjs/operators';
 
 export class Yarn {

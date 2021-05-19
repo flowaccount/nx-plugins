@@ -214,7 +214,8 @@ function normalizeOptions(options: Schema): NormalizedSchema {
       : undefined,
     appProjectRoot,
     provider: options.provider,
-    parsedTags
+    parsedTags,
+    endpointType: options.endpointType ? undefined : options.endpointType
   };
 }
 
@@ -222,7 +223,8 @@ export default function(host: Tree, schema: Schema) {
     const options = normalizeOptions(schema);
     initGenerator(host, {
       skipFormat: options.skipFormat,
-      expressProxy: true
+      expressProxy: true,
+      unitTestRunner: options.unitTestRunner
     });
       // options.initExpress
       //   ? addPackageWithInit('@nrwl/express', {

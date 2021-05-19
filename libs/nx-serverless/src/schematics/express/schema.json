@@ -63,6 +63,12 @@
     "frontendProject": {
       "type": "string",
       "description": "Frontend project that needs to access this api. This sets up proxy configuration."
+    },
+    "region": {
+      "type": "string",
+      "description": "The region to deploy to",
+      "default": "ap-southeast-1",
+      "x-prompt": "Which region do you want to default your deployment to?"
     }
   },
   "required": [
