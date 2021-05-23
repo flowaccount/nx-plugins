@@ -8,6 +8,18 @@ describe('express app', () => {
   beforeEach(async () => {
     appTree = Tree.empty();
     appTree = createEmptyWorkspace(appTree);
+    appTree.overwrite(
+      'package.json',
+      `
+      {
+        "name": "test-name",
+        "dependencies": {},
+        "devDependencies": {
+          "@nrwl/workspace": "0.0.0"
+        }
+      }
+    `
+    );
   });
 
   describe('not nested', () => {
@@ -20,10 +32,10 @@ describe('express app', () => {
       const workspaceJson = readJsonInTree(tree, '/workspace.json');
       const project = workspaceJson.projects['my-app'];
       expect(project.root).toEqual('apps/my-app');
-      expect(project.architect).toEqual(
+      expect(project.targets).toEqual(
         jasmine.objectContaining({
           compile: {
-            builder: '@flowaccount/nx-serverless:compile',
+            executor: '@flowaccount/nx-serverless:compile',
             configurations: {
               dev: {
                 budgets: [
@@ -69,7 +81,7 @@ describe('express app', () => {
             }
           },
           deploy: {
-            builder: '@flowaccount/nx-serverless:deploy',
+            executor: '@flowaccount/nx-serverless:deploy',
             options: {
               waitUntilTargets: ['my-app:build:production'],
               buildTarget: 'my-app:compile:production',
@@ -80,7 +92,7 @@ describe('express app', () => {
             }
           },
           destroy: {
-            builder: '@flowaccount/nx-serverless:destroy',
+            executor: '@flowaccount/nx-serverless:destroy',
             options: {
               buildTarget: 'my-app:compile:production',
               config: 'apps/my-app/serverless.yml',
@@ -89,7 +101,7 @@ describe('express app', () => {
             }
           },
           offline: {
-            builder: '@flowaccount/nx-serverless:offline',
+            executor: '@flowaccount/nx-serverless:offline',
             configurations: {
               dev: {
                 buildTarget: 'my-app:compile:dev'
@@ -142,10 +154,10 @@ describe('express app', () => {
         'apps/my-dir/my-app'
       );
 
-      expect(workspaceJson.projects['my-dir-my-app'].architect.lint).toEqual({
-        builder: '@angular-devkit/build-angular:tslint',
+      expect(workspaceJson.projects['my-dir-my-app'].targets.lint).toEqual({
+        executor: '@angular-devkit/build-angular:tslint',
         options: {
-          exclude: ['**/node_modules/**', '!apps/my-dir/my-app/**'],
+          exclude: ['**/node_modules/**', '!apps/my-dir/my-app/**/*'],
           tsConfig: [
             'apps/my-dir/my-app/tsconfig.app.json',
             'apps/my-dir/my-app/tsconfig.spec.json'
@@ -193,9 +205,9 @@ describe('express app', () => {
       expect(tree.exists('apps/my-app/tsconfig.spec.json')).toBeFalsy();
       expect(tree.exists('apps/my-app/jest.config.js')).toBeFalsy();
       const workspaceJson = readJsonInTree(tree, 'workspace.json');
-      expect(workspaceJson.projects['my-app'].architect.test).toBeUndefined();
+      expect(workspaceJson.projects['my-app'].targets.test).toBeUndefined();
       expect(
-        workspaceJson.projects['my-app'].architect.lint.options.tsConfig
+        workspaceJson.projects['my-app'].targets.lint.options.tsConfig
       ).toEqual(['apps/my-app/tsconfig.app.json']);
       done();
     }, 90000);

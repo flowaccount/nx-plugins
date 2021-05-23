@@ -13,6 +13,18 @@ describe('scully app', () => {
   beforeEach(async () => {
     appTree = Tree.empty();
     appTree = createEmptyWorkspace(appTree);
+    appTree.overwrite(
+      'package.json',
+      `
+      {
+        "name": "test-name",
+        "dependencies": {},
+        "devDependencies": {
+          "@nrwl/workspace": "0.0.0"
+        }
+      }
+    `
+    );
     jest.spyOn(workspace, 'getProjectConfig').mockReturnValue({
       root: 'apps/my-app',
       sourceRoot: 'apps/my-app/src',
@@ -23,7 +35,7 @@ describe('scully app', () => {
       .mockImplementation(callback => {
         return (host: Tree, context: SchematicContext): Tree => {
           const path = getWorkspacePath(host);
-          host.overwrite(
+          appTree.overwrite(
             path,
             serializeJson(
               callback(
@@ -33,11 +45,12 @@ describe('scully app', () => {
                       root: 'apps/my-app',
                       sourceRoot: 'apps/my-app/src',
                       prefix: 'my-app',
-                      architect: {}
+                      targets: {}
                     }
                   }
                 },
-                context
+                context,
+                host
               )
             )
           );
@@ -56,7 +69,7 @@ describe('scully app', () => {
       const workspaceJson = readJsonInTree(tree, '/workspace.json');
       const project = workspaceJson.projects['my-app'];
       expect(project.root).toEqual('apps/my-app');
-      expect(project.architect).toEqual(
+      expect(project.targets).toEqual(
         jasmine.objectContaining({
           compile: {
             builder: '@flowaccount/nx-serverless:compile',
@@ -190,7 +203,7 @@ describe('scully app', () => {
   //     );
 
   //     expect(
-  //       workspaceJson.projects['my-dir-my-serveless-app'].architect.lint
+  //       workspaceJson.projects['my-dir-my-serveless-app'].targets.lint
   //     ).toEqual({
   //       builder: '@angular-devkit/build-angular:tslint',
   //       options: {
@@ -241,10 +254,10 @@ describe('scully app', () => {
   //       expect(tree.exists('apps/my-serveless-app/jest.config.js')).toBeFalsy();
   //       const workspaceJson = readJsonInTree(tree, 'workspace.json');
   //       expect(
-  //         workspaceJson.projects['my-serveless-app'].architect.test
+  //         workspaceJson.projects['my-serveless-app'].targets.test
   //       ).toBeUndefined();
   //       expect(
-  //         workspaceJson.projects['my-serveless-app'].architect.lint.options.tsConfig
+  //         workspaceJson.projects['my-serveless-app'].targets.lint.options.tsConfig
   //       ).toEqual(['apps/my-serveless-app/tsconfig.app.json']);
   //     });
   //   });

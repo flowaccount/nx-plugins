@@ -1,12 +1,12 @@
-import { BuilderContext } from '@angular-devkit/architect';
+
+import { ExecutorContext } from '@nrwl/devkit';
 import * as glob from 'glob';
-import { basename, dirname, join, relative } from 'path';
+import { basename,  join} from 'path';
 import { BuildBuilderOptions, FileInputOutput } from './types';
 
 export default function normalizeAssetOptions(
   options: BuildBuilderOptions,
-  context: BuilderContext,
-  libRoot: string
+  context: ExecutorContext
 ): BuildBuilderOptions {
   const outDir = options.outputPath;
   const files: FileInputOutput[] = [];
@@ -19,21 +19,21 @@ export default function normalizeAssetOptions(
   };
   options.assets.forEach(asset => {
     if (typeof asset === 'string') {
-      globbedFiles(asset, context.workspaceRoot).forEach(globbedFile => {
+      globbedFiles(asset, context.root).forEach(globbedFile => {
         files.push({
-          input: join(context.workspaceRoot, globbedFile),
-          output: join(context.workspaceRoot, outDir, basename(globbedFile))
+          input: join(context.root, globbedFile),
+          output: join(context.root, outDir, basename(globbedFile))
         });
       });
     } else {
       globbedFiles(
         asset.glob,
-        join(context.workspaceRoot, asset.input),
+        join(context.root, asset.input),
         asset.ignore
       ).forEach(globbedFile => {
         files.push({
-          input: join(context.workspaceRoot, asset.input, globbedFile),
-          output: join(context.workspaceRoot, outDir, asset.output, globbedFile)
+          input: join(context.root, asset.input, globbedFile),
+          output: join(context.root, outDir, asset.output, globbedFile)
         });
       });
     }

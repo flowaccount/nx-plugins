@@ -3,10 +3,11 @@ import * as _ from 'lodash';
 import { DependencyResolver } from './types';
 import { getProdModules } from './normalize';
 import { of } from 'rxjs';
-import { BuilderContext } from '@angular-devkit/architect';
+import { ExecutorContext } from '@nrwl/devkit';
+
 
 export class WebpackDependencyResolver implements DependencyResolver {
-  constructor(private context: BuilderContext) {}
+  constructor(private context: ExecutorContext) {}
 
   normalizeExternalDependencies(
     packageJson: any,

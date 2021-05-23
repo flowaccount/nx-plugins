@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/schema",
-  "id": "SchematicsNgUniversalServerlessApp",
+  "$id": "SchematicsNgUniversalServerlessApp",
   "title": "Expressjs Serverless Deployment Options Schema",
   "type": "object",
   "properties": {
@@ -21,6 +21,7 @@
     "provider": {
       "type": "string",
       "description": "The cloud provider for this serverless application.",
+      "default": "aws",
       "x-prompt": "Which cloud provider are you using for this serverless application? ( aws | azure | google )"
     },
     "initExpress": {

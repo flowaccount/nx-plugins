@@ -57,11 +57,12 @@
     "provider": {
       "type": "string",
       "description": "The cloud provider for this serverless api.",
+      "default": "aws",
       "x-prompt": "Which cloud provider are you using for this serverless api? ( aws | azure | google ) etc."
     },
     "baseWorkspaceTsConfig": {
       "type": "boolean",
-      "default": false,
+      "default": true,
       "description": "Extends tsconfig.base.json when true instead of tsconfig.json"
     },
     "region": {

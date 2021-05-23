@@ -5,6 +5,7 @@ import {
   formatFiles,
   generateFiles,
   getWorkspaceLayout,
+  joinPathFragments,
   names,
   offsetFromRoot,
   Tree,
@@ -17,6 +18,8 @@ import { toFileName } from '@nrwl/workspace';
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
 import { join, normalize } from 'path';
+import { jestProjectGenerator } from '@nrwl/jest';
+import { lintProjectGenerator } from '@nrwl/linter';
 
 interface NormalizedSchema extends Schema {
   parsedTags: string[];
@@ -40,8 +43,9 @@ function getServeConfig(project: any, options: NormalizedSchema) {
     builder: '@flowaccount/nx-serverless:offline',
     options: {
       buildTarget: options.name + ':build',
-      config: join(options.appProjectRoot, 'serverless.yml'),
-      location: join(normalize('dist'), options.appProjectRoot)
+      config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
+      location: joinPathFragments(normalize('dist'), options.appProjectRoot),
+      port: 7777
     },
     configurations: {
       dev: {
@@ -59,9 +63,9 @@ function getDeployConfig(project: any, options: NormalizedSchema) {
     builder: '@flowaccount/nx-serverless:deploy',
     options: {
       buildTarget: options.name + ':build:production',
-      config: join(options.appProjectRoot, 'serverless.yml'),
-      location: join(normalize('dist'), options.appProjectRoot),
-      package: join(normalize('dist'), options.appProjectRoot),
+      config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
+      location: joinPathFragments(normalize('dist'), options.appProjectRoot),
+      package: joinPathFragments(normalize('dist'), options.appProjectRoot),
       stage: 'dev'
     }
   };
@@ -72,9 +76,9 @@ function getDestroyConfig(options: NormalizedSchema) {
     builder: '@flowaccount/nx-serverless:destroy',
     options: {
       buildTarget: options.name + ':build:production',
-      config: join(options.appProjectRoot, 'serverless.yml'),
-      location: join(normalize('dist'), options.appProjectRoot),
-      package: join(normalize('dist'), options.appProjectRoot)
+      config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
+      location: joinPathFragments(normalize('dist'), options.appProjectRoot),
+      package: joinPathFragments(normalize('dist'), options.appProjectRoot)
     }
   };
 }
@@ -82,7 +86,7 @@ function getDestroyConfig(options: NormalizedSchema) {
 function updateWorkspaceJson(host: Tree, options: NormalizedSchema): void {
   const project = {
     root: options.appProjectRoot,
-    sourceRoot: join(options.appProjectRoot, 'src'),
+    sourceRoot: joinPathFragments(options.appProjectRoot, 'src'),
     projectType: ProjectType.Application,
     prefix: options.name,
     schematics: {},
@@ -96,7 +100,7 @@ function updateWorkspaceJson(host: Tree, options: NormalizedSchema): void {
   project.targets.destroy = getDestroyConfig(options);
   // project.targets.lint = generateProjectLint(
   //   normalize(project.root),
-  //   join(normalize(project.root), 'tsconfig.app.json'),
+  //   joinPathFragments(normalize(project.root), 'tsconfig.app.json'),
   //   options.linter
   // );
   project.tags = options.parsedTags
@@ -125,6 +129,7 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
       options.appProjectRoot,
       templateOptions
     );
+  
   //   mergeWith(
   //   apply(url('./files/app'), [
   //     template({
@@ -204,7 +209,7 @@ function normalizeOptions(options: Schema): NormalizedSchema {
 
   const appProjectName = appDirectory.replace(new RegExp('/', 'g'), '-');
 
-  const appProjectRoot = join(normalize('apps'), appDirectory);
+  const appProjectRoot = joinPathFragments(normalize('apps'), appDirectory);
 
   const parsedTags = options.tags
     ? options.tags.split(',').map(s => s.trim())
@@ -226,14 +231,21 @@ function normalizeOptions(options: Schema): NormalizedSchema {
 export async function apiGenerator(host: Tree, schema: Schema) {
     const options = normalizeOptions(schema);
       initGenerator(host, {
-        skipFormat: false,
+        skipFormat: true,
         expressProxy: false,
         unitTestRunner: options.unitTestRunner
       });
-      // addLintFiles(options.appProjectRoot, options.linter),
-      addAppFiles(host, options);
       // addServerlessYMLFile(host, options);
+      addAppFiles(host, options);
       updateWorkspaceJson(host, options);
+      await lintProjectGenerator(host, { project: options.name, skipFormat: true });
+      if (!options.unitTestRunner || options.unitTestRunner === 'jest') {
+        await jestProjectGenerator(host, {
+          project: options.name,
+          setupFile: 'none',
+          skipSerializers: true
+        });
+      }
       // updateNxJson(options);
       // options.unitTestRunner === 'jest'
       //   ? externalSchematic('@nrwl/jest', 'jest-project', {

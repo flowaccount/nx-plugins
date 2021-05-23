@@ -15,49 +15,35 @@ import {
 } from '../../utils/normalize';
 import { ServerlessWrapper } from '../../utils/serverless';
 import { resolve, join } from 'path';
+import { convertNxExecutor, ExecutorContext, logger } from '@nrwl/devkit';
 
 export type ServerlesCompiledEvent = {
   outfile: string;
 };
 
-export default createBuilder(run);
 
-export function run(
+export async function compileExecutor(
   options: JsonObject & ServerlessCompileOptions,
-  context: BuilderContext
-): Observable<ServerlesCompiledEvent> {
-  return from(getSourceRoot(context)).pipe(
-    map(sourceRoot =>
-      normalizeBuildOptions(
+  context: ExecutorContext
+) {
+    const root = getSourceRoot(context)
+    options = normalizeBuildOptions(options, context.root, root)
+    await ServerlessWrapper.init(options, context).toPromise()
+    options = assignEntriesToFunctionsFromServerless(
         options,
-        context.workspaceRoot,
-        join(context.workspaceRoot, sourceRoot)
-      )
-    ),
-    switchMap(options =>
-      combineLatest(of(options), from(ServerlessWrapper.init(options, context)))
-    ),
-    map(([options]) => {
-      return assignEntriesToFunctionsFromServerless(
-        options,
-        context.workspaceRoot
-      );
-    }),
-    concatMap(options => {
-      context.logger.info('start compiling typescript');
-      return compileTypeScriptFiles(
+        context.root);
+    
+      logger.info('start compiling typescript');
+      const result =  await compileTypeScriptFiles(
         options,
         context
         // libDependencies
-      );
-    }),
-    map((value: BuilderOutput) => {
+      ).toPromise();
       return {
-        ...value,
-        outfile: resolve(context.workspaceRoot, options.outputPath),
+        ...result,
+        outfile: resolve(context.root, options.outputPath),
         resolverName: 'DependencyCheckResolver',
-        tsconfig: resolve(context.workspaceRoot, options.tsConfig)
+        tsconfig: resolve(context.root, options.tsConfig)
       };
-    })
-  );
 }
+export default compileExecutor;

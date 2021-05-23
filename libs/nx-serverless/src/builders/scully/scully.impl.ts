@@ -1,16 +1,13 @@
 // npx scully --nw --configFile apps/frontend/flowaccount-landing/scully.config.js --removeStaticDist
 
 import {
-  BuilderContext,
-  createBuilder,
-  BuilderOutput,
-  BuilderRun
+  BuilderOutput
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { Observable, of, from } from 'rxjs';
-import { concatMap } from 'rxjs/operators';
-import { startBuild } from '../../utils/target.schedulers';
-
+import { ExecutorContext, logger } from '@nrwl/devkit';
+import { of} from 'rxjs';
+import { buildTarget } from '../deploy/deploy.impl';
+import runCommand from '@nrwl/workspace/src/executors/run-commands/run-commands.impl'
 export interface ScullyBuilderOptions extends JsonObject {
   buildTarget: string;
   skipBuild: boolean;
@@ -25,40 +22,35 @@ export interface ScullyBuilderOptions extends JsonObject {
   highlight?: boolean;
 }
 
-export default createBuilder<ScullyBuilderOptions & JsonObject>(
-  scullyCmdRunner
-);
-export function scullyCmdRunner(
+
+export async function scullyCmdRunner(
   options: JsonObject & ScullyBuilderOptions,
-  context: BuilderContext
-): Observable<BuilderOutput> {
+  context: ExecutorContext
+) {
   //
   if (options.skipBuild) {
-    return runScully(options, context).pipe(
-      concatMap(result => {
-        return result.output;
-      })
-    );
+    await runScully(options, context);
+    
   } else {
-    return startBuild(options, context).pipe(
-      concatMap(v => {
-        if (!v.success) {
-          context.logger.error('Build target failed!');
-          return of({ success: false });
+        const iterator = await buildTarget(options, context)
+        const event = <BuilderOutput>(await iterator.next()).value
+        
+          
+        if (!event.success) {
+          logger.error('Build target failed!');
+          return { success: false };
         }
-        return runScully(options, context);
-      }),
-      concatMap((result: BuilderRun) => {
-        return result.output;
-      })
-    );
+        await runScully(options, context);
   }
+  return { success: true }
 }
 
-function runScully(
+export default scullyCmdRunner;
+
+async function runScully(
   options: ScullyBuilderOptions,
-  context: BuilderContext
-): Observable<BuilderRun> {
+  context: ExecutorContext
+) {
   const commands: { command: string }[] = [];
   const args = getExecArgv(options);
   options.configFiles.forEach(fileName => {
@@ -66,14 +58,12 @@ function runScully(
       command: `scully --configFile=${fileName} ${args.join(' ')}`
     });
   });
-  return from(
-    context.scheduleBuilder('@nrwl/workspace:run-commands', {
-      commands: commands,
-      cwd: options.root,
-      color: true,
-      parallel: false
-    })
-  );
+  await runCommand({
+    commands: commands,
+    cwd: options.root.toString(),
+    color: true,
+    parallel: false
+  } , context);
 }
 
 function getExecArgv(options: ScullyBuilderOptions) {

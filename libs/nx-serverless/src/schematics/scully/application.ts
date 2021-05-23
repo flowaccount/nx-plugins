@@ -4,7 +4,7 @@ import { offsetFromRoot } from '@nrwl/workspace';
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
 import { join, normalize } from 'path';
-import { generateFiles, names, ProjectConfiguration, readProjectConfiguration, Tree, updateProjectConfiguration } from '@nrwl/devkit';
+import { convertNxGenerator, generateFiles, names, ProjectConfiguration, readProjectConfiguration, Tree, updateProjectConfiguration } from '@nrwl/devkit';
 
 interface NormalizedSchema extends Schema {}
 
@@ -158,7 +158,7 @@ function normalizeOptions(project: any, options: Schema): NormalizedSchema {
   };
 }
 
-export default function(host: Tree, schema: Schema) {
+export async function scullyAppGenerator(host: Tree, schema: Schema) {
   
     const project = readProjectConfiguration(host, schema.project);
     const options = normalizeOptions(project, schema);
@@ -178,3 +178,7 @@ export default function(host: Tree, schema: Schema) {
       updateWorkspaceJson(host, options, project)
     
 }
+
+
+export default scullyAppGenerator;
+export const scullyAppSchematic = convertNxGenerator(scullyAppGenerator);

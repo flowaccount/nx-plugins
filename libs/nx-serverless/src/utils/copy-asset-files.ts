@@ -1,19 +1,19 @@
-import { BuilderContext, BuilderOutput } from '@angular-devkit/architect';
+import { BuilderOutput } from '@angular-devkit/architect';
 import { copy } from 'fs-extra';
 import { ServerlessSlsBuilderOptions } from '../builders/sls/sls.impl';
 import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
-import { BuildBuilderOptions, ServerlessBaseOptions } from './types';
+import { BuildBuilderOptions, FileInputOutput } from './types';
+import { logger } from '@nrwl/devkit';
 
 export default function copyAssetFiles(
-  options: BuildBuilderOptions,
-  context: BuilderContext
+  options: BuildBuilderOptions
 ): Promise<BuilderOutput> {
-  context.logger.info('Copying asset files...');
+  logger.info('Copying asset files...');
   return Promise.all(
     options.assetFiles.map(file => copy(file.input, file.output))
   )
     .then(() => {
-      context.logger.info('Done copying asset files.');
+      logger.info('Done copying asset files.');
       return {
         success: true
       };
@@ -26,16 +26,38 @@ export default function copyAssetFiles(
     });
 }
 
+export function copyAssetFilesSync(
+  options: BuildBuilderOptions
+): BuilderOutput {
+  logger.info('Copying asset files...');
+    try
+    {
+      // options.assetFiles.map(file => copy(file.input, file.output))
+      options.assetFiles.forEach(file => {
+        copy(file.input, file.output)
+      })
+      logger.info('Done copying asset files.');
+      return {
+        success: true
+      }
+    }
+    catch(err) {
+      return {
+        error: err.message,
+        success: false
+      };
+    }
+}
+
 export function copyBuildOutputToBePackaged(
-  options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions,
-  context: BuilderContext
+  options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions
 ): Promise<BuilderOutput> {
-  context.logger.info(
+  logger.info(
     `Copying build output files from ${options.package} to ${options.serverlessPackagePath} to be packaged`
   );
   return copy(options.package, options.serverlessPackagePath)
     .then(() => {
-      context.logger.info('Done copying build output files.');
+      logger.info('Done copying build output files.');
       return {
         success: true
       };

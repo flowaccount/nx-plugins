@@ -1,4 +1,5 @@
-import { join, normalize } from "path";
+import { joinPathFragments } from "@nrwl/devkit";
+import { normalize } from "path";
 
 
 export interface BaseSchema {
@@ -13,11 +14,11 @@ export function getBuildConfig(options: BaseSchema) {
   return {
     executor: '@flowaccount/nx-serverless:build',
     options: {
-      outputPath: join(normalize('dist'), options.appProjectRoot),
+      outputPath: joinPathFragments(normalize('dist'), options.appProjectRoot),
       package: options.appProjectRoot,
-      serverlessConfig: join(options.appProjectRoot, 'serverless.yml'),
+      serverlessConfig: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
       servicePath: options.appProjectRoot,
-      tsConfig: join(options.appProjectRoot, 'tsconfig.app.json'),
+      tsConfig: joinPathFragments(options.appProjectRoot, 'tsconfig.app.json'),
       provider: options.provider,
       processEnvironmentFile: 'env.json'
     },
@@ -49,8 +50,8 @@ export function getBuildConfig(options: BaseSchema) {
         ],
         fileReplacements: [
           {
-            replace: join(options.appProjectRoot, 'environment.ts'),
-            with: join(options.appProjectRoot, 'environment.prod.ts')
+            replace: joinPathFragments(options.appProjectRoot, 'environment.ts'),
+            with: joinPathFragments(options.appProjectRoot, 'environment.prod.ts')
           }
         ]
       }

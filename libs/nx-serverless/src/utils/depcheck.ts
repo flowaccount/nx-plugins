@@ -1,10 +1,10 @@
 import * as depcheck from 'depcheck';
-import { BuilderContext } from '@angular-devkit/architect';
 import { readJsonFile } from '@nrwl/workspace';
 import { DependencyResolver } from './types';
 import { getProdModules } from './normalize';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { ExecutorContext, logger } from '@nrwl/devkit';
 export class DependencyCheckResolver implements DependencyResolver {
   options = {
     ignoreBinPackage: false, // ignore the packages with bin entry
@@ -32,7 +32,7 @@ export class DependencyCheckResolver implements DependencyResolver {
     ],
     package: {}
   };
-  constructor(private context: BuilderContext) {}
+  constructor(private context: ExecutorContext) {}
 
   normalizeExternalDependencies(
     packageJson: any,
@@ -53,7 +53,7 @@ export class DependencyCheckResolver implements DependencyResolver {
           throw result.invalidFiles;
         }
         Object.keys(result.missing).forEach(key => {
-          this.context.logger.warn(
+          logger.warn(
             `Missing dependencies ${key} in ${result.missing[key]}`
           );
         });

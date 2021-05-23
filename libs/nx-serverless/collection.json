@@ -17,19 +17,13 @@
       "description": "Create a serverless nodejs api application"
     },
     "express": {
-      "factory": "./src/schematics/express/application",
+      "factory": "./src/schematics/express/application#expressApiSchematic",
       "schema": "./src/schematics/express/schema.json",
       "aliases": ["express-serverless"],
       "description": "Create a serverless nodejs express server application"
     },
-    "universal-app": {
-      "factory": "./src/schematics/angular-universal/application",
-      "schema": "./src/schematics/angular-universal/schema.json",
-      "description": "Adds serverless schematics to current universal app and make it deployable",
-      "aliases": ["add-universal"]
-    },
     "scully-app": {
-      "factory": "./src/schematics/scully/application",
+      "factory": "./src/schematics/scully/application#scullyAppSchematic",
       "schema": "./src/schematics/scully/schema.json",
       "description": "Adds scully files, builder and deploy configurations to current angular app and make it deployable",
       "aliases": ["add-scully"]

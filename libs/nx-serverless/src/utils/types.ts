@@ -2,6 +2,7 @@ import { Path } from '@angular-devkit/core';
 // import { JsonObject } from '@angular-devkit/core';
 import { Stats } from 'webpack';
 import { Observable } from 'rxjs';
+import { Target } from '@nrwl/devkit';
 
 export interface FileReplacement {
   replace: string;
@@ -39,7 +40,7 @@ export interface ServerlessBaseOptions {
   state?: string;
   assets?: Array<AssetGlob | string>;
   fileReplacements?: Array<FileReplacement>;
-  webpackConfig?: string;
+  webpackConfig?: string | string[];
   watch?: boolean;
   sourceMap?: boolean;
   files?: {};
@@ -66,11 +67,16 @@ export interface BuildBuilderOptions extends ServerlessBaseOptions {
   externalDependencies: 'all' | 'none' | string[];
 }
 
+export interface NormalizedBuildServerlessBuilderOptions
+  extends BuildBuilderOptions {
+  webpackConfig: string[];
+}
+
 type normalizeExternalDependencies = (
   packageJson: any,
   originPackageJsonPath: string,
   verbose: boolean,
-  webpackStats?: Stats.ToJsonOutput,
+  webpackStats?: Stats,
   dependencyGraph?: any,
   sourceRoot?: string,
   tsconfig?: string
@@ -83,4 +89,14 @@ export interface DependencyResolver {
 export interface ServerlessEventResult {
   resolverName: string;
   tsconfig: string;
+}
+
+
+export interface ServerlessBuildEvent  {
+  error?: string;
+  info?: {
+      [key: string]: any;
+  };
+  success: boolean;
+  target?: Target;
 }

@@ -2,12 +2,13 @@ import { normalize, workspaces } from '@angular-devkit/core';
 import { BuilderContext } from '@angular-devkit/architect';
 import { NodeJsSyncHost } from '@angular-devkit/core/node';
 import { resolve, dirname, relative, basename } from 'path';
-import { ServerlessBaseOptions } from './types';
+import { NormalizedBuildServerlessBuilderOptions, ServerlessBaseOptions } from './types';
 import { statSync } from 'fs';
 import * as glob from 'glob';
 import { extname, join } from 'path';
 import * as _ from 'lodash';
 import { ServerlessWrapper } from './serverless';
+import { ExecutorContext, logger, readProjectConfiguration, Tree } from '@nrwl/devkit';
 
 export interface FileReplacement {
   replace: string;
@@ -38,36 +39,49 @@ export function assignEntriesToFunctionsFromServerless<
   return result;
 }
 
-export async function getProjectRoot(context: BuilderContext) {
-  const workspaceHost = workspaces.createWorkspaceHost(new NodeJsSyncHost());
-  const { workspace } = await workspaces.readWorkspace(
-    context.workspaceRoot,
-    workspaceHost
-  );
-  if (workspace.projects.get(context.target.project).root) {
-    return workspace.projects.get(context.target.project).root;
-  } else {
-    context.reportStatus('Error');
-    const message = `${context.target.project} does not have a root. Please define one.`;
-    context.logger.error(message);
-    throw new Error(message);
+export async function getProjectRoot(context: ExecutorContext) {
+  const { root } = context.workspace.projects[context.projectName];
+  if (!root) {
+    throw new Error(`${context.projectName} does not have a root.`);
   }
+  return root;
+  // Mark for deletion
+  // const workspaceHost = workspaces.createWorkspaceHost(new NodeJsSyncHost());
+  // const { workspace } = await workspaces.readWorkspace(
+  //   context.workspaceRoot,
+  //   workspaceHost
+  // );
+  // if (workspace.projects.get(context.target.project).root) {
+  //   return workspace.projects.get(context.target.project).root;
+  // } else {
+  //   context.reportStatus('Error');
+  //   const message = `${context.target.project} does not have a root. Please define one.`;
+  //   context.logger.error(message);
+  //   throw new Error(message);
+  // }
 }
 
-export async function getSourceRoot(context: BuilderContext) {
-  const workspaceHost = workspaces.createWorkspaceHost(new NodeJsSyncHost());
-  const { workspace } = await workspaces.readWorkspace(
-    context.workspaceRoot,
-    workspaceHost
-  );
-  if (workspace.projects.get(context.target.project).sourceRoot) {
-    return workspace.projects.get(context.target.project).sourceRoot;
-  } else {
-    context.reportStatus('Error');
-    const message = `${context.target.project} does not have a sourceRoot. Please define one.`;
-    context.logger.error(message);
-    throw new Error(message);
+export function getSourceRoot(context: ExecutorContext) {
+  const { sourceRoot } = context.workspace.projects[context.projectName];
+  if (!sourceRoot) {
+    throw new Error(`${context.projectName} does not have a root.`);
   }
+  return sourceRoot;
+  // const workspaceHost = workspaces.createWorkspaceHost(new NodeJsSyncHost());
+  // logger.debug("readWorkspace", context.workspaceRoot, workspaceHost)
+  // const { workspace } = await workspaces.readWorkspace(
+  //   context.workspaceRoot,
+  //   workspaceHost
+  // );
+  // if (workspace.projects.get(context.target.project).sourceRoot) {
+  //   return workspace.projects.get(context.target.project).sourceRoot;
+  // } else {
+  //   context.reportStatus('Error');
+  //   const message = `${context.target.project} does not have a sourceRoot. Please define one.`;
+  //   logger.debug("throwing error for getting sourceroot")
+  //   logger.error(message);
+  //   throw new Error(message);
+  // }
 }
 
 export function normalizeBuildOptions<T extends ServerlessBaseOptions>(
@@ -87,10 +101,20 @@ export function normalizeBuildOptions<T extends ServerlessBaseOptions>(
     fileReplacements: normalizeFileReplacements(root, options.fileReplacements),
     assets: normalizeAssets(options.assets, root, sourceRoot),
     webpackConfig: options.webpackConfig
-      ? resolve(root, options.webpackConfig)
-      : options.webpackConfig
+      ? []
+          .concat(options.webpackConfig)
+          .map((path) => normalizePluginPath(path, root))
+      : []
   };
   return result;
+}
+
+function normalizePluginPath(path: string, root: string) {
+  try {
+    return require.resolve(path);
+  } catch {
+    return resolve(root, path);
+  }
 }
 
 const preferredExtensions = ['.js', '.ts', '.jsx', '.tsx'];

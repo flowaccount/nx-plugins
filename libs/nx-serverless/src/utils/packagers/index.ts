@@ -32,9 +32,10 @@ import { DependencyCheckResolver } from '../depcheck';
 import { ServerlessWrapper } from '../serverless';
 import { concatMap, switchMap } from 'rxjs/operators';
 import { Observable, of, from } from 'rxjs';
-import { BuilderContext, BuilderOutput } from '@angular-devkit/architect';
+import { BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { join, dirname } from 'path';
+import { ExecutorContext, logger } from '@nrwl/devkit';
 
 const registeredPackagers = {
   npm: NPM,
@@ -61,17 +62,17 @@ export function preparePackageJson(
     root?: string;
     verbose?: boolean;
   },
-  context: BuilderContext,
+  context: ExecutorContext,
   stats: any,
   resolverName: string,
   tsconfig?: string
 ): Observable<BuilderOutput> {
   const resolver = resolverFactory(resolverName, context);
-  context.logger.info('getting external modules');
-  const workspacePackageJsonPath = join(context.workspaceRoot, 'package.json');
+  logger.info('getting external modules');
+  const workspacePackageJsonPath = join(context.root, 'package.json');
   const packageJsonPath = join(options.package, 'package.json');
   const packageJson = readJsonFile(workspacePackageJsonPath);
-  context.logger.info('create a package.json with first level dependencies'); //First create a package.json with first level dependencies
+  logger.info('create a package.json with first level dependencies'); //First create a package.json with first level dependencies
   // Get the packager for the current process.
   let packagerInstance = null;
   if (options.packager && options.packager == 'npm') {
@@ -88,12 +89,12 @@ export function preparePackageJson(
       error: 'No Packager to process package.json, please install npm or yarn'
     });
   }
-  context.logger.info(`packager instance is -- ${options.packager}`);
+  logger.info(`packager instance is -- ${options.packager}`);
   let dependencyGraph = null;
   // Get the packager for the current process.
   return from(getProjectRoot(context)).pipe(
     switchMap(root => {
-      options.root = join(context.workspaceRoot, root);
+      options.root = join(context.root, root);
       return resolver.normalizeExternalDependencies(
         packageJson,
         workspacePackageJsonPath,
@@ -108,14 +109,14 @@ export function preparePackageJson(
       createPackageJson(prodModules, packageJsonPath, workspacePackageJsonPath);
       //got to generate lock entry for yarn for dependency graph to work.
       if (packagerInstance === Yarn) {
-        context.logger.info(
+        logger.info(
           'generate lock entry for yarn for dependency graph to work.'
         );
         const result = packagerInstance.generateLockFile(
           dirname(packageJsonPath)
         );
         if (result.error) {
-          context.logger.error('ERROR: generating lock file!');
+          logger.error('ERROR: generating lock file!');
           return of({ success: false, error: result.error.toString() });
         }
         writeToFile(
@@ -126,7 +127,7 @@ export function preparePackageJson(
       // Get the packagelist with dependency graph and depth=2 level
       // review: Change depth to options?
       // review: Should I change everything to spawnsync for the pacakagers?
-      context.logger.info(
+      logger.info(
         'get the packagelist with dependency graph and depth=2 level'
       );
       const getDependenciesResult = packagerInstance.getProdDependencies(
@@ -135,7 +136,7 @@ export function preparePackageJson(
         4
       );
       if (getDependenciesResult.error) {
-        context.logger.error('ERROR: getDependenciesResult!');
+        logger.error('ERROR: getDependenciesResult!');
         return of({
           success: false,
           error: getDependenciesResult.error.toString()
@@ -149,13 +150,13 @@ export function preparePackageJson(
       }
       const problems = _.get(dependencyGraph, 'problems', []);
       if (options.verbose && !_.isEmpty(problems)) {
-        context.logger.info(`Ignoring ${_.size(problems)} NPM errors:`);
+        logger.info(`Ignoring ${_.size(problems)} NPM errors:`);
         _.forEach(problems, problem => {
-          context.logger.info(`=> ${problem}`);
+          logger.info(`=> ${problem}`);
         });
       }
       // re-writing package.json with dependency-graphs
-      context.logger.info('re-writing package.json with dependency-graphs');
+      logger.info('re-writing package.json with dependency-graphs');
       return resolver.normalizeExternalDependencies(
         packageJson,
         workspacePackageJsonPath,
@@ -169,19 +170,19 @@ export function preparePackageJson(
     concatMap((prodModules: string[]) => {
       createPackageJson(prodModules, packageJsonPath, workspacePackageJsonPath);
       // run packager to  install node_modules
-      context.logger.info('run packager to  install node_modules');
+      logger.info('run packager to  install node_modules');
       const packageInstallResult = packagerInstance.install(
         dirname(packageJsonPath),
         { ignoreScripts: options.ignoreScripts }
       );
       if (packageInstallResult.error) {
-        context.logger.error('ERROR: install package error!');
+        logger.error('ERROR: install package error!');
         return of({
           success: false,
           error: packageInstallResult.error.toString()
         });
       }
-      context.logger.info(packageInstallResult.stdout.toString());
+      logger.info(packageInstallResult.stdout.toString());
       return of({ success: true });
     })
   );
@@ -189,7 +190,7 @@ export function preparePackageJson(
 
 function resolverFactory(
   resolverName: string,
-  context: BuilderContext
+  context: ExecutorContext
 ): DependencyResolver {
   // Dont know how to reflect class using type string???
   // const resolver = Object.create(window[resolverName].prototype);

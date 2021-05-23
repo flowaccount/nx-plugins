@@ -1,21 +1,18 @@
 import {
-  BuilderContext,
-  createBuilder,
   BuilderOutput
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { Observable, of, from } from 'rxjs';
-import { concatMap, tap } from 'rxjs/operators';
-import { ServerlessBuildEvent } from '../build/build.impl';
 import * as _ from 'lodash';
-import { getExecArgv, ServerlessWrapper } from '../../utils/serverless';
+import { getExecArgv, makeDistFileReadyForPackaging, runServerlessCommand, ServerlessWrapper } from '../../utils/serverless';
 /* Fix for EMFILE: too many open files on serverless deploy */
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { Packager } from '../../utils/enums';
-import { copyBuildOutputToBePackaged } from '../../utils/copy-asset-files';
+import { ExecutorContext, logger } from '@nrwl/devkit';
+import { ServerlessSlsBuilderOptions } from '../sls/sls.impl';
+import { ScullyBuilderOptions } from '../scully/scully.impl';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
@@ -46,110 +43,65 @@ export interface ServerlessDeployBuilderOptions extends JsonObject {
   args?: string;
 }
 
-export default createBuilder<ServerlessDeployBuilderOptions & JsonObject>(
-  serverlessExecutionHandler
-);
-export function serverlessExecutionHandler(
+
+export async function deployExecutor(
   options: JsonObject & ServerlessDeployBuilderOptions,
-  context: BuilderContext
-): Observable<BuilderOutput> {
+  context: ExecutorContext
+) {
   // build into output path before running serverless offline.
   let packagePath = options.location;
-  return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
-    concatMap(v => {
-      if (!v.success) {
-        context.logger.error(
-          'One of the tasks specified in waitUntilTargets failed'
+  if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
+    const results = await runWaitUntilTargets(options.waitUntilTargets, context);
+    for (const [i, result] of results.entries()) {
+      if (!result.success) {
+        console.log('throw');
+        throw new Error(
+          `Wait until target failed: ${options.waitUntilTargets[i]}.`
         );
-        return of({ success: false });
       }
-      return startBuild(options, context);
-    }),
-    concatMap((event: ServerlessBuildEvent) => {
-      if (event.success) {
-        return preparePackageJson(
-          options,
-          context,
-          event.webpackStats,
-          event.resolverName,
-          event.tsconfig
-        );
-      } else {
-        context.logger.error('There was an error with the build. See above.');
-        context.logger.info(`${event.outfile} was not restarted.`);
-        return of({
-          success: false,
-          error: `${event.outfile} was not restarted.`
-        });
-      }
-    }),
-    concatMap(result => {
-      if (result.success) {
-        if (
-          !options.serverlessPackagePath &&
-          options.location.indexOf('dist/') > -1
-        ) {
-          packagePath = options.location.replace(
-            'dist/',
-            'dist/.serverlessPackages/'
-          );
-        } else if (options.serverlessPackagePath) {
-          packagePath = options.serverlessPackagePath;
+    }
+  }
+  const iterator = await buildTarget(options,context)
+  const event = <BuilderOutput>(await iterator.next()).value
+  
+  const prepResult = await preparePackageJson(
+    options,
+    context,
+    event.webpackStats,
+    event.resolverName.toString(),
+    event.tsconfig.toString()
+  ).toPromise();
+ 
+        if (!prepResult.success) {
+          throw new Error(`There was an error with the build. ${prepResult.error}`)
         }
-        options.serverlessPackagePath = packagePath;
-        return copyBuildOutputToBePackaged(options, context);
-      } else {
-        context.logger.error(
-          `There was an error with the build. ${result.error}.`
-        );
-        return of(result);
-      }
-    }),
-    concatMap(result => {
-      if (result.success) {
-        // change servicePath to distribution location
-        // review: Change options from location to outputpath?\
-        const servicePath = ServerlessWrapper.serverless.config.servicePath;
-        const args = getExecArgv(options);
+        packagePath = await makeDistFileReadyForPackaging(options, packagePath)
+        const extraArgs = [];
         const commands = [];
-        commands.push('deploy');
-        if (options.function && options.function != '') {
-          commands.push('function');
-          args.push(`--function ${options.function}`);
-        }
-        if (options.list) {
-          commands.push('list');
-        }
-        ServerlessWrapper.serverless.config.servicePath = packagePath;
-        ServerlessWrapper.serverless.processedInput = {
-          commands: commands,
-          options: args
-        };
-
-        return new Observable<BuilderOutput>(option => {
-          ServerlessWrapper.serverless
-            .run()
-            .then(() => {
-              // change servicePath back for further processing.
-              ServerlessWrapper.serverless.config.servicePath = servicePath;
-              option.next({ success: true });
-              option.complete();
-            })
-            .catch(ex => {
-              option.next({ success: false, error: ex.toString() });
-              option.complete();
-            });
-        }).pipe(
-          concatMap(result => {
-            return of(result);
-          })
-        );
-      } else {
-        context.logger.error(
-          `There was an error with the build. ${result.error}.`
-        );
-        return of(result);
-      }
-    })
-  );
+          commands.push('deploy');
+          if (options.function && options.function != '') {
+            commands.push('function');
+            extraArgs.push(`--function ${options.function}`);
+          }
+          if (options.list) {
+            commands.push('list');
+          }
+        await runServerlessCommand(options, commands, packagePath, extraArgs);
+        return { success: true}
 }
+
+export async function* buildTarget(options: 
+  JsonObject & ServerlessDeployBuilderOptions | 
+  JsonObject & ServerlessSlsBuilderOptions | 
+  JsonObject & ScullyBuilderOptions,
+  context: ExecutorContext) {
+  for await (const event of startBuild(options, context)) {
+    if (!event.success) {
+      logger.error('There was an error with the build. See above.');
+      logger.info(`${event.outfile} was not restarted.`);
+    }
+    yield event;
+  }
+}
+
+export default deployExecutor;

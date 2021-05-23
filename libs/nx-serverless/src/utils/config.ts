@@ -1,4 +1,3 @@
-import * as webpack from 'webpack';
 import { Configuration, ProgressPlugin, Stats } from 'webpack';
 
 import * as ts from 'typescript';
@@ -24,7 +23,7 @@ function getAliases(options: BuildBuilderOptions): { [key: string]: string } {
   );
 }
 
-function getStatsConfig(options: BuildBuilderOptions): Stats.ToStringOptions {
+function getStatsConfig(options: BuildBuilderOptions) {
   return {
     hash: true,
     timings: false,
@@ -109,7 +108,7 @@ export function getBaseWebpackPartial(
     stats: getStatsConfig(options)
   };
 
-  const extraPlugins: webpack.Plugin[] = [];
+  const extraPlugins: any[] = [];
 
   if (options.progress) {
     extraPlugins.push(new ProgressPlugin());

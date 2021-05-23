@@ -8,8 +8,9 @@ import { offsetFromRoot } from '@nrwl/workspace';
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
 import { join, normalize } from 'path';
-import { names, ProjectConfiguration, readProjectConfiguration, Tree, updateProjectConfiguration, generateFiles } from '@nrwl/devkit';
-
+import { names, ProjectConfiguration, readProjectConfiguration, Tree, updateProjectConfiguration, generateFiles, convertNxGenerator, joinPathFragments } from '@nrwl/devkit';
+import { applicationGenerator } from '@nrwl/express';
+import { initGenerator as initGeneratorExpress } from '@nrwl/express/src/generators/init/init'
 interface NormalizedSchema extends Schema {
   parsedTags: string[];
   provider: string;
@@ -21,8 +22,8 @@ function getServeConfig(options: NormalizedSchema) {
     options: {
       waitUntilTargets: [options.name + ':build'],
       buildTarget: options.name + ':compile',
-      config: join(options.appProjectRoot, 'serverless.yml'),
-      location: join(normalize('dist'), options.appProjectRoot)
+      config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
+      location: joinPathFragments(normalize('dist'), options.appProjectRoot)
     },
     configurations: {
       dev: {
@@ -41,9 +42,9 @@ function getDeployConfig(options: NormalizedSchema) {
     options: {
       waitUntilTargets: [options.name + ':build:production'],
       buildTarget: options.name + ':compile:production',
-      config: join(options.appProjectRoot, 'serverless.yml'),
-      location: join(normalize('dist'), options.appProjectRoot),
-      package: join(normalize('dist'), options.appProjectRoot),
+      config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
+      location: joinPathFragments(normalize('dist'), options.appProjectRoot),
+      package: joinPathFragments(normalize('dist'), options.appProjectRoot),
       stage: 'dev'
     }
   };
@@ -54,9 +55,9 @@ function getDestroyConfig(options: NormalizedSchema) {
     executor: '@flowaccount/nx-serverless:destroy',
     options: {
       buildTarget: options.name + ':compile:production',
-      config: join(options.appProjectRoot, 'serverless.yml'),
-      location: join(normalize('dist'), options.appProjectRoot),
-      package: join(normalize('dist'), options.appProjectRoot)
+      config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
+      location: joinPathFragments(normalize('dist'), options.appProjectRoot),
+      package: joinPathFragments(normalize('dist'), options.appProjectRoot)
     }
   };
 }
@@ -66,7 +67,7 @@ function updateWorkspaceJson(host: Tree, options: NormalizedSchema, project: Pro
     const buildConfig = getBuildConfig(options);
     buildConfig.options['skipClean'] = true;
     buildConfig.options['outputPath'] = normalize('dist');
-    buildConfig.options['tsConfig'] = join(
+    buildConfig.options['tsConfig'] = joinPathFragments(
       options.appProjectRoot,
       'tsconfig.serverless.json'
     );
@@ -83,7 +84,7 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
   const templateOptions = {
     ...options,
     ...names(options.name), // name: options.name,
-    offsetFromRoot: offsetFromRoot(options.appProjectRoot),
+    offset: offsetFromRoot(options.appProjectRoot),
     template: '',
     root: options.appProjectRoot
   };
@@ -114,8 +115,8 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
   // };
 }
 
-// function updateServerTsFile(options: NormalizedSchema): Rule {
-//   return (host: Tree, context: SchematicContext) => {
+// function updateServerTsFile(host:Tree, options: NormalizedSchema) {
+ 
 //     const modulePath = `${options.appProjectRoot}/server.ts`;
 //     const content: Buffer | null = host.read(modulePath);
 //     let moduleSource = '';
@@ -150,9 +151,6 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
 //         './src/environments/environment'
 //       )
 //     ]);
-
-//     return host;
-//   };
 // }
 
 // function addServerlessYMLFile(options: NormalizedSchema): Rule {
@@ -200,7 +198,7 @@ function normalizeOptions(options: Schema): NormalizedSchema {
 
   const appProjectName = appDirectory.replace(new RegExp('/', 'g'), '-');
 
-  const appProjectRoot = join(normalize('apps'), appDirectory);
+  const appProjectRoot = joinPathFragments(normalize('apps'), appDirectory);
 
   const parsedTags = options.tags
     ? options.tags.split(',').map(s => s.trim())
@@ -219,33 +217,39 @@ function normalizeOptions(options: Schema): NormalizedSchema {
   };
 }
 
-export default function(host: Tree, schema: Schema) {
+export async function expressApiGenerator(host: Tree, schema: Schema) {
     const options = normalizeOptions(schema);
     initGenerator(host, {
       skipFormat: options.skipFormat,
       expressProxy: true,
       unitTestRunner: options.unitTestRunner
     });
-      // options.initExpress
-      //   ? addPackageWithInit('@nrwl/express', {
-      //       unitTestRunner: options.unitTestRunner
-      //     })
-      //   : noop(),
-      // options.initExpress
-      //   ? externalSchematic('@nrwl/express', 'app', {
-      //       name: schema.name,
-      //       skipFormat: schema.skipFormat,
-      //       skipPackageJson: schema.skipPackageJson,
-      //       directory: schema.directory,
-      //       unitTestRunner: schema.unitTestRunner,
-      //       tags: schema.tags,
-      //       linter: schema.linter,
-      //       frontendProject: schema.frontendProject
-      //     })
-      //   : noop(),
+     
+      if(options.initExpress) {
+        await initGeneratorExpress(host, {
+          unitTestRunner: options.unitTestRunner
+        });
+        await applicationGenerator(host, {
+            name: schema.name,
+            skipFormat: schema.skipFormat,
+            skipPackageJson: schema.skipPackageJson,
+            directory: schema.directory,
+            unitTestRunner: schema.unitTestRunner,
+            tags: schema.tags,
+            linter: schema.linter,
+            frontendProject: schema.frontendProject,
+            js: false,
+            pascalCaseFiles: false
+          })
+        ;
+      }
       addAppFiles(host, options);
       // addServerlessYMLFile(options),
       // updateServerTsFile(options),
-      const project = readProjectConfiguration(host, schema.name);
+      const project = readProjectConfiguration(host, options.name);
       updateWorkspaceJson(host, options, project)
 }
+
+
+export default expressApiGenerator;
+export const expressApiSchematic = convertNxGenerator(expressApiGenerator);
