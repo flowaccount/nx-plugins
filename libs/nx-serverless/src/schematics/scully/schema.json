@@ -38,8 +38,5 @@
       "x-prompt": "Which region do you want to default your deployment to?"
     }
   },
-  "required": [
-    "project",
-    "addScully"
-  ]
+  "required": ["project", "addScully"]
 }

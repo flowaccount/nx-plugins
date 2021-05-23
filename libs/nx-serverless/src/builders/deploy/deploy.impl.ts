@@ -1,9 +1,12 @@
-import {
-  BuilderOutput
-} from '@angular-devkit/architect';
+import { BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import * as _ from 'lodash';
-import { getExecArgv, makeDistFileReadyForPackaging, runServerlessCommand, ServerlessWrapper } from '../../utils/serverless';
+import {
+  getExecArgv,
+  makeDistFileReadyForPackaging,
+  runServerlessCommand,
+  ServerlessWrapper,
+} from '../../utils/serverless';
 /* Fix for EMFILE: too many open files on serverless deploy */
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
@@ -17,7 +20,7 @@ gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
   Inspect = 'inspect',
-  InspectBrk = 'inspect-brk'
+  InspectBrk = 'inspect-brk',
 }
 
 // review: Have to spin off options and clarify schema.json for deploy,build,serve
@@ -43,7 +46,6 @@ export interface ServerlessDeployBuilderOptions extends JsonObject {
   args?: string;
 }
 
-
 export async function deployExecutor(
   options: JsonObject & ServerlessDeployBuilderOptions,
   context: ExecutorContext
@@ -51,7 +53,10 @@ export async function deployExecutor(
   // build into output path before running serverless offline.
   let packagePath = options.location;
   if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
-    const results = await runWaitUntilTargets(options.waitUntilTargets, context);
+    const results = await runWaitUntilTargets(
+      options.waitUntilTargets,
+      context
+    );
     for (const [i, result] of results.entries()) {
       if (!result.success) {
         console.log('throw');
@@ -61,9 +66,9 @@ export async function deployExecutor(
       }
     }
   }
-  const iterator = await buildTarget(options,context)
-  const event = <BuilderOutput>(await iterator.next()).value
-  
+  const iterator = await buildTarget(options, context);
+  const event = <BuilderOutput>(await iterator.next()).value;
+
   const prepResult = await preparePackageJson(
     options,
     context,
@@ -71,30 +76,32 @@ export async function deployExecutor(
     event.resolverName.toString(),
     event.tsconfig.toString()
   ).toPromise();
- 
-        if (!prepResult.success) {
-          throw new Error(`There was an error with the build. ${prepResult.error}`)
-        }
-        packagePath = await makeDistFileReadyForPackaging(options, packagePath)
-        const extraArgs = [];
-        const commands = [];
-          commands.push('deploy');
-          if (options.function && options.function != '') {
-            commands.push('function');
-            extraArgs.push(`--function ${options.function}`);
-          }
-          if (options.list) {
-            commands.push('list');
-          }
-        await runServerlessCommand(options, commands, packagePath, extraArgs);
-        return { success: true}
+
+  if (!prepResult.success) {
+    throw new Error(`There was an error with the build. ${prepResult.error}`);
+  }
+  packagePath = await makeDistFileReadyForPackaging(options, packagePath);
+  const extraArgs = [];
+  const commands = [];
+  commands.push('deploy');
+  if (options.function && options.function != '') {
+    commands.push('function');
+    extraArgs.push(`--function ${options.function}`);
+  }
+  if (options.list) {
+    commands.push('list');
+  }
+  await runServerlessCommand(options, commands, packagePath, extraArgs);
+  return { success: true };
 }
 
-export async function* buildTarget(options: 
-  JsonObject & ServerlessDeployBuilderOptions | 
-  JsonObject & ServerlessSlsBuilderOptions | 
-  JsonObject & ScullyBuilderOptions,
-  context: ExecutorContext) {
+export async function* buildTarget(
+  options:
+    | (JsonObject & ServerlessDeployBuilderOptions)
+    | (JsonObject & ServerlessSlsBuilderOptions)
+    | (JsonObject & ScullyBuilderOptions),
+  context: ExecutorContext
+) {
   for await (const event of startBuild(options, context)) {
     if (!event.success) {
       logger.error('There was an error with the build. See above.');

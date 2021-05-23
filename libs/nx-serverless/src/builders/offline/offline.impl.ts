@@ -1,5 +1,4 @@
-import {
-  BuilderOutput} from '@angular-devkit/architect';
+import { BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { ChildProcess, execSync, fork } from 'child_process';
 import * as treeKill from 'tree-kill';
@@ -13,7 +12,7 @@ try {
 
 export const enum InspectType {
   Inspect = 'inspect',
-  InspectBrk = 'inspect-brk'
+  InspectBrk = 'inspect-brk',
 }
 // https://www.npmjs.com/package/serverless-offline
 export interface ServerlessExecuteBuilderOptions extends JsonObject {
@@ -62,7 +61,10 @@ export async function* offlineExecutor(
     process.exit(code);
   });
   if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
-    const results = await runWaitUntilTargets(options.waitUntilTargets, context);
+    const results = await runWaitUntilTargets(
+      options.waitUntilTargets,
+      context
+    );
     for (const [i, result] of results.entries()) {
       if (!result.success) {
         console.log('throw');
@@ -81,90 +83,88 @@ export async function* offlineExecutor(
     yield event;
   }
 }
-  async function handleBuildEvent(
-    event: BuilderOutput,
-    options: ServerlessExecuteBuilderOptions
-  ) {
-    if ((!event.success || options.watch) && subProcess) {
-      console.log('killing process')
-      await killProcess();
-    }
-    logger.info('running process')
-    runProcess(event, options);
+async function handleBuildEvent(
+  event: BuilderOutput,
+  options: ServerlessExecuteBuilderOptions
+) {
+  if ((!event.success || options.watch) && subProcess) {
+    console.log('killing process');
+    await killProcess();
+  }
+  logger.info('running process');
+  runProcess(event, options);
+}
+
+function runProcess(
+  event: BuilderOutput,
+  options: ServerlessExecuteBuilderOptions
+) {
+  if (subProcess || !event.success) {
+    return;
+  }
+  console.log(getServerlessArg(options));
+  subProcess = fork(
+    'node_modules/serverless/bin/serverless.js',
+    getExecArgv(options)
+  );
+  subProcess.on('message', (message) => {
+    console.log(message);
+  });
+  logger.info('forked process');
+}
+
+async function killProcess() {
+  if (!subProcess) {
+    return;
   }
 
-  function runProcess(event: BuilderOutput,
-    options: ServerlessExecuteBuilderOptions
-  ) {
-    if (subProcess || !event.success) {
-      return;
+  const promisifiedTreeKill: (
+    pid: number,
+    signal: string
+  ) => Promise<void> = promisify(treeKill);
+  try {
+    await promisifiedTreeKill(subProcess.pid, 'SIGTERM');
+  } catch (err) {
+    if (Array.isArray(err) && err[0] && err[2]) {
+      const errorMessage = err[2];
+      logger.error(errorMessage);
+    } else if (err.message) {
+      logger.error(err.message);
     }
-    console.log(getServerlessArg(options));
-    subProcess = fork(
-      'node_modules/serverless/bin/serverless.js',
-      getExecArgv(options)
-    );
-    subProcess.on("message", (message) => {
-      console.log(message)
-    })
-    logger.info('forked process')
+  } finally {
+    subProcess = null;
+  }
+}
+
+function getServerlessArg(options: ServerlessExecuteBuilderOptions) {
+  const args = ['offline', ...options.args];
+  if (options.inspect === true) {
+    options.inspect = InspectType.Inspect;
+  }
+  if (options.inspect) {
+    args.push(`--${options.inspect}=${options.host}:${options.port}`);
+  }
+  return args;
+}
+
+function getExecArgv(options: ServerlessExecuteBuilderOptions) {
+  const args = [];
+  if (options.inspect === true) {
+    options.inspect = InspectType.Inspect;
   }
 
-  async function killProcess() {
-   
-    if (!subProcess) {
-      return;
-    }
-  
-    const promisifiedTreeKill: (
-      pid: number,
-      signal: string
-    ) => Promise<void> = promisify(treeKill);
-    try {
-      await promisifiedTreeKill(subProcess.pid, 'SIGTERM');
-    } catch (err) {
-      if (Array.isArray(err) && err[0] && err[2]) {
-        const errorMessage = err[2];
-        logger.error(errorMessage);
-      } else if (err.message) {
-        logger.error(err.message);
-      }
-    } finally {
-      subProcess = null;
-    }
+  if (options.inspect) {
+    args.push(`--${options.inspect}=${options.host}:${options.port}`);
   }
-
-  
-
-  function getServerlessArg(options: ServerlessExecuteBuilderOptions) {
-    const args = ['offline', ...options.args];
-    if (options.inspect === true) {
-      options.inspect = InspectType.Inspect;
-    }
-    if (options.inspect) {
-      args.push(`--${options.inspect}=${options.host}:${options.port}`);
-    }
-    return args;
-  }
-
-  function getExecArgv(options: ServerlessExecuteBuilderOptions) {
-    const args = [];
-    if (options.inspect === true) {
-      options.inspect = InspectType.Inspect;
-    }
-  
-    if (options.inspect) {
-      args.push(`--${options.inspect}=${options.host}:${options.port}`);
-    }
-    args.push('offline');
-    for (const key in options) {
-      if (options.hasOwnProperty(key)) {
-        if (options[key] !== undefined) {
-          args.push(`--${key}=${options[key]}`);
-        }
+  args.push('offline');
+  for (const key in options) {
+    if (options.hasOwnProperty(key)) {
+      if (options[key] !== undefined) {
+        args.push(`--${key}=${options[key]}`);
       }
     }
-    return args;
   }
+  return args;
+}
 
-  export default offlineExecutor;
+export default offlineExecutor;

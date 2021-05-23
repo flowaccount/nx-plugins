@@ -91,11 +91,10 @@ export interface ServerlessEventResult {
   tsconfig: string;
 }
 
-
-export interface ServerlessBuildEvent  {
+export interface ServerlessBuildEvent {
   error?: string;
   info?: {
-      [key: string]: any;
+    [key: string]: any;
   };
   success: boolean;
   target?: Target;

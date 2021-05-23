@@ -1,7 +1,6 @@
-
 import { ExecutorContext } from '@nrwl/devkit';
 import * as glob from 'glob';
-import { basename,  join} from 'path';
+import { basename, join } from 'path';
 import { BuildBuilderOptions, FileInputOutput } from './types';
 
 export default function normalizeAssetOptions(
@@ -14,15 +13,15 @@ export default function normalizeAssetOptions(
     return glob.sync(pattern, {
       cwd: input,
       nodir: true,
-      ignore
+      ignore,
     });
   };
-  options.assets.forEach(asset => {
+  options.assets.forEach((asset) => {
     if (typeof asset === 'string') {
-      globbedFiles(asset, context.root).forEach(globbedFile => {
+      globbedFiles(asset, context.root).forEach((globbedFile) => {
         files.push({
           input: join(context.root, globbedFile),
-          output: join(context.root, outDir, basename(globbedFile))
+          output: join(context.root, outDir, basename(globbedFile)),
         });
       });
     } else {
@@ -30,16 +29,16 @@ export default function normalizeAssetOptions(
         asset.glob,
         join(context.root, asset.input),
         asset.ignore
-      ).forEach(globbedFile => {
+      ).forEach((globbedFile) => {
         files.push({
           input: join(context.root, asset.input, globbedFile),
-          output: join(context.root, outDir, asset.output, globbedFile)
+          output: join(context.root, outDir, asset.output, globbedFile),
         });
       });
     }
   });
   return {
     ...options,
-    assetFiles: files
+    assetFiles: files,
   };
 }

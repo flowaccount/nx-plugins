@@ -66,11 +66,5 @@
     }
   },
   "additionalProperties": false,
-  "required": [
-    "buildTarget",
-    "config",
-    "location",
-    "package",
-    "stage"
-  ]
+  "required": ["buildTarget", "config", "location", "package", "stage"]
 }

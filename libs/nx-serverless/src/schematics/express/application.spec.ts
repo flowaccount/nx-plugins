@@ -23,7 +23,7 @@ describe('express app', () => {
   });
 
   describe('not nested', () => {
-    it('should update workspace.json', async done => {
+    it('should update workspace.json', async (done) => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', initExpress: true },
@@ -42,33 +42,33 @@ describe('express app', () => {
                   {
                     maximumWarning: '2mb',
                     maximumError: '5mb',
-                    type: 'initial'
-                  }
+                    type: 'initial',
+                  },
                 ],
                 optimization: false,
-                sourceMap: false
+                sourceMap: false,
               },
               production: {
                 budgets: [
                   {
                     maximumWarning: '2mb',
                     maximumError: '5mb',
-                    type: 'initial'
-                  }
+                    type: 'initial',
+                  },
                 ],
                 extractCss: true,
                 extractLicenses: true,
                 fileReplacements: [
                   {
                     replace: 'apps/my-app/environment.ts',
-                    with: 'apps/my-app/environment.prod.ts'
-                  }
+                    with: 'apps/my-app/environment.prod.ts',
+                  },
                 ],
                 namedChunks: false,
                 optimization: true,
                 sourceMap: false,
-                vendorChunk: false
-              }
+                vendorChunk: false,
+              },
             },
             options: {
               outputPath: 'dist',
@@ -77,8 +77,8 @@ describe('express app', () => {
               serverlessConfig: 'apps/my-app/serverless.yml',
               servicePath: 'apps/my-app',
               tsConfig: 'apps/my-app/tsconfig.serverless.json',
-              skipClean: true
-            }
+              skipClean: true,
+            },
           },
           deploy: {
             executor: '@flowaccount/nx-serverless:deploy',
@@ -88,8 +88,8 @@ describe('express app', () => {
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app',
               package: 'dist/apps/my-app',
-              stage: 'dev'
-            }
+              stage: 'dev',
+            },
           },
           destroy: {
             executor: '@flowaccount/nx-serverless:destroy',
@@ -97,31 +97,31 @@ describe('express app', () => {
               buildTarget: 'my-app:compile:production',
               config: 'apps/my-app/serverless.yml',
               location: 'dist/apps/my-app',
-              package: 'dist/apps/my-app'
-            }
+              package: 'dist/apps/my-app',
+            },
           },
           offline: {
             executor: '@flowaccount/nx-serverless:offline',
             configurations: {
               dev: {
-                buildTarget: 'my-app:compile:dev'
+                buildTarget: 'my-app:compile:dev',
               },
               production: {
-                buildTarget: 'my-app:compile:production'
-              }
+                buildTarget: 'my-app:compile:production',
+              },
             },
             options: {
               waitUntilTargets: ['my-app:build'],
               buildTarget: 'my-app:compile',
               config: 'apps/my-app/serverless.yml',
-              location: 'dist/apps/my-app'
-            }
-          }
+              location: 'dist/apps/my-app',
+            },
+          },
         })
       );
       done();
     }, 90000);
-    it('should generate files', async done => {
+    it('should generate files', async (done) => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', initExpress: true },
@@ -142,7 +142,7 @@ describe('express app', () => {
   });
 
   describe('nested', () => {
-    it('should update workspace.json', async done => {
+    it('should update workspace.json', async (done) => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', directory: 'myDir', initExpress: true },
@@ -160,16 +160,16 @@ describe('express app', () => {
           exclude: ['**/node_modules/**', '!apps/my-dir/my-app/**/*'],
           tsConfig: [
             'apps/my-dir/my-app/tsconfig.app.json',
-            'apps/my-dir/my-app/tsconfig.spec.json'
-          ]
-        }
+            'apps/my-dir/my-app/tsconfig.spec.json',
+          ],
+        },
       });
       expect(workspaceJson.projects['my-dir-my-app-e2e']).toBeUndefined();
       expect(workspaceJson.defaultProject).toEqual('my-dir-my-app');
       done();
     }, 90000);
 
-    it('should generate files', async done => {
+    it('should generate files', async (done) => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', directory: 'myDir', initExpress: true },
@@ -179,8 +179,8 @@ describe('express app', () => {
         'apps/my-dir/my-app/env.json',
         'apps/my-dir/my-app/handler.ts',
         'apps/my-dir/my-app/tsconfig.serverless.json',
-        'apps/my-dir/my-app/serverless.yml'
-      ].forEach(path => {
+        'apps/my-dir/my-app/serverless.yml',
+      ].forEach((path) => {
         expect(tree.exists(path)).toBeTruthy();
       });
       const tsconfig = readJsonInTree(
@@ -194,7 +194,7 @@ describe('express app', () => {
   });
 
   describe('--unit-test-runner none', () => {
-    it('should not generate test configuration', async done => {
+    it('should not generate test configuration', async (done) => {
       const tree = await runSchematic(
         'express',
         { name: 'my-app', initExpress: true, unitTestRunner: 'none' },

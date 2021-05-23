@@ -30,22 +30,30 @@ function getHttpServerArgs(options: ServerlessExecuteBuilderOptions) {
 }
 
 function getBuildTargetCommand(options: ServerlessExecuteBuilderOptions) {
-    // "config": "apps/test-api-8/serverless.yml",
-    //         "location": "dist/apps/test-api-8",
-    //         "port": 7777
-  const cmd = ['node', 'D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/bin/serverless.js', 'offline', '--config apps/test-api-11/serverless.yml --location dist/apps/test-api-11 --port 7777'];
-//   cmd.push(`offline`);
-  
-// //   if (options.parallel) {
-// //     cmd.push(`--parallel`);
-// //   }
-// //   if (options.maxParallel) {
-// //     cmd.push(`--maxParallel=${options.maxParallel}`);
-// //   }
- return cmd.join(' ');
+  // "config": "apps/test-api-8/serverless.yml",
+  //         "location": "dist/apps/test-api-8",
+  //         "port": 7777
+  const cmd = [
+    'node',
+    'D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/bin/serverless.js',
+    'offline',
+    '--config apps/test-api-11/serverless.yml --location dist/apps/test-api-11 --port 7777',
+  ];
+  //   cmd.push(`offline`);
+
+  // //   if (options.parallel) {
+  // //     cmd.push(`--parallel`);
+  // //   }
+  // //   if (options.maxParallel) {
+  // //     cmd.push(`--maxParallel=${options.maxParallel}`);
+  // //   }
+  return cmd.join(' ');
 }
 
-function getBuildTargetOutputPath(options: ServerlessExecuteBuilderOptions, context: ExecutorContext) {
+function getBuildTargetOutputPath(
+  options: ServerlessExecuteBuilderOptions,
+  context: ExecutorContext
+) {
   let buildOptions;
   try {
     const [project, target, config] = options.buildTarget.split(':');
@@ -73,27 +81,26 @@ function getIgnoredGlobs(root: string) {
   const ig = ignore();
   try {
     ig.add(readFileSync(`${root}/.gitignore`, 'utf-8'));
-  } catch { }
+  } catch {}
   try {
     ig.add(readFileSync(`${root}/.nxignore`, 'utf-8'));
   } catch {}
   return ig;
 }
 
-function createFileWatcher(root: string, sourceRoot:string , changeHandler: () => void) {
+function createFileWatcher(
+  root: string,
+  sourceRoot: string,
+  changeHandler: () => void
+) {
   const ignoredGlobs = getIgnoredGlobs(root);
-  console.log(sourceRoot+ '/**')
-  const watcher = watch(
-    [
-      sourceRoot + '/**',
-    ],
-    {
-      cwd: root,
-      ignoreInitial: true,
-    }
-  );
+  console.log(sourceRoot + '/**');
+  const watcher = watch([sourceRoot + '/**'], {
+    cwd: root,
+    ignoreInitial: true,
+  });
   watcher.on('all', (_event: string, path: string) => {
-    console.log('something happened')
+    console.log('something happened');
     if (ignoredGlobs.ignores(path)) return;
     changeHandler();
   });
@@ -124,35 +131,41 @@ export async function* serverlessOfflineExecutor(
   options: ServerlessExecuteBuilderOptions,
   context: ExecutorContext
 ) {
-
-    console.log('executing offline')
+  console.log('executing offline');
   let running = false;
 
   const run = () => {
-    console.log('running?' + running)
+    console.log('running?' + running);
     if (!running) {
       running = true;
       try {
-        console.log(getExecArgv(options))
+        console.log(getExecArgv(options));
         execSync(getBuildTargetCommand(options), {
           stdio: [0, 1, 2],
         });
-      } catch { }
+      } catch {}
       running = false;
     }
   };
-  console.log('watching:' + context.root)
-  const watcher = createFileWatcher(context.root, context.workspace.projects[context.projectName].root,  run);
+  console.log('watching:' + context.root);
+  const watcher = createFileWatcher(
+    context.root,
+    context.workspace.projects[context.projectName].root,
+    run
+  );
 
   // perform initial run
   run();
 
   const outputPath = getBuildTargetOutputPath(options, context);
   const args = getHttpServerArgs(options);
-  console.log('executing serve')
-  const serve = exec(`node D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/lib/Serverless.js offline --config apps/test-api-11/serverless.yml --location dist/apps/test-api-11 --port 7777`, {
-    cwd: context.root,
-  });
+  console.log('executing serve');
+  const serve = exec(
+    `node D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/lib/Serverless.js offline --config apps/test-api-11/serverless.yml --location dist/apps/test-api-11 --port 7777`,
+    {
+      cwd: context.root,
+    }
+  );
   const processExitListener = () => {
     serve.kill();
     watcher.close();

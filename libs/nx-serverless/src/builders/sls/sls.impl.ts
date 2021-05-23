@@ -1,9 +1,10 @@
-import {
-  BuilderOutput
-} from '@angular-devkit/architect';
+import { BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import * as _ from 'lodash';
-import { makeDistFileReadyForPackaging, runServerlessCommand } from '../../utils/serverless';
+import {
+  makeDistFileReadyForPackaging,
+  runServerlessCommand,
+} from '../../utils/serverless';
 /* Fix for EMFILE: too many open files on serverless deploy */
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
@@ -16,7 +17,7 @@ gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
   Inspect = 'inspect',
-  InspectBrk = 'inspect-brk'
+  InspectBrk = 'inspect-brk',
 }
 
 // review: Have to spin off options and clarify schema.json for deploy,build,serve
@@ -40,14 +41,16 @@ export interface ServerlessSlsBuilderOptions extends JsonObject {
   args?: string;
 }
 
-
 export async function slsExecutor(
   options: JsonObject & ServerlessSlsBuilderOptions,
   context: ExecutorContext
 ) {
   let packagePath = options.location;
   if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
-    const results = await runWaitUntilTargets(options.waitUntilTargets, context);
+    const results = await runWaitUntilTargets(
+      options.waitUntilTargets,
+      context
+    );
     for (const [i, result] of results.entries()) {
       if (!result.success) {
         console.log('throw');
@@ -57,8 +60,8 @@ export async function slsExecutor(
       }
     }
   }
-  const iterator = await buildTarget(options, context)
-  const event = <BuilderOutput>(await iterator.next()).value
+  const iterator = await buildTarget(options, context);
+  const event = <BuilderOutput>(await iterator.next()).value;
   const prepResult = await preparePackageJson(
     options,
     context,
@@ -66,12 +69,12 @@ export async function slsExecutor(
     event.resolverName.toString(),
     event.tsconfig.toString()
   ).toPromise();
-        if (!prepResult.success) {
-          throw new Error(`There was an error with the build. ${prepResult.error}`)
-        }
-        packagePath = await makeDistFileReadyForPackaging(options, packagePath)
-        const commands = [];
-        commands.push(options.command)
-        await runServerlessCommand(options, commands, packagePath)
-        return { success: true}
+  if (!prepResult.success) {
+    throw new Error(`There was an error with the build. ${prepResult.error}`);
+  }
+  packagePath = await makeDistFileReadyForPackaging(options, packagePath);
+  const commands = [];
+  commands.push(options.command);
+  await runServerlessCommand(options, commands, packagePath);
+  return { success: true };
 }

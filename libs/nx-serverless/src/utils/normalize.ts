@@ -2,13 +2,21 @@ import { normalize, workspaces } from '@angular-devkit/core';
 import { BuilderContext } from '@angular-devkit/architect';
 import { NodeJsSyncHost } from '@angular-devkit/core/node';
 import { resolve, dirname, relative, basename } from 'path';
-import { NormalizedBuildServerlessBuilderOptions, ServerlessBaseOptions } from './types';
+import {
+  NormalizedBuildServerlessBuilderOptions,
+  ServerlessBaseOptions,
+} from './types';
 import { statSync } from 'fs';
 import * as glob from 'glob';
 import { extname, join } from 'path';
 import * as _ from 'lodash';
 import { ServerlessWrapper } from './serverless';
-import { ExecutorContext, logger, readProjectConfiguration, Tree } from '@nrwl/devkit';
+import {
+  ExecutorContext,
+  logger,
+  readProjectConfiguration,
+  Tree,
+} from '@nrwl/devkit';
 
 export interface FileReplacement {
   replace: string;
@@ -34,7 +42,7 @@ export function assignEntriesToFunctionsFromServerless<
   });
   const result = {
     ...options,
-    files: entries
+    files: entries,
   };
   return result;
 }
@@ -104,7 +112,7 @@ export function normalizeBuildOptions<T extends ServerlessBaseOptions>(
       ? []
           .concat(options.webpackConfig)
           .map((path) => normalizePluginPath(path, root))
-      : []
+      : [],
   };
   return result;
 }
@@ -149,11 +157,11 @@ export const getEntryForFunction = (
   }
 
   return {
-    [handlerFile]: resolve(root, `${handlerFileFinal}`)
+    [handlerFile]: resolve(root, `${handlerFileFinal}`),
   };
 };
 
-const getHandlerFile = handler => {
+const getHandlerFile = (handler) => {
   // Check if handler is a well-formed path based handler.
   const handlerEntry = /(.*)\..*?$/.exec(handler);
   if (handlerEntry) {
@@ -164,7 +172,7 @@ const getHandlerFile = handler => {
 const getEntryExtension = (fileName, serverless) => {
   const files = glob.sync(`${fileName}.*`, {
     cwd: serverless.config.servicePath,
-    nodir: true
+    nodir: true,
     // ignore: this.configuration.excludeFiles ? this.configuration.excludeFiles : undefined
   });
 
@@ -179,8 +187,10 @@ const getEntryExtension = (fileName, serverless) => {
   const sortedFiles = _.uniq(
     _.concat(
       _.sortBy(
-        _.filter(files, file => _.includes(preferredExtensions, extname(file))),
-        a => _.size(a)
+        _.filter(files, (file) =>
+          _.includes(preferredExtensions, extname(file))
+        ),
+        (a) => _.size(a)
       ),
       files
     )
@@ -201,7 +211,7 @@ function normalizeAssets(
   root: string,
   sourceRoot: string
 ): any[] {
-  return assets.map(asset => {
+  return assets.map((asset) => {
     if (typeof asset === 'string') {
       const assetPath = normalize(asset);
       const resolvedAssetPath = resolve(root, assetPath);
@@ -222,7 +232,7 @@ function normalizeAssets(
       return {
         input,
         output,
-        glob
+        glob,
       };
     } else {
       if (asset.output.startsWith('..')) {
@@ -237,7 +247,7 @@ function normalizeAssets(
         ...asset,
         input: resolvedAssetPath,
         // Now we remove starting slash to make Webpack place it from the output root.
-        output: asset.output.replace(/^\//, '')
+        output: asset.output.replace(/^\//, ''),
       };
     }
   });
@@ -247,9 +257,9 @@ function normalizeFileReplacements(
   root: string,
   fileReplacements: FileReplacement[]
 ): FileReplacement[] {
-  return fileReplacements.map(fileReplacement => ({
+  return fileReplacements.map((fileReplacement) => ({
     replace: resolve(root, fileReplacement.replace),
-    with: resolve(root, fileReplacement.with)
+    with: resolve(root, fileReplacement.with),
   }));
 }
 
@@ -270,10 +280,10 @@ export function getProdModules(
     'aws-sdk',
     '@types/aws-serverless-express',
     '@types/aws-lambda',
-    '@types/node'
+    '@types/node',
   ];
   // Get versions of all transient modules
-  _.forEach(externalModules, module => {
+  _.forEach(externalModules, (module) => {
     let moduleVersion = packageJson.dependencies[module.external];
     if (moduleVersion) {
       prodModules.push(`${module.external}@${moduleVersion}`);

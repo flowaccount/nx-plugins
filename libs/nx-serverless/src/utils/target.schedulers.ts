@@ -2,13 +2,19 @@ import {
   BuilderContext,
   BuilderOutput,
   targetFromTargetString,
-  scheduleTargetAndForget
+  scheduleTargetAndForget,
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { Observable, of, from, zip } from 'rxjs';
 import { concatMap, tap, map, filter, first } from 'rxjs/operators';
 import { stripIndents } from '@angular-devkit/core/src/utils/literals';
-import { ExecutorContext, logger, parseTargetString, readTargetOptions, runExecutor } from '@nrwl/devkit';
+import {
+  ExecutorContext,
+  logger,
+  parseTargetString,
+  readTargetOptions,
+  runExecutor,
+} from '@nrwl/devkit';
 
 // export function runWaitUntilTargets(
 //   waitUntilTargets: string[],
@@ -72,7 +78,7 @@ export async function* startBuild(
     //         ************************************************`);
   }
 
-  console.log(options.watch)
+  console.log(options.watch);
   yield* await runExecutor<BuilderOutput>(
     buildTarget,
     {
@@ -81,9 +87,6 @@ export async function* startBuild(
     context
   );
 }
-
-
-
 
 // export function startBuild(
 //   options: { buildTarget: string } & JsonObject,

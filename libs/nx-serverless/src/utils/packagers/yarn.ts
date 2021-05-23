@@ -29,7 +29,7 @@ export class Yarn {
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
     const args = ['generate-lock-entry'];
     return spawnSync(command, args, {
-      cwd: cwd
+      cwd: cwd,
     });
   }
 
@@ -41,7 +41,7 @@ export class Yarn {
     const ignoredYarnErrors = [];
 
     var result = spawnSync(command, args, {
-      cwd: cwd
+      cwd: cwd,
     });
     if (result.error) {
       const err = result.error;
@@ -56,7 +56,7 @@ export class Yarn {
             }
             return (
               !_.isEmpty(error) &&
-              !_.some(ignoredYarnErrors, ignoredError =>
+              !_.some(ignoredYarnErrors, (ignoredError) =>
                 _.startsWith(error, `npm ERR! ${ignoredError.npmError}`)
               )
             );
@@ -83,7 +83,7 @@ export class Yarn {
     while ((match = fileVersionMatcher.exec(lockfile)) !== null) {
       replacements.push({
         oldRef: match[1],
-        newRef: _.replace(`${pathToPackageRoot}/${match[1]}`, /\\/g, '/')
+        newRef: _.replace(`${pathToPackageRoot}/${match[1]}`, /\\/g, '/'),
       });
     }
 
@@ -116,7 +116,7 @@ export class Yarn {
 
   static runScripts(cwd, scriptNames) {
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
-    return map(scriptNames, scriptName => {
+    return map(scriptNames, (scriptName) => {
       const args = ['run', scriptName];
 
       return spawn(command, args, { cwd });

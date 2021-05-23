@@ -52,9 +52,5 @@
     }
   },
   "additionalProperties": true,
-  "required": [
-    "buildTarget",
-    "config",
-    "location"
-  ]
+  "required": ["buildTarget", "config", "location"]
 }

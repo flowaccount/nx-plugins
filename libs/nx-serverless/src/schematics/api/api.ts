@@ -11,9 +11,7 @@ import {
   Tree,
 } from '@nrwl/devkit';
 import { Schema } from './schema';
-import {
-  ProjectType
-} from '@nrwl/workspace';
+import { ProjectType } from '@nrwl/workspace';
 import { toFileName } from '@nrwl/workspace';
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
@@ -45,16 +43,16 @@ function getServeConfig(project: any, options: NormalizedSchema) {
       buildTarget: options.name + ':build',
       config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
       location: joinPathFragments(normalize('dist'), options.appProjectRoot),
-      port: 7777
+      port: 7777,
     },
     configurations: {
       dev: {
-        buildTarget: options.name + ':build:dev'
+        buildTarget: options.name + ':build:dev',
       },
       production: {
-        buildTarget: options.name + ':build:production'
-      }
-    }
+        buildTarget: options.name + ':build:production',
+      },
+    },
   };
 }
 
@@ -66,8 +64,8 @@ function getDeployConfig(project: any, options: NormalizedSchema) {
       config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
       location: joinPathFragments(normalize('dist'), options.appProjectRoot),
       package: joinPathFragments(normalize('dist'), options.appProjectRoot),
-      stage: 'dev'
-    }
+      stage: 'dev',
+    },
   };
 }
 
@@ -78,8 +76,8 @@ function getDestroyConfig(options: NormalizedSchema) {
       buildTarget: options.name + ':build:production',
       config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
       location: joinPathFragments(normalize('dist'), options.appProjectRoot),
-      package: joinPathFragments(normalize('dist'), options.appProjectRoot)
-    }
+      package: joinPathFragments(normalize('dist'), options.appProjectRoot),
+    },
   };
 }
 
@@ -91,7 +89,7 @@ function updateWorkspaceJson(host: Tree, options: NormalizedSchema): void {
     prefix: options.name,
     schematics: {},
     targets: <any>{},
-    tags: <any>{}
+    tags: <any>{},
   };
 
   project.targets.build = getBuildConfig(options);
@@ -103,33 +101,33 @@ function updateWorkspaceJson(host: Tree, options: NormalizedSchema): void {
   //   joinPathFragments(normalize(project.root), 'tsconfig.app.json'),
   //   options.linter
   // );
-  project.tags = options.parsedTags
- 
-   addProjectConfiguration(host, options.name, project);
+  project.tags = options.parsedTags;
+
+  addProjectConfiguration(host, options.name, project);
 
   // return updateWorkspaceInTree(workspaceJson => {
-    // workspaceJson.projects[options.name] = project;
-    // workspaceJson.defaultProject = workspaceJson.defaultProject || options.name;
-    // return workspaceJson;
+  // workspaceJson.projects[options.name] = project;
+  // workspaceJson.defaultProject = workspaceJson.defaultProject || options.name;
+  // return workspaceJson;
   // });
 }
 
 function addAppFiles(host: Tree, options: NormalizedSchema) {
-    const templateOptions = {
-      ...options,
-      ...names(options.name), // name: options.name,
-      offset: offsetFromRoot(options.appProjectRoot),
-      template: '',
-      root: options.appProjectRoot,
-      baseWorkspaceTsConfig: options.baseWorkspaceTsConfig,
-    };
-    generateFiles(
-      host,
-      path.join(__dirname, 'files'),
-      options.appProjectRoot,
-      templateOptions
-    );
-  
+  const templateOptions = {
+    ...options,
+    ...names(options.name), // name: options.name,
+    offset: offsetFromRoot(options.appProjectRoot),
+    template: '',
+    root: options.appProjectRoot,
+    baseWorkspaceTsConfig: options.baseWorkspaceTsConfig,
+  };
+  generateFiles(
+    host,
+    path.join(__dirname, 'files'),
+    options.appProjectRoot,
+    templateOptions
+  );
+
   //   mergeWith(
   //   apply(url('./files/app'), [
   //     template({
@@ -212,7 +210,7 @@ function normalizeOptions(options: Schema): NormalizedSchema {
   const appProjectRoot = joinPathFragments(normalize('apps'), appDirectory);
 
   const parsedTags = options.tags
-    ? options.tags.split(',').map(s => s.trim())
+    ? options.tags.split(',').map((s) => s.trim())
     : [];
 
   return {
@@ -224,38 +222,38 @@ function normalizeOptions(options: Schema): NormalizedSchema {
     appProjectRoot,
     provider: options.provider,
     parsedTags,
-    endpointType: options.endpointType ? undefined : options.endpointType
+    endpointType: options.endpointType ? undefined : options.endpointType,
   };
 }
 
 export async function apiGenerator(host: Tree, schema: Schema) {
-    const options = normalizeOptions(schema);
-      initGenerator(host, {
-        skipFormat: true,
-        expressProxy: false,
-        unitTestRunner: options.unitTestRunner
-      });
-      // addServerlessYMLFile(host, options);
-      addAppFiles(host, options);
-      updateWorkspaceJson(host, options);
-      await lintProjectGenerator(host, { project: options.name, skipFormat: true });
-      if (!options.unitTestRunner || options.unitTestRunner === 'jest') {
-        await jestProjectGenerator(host, {
-          project: options.name,
-          setupFile: 'none',
-          skipSerializers: true
-        });
-      }
-      // updateNxJson(options);
-      // options.unitTestRunner === 'jest'
-      //   ? externalSchematic('@nrwl/jest', 'jest-project', {
-      //       project: options.name,
-      //       setupFile: 'none',
-      //       skipSerializers: true
-      //     })
-      //   : noop();
-      // options.frontendProject ? addProxy(host, options) : noop();
-      await formatFiles(host);
+  const options = normalizeOptions(schema);
+  initGenerator(host, {
+    skipFormat: true,
+    expressProxy: false,
+    unitTestRunner: options.unitTestRunner,
+  });
+  // addServerlessYMLFile(host, options);
+  addAppFiles(host, options);
+  updateWorkspaceJson(host, options);
+  await lintProjectGenerator(host, { project: options.name, skipFormat: true });
+  if (!options.unitTestRunner || options.unitTestRunner === 'jest') {
+    await jestProjectGenerator(host, {
+      project: options.name,
+      setupFile: 'none',
+      skipSerializers: true,
+    });
+  }
+  // updateNxJson(options);
+  // options.unitTestRunner === 'jest'
+  //   ? externalSchematic('@nrwl/jest', 'jest-project', {
+  //       project: options.name,
+  //       setupFile: 'none',
+  //       skipSerializers: true
+  //     })
+  //   : noop();
+  // options.frontendProject ? addProxy(host, options) : noop();
+  await formatFiles(host);
 }
 
 export default apiGenerator;

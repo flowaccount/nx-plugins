@@ -1,6 +1,5 @@
-import { joinPathFragments } from "@nrwl/devkit";
-import { normalize } from "path";
-
+import { joinPathFragments } from '@nrwl/devkit';
+import { normalize } from 'path';
 
 export interface BaseSchema {
   appProjectRoot: string;
@@ -16,11 +15,14 @@ export function getBuildConfig(options: BaseSchema) {
     options: {
       outputPath: joinPathFragments(normalize('dist'), options.appProjectRoot),
       package: options.appProjectRoot,
-      serverlessConfig: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
+      serverlessConfig: joinPathFragments(
+        options.appProjectRoot,
+        'serverless.yml'
+      ),
       servicePath: options.appProjectRoot,
       tsConfig: joinPathFragments(options.appProjectRoot, 'tsconfig.app.json'),
       provider: options.provider,
-      processEnvironmentFile: 'env.json'
+      processEnvironmentFile: 'env.json',
     },
     configurations: {
       dev: {
@@ -30,9 +32,9 @@ export function getBuildConfig(options: BaseSchema) {
           {
             type: 'initial',
             maximumWarning: '2mb',
-            maximumError: '5mb'
-          }
-        ]
+            maximumError: '5mb',
+          },
+        ],
       },
       production: {
         optimization: true,
@@ -45,16 +47,22 @@ export function getBuildConfig(options: BaseSchema) {
           {
             type: 'initial',
             maximumWarning: '2mb',
-            maximumError: '5mb'
-          }
+            maximumError: '5mb',
+          },
         ],
         fileReplacements: [
           {
-            replace: joinPathFragments(options.appProjectRoot, 'environment.ts'),
-            with: joinPathFragments(options.appProjectRoot, 'environment.prod.ts')
-          }
-        ]
-      }
-    }
+            replace: joinPathFragments(
+              options.appProjectRoot,
+              'environment.ts'
+            ),
+            with: joinPathFragments(
+              options.appProjectRoot,
+              'environment.prod.ts'
+            ),
+          },
+        ],
+      },
+    },
   };
 }

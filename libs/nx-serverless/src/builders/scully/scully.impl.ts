@@ -1,13 +1,11 @@
 // npx scully --nw --configFile apps/frontend/flowaccount-landing/scully.config.js --removeStaticDist
 
-import {
-  BuilderOutput
-} from '@angular-devkit/architect';
+import { BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { ExecutorContext, logger } from '@nrwl/devkit';
-import { of} from 'rxjs';
+import { of } from 'rxjs';
 import { buildTarget } from '../deploy/deploy.impl';
-import runCommand from '@nrwl/workspace/src/executors/run-commands/run-commands.impl'
+import runCommand from '@nrwl/workspace/src/executors/run-commands/run-commands.impl';
 export interface ScullyBuilderOptions extends JsonObject {
   buildTarget: string;
   skipBuild: boolean;
@@ -22,7 +20,6 @@ export interface ScullyBuilderOptions extends JsonObject {
   highlight?: boolean;
 }
 
-
 export async function scullyCmdRunner(
   options: JsonObject & ScullyBuilderOptions,
   context: ExecutorContext
@@ -30,19 +27,17 @@ export async function scullyCmdRunner(
   //
   if (options.skipBuild) {
     await runScully(options, context);
-    
   } else {
-        const iterator = await buildTarget(options, context)
-        const event = <BuilderOutput>(await iterator.next()).value
-        
-          
-        if (!event.success) {
-          logger.error('Build target failed!');
-          return { success: false };
-        }
-        await runScully(options, context);
+    const iterator = await buildTarget(options, context);
+    const event = <BuilderOutput>(await iterator.next()).value;
+
+    if (!event.success) {
+      logger.error('Build target failed!');
+      return { success: false };
+    }
+    await runScully(options, context);
   }
-  return { success: true }
+  return { success: true };
 }
 
 export default scullyCmdRunner;
@@ -53,23 +48,26 @@ async function runScully(
 ) {
   const commands: { command: string }[] = [];
   const args = getExecArgv(options);
-  options.configFiles.forEach(fileName => {
+  options.configFiles.forEach((fileName) => {
     commands.push({
-      command: `scully --configFile=${fileName} ${args.join(' ')}`
+      command: `scully --configFile=${fileName} ${args.join(' ')}`,
     });
   });
-  await runCommand({
-    commands: commands,
-    cwd: options.root.toString(),
-    color: true,
-    parallel: false
-  } , context);
+  await runCommand(
+    {
+      commands: commands,
+      cwd: options.root.toString(),
+      color: true,
+      parallel: false,
+    },
+    context
+  );
 }
 
 function getExecArgv(options: ScullyBuilderOptions) {
   const args = [];
   const keys = Object.keys(options);
-  keys.forEach(key => {
+  keys.forEach((key) => {
     if (
       options[key] !== undefined &&
       key !== 'buildTarget' &&

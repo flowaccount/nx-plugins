@@ -1,7 +1,7 @@
 import {
   BuilderContext,
   createBuilder,
-  BuilderOutput
+  BuilderOutput,
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { ServerlessCompileOptions } from '../../utils/types';
@@ -11,7 +11,7 @@ import { switchMap, map, concatMap } from 'rxjs/operators';
 import {
   normalizeBuildOptions,
   assignEntriesToFunctionsFromServerless,
-  getSourceRoot
+  getSourceRoot,
 } from '../../utils/normalize';
 import { ServerlessWrapper } from '../../utils/serverless';
 import { resolve, join } from 'path';
@@ -21,29 +21,26 @@ export type ServerlesCompiledEvent = {
   outfile: string;
 };
 
-
 export async function compileExecutor(
   options: JsonObject & ServerlessCompileOptions,
   context: ExecutorContext
 ) {
-    const root = getSourceRoot(context)
-    options = normalizeBuildOptions(options, context.root, root)
-    await ServerlessWrapper.init(options, context).toPromise()
-    options = assignEntriesToFunctionsFromServerless(
-        options,
-        context.root);
-    
-      logger.info('start compiling typescript');
-      const result =  await compileTypeScriptFiles(
-        options,
-        context
-        // libDependencies
-      ).toPromise();
-      return {
-        ...result,
-        outfile: resolve(context.root, options.outputPath),
-        resolverName: 'DependencyCheckResolver',
-        tsconfig: resolve(context.root, options.tsConfig)
-      };
+  const root = getSourceRoot(context);
+  options = normalizeBuildOptions(options, context.root, root);
+  await ServerlessWrapper.init(options, context).toPromise();
+  options = assignEntriesToFunctionsFromServerless(options, context.root);
+
+  logger.info('start compiling typescript');
+  const result = await compileTypeScriptFiles(
+    options,
+    context
+    // libDependencies
+  ).toPromise();
+  return {
+    ...result,
+    outfile: resolve(context.root, options.outputPath),
+    resolverName: 'DependencyCheckResolver',
+    tsconfig: resolve(context.root, options.tsConfig),
+  };
 }
 export default compileExecutor;

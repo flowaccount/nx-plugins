@@ -2,15 +2,24 @@ import { Schema } from './schema';
 import {
   updateWorkspaceInTree,
   toFileName,
-  addPackageWithInit
+  addPackageWithInit,
 } from '@nrwl/workspace';
 import { offsetFromRoot } from '@nrwl/workspace';
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
 import { join, normalize } from 'path';
-import { names, ProjectConfiguration, readProjectConfiguration, Tree, updateProjectConfiguration, generateFiles, convertNxGenerator, joinPathFragments } from '@nrwl/devkit';
+import {
+  names,
+  ProjectConfiguration,
+  readProjectConfiguration,
+  Tree,
+  updateProjectConfiguration,
+  generateFiles,
+  convertNxGenerator,
+  joinPathFragments,
+} from '@nrwl/devkit';
 import { applicationGenerator } from '@nrwl/express';
-import { initGenerator as initGeneratorExpress } from '@nrwl/express/src/generators/init/init'
+import { initGenerator as initGeneratorExpress } from '@nrwl/express/src/generators/init/init';
 interface NormalizedSchema extends Schema {
   parsedTags: string[];
   provider: string;
@@ -23,16 +32,16 @@ function getServeConfig(options: NormalizedSchema) {
       waitUntilTargets: [options.name + ':build'],
       buildTarget: options.name + ':compile',
       config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
-      location: joinPathFragments(normalize('dist'), options.appProjectRoot)
+      location: joinPathFragments(normalize('dist'), options.appProjectRoot),
     },
     configurations: {
       dev: {
-        buildTarget: options.name + ':compile:dev'
+        buildTarget: options.name + ':compile:dev',
       },
       production: {
-        buildTarget: options.name + ':compile:production'
-      }
-    }
+        buildTarget: options.name + ':compile:production',
+      },
+    },
   };
 }
 
@@ -45,8 +54,8 @@ function getDeployConfig(options: NormalizedSchema) {
       config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
       location: joinPathFragments(normalize('dist'), options.appProjectRoot),
       package: joinPathFragments(normalize('dist'), options.appProjectRoot),
-      stage: 'dev'
-    }
+      stage: 'dev',
+    },
   };
 }
 
@@ -57,27 +66,29 @@ function getDestroyConfig(options: NormalizedSchema) {
       buildTarget: options.name + ':compile:production',
       config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
       location: joinPathFragments(normalize('dist'), options.appProjectRoot),
-      package: joinPathFragments(normalize('dist'), options.appProjectRoot)
-    }
+      package: joinPathFragments(normalize('dist'), options.appProjectRoot),
+    },
   };
 }
 
-function updateWorkspaceJson(host: Tree, options: NormalizedSchema, project: ProjectConfiguration) {
- 
-    const buildConfig = getBuildConfig(options);
-    buildConfig.options['skipClean'] = true;
-    buildConfig.options['outputPath'] = normalize('dist');
-    buildConfig.options['tsConfig'] = joinPathFragments(
-      options.appProjectRoot,
-      'tsconfig.serverless.json'
-    );
-    buildConfig.executor = '@flowaccount/nx-serverless:compile';
-    project.targets.compile = buildConfig;
-    project.targets.offline = getServeConfig(options);
-    project.targets.deploy = getDeployConfig(options);
-    project.targets.destroy = getDestroyConfig(options);
-    updateProjectConfiguration(host, options.name, project) 
- 
+function updateWorkspaceJson(
+  host: Tree,
+  options: NormalizedSchema,
+  project: ProjectConfiguration
+) {
+  const buildConfig = getBuildConfig(options);
+  buildConfig.options['skipClean'] = true;
+  buildConfig.options['outputPath'] = normalize('dist');
+  buildConfig.options['tsConfig'] = joinPathFragments(
+    options.appProjectRoot,
+    'tsconfig.serverless.json'
+  );
+  buildConfig.executor = '@flowaccount/nx-serverless:compile';
+  project.targets.compile = buildConfig;
+  project.targets.offline = getServeConfig(options);
+  project.targets.deploy = getDeployConfig(options);
+  project.targets.destroy = getDestroyConfig(options);
+  updateProjectConfiguration(host, options.name, project);
 }
 
 function addAppFiles(host: Tree, options: NormalizedSchema) {
@@ -86,7 +97,7 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
     ...names(options.name), // name: options.name,
     offset: offsetFromRoot(options.appProjectRoot),
     template: '',
-    root: options.appProjectRoot
+    root: options.appProjectRoot,
   };
   generateFiles(
     host,
@@ -116,7 +127,7 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
 }
 
 // function updateServerTsFile(host:Tree, options: NormalizedSchema) {
- 
+
 //     const modulePath = `${options.appProjectRoot}/server.ts`;
 //     const content: Buffer | null = host.read(modulePath);
 //     let moduleSource = '';
@@ -201,7 +212,7 @@ function normalizeOptions(options: Schema): NormalizedSchema {
   const appProjectRoot = joinPathFragments(normalize('apps'), appDirectory);
 
   const parsedTags = options.tags
-    ? options.tags.split(',').map(s => s.trim())
+    ? options.tags.split(',').map((s) => s.trim())
     : [];
 
   return {
@@ -213,43 +224,41 @@ function normalizeOptions(options: Schema): NormalizedSchema {
     appProjectRoot,
     provider: options.provider,
     parsedTags,
-    endpointType: options.endpointType ? undefined : options.endpointType
+    endpointType: options.endpointType ? undefined : options.endpointType,
   };
 }
 
 export async function expressApiGenerator(host: Tree, schema: Schema) {
-    const options = normalizeOptions(schema);
-    initGenerator(host, {
-      skipFormat: options.skipFormat,
-      expressProxy: true,
-      unitTestRunner: options.unitTestRunner
-    });
-     
-      if(options.initExpress) {
-        await initGeneratorExpress(host, {
-          unitTestRunner: options.unitTestRunner
-        });
-        await applicationGenerator(host, {
-            name: schema.name,
-            skipFormat: schema.skipFormat,
-            skipPackageJson: schema.skipPackageJson,
-            directory: schema.directory,
-            unitTestRunner: schema.unitTestRunner,
-            tags: schema.tags,
-            linter: schema.linter,
-            frontendProject: schema.frontendProject,
-            js: false,
-            pascalCaseFiles: false
-          })
-        ;
-      }
-      addAppFiles(host, options);
-      // addServerlessYMLFile(options),
-      // updateServerTsFile(options),
-      const project = readProjectConfiguration(host, options.name);
-      updateWorkspaceJson(host, options, project)
-}
+  const options = normalizeOptions(schema);
+  initGenerator(host, {
+    skipFormat: options.skipFormat,
+    expressProxy: true,
+    unitTestRunner: options.unitTestRunner,
+  });
 
+  if (options.initExpress) {
+    await initGeneratorExpress(host, {
+      unitTestRunner: options.unitTestRunner,
+    });
+    await applicationGenerator(host, {
+      name: schema.name,
+      skipFormat: schema.skipFormat,
+      skipPackageJson: schema.skipPackageJson,
+      directory: schema.directory,
+      unitTestRunner: schema.unitTestRunner,
+      tags: schema.tags,
+      linter: schema.linter,
+      frontendProject: schema.frontendProject,
+      js: false,
+      pascalCaseFiles: false,
+    });
+  }
+  addAppFiles(host, options);
+  // addServerlessYMLFile(options),
+  // updateServerTsFile(options),
+  const project = readProjectConfiguration(host, options.name);
+  updateWorkspaceJson(host, options, project);
+}
 
 export default expressApiGenerator;
 export const expressApiSchematic = convertNxGenerator(expressApiGenerator);

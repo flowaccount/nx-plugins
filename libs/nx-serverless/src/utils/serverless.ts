@@ -1,5 +1,4 @@
-
-import * as Serverless from 'D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/lib/Serverless.js'; // 'serverless/lib/Serverless'; 
+import * as Serverless from 'D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/lib/Serverless.js'; // 'serverless/lib/Serverless';
 import { ServerlessBaseOptions } from './types';
 import { mergeMap, concatMap } from 'rxjs/operators';
 import { of, Observable, from } from 'rxjs';
@@ -9,11 +8,14 @@ import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
 import { copyBuildOutputToBePackaged, parseArgs } from './copy-asset-files';
 import { ServerlessSlsBuilderOptions } from '../builders/sls/sls.impl';
 // import * as componentsV2  from '@serverless/components';
-import { ExecutorContext, logger, parseTargetString, readTargetOptions } from '@nrwl/devkit';
-import { JsonObject } from '@angular-devkit/core';
 import {
-  BuilderOutput
-} from '@angular-devkit/architect';
+  ExecutorContext,
+  logger,
+  parseTargetString,
+  readTargetOptions,
+} from '@nrwl/devkit';
+import { JsonObject } from '@angular-devkit/core';
+import { BuilderOutput } from '@angular-devkit/architect';
 export class ServerlessWrapper {
   constructor() {}
 
@@ -39,18 +41,18 @@ export class ServerlessWrapper {
     context: ExecutorContext
   ): Observable<void> {
     if (this.serverless$ === null) {
-      logger.debug("Starting to Initiate Serverless Instance")
-     
-      let buildOptions
+      logger.debug('Starting to Initiate Serverless Instance');
+
+      let buildOptions;
       if (ServerlessWrapper.isServerlessDeployBuilderOptions(options)) {
-          const buildTarget = parseTargetString(options.buildTarget);
-          buildOptions = readTargetOptions<{ buildTarget: string } & JsonObject>(
-                  buildTarget,
-                  context
-          );
-          if(!buildOptions){
-            options = buildOptions
-          }
+        const buildTarget = parseTargetString(options.buildTarget);
+        buildOptions = readTargetOptions<{ buildTarget: string } & JsonObject>(
+          buildTarget,
+          context
+        );
+        if (!buildOptions) {
+          options = buildOptions;
+        }
       }
       return from(Promise.resolve(options)).pipe(
         mergeMap((options: T) => {
@@ -65,15 +67,13 @@ export class ServerlessWrapper {
                 path: path.join(
                   options.servicePath,
                   options.processEnvironmentFile
-                )
+                ),
               });
               logger.info(
                 `Environment variables set according to ${options.processEnvironmentFile}`
               );
             } else {
-              logger.error(
-                'No env.json found! no environment will be set!'
-              );
+              logger.error('No env.json found! no environment will be set!');
             }
           } catch (e) {
             logger.error(e);
@@ -83,8 +83,7 @@ export class ServerlessWrapper {
           this.serverless$ = new Serverless({
             config: options.serverlessConfig,
             servicePath: options.servicePath,
-            configuration: { useDotenv: false},
-            
+            configuration: { useDotenv: false },
           });
           if (
             this.serverless$.version &&
@@ -96,16 +95,22 @@ export class ServerlessWrapper {
             this.serverless$._shouldResolveConfigurationInternally = false;
             this.serverless$.serviceDir = options.servicePath;
             this.serverless$.configurationFilename = 'serverless.yml';
-            console.log(this.serverless$.commands)
-            this.serverless$.config.commands = ['deploy', 'offline', 'deploy list', 'destroy', 'deploy function', 'sls']
-            console.log(this.serverless$.commands)
+            console.log(this.serverless$.commands);
+            this.serverless$.config.commands = [
+              'deploy',
+              'offline',
+              'deploy list',
+              'destroy',
+              'deploy function',
+              'sls',
+            ];
+            console.log(this.serverless$.commands);
           }
           return this.serverless$.init();
         }),
         concatMap(() => {
-        
           return this.serverless$.service.load({
-            config: options.serverlessConfig
+            config: options.serverlessConfig,
           });
         }),
         concatMap(() => {
@@ -136,48 +141,50 @@ export function getExecArgv(
   const serverlessOptions = [];
   const extraArgs = parseArgs(options);
 
-  Object.keys(extraArgs).map(a =>
+  Object.keys(extraArgs).map((a) =>
     serverlessOptions.push(`--${a} ${extraArgs[a]}`)
   );
   return serverlessOptions;
 }
 
 export async function runServerlessCommand(
-  options: JsonObject & ServerlessDeployBuilderOptions | JsonObject & ServerlessSlsBuilderOptions,
+  options:
+    | (JsonObject & ServerlessDeployBuilderOptions)
+    | (JsonObject & ServerlessSlsBuilderOptions),
   commands: string[],
-  packagePath: string, extraArgs: string[] = null) {
+  packagePath: string,
+  extraArgs: string[] = null
+) {
   // change servicePath to distribution location
-          // review: Change options from location to outputpath?\
-          const servicePath = ServerlessWrapper.serverless.config.servicePath;
-          let args = getExecArgv(options);
-          if(extraArgs) {
-            args = args.concat(extraArgs);
-          }
-          ServerlessWrapper.serverless.config.servicePath = packagePath;
-          logger.info('running serverless commands')
-          console.log(commands)
-          ServerlessWrapper.serverless.processedInput = {
-            commands: commands,
-            options: args
-          };
-          // console.log(ServerlessWrapper.serverless.service.provider.name)
-          ServerlessWrapper.serverless.isTelemetryReportedExternally = true
-            try {
-                await ServerlessWrapper.serverless
-                  .run();
-                ServerlessWrapper.serverless.config.servicePath = servicePath;
-            }
-            catch(ex) {
-              throw new Error(
-                `There was an error with the build. ${ex}.`
-              );
-            };
+  // review: Change options from location to outputpath?\
+  const servicePath = ServerlessWrapper.serverless.config.servicePath;
+  let args = getExecArgv(options);
+  if (extraArgs) {
+    args = args.concat(extraArgs);
+  }
+  ServerlessWrapper.serverless.config.servicePath = packagePath;
+  logger.info('running serverless commands');
+  console.log(commands);
+  ServerlessWrapper.serverless.processedInput = {
+    commands: commands,
+    options: args,
+  };
+  // console.log(ServerlessWrapper.serverless.service.provider.name)
+  ServerlessWrapper.serverless.isTelemetryReportedExternally = true;
+  try {
+    await ServerlessWrapper.serverless.run();
+    ServerlessWrapper.serverless.config.servicePath = servicePath;
+  } catch (ex) {
+    throw new Error(`There was an error with the build. ${ex}.`);
+  }
 }
 
 export async function makeDistFileReadyForPackaging(
-  options: JsonObject & ServerlessDeployBuilderOptions | JsonObject & ServerlessSlsBuilderOptions,
+  options:
+    | (JsonObject & ServerlessDeployBuilderOptions)
+    | (JsonObject & ServerlessSlsBuilderOptions),
   packagePath: string
-  ): Promise<string>  {
+): Promise<string> {
   let readyToPackaged: BuilderOutput = null;
   if (
     !options.serverlessPackagePath &&
@@ -190,18 +197,21 @@ export async function makeDistFileReadyForPackaging(
   } else if (options.serverlessPackagePath) {
     packagePath = options.serverlessPackagePath;
   }
-  logger.info(packagePath)
+  logger.info(packagePath);
   options.serverlessPackagePath = packagePath;
   readyToPackaged = await copyBuildOutputToBePackaged(options);
-  if(readyToPackaged == null) {
-      throw new Error(`readyToPackaged is null something went wrong in 'copyBuildOutputToBePackaged'.`);
+  if (readyToPackaged == null) {
+    throw new Error(
+      `readyToPackaged is null something went wrong in 'copyBuildOutputToBePackaged'.`
+    );
   }
-  if(!readyToPackaged.success) {
-    throw new Error(`readyToPackaged is null something went wrong in 'copyBuildOutputToBePackaged'.`);
+  if (!readyToPackaged.success) {
+    throw new Error(
+      `readyToPackaged is null something went wrong in 'copyBuildOutputToBePackaged'.`
+    );
   }
-  return packagePath
+  return packagePath;
 }
 function resolveLocalServerlessPath() {
   throw new Error('Function not implemented.');
 }
-

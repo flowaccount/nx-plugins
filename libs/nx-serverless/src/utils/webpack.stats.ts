@@ -5,7 +5,6 @@ import { getProdModules } from './normalize';
 import { of } from 'rxjs';
 import { ExecutorContext } from '@nrwl/devkit';
 
-
 export class WebpackDependencyResolver implements DependencyResolver {
   constructor(private context: ExecutorContext) {}
 
@@ -70,7 +69,7 @@ export class WebpackDependencyResolver implements DependencyResolver {
         if (this.isExternalModule(module)) {
           externals.add({
             origin: module.issuer,
-            external: this.getExternalModuleName(module)
+            external: this.getExternalModuleName(module),
           });
         }
       }

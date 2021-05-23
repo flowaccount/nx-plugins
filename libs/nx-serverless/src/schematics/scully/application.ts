@@ -4,7 +4,15 @@ import { offsetFromRoot } from '@nrwl/workspace';
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
 import { join, normalize } from 'path';
-import { convertNxGenerator, generateFiles, names, ProjectConfiguration, readProjectConfiguration, Tree, updateProjectConfiguration } from '@nrwl/devkit';
+import {
+  convertNxGenerator,
+  generateFiles,
+  names,
+  ProjectConfiguration,
+  readProjectConfiguration,
+  Tree,
+  updateProjectConfiguration,
+} from '@nrwl/devkit';
 
 interface NormalizedSchema extends Schema {}
 
@@ -15,16 +23,16 @@ function getServeConfig(options: NormalizedSchema) {
       waitUntilTargets: [options.project + ':scully'],
       buildTarget: options.project + ':compile',
       config: join(options.appProjectRoot, 'serverless.yml'),
-      location: join(normalize('dist'), options.appProjectRoot)
+      location: join(normalize('dist'), options.appProjectRoot),
     },
     configurations: {
       dev: {
-        buildTarget: options.project + ':compile:dev'
+        buildTarget: options.project + ':compile:dev',
       },
       production: {
-        buildTarget: options.project + ':compile:production'
-      }
-    }
+        buildTarget: options.project + ':compile:production',
+      },
+    },
   };
 }
 
@@ -36,8 +44,8 @@ function getScullyBuilderConfig(options: NormalizedSchema) {
       configFiles: [join(options.appProjectRoot, 'scully.config.js')],
       scanRoutes: true,
       removeStaticDist: true,
-      skipBuild: false
-    }
+      skipBuild: false,
+    },
   };
 }
 
@@ -49,8 +57,8 @@ function getDeployConfig(options: NormalizedSchema) {
       buildTarget: options.project + ':compile:production',
       config: join(options.appProjectRoot, 'serverless.yml'),
       location: join(normalize('dist'), options.appProjectRoot),
-      package: join(normalize('dist'), options.appProjectRoot)
-    }
+      package: join(normalize('dist'), options.appProjectRoot),
+    },
   };
 }
 
@@ -61,37 +69,40 @@ function getDestroyConfig(options: NormalizedSchema) {
       buildTarget: options.project + ':compile:production',
       config: join(options.appProjectRoot, 'serverless.yml'),
       location: join(normalize('dist'), options.appProjectRoot),
-      package: join(normalize('dist'), options.appProjectRoot)
-    }
+      package: join(normalize('dist'), options.appProjectRoot),
+    },
   };
 }
 
-function updateWorkspaceJson(host: Tree, options: NormalizedSchema, project: ProjectConfiguration) {
+function updateWorkspaceJson(
+  host: Tree,
+  options: NormalizedSchema,
+  project: ProjectConfiguration
+) {
+  const buildConfig = getBuildConfig(options);
+  buildConfig.options['skipClean'] = true;
+  buildConfig.options['outputPath'] = normalize('dist');
+  buildConfig.options['tsConfig'] = join(
+    options.appProjectRoot,
+    'tsconfig.serverless.json'
+  );
+  buildConfig.executor = '@flowaccount/nx-serverless:compile';
+  project.targets.compile = buildConfig;
+  project.targets.scully = getScullyBuilderConfig(options);
+  project.targets.offline = getServeConfig(options);
+  project.targets.deploy = getDeployConfig(options);
+  project.targets.destroy = getDestroyConfig(options);
 
-    const buildConfig = getBuildConfig(options);
-    buildConfig.options['skipClean'] = true;
-    buildConfig.options['outputPath'] = normalize('dist');
-    buildConfig.options['tsConfig'] = join(
-      options.appProjectRoot,
-      'tsconfig.serverless.json'
-    );
-    buildConfig.executor = '@flowaccount/nx-serverless:compile';
-    project.targets.compile = buildConfig;
-    project.targets.scully = getScullyBuilderConfig(options);
-    project.targets.offline = getServeConfig(options);
-    project.targets.deploy = getDeployConfig(options);
-    project.targets.destroy = getDestroyConfig(options);
-
-    updateProjectConfiguration(host, options.project, project) 
+  updateProjectConfiguration(host, options.project, project);
 }
 
-function addAppFiles(host:Tree ,options: NormalizedSchema) {
+function addAppFiles(host: Tree, options: NormalizedSchema) {
   const templateOptions = {
     ...options,
     ...names(options.project), // name: options.name,
     offsetFromRoot: offsetFromRoot(options.appProjectRoot),
     template: '',
-    root: options.appProjectRoot
+    root: options.appProjectRoot,
   };
   generateFiles(
     host,
@@ -154,31 +165,28 @@ function normalizeOptions(project: any, options: Schema): NormalizedSchema {
   return {
     ...options,
     appProjectRoot: project.root,
-    endpointType: options.endpointType ? undefined : options.endpointType
+    endpointType: options.endpointType ? undefined : options.endpointType,
   };
 }
 
 export async function scullyAppGenerator(host: Tree, schema: Schema) {
-  
-    const project = readProjectConfiguration(host, schema.project);
-    const options = normalizeOptions(project, schema);
-    initGenerator(host, {
-      skipFormat: options.skipFormat,
-      expressProxy: true,
-      unitTestRunner: ""
-    });
-   
-      // options.addScully
-      //   ? externalSchematic('@scullyio/scully', 'run', {
+  const project = readProjectConfiguration(host, schema.project);
+  const options = normalizeOptions(project, schema);
+  initGenerator(host, {
+    skipFormat: options.skipFormat,
+    expressProxy: true,
+    unitTestRunner: '',
+  });
 
-      //     })
-      //   : noop(),
-      addAppFiles(host, options),
-      // addServerlessYMLFile(options),
-      updateWorkspaceJson(host, options, project)
-    
+  // options.addScully
+  //   ? externalSchematic('@scullyio/scully', 'run', {
+
+  //     })
+  //   : noop(),
+  addAppFiles(host, options),
+    // addServerlessYMLFile(options),
+    updateWorkspaceJson(host, options, project);
 }
-
 
 export default scullyAppGenerator;
 export const scullyAppSchematic = convertNxGenerator(scullyAppGenerator);

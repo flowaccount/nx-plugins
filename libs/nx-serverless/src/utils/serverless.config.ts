@@ -1,4 +1,3 @@
-
 import { BuildBuilderOptions } from './types';
 import { ServerlessWrapper } from './serverless';
 import * as _ from 'lodash';
@@ -11,9 +10,7 @@ import { logger } from '@nrwl/devkit';
 
 const defaultExcludes = ['.serverless_plugins/**'];
 
-export function consolidateExcludes(
-  options: BuildBuilderOptions
-) {
+export function consolidateExcludes(options: BuildBuilderOptions) {
   const packageExcludes =
     ServerlessWrapper.serverless.service.package.exclude || [];
   // add local service plugins Path
@@ -59,7 +56,7 @@ export function consolidateExcludes(
       );
       logger.warn(`handlers ---> ${JSON.stringify(options.files)}`);
     }
-    Object.keys(options.files).forEach(handlerEntryName => {
+    Object.keys(options.files).forEach((handlerEntryName) => {
       if (
         filteredPaths.indexOf(
           relative(appRoot, options.files[handlerEntryName])
@@ -68,9 +65,7 @@ export function consolidateExcludes(
         delete options.files[handlerEntryName];
       }
     });
-    logger.warn(
-      `you are left with --> ${JSON.stringify(options.files)}`
-    );
+    logger.warn(`you are left with --> ${JSON.stringify(options.files)}`);
     if (Object.keys(options.files).length === 0) {
       throw `Please check your exclude paths --> ${JSON.stringify(
         excludeList

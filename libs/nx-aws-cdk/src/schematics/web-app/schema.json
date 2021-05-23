@@ -42,8 +42,5 @@
       "default": false
     }
   },
-  "required": [
-    "project",
-    "deploymentTarget"
-  ]
+  "required": ["project", "deploymentTarget"]
 }

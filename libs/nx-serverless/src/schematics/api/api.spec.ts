@@ -46,33 +46,33 @@ describe('node api app', () => {
                   {
                     maximumWarning: '2mb',
                     maximumError: '5mb',
-                    type: 'initial'
-                  }
+                    type: 'initial',
+                  },
                 ],
                 optimization: false,
-                sourceMap: false
+                sourceMap: false,
               },
               production: {
                 budgets: [
                   {
                     maximumWarning: '2mb',
                     maximumError: '5mb',
-                    type: 'initial'
-                  }
+                    type: 'initial',
+                  },
                 ],
                 extractCss: true,
                 extractLicenses: true,
                 fileReplacements: [
                   {
                     replace: 'apps/my-serveless-app/environment.ts',
-                    with: 'apps/my-serveless-app/environment.prod.ts'
-                  }
+                    with: 'apps/my-serveless-app/environment.prod.ts',
+                  },
                 ],
                 namedChunks: false,
                 optimization: true,
                 sourceMap: false,
-                vendorChunk: false
-              }
+                vendorChunk: false,
+              },
             },
             options: {
               outputPath: 'dist/apps/my-serveless-app',
@@ -80,8 +80,8 @@ describe('node api app', () => {
               processEnvironmentFile: 'env.json',
               serverlessConfig: 'apps/my-serveless-app/serverless.yml',
               servicePath: 'apps/my-serveless-app',
-              tsConfig: 'apps/my-serveless-app/tsconfig.app.json'
-            }
+              tsConfig: 'apps/my-serveless-app/tsconfig.app.json',
+            },
           },
           deploy: {
             builder: '@flowaccount/nx-serverless:deploy',
@@ -90,8 +90,8 @@ describe('node api app', () => {
               config: 'apps/my-serveless-app/serverless.yml',
               location: 'dist/apps/my-serveless-app',
               package: 'dist/apps/my-serveless-app',
-              stage: 'dev'
-            }
+              stage: 'dev',
+            },
           },
           destroy: {
             builder: '@flowaccount/nx-serverless:destroy',
@@ -99,8 +99,8 @@ describe('node api app', () => {
               buildTarget: 'my-serveless-app:build:production',
               config: 'apps/my-serveless-app/serverless.yml',
               location: 'dist/apps/my-serveless-app',
-              package: 'dist/apps/my-serveless-app'
-            }
+              package: 'dist/apps/my-serveless-app',
+            },
           },
           lint: {
             builder: '@angular-devkit/build-angular:tslint',
@@ -108,34 +108,34 @@ describe('node api app', () => {
               exclude: ['**/node_modules/**', '!apps/my-serveless-app/**'],
               tsConfig: [
                 'apps/my-serveless-app/tsconfig.app.json',
-                'apps/my-serveless-app/tsconfig.spec.json'
-              ]
-            }
+                'apps/my-serveless-app/tsconfig.spec.json',
+              ],
+            },
           },
           serve: {
             builder: '@flowaccount/nx-serverless:offline',
             configurations: {
               dev: {
-                buildTarget: 'my-serveless-app:build:dev'
+                buildTarget: 'my-serveless-app:build:dev',
               },
               production: {
-                buildTarget: 'my-serveless-app:build:production'
-              }
+                buildTarget: 'my-serveless-app:build:production',
+              },
             },
             options: {
               buildTarget: 'my-serveless-app:build',
               config: 'apps/my-serveless-app/serverless.yml',
-              location: 'dist/apps/my-serveless-app'
-            }
+              location: 'dist/apps/my-serveless-app',
+            },
           },
           test: {
             builder: '@nrwl/jest:jest',
             options: {
               jestConfig: 'apps/my-serveless-app/jest.config.js',
               passWithNoTests: true,
-              tsConfig: 'apps/my-serveless-app/tsconfig.spec.json'
-            }
-          }
+              tsConfig: 'apps/my-serveless-app/tsconfig.spec.json',
+            },
+          },
         })
       );
       expect(workspaceJson.projects['my-serveless-app'].architect.lint).toEqual(
@@ -144,10 +144,10 @@ describe('node api app', () => {
           options: {
             tsConfig: [
               'apps/my-serveless-app/tsconfig.app.json',
-              'apps/my-serveless-app/tsconfig.spec.json'
+              'apps/my-serveless-app/tsconfig.spec.json',
             ],
-            exclude: ['**/node_modules/**', '!apps/my-serveless-app/**']
-          }
+            exclude: ['**/node_modules/**', '!apps/my-serveless-app/**'],
+          },
         }
       );
       expect(workspaceJson.projects['my-serveless-app-e2e']).toBeUndefined();
@@ -166,9 +166,9 @@ describe('node api app', () => {
           npmScope: 'proj',
           projects: {
             'my-serveless-app': {
-              tags: ['one', 'two']
-            }
-          }
+              tags: ['one', 'two'],
+            },
+          },
         })
       );
     });
@@ -179,7 +179,7 @@ describe('node api app', () => {
         { name: 'myServelessApp' },
         appTree
       );
-      console.log(tree.files)
+      console.log(tree.files);
       expect(tree.exists('apps/my-serveless-app/jest.config.js')).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/env.json')).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/environment.ts')).toBeTruthy();
@@ -234,10 +234,10 @@ describe('node api app', () => {
         options: {
           tsConfig: [
             'apps/my-dir/my-serveless-app/tsconfig.app.json',
-            'apps/my-dir/my-serveless-app/tsconfig.spec.json'
+            'apps/my-dir/my-serveless-app/tsconfig.spec.json',
           ],
-          exclude: ['**/node_modules/**', '!apps/my-dir/my-serveless-app/**']
-        }
+          exclude: ['**/node_modules/**', '!apps/my-dir/my-serveless-app/**'],
+        },
       });
 
       expect(
@@ -258,9 +258,9 @@ describe('node api app', () => {
           npmScope: 'proj',
           projects: {
             'my-dir-my-serveless-app': {
-              tags: ['one', 'two']
-            }
-          }
+              tags: ['one', 'two'],
+            },
+          },
         })
       );
     });
@@ -277,7 +277,7 @@ describe('node api app', () => {
         { name: 'myServelessApp', directory: 'myDir' },
         appTree
       );
-     
+
       // Make sure these exist
       [
         'apps/my-dir/my-serveless-app/jest.config.js',
@@ -285,8 +285,8 @@ describe('node api app', () => {
         'apps/my-dir/my-serveless-app/environment.ts',
         'apps/my-dir/my-serveless-app/environment.prod.ts',
         'apps/my-dir/my-serveless-app/src/handler.ts',
-        'apps/my-dir/my-serveless-app/serverless.yml'
-      ].forEach(path => {
+        'apps/my-dir/my-serveless-app/serverless.yml',
+      ].forEach((path) => {
         expect(tree.exists(path)).toBeTruthy();
       });
 
@@ -294,24 +294,24 @@ describe('node api app', () => {
       [
         {
           path: 'apps/my-dir/my-serveless-app/tsconfig.json',
-          lookupFn: json => json.extends,
-          expectedValue: '../../../tsconfig.json'
+          lookupFn: (json) => json.extends,
+          expectedValue: '../../../tsconfig.json',
         },
         {
           path: 'apps/my-dir/my-serveless-app/tsconfig.app.json',
-          lookupFn: json => json.compilerOptions.outDir,
-          expectedValue: '../../../dist/out-tsc'
+          lookupFn: (json) => json.compilerOptions.outDir,
+          expectedValue: '../../../dist/out-tsc',
         },
         {
           path: 'apps/my-dir/my-serveless-app/tsconfig.app.json',
-          lookupFn: json => json.compilerOptions.types,
-          expectedValue: ['node']
+          lookupFn: (json) => json.compilerOptions.types,
+          expectedValue: ['node'],
         },
         {
           path: 'apps/my-dir/my-serveless-app/tslint.json',
-          lookupFn: json => json.extends,
-          expectedValue: '../../../tslint.json'
-        }
+          lookupFn: (json) => json.extends,
+          expectedValue: '../../../tslint.json',
+        },
       ].forEach(hasJsonValue);
     });
   });
@@ -333,11 +333,10 @@ describe('node api app', () => {
       expect(tree.exists('apps/my-serveless-app/jest.config.js')).toBeFalsy();
       const workspaceJson = readJsonInTree(tree, 'workspace.json');
 
-     
       expect(
         workspaceJson.projects['my-serveless-app'].architect.test
       ).toBeUndefined();
-      
+
       // should it be tested? its already tested in linter?
       // expect(
       //   workspaceJson.projects['my-serveless-app'].architect.lint.options

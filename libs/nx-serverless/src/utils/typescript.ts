@@ -29,7 +29,7 @@ function cleanupTmpTsConfigFile(tsConfigPath) {
 }
 
 function killProcess(): void {
-  return treeKill(tscProcess.pid, 'SIGTERM', error => {
+  return treeKill(tscProcess.pid, 'SIGTERM', (error) => {
     tscProcess = null;
     if (error) {
       if (Array.isArray(error) && error[0] && error[2]) {
@@ -96,10 +96,7 @@ export function compileTypeScriptFiles(
         args.push('--sourceMap');
       }
 
-      const tscPath = join(
-        context.root,
-        '/node_modules/typescript/bin/tsc'
-      );
+      const tscPath = join(context.root, '/node_modules/typescript/bin/tsc');
       if (options.watch) {
         logger.info('Starting TypeScript watch');
         args.push('--watch');
@@ -110,7 +107,7 @@ export function compileTypeScriptFiles(
           `Compiling TypeScript files for tsconfig ${tsConfigPath} under ${context.projectName} ${context.targetName}...`
         );
         tscProcess = fork(tscPath, args, { stdio: [0, 1, 2, 'ipc'] });
-        tscProcess.on('exit', code => {
+        tscProcess.on('exit', (code) => {
           if (code === 0) {
             logger.info(
               `Done compiling TypeScript files for tsconfig ${tsConfigPath} under ${context.projectName} ${context.targetName}`
