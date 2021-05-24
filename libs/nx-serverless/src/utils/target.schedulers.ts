@@ -78,7 +78,6 @@ export async function* startBuild(
     //         ************************************************`);
   }
 
-  console.log(options.watch);
   yield* await runExecutor<BuilderOutput>(
     buildTarget,
     {

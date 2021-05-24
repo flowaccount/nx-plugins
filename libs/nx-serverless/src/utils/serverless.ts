@@ -1,4 +1,4 @@
-import * as Serverless from 'D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/lib/Serverless.js'; // 'serverless/lib/Serverless';
+import * as Serverless from 'serverless/lib/Serverless'; // 'D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/lib/Serverless.js';
 import { ServerlessBaseOptions } from './types';
 import { mergeMap, concatMap } from 'rxjs/operators';
 import { of, Observable, from } from 'rxjs';
@@ -95,7 +95,6 @@ export class ServerlessWrapper {
             this.serverless$._shouldResolveConfigurationInternally = false;
             this.serverless$.serviceDir = options.servicePath;
             this.serverless$.configurationFilename = 'serverless.yml';
-            console.log(this.serverless$.commands);
             this.serverless$.config.commands = [
               'deploy',
               'offline',
@@ -104,7 +103,6 @@ export class ServerlessWrapper {
               'deploy function',
               'sls',
             ];
-            console.log(this.serverless$.commands);
           }
           return this.serverless$.init();
         }),
@@ -164,7 +162,6 @@ export async function runServerlessCommand(
   }
   ServerlessWrapper.serverless.config.servicePath = packagePath;
   logger.info('running serverless commands');
-  console.log(commands);
   ServerlessWrapper.serverless.processedInput = {
     commands: commands,
     options: args,

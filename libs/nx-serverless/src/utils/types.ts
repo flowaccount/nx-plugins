@@ -39,7 +39,10 @@ export interface ServerlessBaseOptions {
   region?: string;
   state?: string;
   assets?: Array<AssetGlob | string>;
-  fileReplacements?: Array<FileReplacement>;
+  fileReplacements?: Array<{
+    replace: string;
+    with: string;
+  }>;
   webpackConfig?: string | string[];
   watch?: boolean;
   sourceMap?: boolean;

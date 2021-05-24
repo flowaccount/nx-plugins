@@ -139,10 +139,12 @@ export async function* serverlessOfflineExecutor(
     if (!running) {
       running = true;
       try {
+        console.log('fork process');
         console.log(getExecArgv(options));
-        execSync(getBuildTargetCommand(options), {
-          stdio: [0, 1, 2],
-        });
+        fork('node_modules/serverless/bin/serverless.js', getExecArgv(options));
+        // execSync(getBuildTargetCommand(options), {
+        //   stdio: [0, 1, 2],
+        // });
       } catch {}
       running = false;
     }
@@ -157,29 +159,29 @@ export async function* serverlessOfflineExecutor(
   // perform initial run
   run();
 
-  const outputPath = getBuildTargetOutputPath(options, context);
-  const args = getHttpServerArgs(options);
-  console.log('executing serve');
-  const serve = exec(
-    `node D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/lib/Serverless.js offline --config apps/test-api-11/serverless.yml --location dist/apps/test-api-11 --port 7777`,
-    {
-      cwd: context.root,
-    }
-  );
-  const processExitListener = () => {
-    serve.kill();
-    watcher.close();
-  };
-  process.on('exit', processExitListener);
-  process.on('SIGTERM', processExitListener);
-  serve.stdout.on('data', (chunk) => {
-    if (chunk.toString().indexOf('GET') === -1) {
-      process.stdout.write(chunk);
-    }
-  });
-  serve.stderr.on('data', (chunk) => {
-    process.stderr.write(chunk);
-  });
+  // const outputPath = getBuildTargetOutputPath(options, context);
+  // const args = getHttpServerArgs(options);
+  // console.log('executing serve');
+  // const serve = exec(
+  //   `node D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/lib/Serverless.js offline --config apps/test-api-11/serverless.yml --location dist/apps/test-api-11 --port 7777`,
+  //   {
+  //     cwd: context.root,
+  //   }
+  // );
+  // const processExitListener = () => {
+  //   serve.kill();
+  //   watcher.close();
+  // };
+  // process.on('exit', processExitListener);
+  // process.on('SIGTERM', processExitListener);
+  // serve.stdout.on('data', (chunk) => {
+  //   if (chunk.toString().indexOf('GET') === -1) {
+  //     process.stdout.write(chunk);
+  //   }
+  // });
+  // serve.stderr.on('data', (chunk) => {
+  //   process.stderr.write(chunk);
+  // });
 
   yield {
     success: true,
@@ -188,14 +190,8 @@ export async function* serverlessOfflineExecutor(
     }`,
   };
 
-  return new Promise<{ success: boolean }>((res) => {
-    serve.on('exit', (code) => {
-      if (code == 0) {
-        res({ success: true });
-      } else {
-        res({ success: false });
-      }
-    });
+  return new Promise<{ success: boolean }>(() => {
+    success: true;
   });
 }
 

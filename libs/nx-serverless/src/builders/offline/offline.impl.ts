@@ -60,35 +60,41 @@ export async function* offlineExecutor(
   process.on('exit', (code) => {
     process.exit(code);
   });
-  if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
-    const results = await runWaitUntilTargets(
-      options.waitUntilTargets,
-      context
-    );
-    for (const [i, result] of results.entries()) {
-      if (!result.success) {
-        console.log('throw');
-        throw new Error(
-          `Wait until target failed: ${options.waitUntilTargets[i]}.`
-        );
+  if (options.skipBuild) {
+    if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
+      const results = await runWaitUntilTargets(
+        options.waitUntilTargets,
+        context
+      );
+      for (const [i, result] of results.entries()) {
+        if (!result.success) {
+          console.log('throw');
+          throw new Error(
+            `Wait until target failed: ${options.waitUntilTargets[i]}.`
+          );
+        }
       }
     }
   }
+  options.watch = true;
   for await (const event of startBuild(options, context)) {
     if (!event.success) {
       logger.error('There was an error with the build. See above.');
       logger.info(`${event.outfile} was not restarted.`);
     }
+    logger.info(`handleBuildEvent.`);
     await handleBuildEvent(event, options);
     yield event;
   }
+  return new Promise<{ success: boolean }>(() => {
+    success: true;
+  });
 }
 async function handleBuildEvent(
   event: BuilderOutput,
   options: ServerlessExecuteBuilderOptions
 ) {
   if ((!event.success || options.watch) && subProcess) {
-    console.log('killing process');
     await killProcess();
   }
   logger.info('running process');
@@ -102,15 +108,10 @@ function runProcess(
   if (subProcess || !event.success) {
     return;
   }
-  console.log(getServerlessArg(options));
   subProcess = fork(
     'node_modules/serverless/bin/serverless.js',
     getExecArgv(options)
   );
-  subProcess.on('message', (message) => {
-    console.log(message);
-  });
-  logger.info('forked process');
 }
 
 async function killProcess() {

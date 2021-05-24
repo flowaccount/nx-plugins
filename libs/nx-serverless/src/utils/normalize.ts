@@ -26,7 +26,7 @@ export interface FileReplacement {
 export function assignEntriesToFunctionsFromServerless<
   T extends ServerlessBaseOptions
 >(options: T, root: string): T {
-  ServerlessWrapper.serverless.cli.log('getting all functions');
+  logger.info('getting all functions');
   const functions = ServerlessWrapper.serverless.service.getAllFunctions();
   const entries = {};
   _.forEach(functions, (func, index) => {
