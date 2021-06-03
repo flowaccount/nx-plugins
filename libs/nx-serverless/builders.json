@@ -1,10 +1,9 @@
 {
-  "$schema": "../../node_modules/@angular-devkit/architect/src/builders-schema.json",
-  "builders": {
+  "executors": {
     "build": {
       "implementation": "./src/builders/build/build.impl",
       "schema": "./src/builders/build/schema.json",
-      "description": "Build a Serverless application"
+      "description": "Build a Node application"
     },
     "compile": {
       "implementation": "./src/builders/compile/compile.impl",
@@ -33,6 +32,43 @@
     },
     "scully": {
       "implementation": "./src/builders/scully/scully.impl",
+      "schema": "./src/builders/scully/schema.json",
+      "description": "Execute scully command-line"
+    }
+  },
+  "builders": {
+    "build": {
+      "implementation": "./src/builders/build/compat",
+      "schema": "./src/builders/build/schema.json",
+      "description": "Build a Serverless application"
+    },
+    "compile": {
+      "implementation": "./src/builders/compile/compat",
+      "schema": "./src/builders/compile/schema.json",
+      "description": "Compiles a Serverless Typescripted application"
+    },
+    "offline": {
+      "implementation": "./src/builders/offline/compat",
+      "schema": "./src/builders/offline/schema.json",
+      "description": "Execute a Serverless application offline"
+    },
+    "sls": {
+      "implementation": "./src/builders/sls/compat",
+      "schema": "./src/builders/sls/schema.json",
+      "description": "Execute the Serverless sls command"
+    },
+    "deploy": {
+      "implementation": "./src/builders/deploy/compat",
+      "schema": "./src/builders/deploy/schema.json",
+      "description": "Execute a Serverless application deployment"
+    },
+    "destroy": {
+      "implementation": "./src/builders/destroy/compat",
+      "schema": "./src/builders/destroy/schema.json",
+      "description": "Execute a Serverless application teardown"
+    },
+    "scully": {
+      "implementation": "./src/builders/scully/compat",
       "schema": "./src/builders/scully/schema.json",
       "description": "Execute scully command-line"
     }

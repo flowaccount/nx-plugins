@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
-  "id": "SchematicsNxserverlessApp",
+  "$schema": "http://json-schema.org/schema",
+  "$id": "SchematicsNxserverlessApp",
   "title": "Serverless Node-TypeScript Api Options Schema",
   "type": "object",
   "properties": {
@@ -51,12 +51,19 @@
     "provider": {
       "type": "string",
       "description": "The cloud provider for this serverless api.",
+      "default": "aws",
       "x-prompt": "Which cloud provider are you using for this serverless api? ( aws | azure | google ) etc."
     },
     "baseWorkspaceTsConfig": {
       "type": "boolean",
-      "default": false,
+      "default": true,
       "description": "Extends tsconfig.base.json when true instead of tsconfig.json"
+    },
+    "region": {
+      "type": "string",
+      "description": "The region to deploy to",
+      "default": "ap-southeast-1",
+      "x-prompt": "Which region do you want to default your deployment to?"
     }
   },
   "required": []

@@ -1,20 +1,16 @@
-import { BuilderContext } from '@angular-devkit/architect';
 import { BuildBuilderOptions } from './types';
 import { ServerlessWrapper } from './serverless';
-import { readTsConfig } from '@nrwl/workspace';
 import * as _ from 'lodash';
 import * as ts from 'typescript';
 import * as upath from 'upath';
 import { writeJsonFile } from '@nrwl/workspace/src/utils/fileutils';
 import { join, relative } from 'path';
 import ignore from 'ignore';
+import { logger } from '@nrwl/devkit';
 
 const defaultExcludes = ['.serverless_plugins/**'];
 
-export function consolidateExcludes(
-  options: BuildBuilderOptions,
-  context: BuilderContext
-) {
+export function consolidateExcludes(options: BuildBuilderOptions) {
   const packageExcludes =
     ServerlessWrapper.serverless.service.package.exclude || [];
   // add local service plugins Path
@@ -45,22 +41,22 @@ export function consolidateExcludes(
   const parsedTSConfig = ts.readConfigFile(options.tsConfig, ts.sys.readFile)
     .config;
   const appRoot = options.sourceRoot.replace('src', '');
-  context.logger.info(`Adding excluding list to tsconfig ${excludeList}`);
+  logger.info(`Adding excluding list to tsconfig ${excludeList}`);
   if (excludeList.length > 0) {
     /* Handle excludes for handlers */
-    context.logger.info('Checking if exclude paths overlaps with handlers...');
+    logger.info('Checking if exclude paths overlaps with handlers...');
     const handlerPaths: string[] = Object.values(
       options.files
     ).map((m: string) => relative(appRoot, m));
     const ig = ignore().add(excludeList);
     const filteredPaths = ig.filter(handlerPaths);
     if (filteredPaths.length < handlerPaths.length) {
-      context.logger.warn(
+      logger.warn(
         'There is an overlap!\nPlease make sure you are purposely doing this!\nI will build, taking your handlers defined in serverless.yml as the only "entry points"!'
       );
-      context.logger.warn(`handlers ---> ${JSON.stringify(options.files)}`);
+      logger.warn(`handlers ---> ${JSON.stringify(options.files)}`);
     }
-    Object.keys(options.files).forEach(handlerEntryName => {
+    Object.keys(options.files).forEach((handlerEntryName) => {
       if (
         filteredPaths.indexOf(
           relative(appRoot, options.files[handlerEntryName])
@@ -69,9 +65,7 @@ export function consolidateExcludes(
         delete options.files[handlerEntryName];
       }
     });
-    context.logger.warn(
-      `you are left with --> ${JSON.stringify(options.files)}`
-    );
+    logger.warn(`you are left with --> ${JSON.stringify(options.files)}`);
     if (Object.keys(options.files).length === 0) {
       throw `Please check your exclude paths --> ${JSON.stringify(
         excludeList
@@ -85,7 +79,7 @@ export function consolidateExcludes(
     parsedTSConfig.exclude = parsedTSConfig.exclude.concat(excludeList);
   } //  context.workspaceRoot,
   const tmpTsConfigPath = join(appRoot, 'tsconfig.serverless.nx-tmp');
-  context.logger.info(
+  logger.info(
     `writing tsconfig.serverless.nx-tmp with added excludeLists to ${tmpTsConfigPath}`
   );
   writeJsonFile(tmpTsConfigPath, parsedTSConfig);

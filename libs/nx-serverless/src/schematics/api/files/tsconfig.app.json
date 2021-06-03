@@ -3,8 +3,8 @@
   "compilerOptions": {
     "outDir": "<%= offset %>dist/out-tsc",
     "types": ["node"],
-    "module": "commonjs"
+    "importHelpers": false
   },
-  "files": ["handler.ts"],
-  "include": []
+  "exclude": ["**/*.spec.ts"],
+  "include": ["**/*.ts"]
 }

@@ -1,18 +1,10 @@
-import {
-  BuilderContext,
-  createBuilder,
-  BuilderOutput,
-  targetFromTargetString,
-  scheduleTargetAndForget
-} from '@angular-devkit/architect';
+import { BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { Observable, bindCallback, of, zip, from } from 'rxjs';
-import { concatMap, tap, mapTo, first, map, filter } from 'rxjs/operators';
-import { stripIndents } from '@angular-devkit/core/src/utils/literals';
-import { ChildProcess, fork } from 'child_process';
+import { ChildProcess, execSync, fork } from 'child_process';
 import * as treeKill from 'tree-kill';
-import { ServerlessBuildEvent } from '../build/build.impl';
-import { runWaitUntilTargets } from '../../utils/target.schedulers';
+import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
+import { ExecutorContext, logger } from '@nrwl/devkit';
+import { promisify } from 'util';
 
 try {
   require('dotenv').config();
@@ -20,7 +12,7 @@ try {
 
 export const enum InspectType {
   Inspect = 'inspect',
-  InspectBrk = 'inspect-brk'
+  InspectBrk = 'inspect-brk',
 }
 // https://www.npmjs.com/package/serverless-offline
 export interface ServerlessExecuteBuilderOptions extends JsonObject {
@@ -29,6 +21,7 @@ export interface ServerlessExecuteBuilderOptions extends JsonObject {
   buildTarget: string;
   watch: boolean;
   args: string[];
+  runtimeArgs: string[];
   verbose?: boolean;
   binPath?: string;
   host?: string;
@@ -54,12 +47,66 @@ export interface ServerlessExecuteBuilderOptions extends JsonObject {
   readyWhen: string;
 }
 
-async function runProcess(
-  file: string,
+let subProcess: ChildProcess = null;
+
+export async function* offlineExecutor(
+  options: JsonObject & ServerlessExecuteBuilderOptions,
+  context: ExecutorContext
+) {
+  process.on('SIGTERM', () => {
+    subProcess?.kill();
+    process.exit(128 + 15);
+  });
+  process.on('exit', (code) => {
+    process.exit(code);
+  });
+  if (options.skipBuild) {
+    if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
+      const results = await runWaitUntilTargets(
+        options.waitUntilTargets,
+        context
+      );
+      for (const [i, result] of results.entries()) {
+        if (!result.success) {
+          console.log('throw');
+          throw new Error(
+            `Wait until target failed: ${options.waitUntilTargets[i]}.`
+          );
+        }
+      }
+    }
+  }
+  options.watch = true;
+  for await (const event of startBuild(options, context)) {
+    if (!event.success) {
+      logger.error('There was an error with the build. See above.');
+      logger.info(`${event.outfile} was not restarted.`);
+    }
+    logger.info(`handleBuildEvent.`);
+    await handleBuildEvent(event, options);
+    yield event;
+  }
+  return new Promise<{ success: boolean }>(() => {
+    success: true;
+  });
+}
+async function handleBuildEvent(
+  event: BuilderOutput,
   options: ServerlessExecuteBuilderOptions
 ) {
-  if (subProcess) {
-    throw new Error('Already running');
+  if ((!event.success || options.watch) && subProcess) {
+    await killProcess();
+  }
+  logger.info('running process');
+  runProcess(event, options);
+}
+
+function runProcess(
+  event: BuilderOutput,
+  options: ServerlessExecuteBuilderOptions
+) {
+  if (subProcess || !event.success) {
+    return;
   }
   subProcess = fork(
     'node_modules/serverless/bin/serverless.js',
@@ -67,71 +114,38 @@ async function runProcess(
   );
 }
 
-function restartProcess(
-  file: string,
-  options: ServerlessExecuteBuilderOptions,
-  context: BuilderContext
-) {
-  return killProcess(context).pipe(
-    tap(() => {
-      runProcess(file, options);
-    })
-  );
-}
-
-function killProcess(context: BuilderContext): Observable<void | Error> {
+async function killProcess() {
   if (!subProcess) {
-    return of(undefined);
+    return;
   }
 
-  const observableTreeKill = bindCallback<number, string, Error>(treeKill);
-  return observableTreeKill(subProcess.pid, 'SIGTERM').pipe(
-    tap(err => {
-      subProcess = null;
-      if (err) {
-        if (Array.isArray(err) && err[0] && err[2]) {
-          const errorMessage = err[2];
-          context.logger.error(errorMessage);
-        } else if (err.message) {
-          context.logger.error(err.message);
-        }
-      }
-    })
-  );
+  const promisifiedTreeKill: (
+    pid: number,
+    signal: string
+  ) => Promise<void> = promisify(treeKill);
+  try {
+    await promisifiedTreeKill(subProcess.pid, 'SIGTERM');
+  } catch (err) {
+    if (Array.isArray(err) && err[0] && err[2]) {
+      const errorMessage = err[2];
+      logger.error(errorMessage);
+    } else if (err.message) {
+      logger.error(err.message);
+    }
+  } finally {
+    subProcess = null;
+  }
 }
 
-function startBuild(
-  options: ServerlessExecuteBuilderOptions,
-  context: BuilderContext
-): Observable<ServerlessBuildEvent> {
-  const target = targetFromTargetString(options.buildTarget);
-  return from(
-    Promise.all([
-      context.getTargetOptions(target),
-      context.getBuilderNameForTarget(target)
-    ]).then(([options, builderName]) =>
-      context.validateOptions(options, builderName)
-    )
-  ).pipe(
-    tap(options => {
-      if (options.optimization) {
-        context.logger.warn(stripIndents`
-              ************************************************
-              This is a simple process manager for use in
-              testing or debugging Node applications locally.
-              DO NOT USE IT FOR PRODUCTION!
-              You should look into proper means of deploying
-              your node application to production.
-              ************************************************`);
-      }
-    }),
-    concatMap(
-      () =>
-        (scheduleTargetAndForget(context, target, {
-          watch: true
-        }) as unknown) as Observable<ServerlessBuildEvent>
-    )
-  );
+function getServerlessArg(options: ServerlessExecuteBuilderOptions) {
+  const args = ['offline', ...options.args];
+  if (options.inspect === true) {
+    options.inspect = InspectType.Inspect;
+  }
+  if (options.inspect) {
+    args.push(`--${options.inspect}=${options.host}:${options.port}`);
+  }
+  return args;
 }
 
 function getExecArgv(options: ServerlessExecuteBuilderOptions) {
@@ -154,35 +168,4 @@ function getExecArgv(options: ServerlessExecuteBuilderOptions) {
   return args;
 }
 
-export default createBuilder<ServerlessExecuteBuilderOptions & JsonObject>(
-  serverlessExecutionHandler
-);
-let subProcess: ChildProcess = null;
-
-export function serverlessExecutionHandler(
-  options: JsonObject & ServerlessExecuteBuilderOptions,
-  context: BuilderContext
-): Observable<BuilderOutput> {
-  return runWaitUntilTargets(options.waitUntilTargets, context).pipe(
-    concatMap(v => {
-      if (!v.success) {
-        context.logger.error(
-          'One of the tasks specified in waitUntilTargets failed'
-        );
-        return of({ success: false });
-      }
-      return startBuild(options, context);
-    }),
-    concatMap((event: ServerlessBuildEvent) => {
-      if (event.success) {
-        return restartProcess(event.outfile, options, context).pipe(
-          mapTo(event)
-        );
-      } else {
-        context.logger.error('There was an error with the build. See above.');
-        context.logger.info(`${event.outfile} was not restarted.`);
-        return of(event);
-      }
-    })
-  );
-}
+export default offlineExecutor;

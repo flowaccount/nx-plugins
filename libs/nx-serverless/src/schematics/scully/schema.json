@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
-  "id": "SchematicsNgScullyServerlessApp",
+  "$schema": "http://json-schema.org/schema",
+  "$id": "SchematicsNgScullyServerlessApp",
   "title": "Angular Scully Serverless Web Application Options Schema",
   "type": "object",
   "properties": {
@@ -12,6 +12,7 @@
     "provider": {
       "type": "string",
       "description": "The cloud provider for this serverless application.",
+      "default": "aws",
       "x-prompt": "Which cloud provider are you using for this serverless application? ( aws | azure | google )"
     },
     "addScully": {
@@ -29,6 +30,12 @@
       "description": "Skips the prettier format of files",
       "type": "boolean",
       "default": false
+    },
+    "region": {
+      "type": "string",
+      "description": "The region to deploy to",
+      "default": "ap-southeast-1",
+      "x-prompt": "Which region do you want to default your deployment to?"
     }
   },
   "required": ["project", "addScully"]

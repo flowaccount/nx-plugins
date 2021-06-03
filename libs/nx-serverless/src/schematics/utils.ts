@@ -1,7 +1,8 @@
-import { join, normalize, Path } from '@angular-devkit/core';
+import { joinPathFragments } from '@nrwl/devkit';
+import { normalize } from 'path';
 
 export interface BaseSchema {
-  appProjectRoot: Path;
+  appProjectRoot: string;
   provider: string;
   region: string;
   endpointType: string;
@@ -10,15 +11,18 @@ export interface BaseSchema {
 
 export function getBuildConfig(options: BaseSchema) {
   return {
-    builder: '@flowaccount/nx-serverless:build',
+    executor: '@flowaccount/nx-serverless:build',
     options: {
-      outputPath: join(normalize('dist'), options.appProjectRoot),
+      outputPath: joinPathFragments(normalize('dist'), options.appProjectRoot),
       package: options.appProjectRoot,
-      serverlessConfig: join(options.appProjectRoot, 'serverless.yml'),
+      serverlessConfig: joinPathFragments(
+        options.appProjectRoot,
+        'serverless.yml'
+      ),
       servicePath: options.appProjectRoot,
-      tsConfig: join(options.appProjectRoot, 'tsconfig.app.json'),
+      tsConfig: joinPathFragments(options.appProjectRoot, 'tsconfig.app.json'),
       provider: options.provider,
-      processEnvironmentFile: 'env.json'
+      processEnvironmentFile: 'env.json',
     },
     configurations: {
       dev: {
@@ -28,9 +32,9 @@ export function getBuildConfig(options: BaseSchema) {
           {
             type: 'initial',
             maximumWarning: '2mb',
-            maximumError: '5mb'
-          }
-        ]
+            maximumError: '5mb',
+          },
+        ],
       },
       production: {
         optimization: true,
@@ -43,16 +47,22 @@ export function getBuildConfig(options: BaseSchema) {
           {
             type: 'initial',
             maximumWarning: '2mb',
-            maximumError: '5mb'
-          }
+            maximumError: '5mb',
+          },
         ],
         fileReplacements: [
           {
-            replace: join(options.appProjectRoot, 'environment.ts'),
-            with: join(options.appProjectRoot, 'environment.prod.ts')
-          }
-        ]
-      }
-    }
+            replace: joinPathFragments(
+              options.appProjectRoot,
+              'environment.ts'
+            ),
+            with: joinPathFragments(
+              options.appProjectRoot,
+              'environment.prod.ts'
+            ),
+          },
+        ],
+      },
+    },
   };
 }

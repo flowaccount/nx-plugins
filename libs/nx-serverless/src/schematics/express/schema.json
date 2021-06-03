@@ -1,6 +1,6 @@
 {
-  "$schema": "http://json-schema.org/draft-07/schema",
-  "id": "SchematicsNgUniversalServerlessApp",
+  "$schema": "http://json-schema.org/schema",
+  "$id": "SchematicsNgUniversalServerlessApp",
   "title": "Expressjs Serverless Deployment Options Schema",
   "type": "object",
   "properties": {
@@ -21,6 +21,7 @@
     "provider": {
       "type": "string",
       "description": "The cloud provider for this serverless application.",
+      "default": "aws",
       "x-prompt": "Which cloud provider are you using for this serverless application? ( aws | azure | google )"
     },
     "initExpress": {
@@ -57,6 +58,12 @@
     "frontendProject": {
       "type": "string",
       "description": "Frontend project that needs to access this api. This sets up proxy configuration."
+    },
+    "region": {
+      "type": "string",
+      "description": "The region to deploy to",
+      "default": "ap-southeast-1",
+      "x-prompt": "Which region do you want to default your deployment to?"
     }
   },
   "required": ["name", "initExpress"]
