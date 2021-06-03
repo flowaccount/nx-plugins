@@ -8,25 +8,24 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "builder": "@nrwl/linter:lint",
           "options": {
-            "lintFilePatterns": [
-              "libs/nx-serverless/**/*.ts",
-              "libs/nx-serverless/**/*.spec.ts",
-              "libs/nx-serverless/**/*.spec.tsx",
-              "libs/nx-serverless/**/*.spec.js",
-              "libs/nx-serverless/**/*.spec.jsx",
-              "libs/nx-serverless/**/*.d.ts"
-            ]
+            "linter": "eslint",
+            "config": "libs/nx-serverless/.eslintrc",
+            "tsConfig": [
+              "libs/nx-serverless/tsconfig.lib.json",
+              "libs/nx-serverless/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/nx-serverless/**"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/nx-serverless/jest.config.js",
+            "tsConfig": "libs/nx-serverless/tsconfig.spec.json",
             "passWithNoTests": true
-          },
-          "outputs": ["coverage/libs/nx-serverless"]
+          }
         },
         "build": {
           "builder": "@nrwl/node:package",
@@ -53,10 +52,8 @@
                 "glob": "builders.json",
                 "output": "."
               }
-            ],
-            "srcRootForCompilationRoot": "libs\\nx-serverless"
-          },
-          "outputs": ["{options.outputPath}"]
+            ]
+          }
         }
       }
     },
@@ -71,7 +68,8 @@
             "target": "nx-serverless:build",
             "npmPackageName": "@flowaccount/nx-serverless",
             "pluginOutputPath": "dist/libs/nx-serverless",
-            "jestConfig": "apps/nx-serverless-e2e/jest.config.js"
+            "jestConfig": "apps/nx-serverless-e2e/jest.config.js",
+            "tsSpecConfig": "apps/nx-serverless-e2e/tsconfig.spec.json"
           }
         }
       }
@@ -83,25 +81,24 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "builder": "@nrwl/linter:lint",
           "options": {
-            "lintFilePatterns": [
-              "libs/nx-aws-cdk/**/*.ts",
-              "libs/nx-aws-cdk/**/*.spec.ts",
-              "libs/nx-aws-cdk/**/*.spec.tsx",
-              "libs/nx-aws-cdk/**/*.spec.js",
-              "libs/nx-aws-cdk/**/*.spec.jsx",
-              "libs/nx-aws-cdk/**/*.d.ts"
-            ]
+            "linter": "eslint",
+            "config": "libs/nx-aws-cdk/.eslintrc",
+            "tsConfig": [
+              "libs/nx-aws-cdk/tsconfig.lib.json",
+              "libs/nx-aws-cdk/tsconfig.spec.json"
+            ],
+            "exclude": ["**/node_modules/**", "!libs/nx-aws-cdk/**"]
           }
         },
         "test": {
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/nx-aws-cdk/jest.config.js",
+            "tsConfig": "libs/nx-aws-cdk/tsconfig.spec.json",
             "passWithNoTests": true
-          },
-          "outputs": ["coverage/libs/nx-aws-cdk"]
+          }
         },
         "build": {
           "builder": "@nrwl/node:package",
@@ -127,10 +124,8 @@
                 "glob": "builders.json",
                 "output": "."
               }
-            ],
-            "srcRootForCompilationRoot": "libs\\nx-aws-cdk"
-          },
-          "outputs": ["{options.outputPath}"]
+            ]
+          }
         }
       }
     },
@@ -145,7 +140,8 @@
             "target": "nx-aws-cdk:build",
             "npmPackageName": "@flowaccount/nx-aws-cdk",
             "pluginOutputPath": "dist/libs/nx-aws-cdk",
-            "jestConfig": "apps/nx-aws-cdk-e2e/jest.config.js"
+            "jestConfig": "apps/nx-aws-cdk-e2e/jest.config.js",
+            "tsSpecConfig": "apps/nx-aws-cdk-e2e/tsconfig.spec.json"
           }
         }
       }
@@ -157,16 +153,17 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "builder": "@nrwl/linter:lint",
           "options": {
-            "lintFilePatterns": [
-              "libs/scully-plugin-angular-delay/**/*.ts",
-              "libs/scully-plugin-angular-delay/src/index.ts",
-              "libs/scully-plugin-angular-delay/**/*.spec.ts",
-              "libs/scully-plugin-angular-delay/**/*.spec.tsx",
-              "libs/scully-plugin-angular-delay/**/*.spec.js",
-              "libs/scully-plugin-angular-delay/**/*.spec.jsx",
-              "libs/scully-plugin-angular-delay/**/*.d.ts"
+            "linter": "eslint",
+            "config": "libs/scully-plugin-angular-delay/.eslintrc",
+            "tsConfig": [
+              "libs/scully-plugin-angular-delay/tsconfig.lib.json",
+              "libs/scully-plugin-angular-delay/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/scully-plugin-angular-delay/**"
             ]
           }
         },
@@ -174,9 +171,9 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/scully-plugin-angular-delay/jest.config.js",
+            "tsConfig": "libs/scully-plugin-angular-delay/tsconfig.spec.json",
             "passWithNoTests": true
-          },
-          "outputs": ["coverage/libs/scully-plugin-angular-delay"]
+          }
         },
         "build": {
           "builder": "@nrwl/node:package",
@@ -185,10 +182,8 @@
             "tsConfig": "libs/scully-plugin-angular-delay/tsconfig.lib.json",
             "packageJson": "libs/scully-plugin-angular-delay/package.json",
             "main": "libs/scully-plugin-angular-delay/src/index.ts",
-            "assets": ["libs/scully-plugin-angular-delay/*.md"],
-            "srcRootForCompilationRoot": "libs\\scully-plugin-angular-delay\\src"
-          },
-          "outputs": ["{options.outputPath}"]
+            "assets": ["libs/scully-plugin-angular-delay/*.md"]
+          }
         }
       }
     },
@@ -199,15 +194,17 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "builder": "@nrwl/linter:lint",
           "options": {
-            "lintFilePatterns": [
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.ts",
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.ts",
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.tsx",
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.js",
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.jsx",
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.d.ts"
+            "linter": "eslint",
+            "config": "libs/scully-plugin-lazy-load-picture-tag/.eslintrc",
+            "tsConfig": [
+              "libs/scully-plugin-lazy-load-picture-tag/tsconfig.lib.json",
+              "libs/scully-plugin-lazy-load-picture-tag/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/scully-plugin-lazy-load-picture-tag/**"
             ]
           }
         },
@@ -215,9 +212,9 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/scully-plugin-lazy-load-picture-tag/jest.config.js",
+            "tsConfig": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.spec.json",
             "passWithNoTests": true
-          },
-          "outputs": ["coverage/libs/scully-plugin-lazy-load-picture-tag"]
+          }
         },
         "build": {
           "builder": "@nrwl/node:package",
@@ -226,10 +223,8 @@
             "tsConfig": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.lib.json",
             "packageJson": "libs/scully-plugin-lazy-load-picture-tag/package.json",
             "main": "libs/scully-plugin-lazy-load-picture-tag/src/index.ts",
-            "assets": ["libs/scully-plugin-lazy-load-picture-tag/*.md"],
-            "srcRootForCompilationRoot": "libs\\scully-plugin-lazy-load-picture-tag\\src"
-          },
-          "outputs": ["{options.outputPath}"]
+            "assets": ["libs/scully-plugin-lazy-load-picture-tag/*.md"]
+          }
         }
       }
     },
@@ -240,15 +235,17 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "builder": "@nrwl/linter:lint",
           "options": {
-            "lintFilePatterns": [
-              "libs/scully-plugin-google-analytics/**/*.ts",
-              "libs/scully-plugin-google-analytics/**/*.spec.ts",
-              "libs/scully-plugin-google-analytics/**/*.spec.tsx",
-              "libs/scully-plugin-google-analytics/**/*.spec.js",
-              "libs/scully-plugin-google-analytics/**/*.spec.jsx",
-              "libs/scully-plugin-google-analytics/**/*.d.ts"
+            "linter": "eslint",
+            "config": "libs/scully-plugin-google-analytics/.eslintrc",
+            "tsConfig": [
+              "libs/scully-plugin-google-analytics/tsconfig.lib.json",
+              "libs/scully-plugin-google-analytics/tsconfig.spec.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!libs/scully-plugin-google-analytics/**"
             ]
           }
         },
@@ -256,9 +253,9 @@
           "builder": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/scully-plugin-google-analytics/jest.config.js",
+            "tsConfig": "libs/scully-plugin-google-analytics/tsconfig.spec.json",
             "passWithNoTests": true
-          },
-          "outputs": ["coverage/libs/scully-plugin-google-analytics"]
+          }
         },
         "build": {
           "builder": "@nrwl/node:package",
@@ -267,10 +264,8 @@
             "tsConfig": "libs/scully-plugin-google-analytics/tsconfig.lib.json",
             "packageJson": "libs/scully-plugin-google-analytics/package.json",
             "main": "libs/scully-plugin-google-analytics/src/index.ts",
-            "assets": ["libs/scully-plugin-google-analytics/*.md"],
-            "srcRootForCompilationRoot": "libs\\scully-plugin-google-analytics\\src"
-          },
-          "outputs": ["{options.outputPath}"]
+            "assets": ["libs/scully-plugin-google-analytics/*.md"]
+          }
         }
       }
     }

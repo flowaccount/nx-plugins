@@ -1,15 +1,18 @@
 import {
+  Rule,
+  chain,
+  noop,
   Tree,
-  updateJson,
-  addDependenciesToPackageJson,
-  GeneratorCallback,
-  readJson,
+  SchematicContext,
+  externalSchematic
+} from '@angular-devkit/schematics';
+import {
+  addDepsToPackageJson,
+  updateJsonInTree,
+  addPackageWithInit,
   formatFiles,
-  convertNxGenerator,
-  logger,
-} from '@nrwl/devkit';
-import { runTasksInSerial } from '@nrwl/workspace/src/utilities/run-tasks-in-serial';
-import { jestInitGenerator } from '@nrwl/jest';
+  readJsonInTree
+} from '@nrwl/workspace';
 import { Schema } from './schema';
 import {
   nxVersion,
@@ -18,58 +21,53 @@ import {
   awsTypeLambdaVersion,
   awsServerlessExpressVersion,
   serverlessApigwBinaryVersion,
-  expressVersion,
+  expressVersion
 } from '../../utils/versions';
-import { addJestPlugin } from './lib/add-jest-plugin';
-import { addLinterPlugin } from './lib/add-linter-plugin';
 
-function addDependencies(
-  host: Tree,
-  expressProxy: boolean
-): GeneratorCallback[] {
-  const dependencies = {};
-  const tasks: GeneratorCallback[] = [];
-  const devDependencies = {
-    '@flowaccount/nx-serverless': nxVersion,
-    serverless: serverlessVersion,
-    'serverless-offline': serverlessOfflineVersion,
+function addDependencies(expressProxy: boolean): Rule {
+  return (host: Tree, context: SchematicContext): Rule => {
+    const dependencies = {};
+    const devDependencies = {
+      '@flowaccount/nx-serverless': nxVersion,
+      serverless: serverlessVersion,
+      'serverless-offline': serverlessOfflineVersion
+    };
+    if (expressProxy) {
+      dependencies['aws-serverless-express'] = awsServerlessExpressVersion;
+      dependencies['express'] = expressVersion;
+      devDependencies[
+        '@types/aws-serverless-express'
+      ] = awsServerlessExpressVersion;
+      devDependencies['serverless-apigw-binary'] = serverlessApigwBinaryVersion;
+    } else {
+      devDependencies['@types/aws-lambda'] = awsTypeLambdaVersion;
+    }
+    const packageJson = readJsonInTree(host, 'package.json');
+    Object.keys(dependencies).forEach(key => {
+      if (packageJson.dependencies[key]) {
+        delete dependencies[key];
+      }
+    });
+
+    Object.keys(devDependencies).forEach(key => {
+      if (packageJson.devDependencies[key]) {
+        delete devDependencies[key];
+      }
+    });
+
+    if (
+      !Object.keys(dependencies).length &&
+      !Object.keys(devDependencies).length
+    ) {
+      context.logger.info('Skipping update package.json');
+      return noop();
+    }
+    return addDepsToPackageJson(dependencies, devDependencies);
   };
-  if (expressProxy) {
-    dependencies['aws-serverless-express'] = awsServerlessExpressVersion;
-    dependencies['express'] = expressVersion;
-    devDependencies[
-      '@types/aws-serverless-express'
-    ] = awsServerlessExpressVersion;
-    devDependencies['serverless-apigw-binary'] = serverlessApigwBinaryVersion;
-  } else {
-    devDependencies['@types/aws-lambda'] = awsTypeLambdaVersion;
-  }
-  const packageJson = readJson(host, 'package.json');
-  Object.keys(dependencies).forEach((key) => {
-    if (packageJson.dependencies[key]) {
-      delete dependencies[key];
-    }
-  });
-
-  Object.keys(devDependencies).forEach((key) => {
-    if (packageJson.devDependencies[key]) {
-      delete devDependencies[key];
-    }
-  });
-
-  if (
-    !Object.keys(dependencies).length &&
-    !Object.keys(devDependencies).length
-  ) {
-    logger.info('Skipping update package.json');
-    return tasks;
-  }
-  tasks.push(addDependenciesToPackageJson(host, dependencies, devDependencies));
-  return tasks;
 }
 
-function updateDependencies(tree: Tree) {
-  updateJson(tree, '/package.json', (json) => {
+function updateDependencies(): Rule {
+  return updateJsonInTree('package.json', json => {
     if (json.dependencies['@flowaccount/nx-serverless']) {
       json.devDependencies['@flowaccount/nx-serverless'] =
         json.dependencies['@flowaccount/nx-serverless'];
@@ -81,22 +79,11 @@ function updateDependencies(tree: Tree) {
   });
 }
 
-export async function initGenerator<T extends Schema>(tree: Tree, options: T) {
-  const tasks: GeneratorCallback[] = [];
-
-  if (!options.unitTestRunner || options.unitTestRunner === 'jest') {
-    const jestTask = addJestPlugin(tree);
-    tasks.push(jestTask);
-  }
-  const linterTask = addLinterPlugin(tree);
-  tasks.push(linterTask);
-
-  updateDependencies(tree);
-  tasks.push(...addDependencies(tree, options.expressProxy));
-  if (!options.skipFormat) {
-    await formatFiles(tree);
-  }
-  return runTasksInSerial(...tasks);
+export default function(schema: Schema) {
+  return chain([
+    addPackageWithInit('@nrwl/jest'),
+    addDependencies(schema.expressProxy),
+    updateDependencies(),
+    formatFiles(schema)
+  ]);
 }
-
-export const initSchematic = convertNxGenerator(initGenerator);

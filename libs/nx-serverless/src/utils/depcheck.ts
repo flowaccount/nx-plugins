@@ -1,10 +1,10 @@
 import * as depcheck from 'depcheck';
+import { BuilderContext } from '@angular-devkit/architect';
 import { readJsonFile } from '@nrwl/workspace';
 import { DependencyResolver } from './types';
 import { getProdModules } from './normalize';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ExecutorContext, logger } from '@nrwl/devkit';
 export class DependencyCheckResolver implements DependencyResolver {
   options = {
     ignoreBinPackage: false, // ignore the packages with bin entry
@@ -13,26 +13,26 @@ export class DependencyCheckResolver implements DependencyResolver {
       // folder with these names will be ignored
       'sandbox',
       'dist',
-      'bower_components',
+      'bower_components'
     ],
     ignoreMatches: [
       // ignore dependencies that matches these globs
-      'grunt-*',
+      'grunt-*'
     ],
     parsers: {},
     detectors: [
       // the target detectors
       depcheck.detector.requireCallExpression,
-      depcheck.detector.importDeclaration,
+      depcheck.detector.importDeclaration
     ],
     specials: [
       // the target special parsers
       depcheck.special.eslint,
-      depcheck.special.webpack,
+      depcheck.special.webpack
     ],
-    package: {},
+    package: {}
   };
-  constructor(private context: ExecutorContext) {}
+  constructor(private context: BuilderContext) {}
 
   normalizeExternalDependencies(
     packageJson: any,
@@ -52,13 +52,15 @@ export class DependencyCheckResolver implements DependencyResolver {
         if (Object.keys(result.invalidFiles).length > 0) {
           throw result.invalidFiles;
         }
-        Object.keys(result.missing).forEach((key) => {
-          logger.warn(`Missing dependencies ${key} in ${result.missing[key]}`);
+        Object.keys(result.missing).forEach(key => {
+          this.context.logger.warn(
+            `Missing dependencies ${key} in ${result.missing[key]}`
+          );
         });
-        Object.keys(result.using).forEach((key) => {
+        Object.keys(result.using).forEach(key => {
           externals.push({
             origin: result.using[key],
-            external: key,
+            external: key
           });
         });
         // TODO: issue #48
@@ -81,12 +83,12 @@ export class DependencyCheckResolver implements DependencyResolver {
     const tsconfigJson = readJsonFile(tsconfig);
     const parsers = {};
     if (tsconfigJson.files) {
-      tsconfigJson.files.forEach((fileName) => {
+      tsconfigJson.files.forEach(fileName => {
         parsers[fileName] = depcheck.parser.typescript;
       });
     }
     if (tsconfigJson.include) {
-      tsconfigJson.include.forEach((includePattern) => {
+      tsconfigJson.include.forEach(includePattern => {
         parsers[includePattern] = depcheck.parser.typescript;
       });
     }

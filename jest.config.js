@@ -1,9 +1,10 @@
 module.exports = {
-  projects: [
-    '<rootDir>/libs/nx-serverless',
-    '<rootDir>/libs/nx-aws-cdk',
-    '<rootDir>/libs/scully-plugin-angular-delay',
-    '<rootDir>/libs/scully-plugin-lazy-load-picture-tag',
-    '<rootDir>/libs/scully-plugin-google-analytics',
-  ],
+  testMatch: ['**/+(*.)+(spec|test).+(ts|js)?(x)'],
+  transform: {
+    '^.+\\.(ts|js|html)$': 'ts-jest'
+  },
+  resolver: '@nrwl/jest/plugins/resolver',
+  // moduleFileExtensions: ['ts', 'js', 'html'],
+  coverageReporters: ['html'],
+  verbose: true
 };

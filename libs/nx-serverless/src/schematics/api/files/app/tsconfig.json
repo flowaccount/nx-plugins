@@ -3,11 +3,5 @@
   "compilerOptions": {
     "types": ["node"]
   },
-  "include": [],
-  "files": [],
-  "references": [
-    {
-      "path": "./tsconfig.app.json"
-    }
-  ]
+  "include": ["**/*.ts"]
 }

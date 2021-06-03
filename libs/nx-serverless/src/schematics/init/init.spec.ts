@@ -9,18 +9,6 @@ describe('init', () => {
   beforeEach(() => {
     tree = Tree.empty();
     tree = createEmptyWorkspace(tree);
-    tree.overwrite(
-      'package.json',
-      `
-      {
-        "name": "test-name",
-        "dependencies": {},
-        "devDependencies": {
-          "@nrwl/workspace": "0.0.0"
-        }
-      }
-    `
-    );
   });
 
   it('should add dependencies for node apis', async () => {

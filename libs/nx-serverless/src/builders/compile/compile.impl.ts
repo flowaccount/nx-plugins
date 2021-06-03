@@ -1,7 +1,7 @@
 import {
   BuilderContext,
   createBuilder,
-  BuilderOutput,
+  BuilderOutput
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { ServerlessCompileOptions } from '../../utils/types';
@@ -11,36 +11,53 @@ import { switchMap, map, concatMap } from 'rxjs/operators';
 import {
   normalizeBuildOptions,
   assignEntriesToFunctionsFromServerless,
-  getSourceRoot,
+  getSourceRoot
 } from '../../utils/normalize';
 import { ServerlessWrapper } from '../../utils/serverless';
 import { resolve, join } from 'path';
-import { convertNxExecutor, ExecutorContext, logger } from '@nrwl/devkit';
 
 export type ServerlesCompiledEvent = {
   outfile: string;
 };
 
-export async function compileExecutor(
-  options: JsonObject & ServerlessCompileOptions,
-  context: ExecutorContext
-) {
-  const root = getSourceRoot(context);
-  options = normalizeBuildOptions(options, context.root, root);
-  await ServerlessWrapper.init(options, context).toPromise();
-  options = assignEntriesToFunctionsFromServerless(options, context.root);
+export default createBuilder(run);
 
-  logger.info('start compiling typescript');
-  const result = await compileTypeScriptFiles(
-    options,
-    context
-    // libDependencies
-  ).toPromise();
-  return {
-    ...result,
-    outfile: resolve(context.root, options.outputPath),
-    resolverName: 'DependencyCheckResolver',
-    tsconfig: resolve(context.root, options.tsConfig),
-  };
+export function run(
+  options: JsonObject & ServerlessCompileOptions,
+  context: BuilderContext
+): Observable<ServerlesCompiledEvent> {
+  return from(getSourceRoot(context)).pipe(
+    map(sourceRoot =>
+      normalizeBuildOptions(
+        options,
+        context.workspaceRoot,
+        join(context.workspaceRoot, sourceRoot)
+      )
+    ),
+    switchMap(options =>
+      combineLatest(of(options), from(ServerlessWrapper.init(options, context)))
+    ),
+    map(([options]) => {
+      return assignEntriesToFunctionsFromServerless(
+        options,
+        context.workspaceRoot
+      );
+    }),
+    concatMap(options => {
+      context.logger.info('start compiling typescript');
+      return compileTypeScriptFiles(
+        options,
+        context
+        // libDependencies
+      );
+    }),
+    map((value: BuilderOutput) => {
+      return {
+        ...value,
+        outfile: resolve(context.workspaceRoot, options.outputPath),
+        resolverName: 'DependencyCheckResolver',
+        tsconfig: resolve(context.workspaceRoot, options.tsConfig)
+      };
+    })
+  );
 }
-export default compileExecutor;

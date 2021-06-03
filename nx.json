@@ -6,10 +6,9 @@
       "dependencies": "*",
       "devDependencies": "*"
     },
+    "tsconfig.json": "*",
     "tslint.json": "*",
-    "nx.json": "*",
-    "tsconfig.base.json": "*",
-    ".eslintrc.json": "*"
+    "nx.json": "*"
   },
   "projects": {
     "nx-serverless": {
@@ -35,8 +34,5 @@
     "scully-plugin-google-analytics": {
       "tags": []
     }
-  },
-  "affected": {
-    "defaultBase": "master"
   }
 }

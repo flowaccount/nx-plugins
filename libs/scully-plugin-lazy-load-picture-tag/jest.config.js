@@ -1,10 +1,9 @@
 module.exports = {
-  preset: '../../jest.preset.js',
+  name: 'scully-plugin-lazy-load-picture-tag',
+  preset: '../../jest.config.js',
   transform: {
-    '^.+\\.[tj]sx?$': 'ts-jest',
+    '^.+\\.[tj]sx?$': 'ts-jest'
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'html'],
-  coverageDirectory: '../../coverage/libs/scully-plugin-lazy-load-picture-tag',
-  globals: { 'ts-jest': { tsConfig: '<rootDir>/tsconfig.spec.json' } },
-  displayName: 'scully-plugin-lazy-load-picture-tag',
+  coverageDirectory: '../../coverage/libs/scully-plugin-lazy-load-picture-tag'
 };

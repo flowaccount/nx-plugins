@@ -1,93 +1,77 @@
+import { BuilderContext, createBuilder } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { BuildResult } from '@angular-devkit/build-webpack';
+import { runWebpack, BuildResult } from '@angular-devkit/build-webpack';
+import { Observable, from, combineLatest, of } from 'rxjs';
 // import { NodeJsSyncHost } from '@angular-devkit/core/node';
-import {
-  BuildBuilderOptions,
-  NormalizedBuildServerlessBuilderOptions,
-  ServerlessEventResult,
-} from '../../utils/types';
-import { tap, map } from 'rxjs/operators';
+import { BuildBuilderOptions, ServerlessEventResult } from '../../utils/types';
+import { map, concatMap, switchMap, mergeMap, tap } from 'rxjs/operators';
 
 import { getNodeWebpackConfig } from '../../utils/node.config';
 import {
   normalizeBuildOptions,
   assignEntriesToFunctionsFromServerless,
-  getSourceRoot,
+  getSourceRoot
 } from '../../utils/normalize';
+import { Stats } from 'webpack';
 import { ServerlessWrapper } from '../../utils/serverless';
 // import { wrapMiddlewareBuildOptions } from '../../utils/middleware';;
 import { resolve } from 'path';
+import { WebpackDependencyResolver } from '../../utils/webpack.stats';
 import { consolidateExcludes } from '../../utils/serverless.config';
-import copyAssetFiles, {
-  copyAssetFilesSync,
-} from '../../utils/copy-asset-files';
+import copyAssetFiles from '../../utils/copy-asset-files';
 import normalizeAssetOptions from '../../utils/normalize-options';
-import { convertNxExecutor, ExecutorContext, logger } from '@nrwl/devkit';
-import { runWebpack } from '@nrwl/workspace/src/utilities/run-webpack';
-import * as webpack from 'webpack';
-
-import { eachValueFrom } from 'rxjs-for-await';
-
 export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {}
 export type ServerlessBuildEvent = BuildResult &
   ServerlessEventResult & {
     outfile: string;
-    success: boolean;
   };
 
-export async function buildExecutor(
+function run(
   options: JsonObject & BuildServerlessBuilderOptions,
-  context: ExecutorContext
-) {
-  const root = getSourceRoot(context);
-  options = normalizeBuildOptions(options, context.root, root);
-  await ServerlessWrapper.init(options, context).toPromise();
-  options = assignEntriesToFunctionsFromServerless(options, context.root);
-  options.tsConfig = consolidateExcludes(options);
-  options.entry = options.files;
-  const config = (<NormalizedBuildServerlessBuilderOptions>(
-    options
-  )).webpackConfig.reduce((currentConfig, plugin) => {
-    return require(plugin)(currentConfig, {
-      options,
-      configuration: context.configurationName,
-    });
-  }, getNodeWebpackConfig(options));
-
-  const resultCopy = copyAssetFilesSync(
-    normalizeAssetOptions(options, context)
-  );
-  if (!resultCopy.success) {
-    throw new Error(
-      `Error building serverless application ${resultCopy.error}`
-    );
-  }
-
-  logger.info('start compiling webpack');
-  /*
-      , {
+  context: BuilderContext
+): Observable<ServerlessBuildEvent> {
+  return from(getSourceRoot(context)).pipe(
+    map(sourceRoot =>
+      normalizeBuildOptions(options, context.workspaceRoot, sourceRoot)
+    ),
+    switchMap(options =>
+      combineLatest(of(options), from(ServerlessWrapper.init(options, context)))
+    ),
+    map(([options]) => {
+      return assignEntriesToFunctionsFromServerless(
+        options,
+        context.workspaceRoot
+      );
+    }),
+    map(options => {
+      options.tsConfig = consolidateExcludes(options, context);
+      options.entry = options.files;
+      let config = getNodeWebpackConfig(options);
+      if (options.webpackConfig) {
+        config = require(options.webpackConfig)(config, {
+          options,
+          configuration: context.target.configuration
+        });
+      }
+      // tap(() => copyAssetFiles(normalizeAssetOptions(options), context))
+      tap(() =>
+        copyAssetFiles(normalizeAssetOptions(options, context, ''), context)
+      ); // NOTE: Where libRoot?
+      return config;
+    }),
+    concatMap(config => {
+      ServerlessWrapper.serverless.cli.log('start compiling webpack');
+      return runWebpack(config, context, {
         logging: stats => {
-          logger.info(stats.toString(config.stats));
+          context.logger.info(stats.toString(config.stats));
         }
-      }*/
-  const iterator = eachValueFrom(
-    runWebpack(config, webpack).pipe(
-      tap((stats) => {
-        console.info(stats.toString(config.stats));
-      }),
-      map((stats) => {
-        return {
-          success: !stats.hasErrors(),
-          outfile: resolve(context.root, options.outputPath),
-          webpackStats: stats.toJson(config.stats),
-          resolverName: 'WebpackDependencyResolver',
-          tsconfig: options.tsConfig,
-        } as ServerlessBuildEvent;
-      })
-    )
+      });
+    }),
+    map((buildEvent: BuildResult) => {
+      buildEvent.outfile = resolve(context.workspaceRoot, options.outputPath);
+      buildEvent.resolverName = 'WebpackDependencyResolver';
+      return buildEvent as ServerlessBuildEvent;
+    })
   );
-  const event = <ServerlessBuildEvent>(await iterator.next()).value;
-  return event;
 }
-export default buildExecutor;
-export const serverlessBuilder = convertNxExecutor(buildExecutor);
+export default createBuilder<JsonObject & BuildServerlessBuilderOptions>(run);
