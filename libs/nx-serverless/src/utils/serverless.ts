@@ -160,7 +160,7 @@ export async function runServerlessCommand(
   if (extraArgs) {
     args = args.concat(extraArgs);
   }
-  ServerlessWrapper.serverless.config.servicePath = packagePath;
+  ServerlessWrapper.serverless.config.servicePath = path.resolve(packagePath);
   logger.info('running serverless commands');
   ServerlessWrapper.serverless.processedInput = {
     commands: commands,

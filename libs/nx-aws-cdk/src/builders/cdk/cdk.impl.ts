@@ -1,9 +1,6 @@
 import {
   BuilderContext,
-  createBuilder,
   BuilderOutput,
-  targetFromTargetString,
-  scheduleTargetAndForget,
   BuilderRun
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
@@ -22,8 +19,6 @@ export interface AwsCdkOptions extends JsonObject {
   processEnvironmentFile: string;
   verbose?: boolean;
 }
-
-export default createBuilder<AwsCdkOptions & JsonObject>(cdkCmdRunner);
 export function cdkCmdRunner(
   options: JsonObject & AwsCdkOptions,
   context: BuilderContext
@@ -181,3 +176,6 @@ export function startBuild(
     )
   );
 }
+
+
+export default cdkCmdRunner
