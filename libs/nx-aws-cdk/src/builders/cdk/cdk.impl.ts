@@ -1,7 +1,7 @@
 import {
   BuilderContext,
   BuilderOutput,
-  BuilderRun
+  BuilderRun,
 } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { Observable, of, from, concat } from 'rxjs';
@@ -26,7 +26,7 @@ export function cdkCmdRunner(
   //
   if (options.skipBuild) {
     return runWaitUntilTargetsSequentially(options, context).pipe(
-      concatMap(v => {
+      concatMap((v) => {
         if (!v.success) {
           context.logger.error(
             'One of the tasks specified in waitUntilTargets failed'
@@ -41,7 +41,7 @@ export function cdkCmdRunner(
     );
   } else {
     return runWaitUntilTargetsSequentially(options, context).pipe(
-      concatMap(v => {
+      concatMap((v) => {
         if (!v.success) {
           context.logger.error(
             'One of the tasks specified in waitUntilTargets failed'
@@ -50,7 +50,7 @@ export function cdkCmdRunner(
         }
         return startBuild(options, context);
       }),
-      concatMap(v => {
+      concatMap((v) => {
         if (!v.success) {
           context.logger.error('Build target failed!');
           return of({ success: false });
@@ -75,7 +75,7 @@ function runCdk(
       options.outputFile
     } --app "npx ts-node -r dotenv/config ${options.main} dotenv_config_path=${
       options.processEnvironmentFile
-    }" ${options.command} ${options.stackNames.join(' ')}`
+    }" ${options.command} ${options.stackNames.join(' ')}`,
   });
   // });
   return from(
@@ -83,7 +83,7 @@ function runCdk(
       commands: commands,
       cwd: options.root,
       color: true,
-      parallel: false
+      parallel: false,
     })
   );
 }
@@ -119,13 +119,12 @@ function runWaitUntilTargetsSequentially(
 ): Observable<BuilderOutput> {
   if (!options.waitUntilTargets || options.waitUntilTargets.length === 0)
     return of({ success: true });
-  const scheduledTargets: Observable<
-    BuilderOutput
-  >[] = options.waitUntilTargets.map(target =>
-    scheduleTargetAndForget(context, targetFromTargetString(target), {})
+  const scheduledTargets: Observable<BuilderOutput>[] = options.waitUntilTargets.map(
+    (target) =>
+      scheduleTargetAndForget(context, targetFromTargetString(target), {})
   );
   concat(scheduledTargets).pipe(
-    map(result => {
+    map((result) => {
       return result;
     })
   );
@@ -152,12 +151,12 @@ export function startBuild(
   return from(
     Promise.all([
       context.getTargetOptions(target),
-      context.getBuilderNameForTarget(target)
+      context.getBuilderNameForTarget(target),
     ]).then(([options, builderName]) =>
       context.validateOptions(options, builderName)
     )
   ).pipe(
-    tap(options => {
+    tap((options) => {
       if (options.optimization) {
         const art = `
         _   ___  __     ___        ______         ____ ____  _  __ __        ______     _    ____  ____  _____ ____  
@@ -171,11 +170,10 @@ export function startBuild(
     concatMap(
       () =>
         (scheduleTargetAndForget(context, target, {
-          watch: false
+          watch: false,
         }) as unknown) as Observable<BuilderOutput>
     )
   );
 }
 
-
-export default cdkCmdRunner
+export default cdkCmdRunner;
