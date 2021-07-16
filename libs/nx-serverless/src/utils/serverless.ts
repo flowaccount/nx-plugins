@@ -94,7 +94,7 @@ export class ServerlessWrapper {
             );
             this.serverless$._shouldResolveConfigurationInternally = false;
             this.serverless$.serviceDir = options.servicePath;
-            this.serverless$.configurationFilename = 'serverless.yml';
+            this.serverless$.configurationFilename = options.serverlessConfig;
             this.serverless$.config.commands = [
               'deploy',
               'offline',
