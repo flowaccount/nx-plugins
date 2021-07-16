@@ -59,18 +59,15 @@ export class WebpackDependencyResolver implements DependencyResolver {
       return [];
     }
     const externals = new Set();
-    for (const chunk of stats.chunks) {
-      if (!chunk.modules) {
-        continue;
-      }
-
-      // Explore each module within the chunk (built inputs):
-      for (const module of chunk.modules) {
-        if (this.isExternalModule(module)) {
-          externals.add({
-            origin: module.issuer,
-            external: this.getExternalModuleName(module),
-          });
+    for (const module of stats.modules) {
+      if (this.isExternalModule(module) && module.chunks) {
+        for (const chunkId of module.chunks) {
+          if (stats.chunks.find((chunk) => chunk.id === chunkId)) {
+            externals.add({
+              origin: module.issuer,
+              external: this.getExternalModuleName(module),
+            });
+          }
         }
       }
     }
