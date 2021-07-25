@@ -29,14 +29,14 @@ function getStatsConfig(options: BuildBuilderOptions) {
     timings: false,
     cached: false,
     cachedAssets: false,
+    chunks: true, // Required to get external modules
+    chunkModules: true, // Required to get external modules
     modules: true,
     warnings: true,
     errors: true,
     colors: !options.verbose && !options.statsJson,
-    chunks: !options.verbose,
     assets: !!options.verbose,
     chunkOrigins: !!options.verbose,
-    chunkModules: !!options.verbose,
     children: !!options.verbose,
     reasons: !!options.verbose,
     version: !!options.verbose,
