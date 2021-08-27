@@ -33,10 +33,10 @@ function getStatsConfig(options: BuildBuilderOptions) {
     warnings: true,
     errors: true,
     colors: !options.verbose && !options.statsJson,
-    chunks: !options.verbose,
+    chunks: true, // Required to get external modules
+    chunkModules: true,
     assets: !!options.verbose,
     chunkOrigins: !!options.verbose,
-    chunkModules: !!options.verbose,
     children: !!options.verbose,
     reasons: !!options.verbose,
     version: !!options.verbose,

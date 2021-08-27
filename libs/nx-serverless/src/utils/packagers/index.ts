@@ -36,6 +36,8 @@ import { BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { join, dirname } from 'path';
 import { ExecutorContext, logger } from '@nrwl/devkit';
+import { compilation, Stats } from 'webpack';
+
 
 const registeredPackagers = {
   npm: NPM,
@@ -63,7 +65,7 @@ export function preparePackageJson(
     verbose?: boolean;
   },
   context: ExecutorContext,
-  stats: any,
+  stats: Stats.ToJsonOutput,
   resolverName: string,
   tsconfig?: string
 ): Observable<BuilderOutput> {

@@ -1,4 +1,4 @@
-import * as Serverless from 'serverless/lib/Serverless'; // 'D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/lib/Serverless.js';
+import * as Serverless from 'D:/Projects/Flow/flowaccount.workspace/node_modules/serverless/lib/Serverless.js'; // 'serverless/lib/Serverless';
 import { ServerlessBaseOptions } from './types';
 import { mergeMap, concatMap } from 'rxjs/operators';
 import { of, Observable, from } from 'rxjs';
@@ -160,6 +160,7 @@ export async function runServerlessCommand(
   if (extraArgs) {
     args = args.concat(extraArgs);
   }
+  console.log('==================packagePath===================:'+ packagePath)
   ServerlessWrapper.serverless.config.servicePath = path.resolve(packagePath);
   logger.info('running serverless commands');
   ServerlessWrapper.serverless.processedInput = {
