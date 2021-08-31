@@ -1,4 +1,4 @@
-import * as Serverless from 'D:/Projects/Flow/flowaccount.workspace/node_modules/serverless/lib/Serverless.js'; // 'serverless/lib/Serverless';
+import * as Serverless from 'serverless/lib/Serverless'; // 'D:/Projects/opensource/flow-nx-serverless-external-deps-bug/node_modules/serverless/lib/Serverless.js';
 import { ServerlessBaseOptions } from './types';
 import { mergeMap, concatMap } from 'rxjs/operators';
 import { of, Observable, from } from 'rxjs';
