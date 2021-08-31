@@ -38,7 +38,6 @@ import { join, dirname } from 'path';
 import { ExecutorContext, logger } from '@nrwl/devkit';
 import { compilation, Stats } from 'webpack';
 
-
 const registeredPackagers = {
   npm: NPM,
   yarn: Yarn,
