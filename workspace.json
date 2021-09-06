@@ -273,6 +273,70 @@
           "outputs": ["{options.outputPath}"]
         }
       }
+    },
+    "aws-cdk-stack": {
+      "root": "libs/aws-cdk-stack",
+      "sourceRoot": "libs/aws-cdk-stack/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/aws-cdk-stack/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/aws-cdk-stack"],
+          "options": {
+            "jestConfig": "libs/aws-cdk-stack/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/aws-cdk-stack",
+            "tsConfig": "libs/aws-cdk-stack/tsconfig.lib.json",
+            "packageJson": "libs/aws-cdk-stack/package.json",
+            "main": "libs/aws-cdk-stack/src/index.ts",
+            "assets": ["libs/aws-cdk-stack/*.md"]
+          }
+        }
+      }
+    },
+    "aws-cdk-core": {
+      "root": "libs/aws-cdk-core",
+      "sourceRoot": "libs/aws-cdk-core/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/aws-cdk-core/**/*.ts"]
+          }
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/aws-cdk-core"],
+          "options": {
+            "jestConfig": "libs/aws-cdk-core/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/aws-cdk-core",
+            "tsConfig": "libs/aws-cdk-core/tsconfig.lib.json",
+            "packageJson": "libs/aws-cdk-core/package.json",
+            "main": "libs/aws-cdk-core/src/index.ts",
+            "assets": ["libs/aws-cdk-core/*.md"]
+          }
+        }
+      }
     }
   },
   "cli": {

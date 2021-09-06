@@ -1,0 +1,11 @@
+{
+  "name": "@flowaccount/aws-cdk-stack",
+  "version": "0.0.1",
+  "dependencies": {
+    "@aws-cdk/core": "1.114.0",
+    "@aws-cdk/aws-ec2": "1.114.0",
+    "@aws-cdk/aws-dynamodb": "1.114.0",
+    "@aws-cdk/aws-sqs": "1.114.0",
+    "@aws-cdk/aws-sns": "1.114.0"
+  }
+}
