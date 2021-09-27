@@ -1,3 +1,3 @@
-export * from './lib/properties';
 export * from './lib/stacks';
-export * from './lib/models';
+export * from './lib/types';
+    

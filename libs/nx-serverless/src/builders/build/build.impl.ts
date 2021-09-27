@@ -1,5 +1,5 @@
 import { JsonObject } from '@angular-devkit/core';
-import { ServerlessBuildResult } from '@angular-devkit/build-webpack';
+import { BuildResult } from '@angular-devkit/build-webpack';
 // import { NodeJsSyncHost } from '@angular-devkit/core/node';
 import {
   BuildBuilderOptions,
@@ -29,7 +29,7 @@ import * as webpack from 'webpack';
 import { eachValueFrom } from 'rxjs-for-await';
 
 export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {}
-export type ServerlessBuildEvent = ServerlessBuildResult &
+export type ServerlessBuildEvent = BuildResult &
   ServerlessEventResult & {
     outfile: string;
     success: boolean;

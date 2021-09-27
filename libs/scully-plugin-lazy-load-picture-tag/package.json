@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/scully-plugin-lazy-load-picture-tag",
-  "version": "0.0.3",
+  "version": "99.99.99",
   "peerDependencies": {
     "@scullyio/scully": "latest"
   },

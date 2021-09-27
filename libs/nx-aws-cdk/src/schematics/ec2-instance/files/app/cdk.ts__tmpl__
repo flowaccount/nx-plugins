@@ -1,6 +1,0 @@
-import { App } from '@aws-cdk/core';
-import { <%= className %>Stack } from 'src/ec2-stack.ts';
-
-const app = new App();
-new <%= className %>Stack(app, '<%= className %>');
-app.synth();

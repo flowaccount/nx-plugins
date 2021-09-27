@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/scully-plugin-angular-delay",
-  "version": "0.0.9",
+  "version": "99.99.99",
   "peerDependencies": {
     "@scullyio/scully": "^0.0.91"
   },

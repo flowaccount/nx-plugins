@@ -12,12 +12,11 @@
     ".eslintrc.json": "*"
   },
   "projects": {
-    "nx-serverless": {
+    "aws-cdk-core": {
       "tags": []
     },
-    "nx-serverless-e2e": {
-      "tags": [],
-      "implicitDependencies": ["nx-serverless"]
+    "aws-cdk-stack": {
+      "tags": []
     },
     "nx-aws-cdk": {
       "tags": []
@@ -26,23 +25,32 @@
       "tags": [],
       "implicitDependencies": ["nx-aws-cdk"]
     },
-    "scully-plugin-angular-delay": {
+    "nx-serverless": {
       "tags": []
     },
-    "scully-plugin-lazy-load-picture-tag": {
+    "nx-serverless-e2e": {
+      "tags": [],
+      "implicitDependencies": ["nx-serverless"]
+    },
+    "scully-plugin-angular-delay": {
       "tags": []
     },
     "scully-plugin-google-analytics": {
       "tags": []
     },
-    "aws-cdk-stack": {
-      "tags": []
-    },
-    "aws-cdk-core": {
+    "scully-plugin-lazy-load-picture-tag": {
       "tags": []
     }
   },
   "affected": {
     "defaultBase": "master"
+  },
+  "targetDependencies": {
+    "build": [
+      {
+        "target": "build",
+        "projects": "dependencies"
+      }
+    ]
   }
 }

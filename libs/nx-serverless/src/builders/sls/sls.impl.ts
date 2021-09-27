@@ -13,7 +13,7 @@ import { runWaitUntilTargets } from '../../utils/target.schedulers';
 import { Packager } from '../../utils/enums';
 import { buildTarget } from '../deploy/deploy.impl';
 import { ExecutorContext } from '@nrwl/devkit';
-import { ServerlessBuildResult } from '@angular-devkit/build-webpack';
+import { BuildResult } from '@angular-devkit/build-webpack';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
@@ -62,7 +62,7 @@ export async function slsExecutor(
     }
   }
   const iterator = await buildTarget(options, context);
-  const builderOutput = <ServerlessBuildResult>(await iterator.next()).value;
+  const builderOutput = <BuildResult>(await iterator.next()).value;
   const prepResult = await preparePackageJson(
     options,
     context,

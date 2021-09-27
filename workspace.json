@@ -1,6 +1,152 @@
 {
   "version": 1,
   "projects": {
+    "aws-cdk-core": {
+      "root": "libs/aws-cdk-core",
+      "sourceRoot": "libs/aws-cdk-core/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/aws-cdk-core/**/*.ts"]
+          },
+          "outputs": ["{options.outputFile}"]
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/aws-cdk-core"],
+          "options": {
+            "jestConfig": "libs/aws-cdk-core/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/aws-cdk-core",
+            "tsConfig": "libs/aws-cdk-core/tsconfig.lib.json",
+            "packageJson": "libs/aws-cdk-core/package.json",
+            "main": "libs/aws-cdk-core/src/index.ts",
+            "assets": ["libs/aws-cdk-core/*.md"]
+          }
+        }
+      }
+    },
+    "aws-cdk-stack": {
+      "root": "libs/aws-cdk-stack",
+      "sourceRoot": "libs/aws-cdk-stack/src",
+      "projectType": "library",
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": ["libs/aws-cdk-stack/**/*.ts"]
+          },
+          "outputs": ["{options.outputFile}"]
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "outputs": ["coverage/libs/aws-cdk-stack"],
+          "options": {
+            "jestConfig": "libs/aws-cdk-stack/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "outputs": ["{options.outputPath}"],
+          "options": {
+            "outputPath": "dist/libs/aws-cdk-stack",
+            "tsConfig": "libs/aws-cdk-stack/tsconfig.lib.json",
+            "packageJson": "libs/aws-cdk-stack/package.json",
+            "main": "libs/aws-cdk-stack/src/index.ts",
+            "assets": ["libs/aws-cdk-stack/*.md"]
+          }
+        }
+      }
+    },
+    "nx-aws-cdk": {
+      "root": "libs/nx-aws-cdk",
+      "sourceRoot": "libs/nx-aws-cdk/src",
+      "projectType": "library",
+      "schematics": {},
+      "architect": {
+        "lint": {
+          "builder": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/nx-aws-cdk/**/*.ts",
+              "libs/nx-aws-cdk/**/*.spec.ts",
+              "libs/nx-aws-cdk/**/*.spec.tsx",
+              "libs/nx-aws-cdk/**/*.spec.js",
+              "libs/nx-aws-cdk/**/*.spec.jsx",
+              "libs/nx-aws-cdk/**/*.d.ts"
+            ]
+          },
+          "outputs": ["{options.outputFile}"]
+        },
+        "test": {
+          "builder": "@nrwl/jest:jest",
+          "options": {
+            "jestConfig": "libs/nx-aws-cdk/jest.config.js",
+            "passWithNoTests": true
+          },
+          "outputs": ["coverage/libs/nx-aws-cdk"]
+        },
+        "build": {
+          "builder": "@nrwl/node:package",
+          "options": {
+            "outputPath": "dist/libs/nx-aws-cdk",
+            "tsConfig": "libs/nx-aws-cdk/tsconfig.lib.json",
+            "packageJson": "libs/nx-aws-cdk/package.json",
+            "main": "libs/nx-aws-cdk/src/index.ts",
+            "assets": [
+              "libs/nx-aws-cdk/*.md",
+              {
+                "input": "./libs/nx-aws-cdk/src",
+                "glob": "**/!(*.ts)",
+                "output": "./src"
+              },
+              {
+                "input": "./libs/nx-aws-cdk/src",
+                "glob": "**/*.d.ts",
+                "output": "./src"
+              },
+              {
+                "input": "./libs/nx-aws-cdk",
+                "glob": "executors.json",
+                "output": "."
+              },
+              {
+                "input": "./libs/nx-aws-cdk",
+                "glob": "generators.json",
+                "output": "."
+              }
+            ],
+            "srcRootForCompilationRoot": "libs\\nx-aws-cdk"
+          },
+          "outputs": ["{options.outputPath}"]
+        }
+      }
+    },
+    "nx-aws-cdk-e2e": {
+      "projectType": "application",
+      "root": "apps/nx-aws-cdk-e2e",
+      "sourceRoot": "apps/nx-aws-cdk-e2e/src",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/nx-plugin:e2e",
+          "options": {
+            "target": "nx-aws-cdk:build",
+            "npmPackageName": "@flowaccount/nx-aws-cdk",
+            "pluginOutputPath": "dist/libs/nx-aws-cdk",
+            "jestConfig": "apps/nx-aws-cdk-e2e/jest.config.js"
+          }
+        }
+      }
+    },
     "nx-serverless": {
       "root": "libs/nx-serverless",
       "sourceRoot": "libs/nx-serverless/src",
@@ -18,7 +164,8 @@
               "libs/nx-serverless/**/*.spec.jsx",
               "libs/nx-serverless/**/*.d.ts"
             ]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "builder": "@nrwl/jest:jest",
@@ -76,80 +223,6 @@
         }
       }
     },
-    "nx-aws-cdk": {
-      "root": "libs/nx-aws-cdk",
-      "sourceRoot": "libs/nx-aws-cdk/src",
-      "projectType": "library",
-      "schematics": {},
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": [
-              "libs/nx-aws-cdk/**/*.ts",
-              "libs/nx-aws-cdk/**/*.spec.ts",
-              "libs/nx-aws-cdk/**/*.spec.tsx",
-              "libs/nx-aws-cdk/**/*.spec.js",
-              "libs/nx-aws-cdk/**/*.spec.jsx",
-              "libs/nx-aws-cdk/**/*.d.ts"
-            ]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/nx-aws-cdk/jest.config.js",
-            "passWithNoTests": true
-          },
-          "outputs": ["coverage/libs/nx-aws-cdk"]
-        },
-        "build": {
-          "builder": "@nrwl/node:package",
-          "options": {
-            "outputPath": "dist/libs/nx-aws-cdk",
-            "tsConfig": "libs/nx-aws-cdk/tsconfig.lib.json",
-            "packageJson": "libs/nx-aws-cdk/package.json",
-            "main": "libs/nx-aws-cdk/src/index.ts",
-            "assets": [
-              "libs/nx-aws-cdk/*.md",
-              {
-                "input": "./libs/nx-aws-cdk/src",
-                "glob": "**/*.!(ts)",
-                "output": "./src"
-              },
-              {
-                "input": "./libs/nx-aws-cdk",
-                "glob": "collection.json",
-                "output": "."
-              },
-              {
-                "input": "./libs/nx-aws-cdk",
-                "glob": "builders.json",
-                "output": "."
-              }
-            ],
-            "srcRootForCompilationRoot": "libs\\nx-aws-cdk"
-          },
-          "outputs": ["{options.outputPath}"]
-        }
-      }
-    },
-    "nx-aws-cdk-e2e": {
-      "projectType": "application",
-      "root": "apps/nx-aws-cdk-e2e",
-      "sourceRoot": "apps/nx-aws-cdk-e2e/src",
-      "architect": {
-        "e2e": {
-          "builder": "@nrwl/nx-plugin:e2e",
-          "options": {
-            "target": "nx-aws-cdk:build",
-            "npmPackageName": "@flowaccount/nx-aws-cdk",
-            "pluginOutputPath": "dist/libs/nx-aws-cdk",
-            "jestConfig": "apps/nx-aws-cdk-e2e/jest.config.js"
-          }
-        }
-      }
-    },
     "scully-plugin-angular-delay": {
       "root": "libs/scully-plugin-angular-delay",
       "sourceRoot": "libs/scully-plugin-angular-delay/src",
@@ -168,7 +241,8 @@
               "libs/scully-plugin-angular-delay/**/*.spec.jsx",
               "libs/scully-plugin-angular-delay/**/*.d.ts"
             ]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "builder": "@nrwl/jest:jest",
@@ -192,47 +266,6 @@
         }
       }
     },
-    "scully-plugin-lazy-load-picture-tag": {
-      "root": "libs/scully-plugin-lazy-load-picture-tag",
-      "sourceRoot": "libs/scully-plugin-lazy-load-picture-tag/src",
-      "projectType": "library",
-      "schematics": {},
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": [
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.ts",
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.ts",
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.tsx",
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.js",
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.jsx",
-              "libs/scully-plugin-lazy-load-picture-tag/**/*.d.ts"
-            ]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "options": {
-            "jestConfig": "libs/scully-plugin-lazy-load-picture-tag/jest.config.js",
-            "passWithNoTests": true
-          },
-          "outputs": ["coverage/libs/scully-plugin-lazy-load-picture-tag"]
-        },
-        "build": {
-          "builder": "@nrwl/node:package",
-          "options": {
-            "outputPath": "dist/libs/scully-plugin-lazy-load-picture-tag",
-            "tsConfig": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.lib.json",
-            "packageJson": "libs/scully-plugin-lazy-load-picture-tag/package.json",
-            "main": "libs/scully-plugin-lazy-load-picture-tag/src/index.ts",
-            "assets": ["libs/scully-plugin-lazy-load-picture-tag/*.md"],
-            "srcRootForCompilationRoot": "libs\\scully-plugin-lazy-load-picture-tag\\src"
-          },
-          "outputs": ["{options.outputPath}"]
-        }
-      }
-    },
     "scully-plugin-google-analytics": {
       "root": "libs/scully-plugin-google-analytics",
       "sourceRoot": "libs/scully-plugin-google-analytics/src",
@@ -250,7 +283,8 @@
               "libs/scully-plugin-google-analytics/**/*.spec.jsx",
               "libs/scully-plugin-google-analytics/**/*.d.ts"
             ]
-          }
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "builder": "@nrwl/jest:jest",
@@ -274,67 +308,45 @@
         }
       }
     },
-    "aws-cdk-stack": {
-      "root": "libs/aws-cdk-stack",
-      "sourceRoot": "libs/aws-cdk-stack/src",
+    "scully-plugin-lazy-load-picture-tag": {
+      "root": "libs/scully-plugin-lazy-load-picture-tag",
+      "sourceRoot": "libs/scully-plugin-lazy-load-picture-tag/src",
       "projectType": "library",
+      "schematics": {},
       "architect": {
         "lint": {
           "builder": "@nrwl/linter:eslint",
           "options": {
-            "lintFilePatterns": ["libs/aws-cdk-stack/**/*.ts"]
-          }
+            "lintFilePatterns": [
+              "libs/scully-plugin-lazy-load-picture-tag/**/*.ts",
+              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.ts",
+              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.tsx",
+              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.js",
+              "libs/scully-plugin-lazy-load-picture-tag/**/*.spec.jsx",
+              "libs/scully-plugin-lazy-load-picture-tag/**/*.d.ts"
+            ]
+          },
+          "outputs": ["{options.outputFile}"]
         },
         "test": {
           "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/aws-cdk-stack"],
           "options": {
-            "jestConfig": "libs/aws-cdk-stack/jest.config.js",
+            "jestConfig": "libs/scully-plugin-lazy-load-picture-tag/jest.config.js",
             "passWithNoTests": true
-          }
+          },
+          "outputs": ["coverage/libs/scully-plugin-lazy-load-picture-tag"]
         },
         "build": {
           "builder": "@nrwl/node:package",
-          "outputs": ["{options.outputPath}"],
           "options": {
-            "outputPath": "dist/libs/aws-cdk-stack",
-            "tsConfig": "libs/aws-cdk-stack/tsconfig.lib.json",
-            "packageJson": "libs/aws-cdk-stack/package.json",
-            "main": "libs/aws-cdk-stack/src/index.ts",
-            "assets": ["libs/aws-cdk-stack/*.md"]
-          }
-        }
-      }
-    },
-    "aws-cdk-core": {
-      "root": "libs/aws-cdk-core",
-      "sourceRoot": "libs/aws-cdk-core/src",
-      "projectType": "library",
-      "architect": {
-        "lint": {
-          "builder": "@nrwl/linter:eslint",
-          "options": {
-            "lintFilePatterns": ["libs/aws-cdk-core/**/*.ts"]
-          }
-        },
-        "test": {
-          "builder": "@nrwl/jest:jest",
-          "outputs": ["coverage/libs/aws-cdk-core"],
-          "options": {
-            "jestConfig": "libs/aws-cdk-core/jest.config.js",
-            "passWithNoTests": true
-          }
-        },
-        "build": {
-          "builder": "@nrwl/node:package",
-          "outputs": ["{options.outputPath}"],
-          "options": {
-            "outputPath": "dist/libs/aws-cdk-core",
-            "tsConfig": "libs/aws-cdk-core/tsconfig.lib.json",
-            "packageJson": "libs/aws-cdk-core/package.json",
-            "main": "libs/aws-cdk-core/src/index.ts",
-            "assets": ["libs/aws-cdk-core/*.md"]
-          }
+            "outputPath": "dist/libs/scully-plugin-lazy-load-picture-tag",
+            "tsConfig": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.lib.json",
+            "packageJson": "libs/scully-plugin-lazy-load-picture-tag/package.json",
+            "main": "libs/scully-plugin-lazy-load-picture-tag/src/index.ts",
+            "assets": ["libs/scully-plugin-lazy-load-picture-tag/*.md"],
+            "srcRootForCompilationRoot": "libs\\scully-plugin-lazy-load-picture-tag\\src"
+          },
+          "outputs": ["{options.outputPath}"]
         }
       }
     }
