@@ -1,6 +1,6 @@
 import * as cdk from "@aws-cdk/core";
 import * as sqs from '@aws-cdk/aws-sqs';
-import { EnvironmentConfig } from "../types";
+import { SQSConfiguration } from "../types";
 import { IQueue } from "@aws-cdk/aws-sqs";
 import { logger } from "@nrwl/devkit";
 // import { PrincipalWithConditions } from "@aws-cdk/aws-iam";
@@ -12,7 +12,7 @@ export class SQSStack extends cdk.Stack {
     public readonly output: {
         queues?: IQueue[];
     }
-  constructor(scope: cdk.Construct, id: string, _props: EnvironmentConfig) {
+  constructor(scope: cdk.Construct, id: string, _props: SQSConfiguration) {
     super(scope, id, _props);
     logger.info("Initiating SQS");
     this.output = { queues: [] };

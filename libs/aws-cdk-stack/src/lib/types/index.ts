@@ -1,4 +1,4 @@
-import { IVpc, SubnetAttributes, SubnetSelection, VpcAttributes } from "@aws-cdk/aws-ec2";
+import { InstanceType, IVpc, SubnetAttributes, SubnetSelection, VpcAttributes } from "@aws-cdk/aws-ec2";
 import { Conditions, IPrincipal, IRole } from "@aws-cdk/aws-iam"
 import {  Runtime } from "@aws-cdk/aws-lambda";
 import * as lambda from "@aws-cdk/aws-lambda";
@@ -6,6 +6,7 @@ import { IQueue, QueueProps } from "@aws-cdk/aws-sqs";
 import { Duration, NestedStackProps, StackProps } from "@aws-cdk/core";
 import { SqsEventSourceProps } from "@aws-cdk/aws-lambda-event-sources";
 import { TableProps } from "@aws-cdk/aws-dynamodb";
+import { DatabaseInstance, DatabaseInstanceAttributes } from "@aws-cdk/aws-rds";
 
 export interface VpcStackProperties extends StackProps {
   vpcAttributes: VpcAttributes
@@ -58,17 +59,19 @@ export interface AWSCredentialsModel {
   region: string 
 }
 
-export interface EnvironmentConfig extends StackProps {
+export type EnvironmentConfig = StackProps & {
   stackName: string
   isProduction: boolean
   awsCredentials: AWSCredentialsModel
   envName: string
   vpc: VpcStackProperties
-  sqs: QueueProps[],
-  elasticSearch: ElasticsearchStackConfiguration
-  serverless: ServerlessApplicationStackConfiguration
-  aurora: AuroraServerlessDbStackConfiguration
+  // sqs?: QueueProps[],
+  // elasticSearch?: ElasticsearchStackConfiguration
+  // serverless?: ServerlessApplicationStackConfiguration
+  // aurora?: AuroraServerlessDbStackConfiguration
 }
+
+export type SQSConfiguration = StackProps & { sqs: QueueProps[] }
 
 export interface ServerlessApplicationStackConfiguration extends NestedStackProps {
   executionRole: InlineRoleStackProperties
@@ -166,4 +169,22 @@ export interface DynamoDbEnvironmentProps extends StackProps {
     vpc: IVpc;
     tag: Tag[];
     tables: { name: string; definition: TableProps }[];
+}
+
+export interface DatabaseReadonlyReplicaProps extends StackProps {
+  vpc: IVpc
+  instanceType: InstanceType
+  production: boolean
+  instanceAttributes: DatabaseInstanceAttributes
+}
+
+export type DatabaseReadOnlyReplicaConfiguration = StackProps & {
+  instanceType: InstanceType
+  production: boolean
+  instanceAttributes: {
+    instanceIdentifier: string
+    instanceEndpointAddress: string
+    port: number
+    securityGroupIds: string[]
+  }
 }
