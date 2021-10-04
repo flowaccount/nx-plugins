@@ -70,8 +70,7 @@
       "type": "string",
       "description": "Path to file where stack outputs will be written as JSON"
     },
-    "previous-parameters":
-    {
+    "previous-parameters": {
       "type": "boolean",
       "default": true,
       "description": "Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)"
@@ -92,11 +91,9 @@
     },
     "verbose": {
       "type": "boolean",
-      
+
       "default": false
     }
   },
   "required": ["profile", "output", "stackName"]
 }
-
-

@@ -32,20 +32,20 @@ const defaultTypeScriptAssetCodeOptions = {
  * Wrapper for the Code abstract class, which provides some static helper methods.
  */
 export abstract class TypeScriptCode extends Code {
-  public static asset(path: string, distPath?:string, options?: TypeScriptAssetCodeOptions): TypeScriptAssetCode {
+  public static asset(
+    path: string,
+    distPath?: string,
+    options?: TypeScriptAssetCodeOptions
+  ): TypeScriptAssetCode {
     return new TypeScriptAssetCode(path, distPath, options);
   }
 }
 
-
-function copySourceToBePackaged(
-  srcPath: string,
-  outputPath: string
-): boolean {
+function copySourceToBePackaged(srcPath: string, outputPath: string): boolean {
   logger.info(
     `Copying src files from ${srcPath} to ${outputPath} to be packaged`
   );
-  ensureFileSync(outputPath)
+  ensureFileSync(outputPath);
   fs.copyFileSync(srcPath, outputPath);
   logger.info('Done copying build output files.');
   return true;
@@ -59,19 +59,27 @@ export class TypeScriptAssetCode extends AssetCode {
   private typeScriptSourcePath: string; // original source code path
   private typeScriptAssetCodeOptions: TypeScriptAssetCodeOptions;
 
-  constructor(path: string, distPath?: string, options?: TypeScriptAssetCodeOptions) {
+  constructor(
+    path: string,
+    distPath?: string,
+    options?: TypeScriptAssetCodeOptions
+  ) {
     // Add a .deploy subfolder which contains the built files and is deployed to S3
     let destPath = path;
-    if(distPath) {
-      copySourceToBePackaged(path, distPath)
-      destPath = distPath
+    if (distPath) {
+      copySourceToBePackaged(path, distPath);
+      destPath = distPath;
     }
     super(pathModule.join(destPath, '.deploy'));
     this.originalSourcePath = path;
     // Remember the original source folder
     this.typeScriptSourcePath = destPath;
-    this.originalSourcePath = path
-    this.typeScriptAssetCodeOptions = Object.assign({}, defaultTypeScriptAssetCodeOptions, options || {});
+    this.originalSourcePath = path;
+    this.typeScriptAssetCodeOptions = Object.assign(
+      {},
+      defaultTypeScriptAssetCodeOptions,
+      options || {}
+    );
   }
 
   public bind(construct: Construct) {
@@ -81,7 +89,9 @@ export class TypeScriptAssetCode extends AssetCode {
 
   private typeScriptBuild() {
     // Keep track of which folders have already been built
-    logger.info(`Building typescript application from source path:${this.typeScriptSourcePath}`)
+    logger.info(
+      `Building typescript application from source path:${this.typeScriptSourcePath}`
+    );
     if (typeScriptAlreadyBuilt.includes(this.typeScriptSourcePath)) {
       return;
     }
@@ -102,7 +112,7 @@ export class TypeScriptAssetCode extends AssetCode {
         cwd: __dirname,
         stdio: 'inherit',
         shell: true,
-      },
+      }
     );
     if (tscChild.error) {
       throw tscChild.error;
@@ -113,7 +123,10 @@ export class TypeScriptAssetCode extends AssetCode {
 
     // Copy additional files if specified
     for (const copyFile of this.typeScriptAssetCodeOptions.copyFiles || []) {
-      const sourcePath = pathModule.join(this.typeScriptSourcePath, copyFile.sourcePath); // relative to user specified path
+      const sourcePath = pathModule.join(
+        this.typeScriptSourcePath,
+        copyFile.sourcePath
+      ); // relative to user specified path
       const targetPath = pathModule.join(this.path, copyFile.targetPath); // relative to .deploy
       const targetPathParts = pathModule.parse(targetPath);
       mkdirp.sync(targetPathParts.dir);
@@ -134,22 +147,40 @@ export class TypeScriptAssetCode extends AssetCode {
     // New versions in source path
     const newPackageLockData = readFileSyncOrNull(
       pathModule.join(this.typeScriptSourcePath, 'package-lock.json'),
-      'utf8',
+      'utf8'
     );
-    const newPackageData = readFileSyncOrNull(pathModule.join(this.typeScriptSourcePath, 'package.json'), 'utf8');
+    const newPackageData = readFileSyncOrNull(
+      pathModule.join(this.typeScriptSourcePath, 'package.json'),
+      'utf8'
+    );
 
     // Old versions in deploy path (if any)
-    const oldPackageLockData = readFileSyncOrNull(pathModule.join(this.path, 'package-lock.json'), 'utf8');
-    const oldPackageData = readFileSyncOrNull(pathModule.join(this.path, 'package.json'), 'utf8');
+    const oldPackageLockData = readFileSyncOrNull(
+      pathModule.join(this.path, 'package-lock.json'),
+      'utf8'
+    );
+    const oldPackageData = readFileSyncOrNull(
+      pathModule.join(this.path, 'package.json'),
+      'utf8'
+    );
 
     if (
       newPackageData &&
       newPackageLockData &&
-      (newPackageData !== oldPackageData || newPackageLockData !== oldPackageLockData)
+      (newPackageData !== oldPackageData ||
+        newPackageLockData !== oldPackageLockData)
     ) {
       // We have a package.json, and either package.json or package-lock.json has changed since last build, or no build done yet
-      fs.writeFileSync(pathModule.join(this.path, 'package-lock.json'), newPackageLockData, 'utf8');
-      fs.writeFileSync(pathModule.join(this.path, 'package.json'), newPackageData, 'utf8');
+      fs.writeFileSync(
+        pathModule.join(this.path, 'package-lock.json'),
+        newPackageLockData,
+        'utf8'
+      );
+      fs.writeFileSync(
+        pathModule.join(this.path, 'package.json'),
+        newPackageData,
+        'utf8'
+      );
 
       // Execute npm install
       const npmChild = child_process.spawnSync(
@@ -159,7 +190,7 @@ export class TypeScriptAssetCode extends AssetCode {
           cwd: this.path,
           stdio: 'inherit',
           shell: true,
-        },
+        }
       );
       if (npmChild.error) {
         throw npmChild.error;
@@ -173,4 +204,3 @@ export class TypeScriptAssetCode extends AssetCode {
 function copySync(srcPath: string, outputPath: string) {
   throw new Error('Function not implemented.');
 }
-

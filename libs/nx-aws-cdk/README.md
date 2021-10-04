@@ -44,4 +44,3 @@ Deploy your infrastructure
 ```shell
 yarn nx run my-cdk:deploy [--configuration=<stack-suffix>]
 ```
-

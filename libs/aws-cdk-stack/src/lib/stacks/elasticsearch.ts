@@ -1,22 +1,31 @@
-import * as cdk from "@aws-cdk/core";
-import * as iam from "@aws-cdk/aws-iam";
-import * as es from "@aws-cdk/aws-elasticsearch";
-import { SecurityGroup } from "@aws-cdk/aws-ec2";
-import { ElasticsearchStackProperties, EsInstanceType } from "../types";
-import { logger } from "@nrwl/devkit";
+import * as cdk from '@aws-cdk/core';
+import * as iam from '@aws-cdk/aws-iam';
+import * as es from '@aws-cdk/aws-elasticsearch';
+import { SecurityGroup } from '@aws-cdk/aws-ec2';
+import { ElasticsearchStackProperties, EsInstanceType } from '../types';
+import { logger } from '@nrwl/devkit';
 
 export class ElasticsearchStack extends cdk.Stack {
-  public readonly output: { 
+  public readonly output: {
     domainArn?: string;
-  }
-  constructor(scope: cdk.Construct, id: string, _props: ElasticsearchStackProperties) {
+  };
+  constructor(
+    scope: cdk.Construct,
+    id: string,
+    _props: ElasticsearchStackProperties
+  ) {
     super(scope, id, _props);
-    
-    this.templateOptions.description =
-      "To create elasticsearch instance";
 
-    logger.info(`Initiating ElasticsearchStack ${_props.domainName}`)
-    const securityGroups = _props.securityGroupIds.map((secgroupId) => SecurityGroup.fromSecurityGroupId(this, `${id}-${secgroupId}-sg`, secgroupId));
+    this.templateOptions.description = 'To create elasticsearch instance';
+
+    logger.info(`Initiating ElasticsearchStack ${_props.domainName}`);
+    const securityGroups = _props.securityGroupIds.map((secgroupId) =>
+      SecurityGroup.fromSecurityGroupId(
+        this,
+        `${id}-${secgroupId}-sg`,
+        secgroupId
+      )
+    );
     logger.info(`finished fetching security groups`);
     const esDomain = new es.Domain(this, `${id}-es-domain`, {
       domainName: _props.domainName,
@@ -29,18 +38,24 @@ export class ElasticsearchStack extends cdk.Stack {
         volumeSize: _props.esInstanceType === EsInstanceType.Small ? 100 : 150,
       },
       accessPolicies: [
-          new iam.PolicyStatement({
+        new iam.PolicyStatement({
           effect: iam.Effect.ALLOW,
           principals: [new iam.AnyPrincipal()],
-          actions: ["es:ESHttpGet","es:ESHttpPost"]
-        })
+          actions: ['es:ESHttpGet', 'es:ESHttpPost'],
+        }),
       ],
       vpc: _props.vpc,
-      vpcSubnets: _props.esInstanceType === EsInstanceType.Small ? [ _props.subnets[0] ] : _props.subnets,
+      vpcSubnets:
+        _props.esInstanceType === EsInstanceType.Small
+          ? [_props.subnets[0]]
+          : _props.subnets,
       securityGroups: securityGroups,
-      zoneAwareness: _props.subnets.length > 1 ? {enabled: true, availabilityZoneCount: _props.subnets.length} : {enabled:false}
+      zoneAwareness:
+        _props.subnets.length > 1
+          ? { enabled: true, availabilityZoneCount: _props.subnets.length }
+          : { enabled: false },
     });
     this.output = { domainArn: esDomain.domainArn };
-    logger.info("🚀");
+    logger.info('🚀');
   }
 }
