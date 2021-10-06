@@ -113,15 +113,17 @@ workflows:
           requires:
             - install
   release_workflow:
-    filters:
-      branches:
-        only:
-          - beta
     jobs:
       - install
       - checks-and-unit-tests:
+          filters:
+            branches:
+              only: beta
           requires:
             - install
       - semantic-release:
+          filters:
+            branches:
+              only: beta
           requires:
             - install
