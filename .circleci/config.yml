@@ -96,11 +96,11 @@ jobs:
     steps:
       - setup
       - run:
-        name: Build
-        command: yarn nx affected --target=build --base=origin/master~1 --parallel --with-deps
+          name: Build
+          command: yarn nx affected --target=build --base=origin/master~1 --parallel --with-deps
       - run:
-        name: Release
-        command: yarn semantic-release
+          name: Release
+          command: yarn semantic-release
 workflows:
   version: 2.1
   pr_workflow:
