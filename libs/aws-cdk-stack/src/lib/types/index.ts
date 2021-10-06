@@ -180,20 +180,23 @@ export interface DynamoDbEnvironmentProps extends StackProps {
   tables: { name: string; definition: TableProps }[];
 }
 
+type DbInstanceAttributes = {
+  instanceIdentifier: string;
+  instanceEndpointAddress: string;
+  port: number;
+  securityGroupIds: string[];
+};
+
 export interface DatabaseReadonlyReplicaProps extends StackProps {
   vpc: IVpc;
   instanceType: InstanceType;
   production: boolean;
-  instanceAttributes: DatabaseInstanceAttributes;
+  instanceAttributes: DbInstanceAttributes;
+  awsCredentials?: AWSCredentialsModel;
 }
 
 export type DatabaseReadOnlyReplicaConfiguration = StackProps & {
   instanceType: InstanceType;
   production: boolean;
-  instanceAttributes: {
-    instanceIdentifier: string;
-    instanceEndpointAddress: string;
-    port: number;
-    securityGroupIds: string[];
-  };
+  instanceAttributes: DbInstanceAttributes;
 };

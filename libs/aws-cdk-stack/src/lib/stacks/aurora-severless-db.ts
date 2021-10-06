@@ -1,27 +1,31 @@
-import * as cdk from '@aws-cdk/core';
-import * as rds from '@aws-cdk/aws-rds';
-import * as ec2 from '@aws-cdk/aws-ec2';
 import { AuroraServerlessDbStackProperties } from '../types';
 import { SecurityGroup } from '@aws-cdk/aws-ec2';
 import { logger } from '@nrwl/devkit';
+import { Construct, SecretValue, Stack } from '@aws-cdk/core';
+import {
+  AuroraPostgresEngineVersion,
+  Credentials,
+  DatabaseClusterEngine,
+  ServerlessCluster,
+} from '@aws-cdk/aws-rds';
 
-export class AuroraServerlessDbStack extends cdk.Stack {
+export class AuroraServerlessDbStack extends Stack {
   public readonly output: {
     auroraArn: string;
-    db: rds.ServerlessCluster;
+    db: ServerlessCluster;
   };
   constructor(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     _props: AuroraServerlessDbStackProperties
   ) {
     super(scope, id, _props);
     this.templateOptions.description = 'To produce sls (serverless) aurora';
 
-    logger.info('Initiating RDS Cluster');
-    const db = new rds.ServerlessCluster(this, `${id}-aurora-serverless-cdk`, {
-      engine: rds.DatabaseClusterEngine.auroraPostgres({
-        version: rds.AuroraPostgresEngineVersion.VER_10_14,
+    logger.info('Initiating Serverless RDS Cluster');
+    const db = new ServerlessCluster(this, `${id}-aurora-serverless-cdk`, {
+      engine: DatabaseClusterEngine.auroraPostgres({
+        version: AuroraPostgresEngineVersion.VER_10_14,
       }),
       clusterIdentifier: `${id}-sls-db`,
       //parameterGroup: new rds.ParameterGroup(this, 'AuroraServerlessCdk-Param', {engine: ''}),
@@ -37,9 +41,9 @@ export class AuroraServerlessDbStack extends cdk.Stack {
       ),
       deletionProtection: _props.isProduction,
       enableDataApi: true,
-      credentials: rds.Credentials.fromPassword(
+      credentials: Credentials.fromPassword(
         _props.username,
-        cdk.SecretValue.plainText(_props.password)
+        SecretValue.plainText(_props.password)
       ),
     });
     this.output = { auroraArn: db.clusterArn, db: db };

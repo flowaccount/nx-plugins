@@ -3,23 +3,21 @@
 # Check https://circleci.com/docs/2.0/language-javascript/ for more details
 #
 version: 2.1
-
 executors:
   default:
     working_directory: ~/repo
     environment:
       # install Cypress in Linux-like cache folder
-      CYPRESS_CACHE_FOLDER: "~/.cache/Cypress"
+      CYPRESS_CACHE_FOLDER: '~/.cache/Cypress'
       # set node max space
-      NODE_OPTIONS: "--max_old_space_size=4096"
+      NODE_OPTIONS: '--max_old_space_size=4096'
     docker:
       - image: circleci/node:12-browsers
-
 commands:
   yarn_install:
     description: 'Install Dependencies'
     steps:
-      - run: yarn install --non-interactive #--frozen-lockfile 
+      - run: yarn install --non-interactive #--frozen-lockfile
       - run: ./node_modules/.bin/cypress verify
       - save_cache:
           key: flowaccount-nx-plugins-node12-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
@@ -93,14 +91,37 @@ jobs:
           name: nx-plugins E2E Tests
           command: yarn affected:e2e  --base=origin/master~1
           no_output_timeout: 30m
+  semantic-release:
+    executor: default
+    steps:
+      - setup
+      - run:
+        name: Build
+        command: yarn nx affected --target=build --base=origin/master~1 --parallel --with-deps
+      - run:
+        name: Release
+        command: yarn semantic-release
 workflows:
   version: 2.1
-  default_workflow:
+  pr_workflow:
     jobs:
       - install
       - checks-and-unit-tests:
           requires:
             - install
       - e2e-nx-plugins:
+          requires:
+            - install
+  release_workflow:
+    filters:
+      branches:
+        only:
+          - beta
+    jobs:
+      - install
+      - checks-and-unit-tests:
+          requires:
+            - install
+      - semantic-release:
           requires:
             - install

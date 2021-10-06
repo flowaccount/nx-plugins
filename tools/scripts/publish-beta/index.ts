@@ -5,7 +5,7 @@ export function main(all = false, specific?: string) {
   const rootPkg = readJson('package.json');
 
   const [prev, tagSpec] = rootPkg.version.split('-');
-  let [tag, rev] = tagSpec ? tagSpec.split('.') : ['dev', '0'];
+  let [tag, rev] = tagSpec ? tagSpec.split('.') : ['beta', '0'];
   rev = (parseInt(rev) + 1).toString();
   rev = rev === 'NaN' ? '0' : rev;
   const newVersion = `${prev}-${tag}.${rev}`;

@@ -44,11 +44,11 @@ export default async function runSynthExecutor(
   cdkOptionFlag.app = `node ${buildOutput.outfile}`;
   const synthOption = getSynthOptions(synthOptionFlag);
   const cdkOption = getCdkOptions(cdkOptionFlag);
-  const stackSuffix = context.configurationName
+  const stackPrefix = context.configurationName
     ? context.configurationName
     : 'dev';
   awscdkClient.synth(
-    `${options.stackName}-${stackSuffix}`,
+    `${stackPrefix}-${options.stackName}`,
     cdkOption,
     synthOption
   );
