@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/nx-aws-cdk",
-  "version": "99.99.99",
+  "version": "1.0.0-beta.6",
   "main": "src/index.js",
   "generators": "./generators.json",
   "builders": "./executors.json",
