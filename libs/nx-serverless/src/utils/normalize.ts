@@ -136,7 +136,7 @@ export const getEntryForFunction = (
 ) => {
   const handler = serverlessFunction.handler;
 
-  const handlerFile = getHandlerFile(handler);
+  let handlerFile = getHandlerFile(handler);
   if (!handlerFile) {
     _.get(serverless, 'service.provider.name') !== 'google' &&
       serverless.cli.log(
@@ -144,6 +144,13 @@ export const getEntryForFunction = (
       );
     return {};
   }
+
+  // Sometimes the service path and handlerFile path overlap, unusually caused by plugins. This regex removes the overlap
+  const regex = new RegExp(
+    `^${serverless.config.servicePath.replace(/\/([^/]*)/g, `($1\\/)?`)}`
+  );
+  handlerFile = handlerFile.replace(regex, ``);
+
   const ext = getEntryExtension(handlerFile, serverless);
 
   // Create a valid entry key
