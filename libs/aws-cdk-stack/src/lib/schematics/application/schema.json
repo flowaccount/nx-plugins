@@ -1,0 +1,141 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "cli": "nx",
+  "title": "Stack Options",
+  "description": "Synth an app via the `cdk` cli command.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Use the indicated name for as the cdk stack project name",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the cdk project name?"
+    },
+    "profile": {
+      "type": "string",
+      "description": "Use the indicated AWS profile as the default environment",
+      "default": "dev_console",
+      "x-prompt": "What profile would you want to assume (profile from ~/.aws/config) ([profile <profile_name>) ?"
+    },
+    "region": {
+      "type": "string",
+      "description": "Use the indicated AWS profile as the default environment",
+      "default": "ap-southeast-1",
+      "x-prompt": "What region would you want to deploy to ?"
+    },
+    "directory": {
+      "type": "string",
+      "description": "Use the indicated directory under apps/<directory> for as the cdk stack project directory"
+    },
+    "tags": {
+      "type": "string",
+      "description": "Add tags to the project"
+    },
+    "vpcId": {
+      "type": "string",
+      "description": "The vpc-id for this serverless application to live on",
+      "x-prompt": "What vpc id will this application be deployed to ?",
+      "default": "vpc-"
+    },
+    "vpcPrivateSubnetIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of vpc private subnet ids",
+      "x-prompt": "Type in vpc private subnetids (minimum 1)? id1,id2,id3"
+    },
+    "subnets": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of lambda subnet ids",
+      "x-prompt": "What subnet ids will this application use? id1,id2,id3"
+    },
+    "availabilityZones": {
+      "type": "array",
+      "description": "Array for availability zones",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      },
+      "x-prompt": {
+        "message": "Which availability zones would you like to use?",
+        "type": "list",
+        "multiselect": true,
+        "items": [
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    },
+    "handlers":  {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array for lambda handler names",
+      "x-prompt": "What hadlers functions should be mapped to lambda functions (will map in linear order)? 'a','b','c' "
+    },
+    "functionNames": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array for lambda function names",
+      "x-prompt": "Function names for your lambda functions (will map in linear order)? 'a','b','c'"
+    },
+    "securityGroupIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array for lambda security groups 'a','b','c'"
+    },
+    "memmorySizes": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Array for lambda memorrysizes"
+    },
+    "timeouts": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Array for lambda timeout"
+    },
+   
+    "eventSources": {
+      "type": "array",
+      "description": "Array for event source",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      },
+      "x-prompt": {
+        "message": "Which event sources would you like to use?",
+        "type": "list",
+        "multiselect": true,
+        "items": [
+          "kinesis",
+          "sqs"
+        ]
+      }
+    },
+    "eventsArn": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array for event ARNS"
+    }
+  },
+  "required": ["name", "profile", "region", "vpcId", "vpcPrivateSubnetIds", "subnets", "availabilityZones", "handlers", "functionNames" ]
+}

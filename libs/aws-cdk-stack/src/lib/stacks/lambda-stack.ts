@@ -22,7 +22,9 @@ export class TypescriptLambdaStack extends Stack {
 
     _props.functions.forEach((f) => {
       const rootPath = process.cwd();
+      // lambda.DockerImageCode.fromImageAsset
       const code = TypeScriptCode.asset(`${rootPath}/${f.srcRootPath}`);
+
       logger.info(
         `Initiating Lambda Function ${f.functionName}:${rootPath}/${f.srcRootPath}`
       );
@@ -64,6 +66,9 @@ export class TypescriptLambdaStack extends Stack {
         logger.info(
           `attaching sqs ${f.eventProperties?.sqsEventSource.queue.queueName}`
         );
+        if(!f.eventProperties?.sqsEventSource.queue) {
+          throw new Error("SQS IQueue is null, please make sure it is not to hook the event source to lambda")
+        }
         lambdaFunction.addEventSource(
           new lambdaEvent.SqsEventSource(
             f.eventProperties?.sqsEventSource.queue,

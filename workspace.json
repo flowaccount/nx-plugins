@@ -62,7 +62,38 @@
             "tsConfig": "libs/aws-cdk-stack/tsconfig.lib.json",
             "packageJson": "libs/aws-cdk-stack/package.json",
             "main": "libs/aws-cdk-stack/src/index.ts",
-            "assets": ["libs/aws-cdk-stack/*.md"]
+            "assets": [
+              {
+                "input": "./libs/aws-cdk-stack/src",
+                "glob": "**/!(*.ts)",
+                "output": "./src"
+              },
+              "libs/aws-cdk-stack/*.md",
+              {
+                "input": "./libs/aws-cdk-stack/src",
+                "glob": "**/*.d.ts",
+                "output": "./src"
+              },
+              {
+                "input": "./libs/aws-cdk-stack",
+                "glob": "generators.json",
+                "output": "."
+              }
+            ]
+          }
+        }
+      }
+    },
+    "aws-cdk-stack-e2e": {
+      "root": "apps/aws-cdk-stack-e2e",
+      "projectType": "application",
+      "sourceRoot": "apps/aws-cdk-stack-e2e/src",
+      "architect": {
+        "e2e": {
+          "builder": "@nrwl/nx-plugin:e2e",
+          "options": {
+            "target": "aws-cdk-stack:build",
+            "jestConfig": "apps/aws-cdk-stack-e2e/jest.config.js"
           }
         }
       }
@@ -117,11 +148,6 @@
               {
                 "input": "./libs/nx-aws-cdk",
                 "glob": "executors.json",
-                "output": "."
-              },
-              {
-                "input": "./libs/nx-aws-cdk",
-                "glob": "generators.json",
                 "output": "."
               }
             ],

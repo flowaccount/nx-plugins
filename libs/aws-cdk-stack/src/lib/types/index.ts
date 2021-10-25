@@ -14,6 +14,7 @@ import { SqsEventSourceProps } from '@aws-cdk/aws-lambda-event-sources';
 import { TableProps } from '@aws-cdk/aws-dynamodb';
 import { DatabaseInstance, DatabaseInstanceAttributes } from '@aws-cdk/aws-rds';
 
+
 export interface VpcStackProperties extends StackProps {
   vpcAttributes: VpcAttributes;
   awsCredentials?: AWSCredentialsModel;
@@ -159,7 +160,7 @@ export interface EventSourceProperties extends StackProps {
     // properties: KinesisEventSourceProps
   };
   sqsEventSource?: {
-    queue: IQueue;
+    queue?: IQueue;
     properties: SqsEventSourceProps;
   };
 }
@@ -200,3 +201,59 @@ export type DatabaseReadOnlyReplicaConfiguration = StackProps & {
   production: boolean;
   instanceAttributes: DbInstanceAttributes;
 };
+
+// export interface SqsStackConfiguration extends StackProps {
+//   queueName: string,
+
+// }
+
+
+export interface IApplicationStackEnvironmentConfig {
+    stackName: string,
+    region: string,
+    stage: string,
+    _app: string,
+   _isProduction: boolean,
+    sqs?: QueueProps[],
+    elasticSearch?: ElasticsearchStackConfiguration
+    serverless?: ServerlessApplicationStackConfiguration
+    aurora?: AuroraServerlessDbStackConfiguration
+    readonlyReplica?: DatabaseReadOnlyReplicaConfiguration
+}
+
+//* For building up evnironment.ts files
+// TODO: Refactor types into proper folders.
+export interface IApplicationConfigurationBuilder {
+  stackName: string,
+  region: string,
+  stage: string,
+  _app: string,
+ _isProduction: boolean,
+  sqs?: QueueProps[],
+  serverless?: ServerlessApplicationStackConfiguration
+  // aurora?: AuroraServerlessDbStackConfiguration
+  // readonlyReplica?: DatabaseReadOnlyReplicaConfiguration
+}
+
+export interface BaseConfigurationBuilderOption{
+  builderName: string
+}
+
+export interface SqsConfigurationBuilderOption extends BaseConfigurationBuilderOption {
+  queueName: string
+  visibilityTimeout: number
+}
+
+export interface LambdaConfigurationBuilderOption extends BaseConfigurationBuilderOption {
+  securityGroupIds: string[]
+  handler: string
+  memmorySize: number
+  timeout: number
+  name: string
+  eventProperties?: EventSourceProperties
+}
+
+export interface ServerlessConfigurationBuilderOption extends BaseConfigurationBuilderOption {
+    lambdaFunctions: LambdaConfigurationBuilderOption[]
+}
+//* For building up evnironment.ts files

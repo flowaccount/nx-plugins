@@ -1,6 +1,7 @@
 {
   "name": "@flowaccount/aws-cdk-stack",
-  "version": "1.0.0-beta.6",
+  "version": "99.99.99",
+  "schematics": "./generators.json",
   "dependencies": {
     "@aws-cdk/core": "~1.121.0",
     "@aws-cdk/aws-ec2": "~1.121.0",
@@ -10,6 +11,10 @@
     "@aws-cdk/aws-lambda": "~1.121.0",
     "@aws-cdk/aws-rds": "~1.121.0",
     "@aws-cdk/aws-elasticsearch": "~1.121.0",
-    "@aws-cdk/aws-lambda-event-sources": "~1.121.0"
-  }
+    "@aws-cdk/aws-lambda-event-sources": "~1.121.0",
+    "@aws-cdk/aws-iam": "~1.121.0",
+    "@angular-devkit/schematics": "11.2.13",
+    "@angular-devkit/core": "12.2.11"
+  },
+  "devDependencies": {}
 }

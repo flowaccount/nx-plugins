@@ -77,7 +77,7 @@ async function* startBuild(
   yield* await runExecutor<NodeBuildEvent>(
     buildTarget,
     {
-      watch: options.watch,
+      // watch: options.watch,
     },
     context
   );

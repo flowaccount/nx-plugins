@@ -18,6 +18,10 @@
     "aws-cdk-stack": {
       "tags": []
     },
+    "aws-cdk-stack-e2e": {
+      "tags": [],
+      "implicitDependencies": ["aws-cdk-stack"]
+    },
     "nx-aws-cdk": {
       "tags": []
     },
