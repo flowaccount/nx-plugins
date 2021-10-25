@@ -23,7 +23,6 @@
     "@nrwl/workspace": "9.2.2"
   },
   "dependencies": {
-    "@nguniversal/express-engine": "^9.0.1",
     "@nrwl/express": "9.2.2",
     "@nrwl/node": "9.2.2",
     "dotenv": "6.2.0",
