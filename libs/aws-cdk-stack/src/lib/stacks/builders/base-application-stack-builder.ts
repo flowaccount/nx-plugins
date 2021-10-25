@@ -1,15 +1,14 @@
-import { StackProps } from "@aws-cdk/core";
-import { logger } from "@nrwl/devkit";
+import { StackProps } from '@aws-cdk/core';
+import { logger } from '@nrwl/devkit';
 import { IApplicationStackEnvironmentConfig } from '../../types';
 
 export abstract class BaseApplicationStackBuilder {
+  protected _stage: string;
+  protected _stackName: string;
 
-    protected _stage: string
-    protected _stackName: string
-    
-    constructor(protected _applicationConfig: IApplicationStackEnvironmentConfig) {
+  constructor(
+    protected _applicationConfig: IApplicationStackEnvironmentConfig
+  ) {}
 
-    }
-
-    abstract BuildStackConfiguration(): StackProps
+  abstract BuildStackConfiguration(): StackProps;
 }

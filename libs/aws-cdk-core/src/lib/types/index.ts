@@ -98,7 +98,7 @@ const cdkDeployFlagsArray = [
   'progress',
   'no-rollback',
   'buildTarget',
-  'stackName'
+  'stackName',
 ] as const;
 
 export type cdkDeployFlags = typeof cdkDeployFlagsArray[number];

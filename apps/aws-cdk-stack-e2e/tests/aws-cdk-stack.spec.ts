@@ -16,5 +16,4 @@ describe('aws-cdk-stack e2e', () => {
     const result = await runNxCommandAsync(`build ${plugin}`);
     expect(result.stdout).toContain('Executor ran');
   }, 2000);
-
 });

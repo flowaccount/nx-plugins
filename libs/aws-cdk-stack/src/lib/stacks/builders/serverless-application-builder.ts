@@ -5,7 +5,6 @@
 // import { Runtime } from "@aws-cdk/aws-lambda";
 // import { Duration, StackProps } from "@aws-cdk/core";
 
-
 // export class ServerlessApplicationBuilder extends BaseApplicationStackBuilder {
 
 //     constructor(

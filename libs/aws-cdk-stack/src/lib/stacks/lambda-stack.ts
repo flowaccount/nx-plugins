@@ -66,8 +66,10 @@ export class TypescriptLambdaStack extends Stack {
         logger.info(
           `attaching sqs ${f.eventProperties?.sqsEventSource.queue.queueName}`
         );
-        if(!f.eventProperties?.sqsEventSource.queue) {
-          throw new Error("SQS IQueue is null, please make sure it is not to hook the event source to lambda")
+        if (!f.eventProperties?.sqsEventSource.queue) {
+          throw new Error(
+            'SQS IQueue is null, please make sure it is not to hook the event source to lambda'
+          );
         }
         lambdaFunction.addEventSource(
           new lambdaEvent.SqsEventSource(

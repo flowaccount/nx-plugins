@@ -23,10 +23,16 @@ export function getBuildConfig(options: NormalizedSchema) {
       tsConfig: joinPathFragments(options.appProjectRoot, 'tsconfig.cdk.json'),
       fileReplacements: [
         {
-          replace: `${joinPathFragments(normalize('dist'), options.appProjectRoot)}/src/environments/environment.ts`,
-          with: `${joinPathFragments(normalize('dist'), options.appProjectRoot)}/src/environments/environment.staging.ts`
-        }
-      ]
+          replace: `${joinPathFragments(
+            normalize('dist'),
+            options.appProjectRoot
+          )}/src/environments/environment.ts`,
+          with: `${joinPathFragments(
+            normalize('dist'),
+            options.appProjectRoot
+          )}/src/environments/environment.staging.ts`,
+        },
+      ],
     },
     configurations: {
       production: {
@@ -35,11 +41,17 @@ export function getBuildConfig(options: NormalizedSchema) {
         inspect: false,
         fileReplacements: [
           {
-            replace: `${joinPathFragments(normalize('dist'), options.appProjectRoot)}/src/environments/environment.ts`,
-            with: `${joinPathFragments(normalize('dist'), options.appProjectRoot)}/src/environments/environment.production.ts`
-          }
-        ]
-      }
+            replace: `${joinPathFragments(
+              normalize('dist'),
+              options.appProjectRoot
+            )}/src/environments/environment.ts`,
+            with: `${joinPathFragments(
+              normalize('dist'),
+              options.appProjectRoot
+            )}/src/environments/environment.production.ts`,
+          },
+        ],
+      },
     },
   };
 }
@@ -52,8 +64,8 @@ function getCdkConfig(options: NormalizedSchema, executor: string) {
       profile: options.profile,
       stackName: `staging-${options.name}`,
       debug: options.debug,
-      verbose:  options.verbose,
-      output:  `dist/cdkOutput/${options.appProjectRoot}/cdk.out`
+      verbose: options.verbose,
+      output: `dist/cdkOutput/${options.appProjectRoot}/cdk.out`,
     },
     configurations: {
       staging: {
@@ -67,22 +79,25 @@ function getCdkConfig(options: NormalizedSchema, executor: string) {
 }
 
 function getSynthConfig(options: NormalizedSchema) {
-  return getCdkConfig(options, 'synth')
+  return getCdkConfig(options, 'synth');
 }
 
 function getDiffConfig(options: NormalizedSchema) {
-  return getCdkConfig(options, 'diff')
+  return getCdkConfig(options, 'diff');
 }
 
 function getDeployConfig(options: NormalizedSchema) {
-  return getCdkConfig(options, 'deploy')
+  return getCdkConfig(options, 'deploy');
 }
 
 function getDestroyConfig(options: NormalizedSchema) {
-  return getCdkConfig(options, 'destroy')
+  return getCdkConfig(options, 'destroy');
 }
 
-export function updateWorkspaceJson(host: Tree, options: NormalizedSchema): void {
+export function updateWorkspaceJson(
+  host: Tree,
+  options: NormalizedSchema
+): void {
   const project = {
     root: options.appProjectRoot,
     sourceRoot: joinPathFragments(options.appProjectRoot, 'src'),
@@ -93,16 +108,14 @@ export function updateWorkspaceJson(host: Tree, options: NormalizedSchema): void
     tags: <any>{},
   };
 
-  project.targets.build = getBuildConfig(options)
-  project.targets.serve = getSynthConfig(options)
-  project.targets.diff = getDiffConfig(options)
-  project.targets.deploy = getDeployConfig(options)
-  project.targets.destroy = getDestroyConfig(options)
+  project.targets.build = getBuildConfig(options);
+  project.targets.serve = getSynthConfig(options);
+  project.targets.diff = getDiffConfig(options);
+  project.targets.deploy = getDeployConfig(options);
+  project.targets.destroy = getDestroyConfig(options);
   project.tags = options.parsedTags;
   addProjectConfiguration(host, options.name, project);
 }
-
-
 
 export function normalizeOptions(options: Schema): NormalizedSchema {
   const appDirectory = options.directory

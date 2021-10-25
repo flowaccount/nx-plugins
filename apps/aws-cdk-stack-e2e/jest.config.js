@@ -13,5 +13,5 @@ module.exports = {
   coverageDirectory: '../../coverage/apps/aws-cdk-stack-e2e',
   verbose: true,
   detectOpenHandles: true,
-  forceExit: true
+  forceExit: true,
 };

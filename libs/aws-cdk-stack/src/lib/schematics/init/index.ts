@@ -9,25 +9,20 @@ import {
   logger,
 } from '@nrwl/devkit';
 import { runTasksInSerial } from '@nrwl/workspace/src/utilities/run-tasks-in-serial';
-import {
-  cdkVersion,
-  awsTypeLambdaVersion,
-} from '../../versions';
+import { cdkVersion, awsTypeLambdaVersion } from '../../versions';
 import { cdkSchematicFlags } from '../schema';
 // import { addJestPlugin } from './lib/add-jest-plugin';
 // import { addLinterPlugin } from './lib/add-linter-plugin';
 
-function addDependencies(
-  host: Tree
-): GeneratorCallback[] {
+function addDependencies(host: Tree): GeneratorCallback[] {
   const dependencies = {};
   const tasks: GeneratorCallback[] = [];
   const devDependencies = {
     'aws-cdk': cdkVersion,
   };
- 
+
   devDependencies['@types/aws-lambda'] = awsTypeLambdaVersion;
-  
+
   const packageJson = readJson(host, 'package.json');
   Object.keys(dependencies).forEach((key) => {
     if (packageJson.dependencies[key]) {
@@ -65,7 +60,10 @@ function updateDependencies(tree: Tree) {
   });
 }
 
-export async function initGenerator<T extends cdkSchematicFlags>(tree: Tree, options: T) {
+export async function initGenerator<T extends cdkSchematicFlags>(
+  tree: Tree,
+  options: T
+) {
   const tasks: GeneratorCallback[] = [];
 
   // if (!options.unitTestRunner || options.unitTestRunner === 'jest') {

@@ -7,7 +7,7 @@ import {
 } from '@nrwl/nx-plugin/testing';
 describe('nx-aws-cdk-core e2e', () => {
   it('should create nx-aws-cdk-core', async (done) => {
-    console.log('shits')
+    console.log('shits');
     const plugin = uniq('nx-aws-cdk-core');
     ensureNxProject(
       '@flowaccount/nx-aws-cdk-core',

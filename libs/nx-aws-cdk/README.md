@@ -1,7 +1,8 @@
 ## Prerequisites
 
 - Have an existing nx workspace. For creating this, see [nrwl's documentation](https://nx.dev/latest/angular/getting-started/nx-setup).
-- Add  `"aws-cdk": "1.114.0",` to your `package.json` and run `yarn`
+- Add `"aws-cdk": "1.114.0",` to your `package.json` and run `yarn`
+
 ## Installation
 
 ### NPM
