@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "cli": "nx",
+  "title": "NxAWSCdk Synth",
+  "description": "Synth an app via the `cdk` cli command.",
+  "type": "object",
+  "properties": {
+    "profile": {
+      "type": "string",
+      "description": "Use the indicated AWS profile as the default environment"
+    },
+    "stackName": {
+      "type": "string",
+      "description": "The name of the cdk stack you want to execute on"
+    },
+    "quiet": {
+      "type": "boolean",
+      "default": false,
+      "description": "Do not output CloudFormation Template to stdout"
+    },
+    "exclusively": {
+      "type": "boolean",
+      "description": "Only synthesize requested stacks, don't include dependencies"
+    },
+    "output": {
+      "type": "string",
+      "description": "Directory in which to place the synthesizer output."
+    },
+    "debug": {
+      "type": "boolean",
+      "default": false
+    },
+    "verbose": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": ["profile", "output", "stackName"]
+}

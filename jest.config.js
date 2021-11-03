@@ -1,9 +1,3 @@
-module.exports = {
-  projects: [
-    '<rootDir>/libs/nx-serverless',
-    '<rootDir>/libs/nx-aws-cdk',
-    '<rootDir>/libs/scully-plugin-angular-delay',
-    '<rootDir>/libs/scully-plugin-lazy-load-picture-tag',
-    '<rootDir>/libs/scully-plugin-google-analytics',
-  ],
-};
+const { getJestProjects } = require('@nrwl/jest');
+
+module.exports = { projects: getJestProjects() };

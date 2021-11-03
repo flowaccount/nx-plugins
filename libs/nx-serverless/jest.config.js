@@ -11,4 +11,5 @@ module.exports = {
     },
   },
   displayName: 'nx-serverless',
+  testEnvironment: 'node',
 };
