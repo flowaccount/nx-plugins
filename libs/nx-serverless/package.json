@@ -1,12 +1,12 @@
 {
   "name": "@flowaccount/nx-serverless",
-  "version": "1.0.0-beta.2",
+  "version": "1.0.0-beta.6",
   "main": "src/index.js",
   "description": "Serverless schematics for nx workspace",
   "keywords": [
     "Serverless Framework",
     "Serverless",
-    "Angular Universal Deploy",
+    "Scully Serverless Deploy",
     "Node Typescipt",
     "Workspace",
     "Nx",
@@ -23,6 +23,7 @@
     "@nrwl/workspace": "^12.0.0"
   },
   "dependencies": {
+    "@angular-devkit/architect": "0.1200.1",
     "@angular-devkit/schematics": "~11.2.0",
     "@nrwl/devkit": "^12.0.0",
     "ignore": "^5.1.8",
@@ -51,5 +52,9 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/flowaccount/nx-plugins/tree/master/libs/nx-serverless"
-  }
+  },
+  "scripts": {
+    "test": "yarn nx test nx-serverless"
+  },
+  "author": "Wickstargazer"
 }

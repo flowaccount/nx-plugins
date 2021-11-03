@@ -1,14 +1,15 @@
 {
   "name": "@flowaccount/nx-aws-cdk",
-  "version": "0.0.1",
+  "version": "1.0.0-beta.6",
   "main": "src/index.js",
-  "schematics": "./collection.json",
-  "builders": "./builders.json",
+  "generators": "./generators.json",
+  "builders": "./executors.json",
   "license": "MIT",
-  "description": "Serverless schematics for nx workspace",
+  "private": false,
+  "description": "aws-cdk executors and generators for nx workspace",
   "keywords": [
     "aws-cdk",
-    "Serverless",
+    "lambda",
     "Infrastructure as a code",
     "Node Typescipt",
     "Workspace",
@@ -25,6 +26,6 @@
   "devDependencies": {},
   "repository": {
     "type": "git",
-    "url": "https://github.com/flowaccount/nx-plugins/tree/master/libs/nx-serverless"
+    "url": "https://github.com/flowaccount/nx-plugins/tree/master/libs/nx-aws-cdk"
   }
 }

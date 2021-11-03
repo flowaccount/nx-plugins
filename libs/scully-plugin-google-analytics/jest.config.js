@@ -7,4 +7,5 @@ module.exports = {
   coverageDirectory: '../../coverage/libs/scully-plugin-google-analytics',
   globals: { 'ts-jest': { tsConfig: '<rootDir>/tsconfig.spec.json' } },
   displayName: 'scully-plugin-google-analytics',
+  testEnvironment: 'node',
 };

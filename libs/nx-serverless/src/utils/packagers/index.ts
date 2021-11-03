@@ -36,6 +36,7 @@ import { BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
 import { join, dirname } from 'path';
 import { ExecutorContext, logger } from '@nrwl/devkit';
+import { compilation, Stats } from 'webpack';
 
 const registeredPackagers = {
   npm: NPM,
@@ -63,7 +64,7 @@ export function preparePackageJson(
     verbose?: boolean;
   },
   context: ExecutorContext,
-  stats: any,
+  stats: Stats.ToJsonOutput,
   resolverName: string,
   tsconfig?: string
 ): Observable<BuilderOutput> {
@@ -75,9 +76,12 @@ export function preparePackageJson(
   logger.info('create a package.json with first level dependencies'); //First create a package.json with first level dependencies
   // Get the packager for the current process.
   let packagerInstance = null;
-  if (options.packager && options.packager == 'npm') {
+  if (options.packager && options.packager.toString().toLowerCase() == 'npm') {
     packagerInstance = NPM;
-  } else if (options.packager && options.packager == 'yarn') {
+  } else if (
+    options.packager &&
+    options.packager.toString().toLowerCase() == 'yarn'
+  ) {
     packagerInstance = Yarn;
   } else if (packager('npm')) {
     packagerInstance = NPM;
