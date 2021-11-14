@@ -27,7 +27,7 @@ export async function compileExecutor(
 ) {
   const root = getSourceRoot(context);
   options = normalizeBuildOptions(options, context.root, root);
-  await ServerlessWrapper.init(options, context).toPromise();
+  await ServerlessWrapper.init(options, context);
   options = assignEntriesToFunctionsFromServerless(options, context.root);
 
   logger.info('start compiling typescript');
