@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/aws-cdk-stack",
-  "version": "1.0.0-beta.6",
+  "version": "1.0.0-beta.7",
   "dependencies": {
     "@aws-cdk/core": "~1.121.0",
     "@aws-cdk/aws-ec2": "~1.121.0",
