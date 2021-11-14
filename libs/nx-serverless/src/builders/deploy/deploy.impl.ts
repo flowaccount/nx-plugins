@@ -9,7 +9,7 @@ import {
 } from '../../utils/serverless';
 /* Fix for EMFILE: too many open files on serverless deploy */
 import * as fs from 'fs';
-import * as gracefulFs from 'graceful-fs';
+import * as gracefulFs from 'graceful-fs'; // TODO: 0 this is not needed here anymore?
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { Packager } from '../../utils/enums';
@@ -17,7 +17,7 @@ import { ExecutorContext, logger } from '@nrwl/devkit';
 import { ServerlessSlsBuilderOptions } from '../sls/sls.impl';
 import { ScullyBuilderOptions } from '../scully/scully.impl';
 import { BuildResult } from '@angular-devkit/build-webpack';
-gracefulFs.gracefulify(fs);
+gracefulFs.gracefulify(fs); // TODO: 0 this is not needed here anymore?
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
   Inspect = 'inspect',
@@ -53,6 +53,7 @@ export async function deployExecutor(
 ) {
   // build into output path before running serverless offline.
   let packagePath = options.location;
+  await ServerlessWrapper.init(options, context);
   if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
     const results = await runWaitUntilTargets(
       options.waitUntilTargets,
@@ -87,7 +88,7 @@ export async function deployExecutor(
   commands.push('deploy');
   if (options.function && options.function != '') {
     commands.push('function');
-    extraArgs.push(`--function ${options.function}`);
+    extraArgs['function'] = `${options.function}`; // fix function deploy /wick
   }
   if (options.list) {
     commands.push('list');
