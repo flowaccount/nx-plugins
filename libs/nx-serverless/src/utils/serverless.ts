@@ -60,7 +60,7 @@ export class ServerlessWrapper {
           extraArgs['function'] = `${deployOptions.function}`;
         }
         if (deployOptions.list) {
-            commands.push('list');
+          commands.push('list');
         }
         const buildTarget = parseTargetString(deployOptions.buildTarget);
         buildOptions = readTargetOptions<{ buildTarget: string } & JsonObject>(
@@ -71,82 +71,88 @@ export class ServerlessWrapper {
           options = buildOptions;
         }
       } else {
-        buildOptions = options
+        buildOptions = options;
       }
-          try {
-            if (
-              fs.existsSync(
-                path.join(buildOptions.servicePath, buildOptions.processEnvironmentFile)
-              )
-            ) {
-              logger.debug('Loading Environment Variables');
-              require('dotenv-json')({
-                path: path.join(
-                  buildOptions.servicePath,
-                  buildOptions.processEnvironmentFile
-                ),
-              });
-              logger.info(
-                `Environment variables set according to ${buildOptions.processEnvironmentFile}`
-              );
-            } else {
-              logger.error('No env.json found! no environment will be set!');
-            }
-          } catch (e) {
-            logger.error(e);
-          }
-          logger.debug('Reading Configuration');
-          const configurationInput = await readConfiguration(path.resolve(buildOptions.servicePath, 'serverless.yml'));
-          logger.debug('Resolved configurations')
-          configurationInput.useDotenv = false
-          logger.debug('Initiating Serverless Instance');
-          this.serverless$ = new Serverless({
-              commands: ['deploy',
-                  'offline',
-                  'deploy list',
-                  'destroy',
-                  'deploy function',
-                  'sls'
-              ],
-              configuration: configurationInput,
-              serviceDir: buildOptions.servicePath,
-              configurationFilename: 'serverless.yml',
+      try {
+        if (
+          fs.existsSync(
+            path.join(
+              buildOptions.servicePath,
+              buildOptions.processEnvironmentFile
+            )
+          )
+        ) {
+          logger.debug('Loading Environment Variables');
+          require('dotenv-json')({
+            path: path.join(
+              buildOptions.servicePath,
+              buildOptions.processEnvironmentFile
+            ),
           });
-          // if (componentsV2.runningComponents()) return () => componentsV2.runComponents();
-          if (
-            this.serverless$.version &&
-            this.serverless$.version.split('.')[0] > '1'
-          ) {
-            logger.info(
-              'Disable "Resolve Configuration Internally" for serverless 2.0+.'
-            );
-            this.serverless$._shouldResolveConfigurationInternally = false;
-            this.serverless$.isLocallyInstalled = true
-          }
-          // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
-          if(deployOptions) {
-            this.serverless$.processedInput = {
-                commands: commands,
-                options: extraArgs,
-            };
-            logger.info('serverless$.processedInput is set with deploy arguments')
-          }
-          // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
-          await this.serverless$.init();
-          await this.serverless$.service.load({
-            config: buildOptions.serverlessConfig,
-          });
-          await this.serverless$.variables
-            .populateService(this.serverless$.pluginManager.cliOptions)
-            .then(() => {
-              // merge arrays after variables have been populated
-              // (https://github.com/serverless/serverless/issues/3511)
-              this.serverless$.service.mergeArrays();
-              // validate the service configuration, now that variables are loaded
-              this.serverless$.service.validate();
-            });
-          this.serverless$.cli.asciiGreeting();
-          return null;
+          logger.info(
+            `Environment variables set according to ${buildOptions.processEnvironmentFile}`
+          );
+        } else {
+          logger.error('No env.json found! no environment will be set!');
+        }
+      } catch (e) {
+        logger.error(e);
+      }
+      logger.debug('Reading Configuration');
+      const configurationInput = await readConfiguration(
+        path.resolve(buildOptions.servicePath, 'serverless.yml')
+      );
+      logger.debug('Resolved configurations');
+      configurationInput.useDotenv = false;
+      logger.debug('Initiating Serverless Instance');
+      this.serverless$ = new Serverless({
+        commands: [
+          'deploy',
+          'offline',
+          'deploy list',
+          'destroy',
+          'deploy function',
+          'sls',
+        ],
+        configuration: configurationInput,
+        serviceDir: buildOptions.servicePath,
+        configurationFilename: 'serverless.yml',
+      });
+      // if (componentsV2.runningComponents()) return () => componentsV2.runComponents();
+      if (
+        this.serverless$.version &&
+        this.serverless$.version.split('.')[0] > '1'
+      ) {
+        logger.info(
+          'Disable "Resolve Configuration Internally" for serverless 2.0+.'
+        );
+        this.serverless$._shouldResolveConfigurationInternally = false;
+        this.serverless$.isLocallyInstalled = true;
+      }
+      // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
+      if (deployOptions) {
+        this.serverless$.processedInput = {
+          commands: commands,
+          options: extraArgs,
+        };
+        logger.info('serverless$.processedInput is set with deploy arguments');
+      }
+      // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
+      await this.serverless$.init();
+      await this.serverless$.service.load({
+        config: buildOptions.serverlessConfig,
+      });
+      await this.serverless$.variables
+        .populateService(this.serverless$.pluginManager.cliOptions)
+        .then(() => {
+          // merge arrays after variables have been populated
+          // (https://github.com/serverless/serverless/issues/3511)
+          this.serverless$.service.mergeArrays();
+          // validate the service configuration, now that variables are loaded
+          this.serverless$.service.validate();
+        });
+      this.serverless$.cli.asciiGreeting();
+      return null;
     } else {
       return null;
     }
@@ -179,9 +185,7 @@ export async function runServerlessCommand(
   if (extraArgs) {
     args = args.concat(extraArgs);
   }
-  logger.debug(
-    'Serverless Package Path:' + packagePath
-  );
+  logger.debug('Serverless Package Path:' + packagePath);
   logger.info('running serverless commands');
   ServerlessWrapper.serverless.processedInput = {
     commands: commands,

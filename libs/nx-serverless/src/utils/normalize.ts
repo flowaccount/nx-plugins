@@ -144,11 +144,9 @@ export const getEntryForFunction = (
       );
     return {};
   }
-  const servicePath = sourceroot.replace('/src', '')
+  const servicePath = sourceroot.replace('/src', '');
   // Sometimes the service path and handlerFile path overlap, unusually caused by plugins. This regex removes the overlap
-  const regex = new RegExp(
-    `^${servicePath.replace(/\/([^/]*)/g, `($1\\/)?`)}`
-  );
+  const regex = new RegExp(`^${servicePath.replace(/\/([^/]*)/g, `($1\\/)?`)}`);
   handlerFile = handlerFile.replace(regex, ``);
 
   const ext = getEntryExtension(handlerFile, serverless, servicePath);
