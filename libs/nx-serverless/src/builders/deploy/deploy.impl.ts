@@ -82,7 +82,8 @@ export async function deployExecutor(
   if (!prepResult.success) {
     throw new Error(`There was an error with the build. ${prepResult.error}`);
   }
-  packagePath = await makeDistFileReadyForPackaging(options, packagePath);
+  
+  await makeDistFileReadyForPackaging(options);
   const extraArgs = [];
   const commands = [];
   commands.push('deploy');
@@ -93,7 +94,7 @@ export async function deployExecutor(
   if (options.list) {
     commands.push('list');
   }
-  await runServerlessCommand(options, commands, packagePath, extraArgs);
+  await runServerlessCommand(options, commands, extraArgs);
   return { success: true };
 }
 

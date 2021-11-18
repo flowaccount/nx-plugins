@@ -38,6 +38,8 @@ As time goes by, we have been adding serveral open-source utilities and plugins 
 
 [![@flowaccount/nx-aws-cdk](https://img.shields.io/badge/%40flowaccount-nx--aws--cdk-blue)](https://github.com/flowaccount/nx-plugins/tree/master/libs/nx-aws-cdk)
 
+[![@flowaccount/nx-aws-cdk](https://img.shields.io/badge/%40flowaccount-aws--cdk--stack-blue)](https://github.com/flowaccount/nx-plugins/tree/master/libs/aws-cdk-stack)
+
 [![@flowaccount/scully-plugin-angular-delay](https://img.shields.io/badge/%40flowaccount-scully--plugin--angular--delay-blue)](https://github.com/flowaccount/nx-plugins/tree/master/libs/scully-plugin-angular-delay)
 [![NPM Version](https://badge.fury.io/js/%40flowaccount%2Fscully-plugin-angular-delay.svg)](https://www.npmjs.com/@flowaccount/scully-plugin-angular-delay)
 

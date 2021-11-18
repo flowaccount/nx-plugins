@@ -1,4 +1,4 @@
-import * as Serverless from 'serverless/lib/Serverless'; // 'D:/Projects/opensource/flow-nx-serverless-external-deps-bug/node_modules/serverless/lib/Serverless.js';
+import * as Serverless from 'serverless/lib/Serverless';
 import * as readConfiguration from 'serverless/lib/configuration/read';
 import { ServerlessBaseOptions } from './types';
 import { mergeMap, concatMap } from 'rxjs/operators';
@@ -105,7 +105,7 @@ export class ServerlessWrapper {
       logger.debug('Resolved configurations');
       configurationInput.useDotenv = false;
       logger.debug('Initiating Serverless Instance');
-      this.serverless$ = new Serverless({
+      const serverlessConfig: any = {
         commands: [
           'deploy',
           'offline',
@@ -117,7 +117,11 @@ export class ServerlessWrapper {
         configuration: configurationInput,
         serviceDir: buildOptions.servicePath,
         configurationFilename: 'serverless.yml',
-      });
+      }
+      if(deployOptions && deployOptions.function && deployOptions.function != '') {
+        serverlessConfig.servicePath = getPackagePath(deployOptions)
+      }
+      this.serverless$ = new Serverless(serverlessConfig);
       // if (componentsV2.runningComponents()) return () => componentsV2.runComponents();
       if (
         this.serverless$.version &&
@@ -159,6 +163,20 @@ export class ServerlessWrapper {
   }
 }
 
+function getPackagePath(deployOptions: 
+  | (JsonObject & ServerlessDeployBuilderOptions)
+  | (JsonObject & ServerlessSlsBuilderOptions)) {
+  let packagePath = ""
+    if (!deployOptions.serverlessPackagePath &&
+    deployOptions.location.indexOf('dist/') > -1) {
+    packagePath = deployOptions.location.replace('dist/', 'dist/.serverlessPackages/');
+  }
+  else if (deployOptions.serverlessPackagePath) {
+    packagePath = deployOptions.serverlessPackagePath;
+  } 
+  return packagePath
+}
+
 export function getExecArgv(
   options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions
 ) {
@@ -176,16 +194,15 @@ export async function runServerlessCommand(
     | (JsonObject & ServerlessDeployBuilderOptions)
     | (JsonObject & ServerlessSlsBuilderOptions),
   commands: string[],
-  packagePath: string,
   extraArgs: string[] = null
 ) {
   // change servicePath to distribution location
   // review: Change options from location to outputpath?\
   let args = getExecArgv(options);
-  if (extraArgs) {
+  const serviceDir = ServerlessWrapper.serverless.serviceDir;
+  if (extraArgs) { 
     args = args.concat(extraArgs);
   }
-  logger.debug('Serverless Package Path:' + packagePath);
   logger.info('running serverless commands');
   ServerlessWrapper.serverless.processedInput = {
     commands: commands,
@@ -193,7 +210,11 @@ export async function runServerlessCommand(
   };
   ServerlessWrapper.serverless.isTelemetryReportedExternally = true;
   try {
+    const packagePath = getPackagePath(options)
+    logger.debug(`Serverless service path is ${packagePath}`)
+    ServerlessWrapper.serverless.serviceDir = packagePath
     await ServerlessWrapper.serverless.run();
+    ServerlessWrapper.serverless.serviceDir = serviceDir
   } catch (ex) {
     throw new Error(`There was an error with the build. ${ex}.`);
   }
@@ -202,23 +223,10 @@ export async function runServerlessCommand(
 export async function makeDistFileReadyForPackaging(
   options:
     | (JsonObject & ServerlessDeployBuilderOptions)
-    | (JsonObject & ServerlessSlsBuilderOptions),
-  packagePath: string
-): Promise<string> {
+    | (JsonObject & ServerlessSlsBuilderOptions)
+): Promise<void> {
   let readyToPackaged: BuilderOutput = null;
-  if (
-    !options.serverlessPackagePath &&
-    options.location.indexOf('dist/') > -1
-  ) {
-    packagePath = options.location.replace(
-      'dist/',
-      'dist/.serverlessPackages/'
-    );
-  } else if (options.serverlessPackagePath) {
-    packagePath = options.serverlessPackagePath;
-  }
-  logger.info(packagePath);
-  options.serverlessPackagePath = packagePath;
+  options.serverlessPackagePath =  getPackagePath(options);
   readyToPackaged = await copyBuildOutputToBePackaged(options);
   if (readyToPackaged == null) {
     throw new Error(
@@ -230,7 +238,6 @@ export async function makeDistFileReadyForPackaging(
       `readyToPackaged is null something went wrong in 'copyBuildOutputToBePackaged'.`
     );
   }
-  return packagePath;
 }
 function resolveLocalServerlessPath() {
   throw new Error('Function not implemented.');

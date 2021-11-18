@@ -42,7 +42,7 @@ Simplify any workflow that can be abstracted into one command using the same con
 | Framework Name                          | AWS                | Azure      | GCP        |
 | --------------------------------------- | ------------------ | ---------- | ---------- |
 | Node-Typescript (Webpack)               | :white_check_mark: | :calendar: | :calendar: |
-| Angular Universal (Typescript-compiler) | :white_check_mark: | :calendar: | :calendar: |
+:white_check_mark: | :calendar: | :calendar: |
 | Express-js (Typescript-compiler)        | :white_check_mark: | :calendar: | :calendar: |
 
 ### Serverless Framework Commands

@@ -46,7 +46,6 @@ export async function slsExecutor(
   options: JsonObject & ServerlessSlsBuilderOptions,
   context: ExecutorContext
 ) {
-  let packagePath = options.location;
   if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
     const results = await runWaitUntilTargets(
       options.waitUntilTargets,
@@ -73,9 +72,9 @@ export async function slsExecutor(
   if (!prepResult.success) {
     throw new Error(`There was an error with the build. ${prepResult.error}`);
   }
-  packagePath = await makeDistFileReadyForPackaging(options, packagePath);
+  await makeDistFileReadyForPackaging(options);
   const commands = [];
   commands.push(options.command);
-  await runServerlessCommand(options, commands, packagePath);
+  await runServerlessCommand(options, commands);
   return { success: true };
 }
