@@ -82,7 +82,7 @@ export async function deployExecutor(
   if (!prepResult.success) {
     throw new Error(`There was an error with the build. ${prepResult.error}`);
   }
-  
+
   await makeDistFileReadyForPackaging(options);
   const extraArgs = [];
   const commands = [];

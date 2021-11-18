@@ -117,9 +117,13 @@ export class ServerlessWrapper {
         configuration: configurationInput,
         serviceDir: buildOptions.servicePath,
         configurationFilename: 'serverless.yml',
-      }
-      if(deployOptions && deployOptions.function && deployOptions.function != '') {
-        serverlessConfig.servicePath = getPackagePath(deployOptions)
+      };
+      if (
+        deployOptions &&
+        deployOptions.function &&
+        deployOptions.function != ''
+      ) {
+        serverlessConfig.servicePath = getPackagePath(deployOptions);
       }
       this.serverless$ = new Serverless(serverlessConfig);
       // if (componentsV2.runningComponents()) return () => componentsV2.runComponents();
@@ -163,18 +167,24 @@ export class ServerlessWrapper {
   }
 }
 
-function getPackagePath(deployOptions: 
-  | (JsonObject & ServerlessDeployBuilderOptions)
-  | (JsonObject & ServerlessSlsBuilderOptions)) {
-  let packagePath = ""
-    if (!deployOptions.serverlessPackagePath &&
-    deployOptions.location.indexOf('dist/') > -1) {
-    packagePath = deployOptions.location.replace('dist/', 'dist/.serverlessPackages/');
-  }
-  else if (deployOptions.serverlessPackagePath) {
+function getPackagePath(
+  deployOptions:
+    | (JsonObject & ServerlessDeployBuilderOptions)
+    | (JsonObject & ServerlessSlsBuilderOptions)
+) {
+  let packagePath = '';
+  if (
+    !deployOptions.serverlessPackagePath &&
+    deployOptions.location.indexOf('dist/') > -1
+  ) {
+    packagePath = deployOptions.location.replace(
+      'dist/',
+      'dist/.serverlessPackages/'
+    );
+  } else if (deployOptions.serverlessPackagePath) {
     packagePath = deployOptions.serverlessPackagePath;
-  } 
-  return packagePath
+  }
+  return packagePath;
 }
 
 export function getExecArgv(
@@ -200,7 +210,7 @@ export async function runServerlessCommand(
   // review: Change options from location to outputpath?\
   let args = getExecArgv(options);
   const serviceDir = ServerlessWrapper.serverless.serviceDir;
-  if (extraArgs) { 
+  if (extraArgs) {
     args = args.concat(extraArgs);
   }
   logger.info('running serverless commands');
@@ -210,11 +220,11 @@ export async function runServerlessCommand(
   };
   ServerlessWrapper.serverless.isTelemetryReportedExternally = true;
   try {
-    const packagePath = getPackagePath(options)
-    logger.debug(`Serverless service path is ${packagePath}`)
-    ServerlessWrapper.serverless.serviceDir = packagePath
+    const packagePath = getPackagePath(options);
+    logger.debug(`Serverless service path is ${packagePath}`);
+    ServerlessWrapper.serverless.serviceDir = packagePath;
     await ServerlessWrapper.serverless.run();
-    ServerlessWrapper.serverless.serviceDir = serviceDir
+    ServerlessWrapper.serverless.serviceDir = serviceDir;
   } catch (ex) {
     throw new Error(`There was an error with the build. ${ex}.`);
   }
@@ -226,7 +236,7 @@ export async function makeDistFileReadyForPackaging(
     | (JsonObject & ServerlessSlsBuilderOptions)
 ): Promise<void> {
   let readyToPackaged: BuilderOutput = null;
-  options.serverlessPackagePath =  getPackagePath(options);
+  options.serverlessPackagePath = getPackagePath(options);
   readyToPackaged = await copyBuildOutputToBePackaged(options);
   if (readyToPackaged == null) {
     throw new Error(
