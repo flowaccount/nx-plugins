@@ -57,7 +57,8 @@
     "baseWorkspaceTsConfig": {
       "type": "boolean",
       "default": true,
-      "description": "Extends tsconfig.base.json when true instead of tsconfig.json"
+      "description": "Extends tsconfig.base.json when true instead of tsconfig.json",
+      "x-prompt": "Are you using the latest nx version?"
     },
     "region": {
       "type": "string",
