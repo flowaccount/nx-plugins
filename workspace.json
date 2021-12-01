@@ -73,11 +73,6 @@
                 "input": "./libs/aws-cdk-stack/src",
                 "glob": "**/*.d.ts",
                 "output": "./src"
-              },
-              {
-                "input": "./libs/aws-cdk-stack",
-                "glob": "generators.json",
-                "output": "."
               }
             ]
           }
@@ -148,6 +143,11 @@
               {
                 "input": "./libs/nx-aws-cdk",
                 "glob": "executors.json",
+                "output": "."
+              },
+              {
+                "input": "./libs/nx-aws-cdk",
+                "glob": "generators.json",
                 "output": "."
               }
             ],

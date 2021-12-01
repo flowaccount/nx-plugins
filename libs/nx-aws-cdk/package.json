@@ -3,6 +3,7 @@
   "version": "99.99.99",
   "main": "src/index.js",
   "builders": "./executors.json",
+  "schematics": "./generators.json",
   "license": "MIT",
   "private": false,
   "description": "aws-cdk executors and generators for nx workspace",

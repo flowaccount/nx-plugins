@@ -13,14 +13,18 @@ import { jestProjectGenerator } from '@nrwl/jest';
 import { lintProjectGenerator } from '@nrwl/linter';
 import * as path from 'path';
 import { NormalizedSchema } from '../normalized-schema';
-// import { ServerlessApplicationBuilder } from "../../stacks/builders/serverless-application-builder";
 import {
   IApplicationStackEnvironmentConfig,
-  ServerlessApplicationStackConfiguration,
+  // ServerlessApplicationStackConfiguration,
   SqsConfigurationBuilderOption,
   LambdaConfigurationBuilderOption,
-} from '../../types';
-import { SqsStackBuilder } from '../../stacks/builders/sqs-stack-builder';
+  SqsStackBuilder,
+  // ServerlessApplicationBuilder
+} from '@flowaccount/aws-cdk-stack';
+// import { SqsStackBuilder } from '../../stacks/builders/sqs-stack-builder';
+// import { ServerlessApplicationBuilder } from "../../stacks/builders/serverless-application-builder";
+import { classify, dasherize, camelize, underscore } from '@angular-devkit/core/src/utils/strings';
+const stringUtils = {classify, dasherize, camelize, underscore };
 
 function initStack(
   host: Tree,
@@ -35,22 +39,22 @@ function initStack(
     _app: options.name,
     _isProduction: false,
   };
-  // const productionEnvironmentConfig: IApplicationStackEnvironmentConfig = {
-  //   region: options.region,
-  //   stackName: options.name,
-  //   stage: 'staging',
-  //   _app: options.name,
-  //   _isProduction: false
-  // }
+  const productionEnvironmentConfig: IApplicationStackEnvironmentConfig = {
+    region: options.region,
+    stackName: options.name,
+    stage: 'production',
+    _app: options.name,
+    _isProduction: false
+  }
 
   const sqsOptions: SqsConfigurationBuilderOption = {
     builderName: 'SqsConfigurationBuilder',
-    queueName: ``,
+    queueName: `test-sqs`,
     visibilityTimeout: 60,
   };
   stagingEnvironmentConfig.sqs = [
     new SqsStackBuilder(stagingEnvironmentConfig, sqsOptions).BuildSqsStack(),
-  ];
+  ]; 
 
   const _lambdaFunctions: LambdaConfigurationBuilderOption[] = [];
 
@@ -63,9 +67,8 @@ function initStack(
       timeout: options.timeouts[i] ? options.timeouts[i] : 60,
       name: options.functionNames[i],
     });
-    console.log(options.eventSources);
+   
   }
-
   const subnets: { id: string; availabilityZone: string }[] = [];
   for (let i = 0; i < options.subnetIds.length; i++) {
     for (let j = 0; j < options.availabilityZones.length; j++) {
@@ -75,20 +78,26 @@ function initStack(
       });
     }
   }
+  
   // _lambdaFunctions[0].eventProperties.sqsEventSource = options.sqsEvent ?  :
 
   // stagingEnvironmentConfig.serverless = <ServerlessApplicationStackConfiguration>(new ServerlessApplicationBuilder(stagingEnvironmentConfig, _lambdaFunctions).BuildStackConfiguration())
 
   const templateOptions = {
+    ...stringUtils,
     ...options,
     ...names(options.name), // name: options.name,
     offset: offsetFromRoot(options.appProjectRoot),
     template: '',
     root: options.appProjectRoot,
-    // vpc:
+    vpcId: options.vpcId,
+    rds: false,
     sqs: { ...stagingEnvironmentConfig.sqs },
     lambdaFunctions: { ..._lambdaFunctions },
     subnets: subnets,
+    stage: stagingEnvironmentConfig.stage,
+    isProduction: stagingEnvironmentConfig._isProduction,
+    accountid: options.accountid
   };
 
   generateFiles(
@@ -110,13 +119,13 @@ export async function slsApplicationGenerator(host: Tree, schema: Schema) {
   initStack(host, options, 'files');
   updateWorkspaceJson(host, options);
   await lintProjectGenerator(host, { project: options.name, skipFormat: true });
-  if (!options.unitTestRunner || options.unitTestRunner === 'jest') {
-    await jestProjectGenerator(host, {
-      project: options.name,
-      setupFile: 'none',
-      skipSerializers: true,
-    });
-  }
+  // if (!options.unitTestRunner || options.unitTestRunner === 'jest') {
+  //   await jestProjectGenerator(host, {
+  //     project: options.name,
+  //     setupFile: 'none',
+  //     skipSerializers: true,
+  //   });
+  // }
   await formatFiles(host);
 }
 

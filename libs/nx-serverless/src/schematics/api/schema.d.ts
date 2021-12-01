@@ -6,7 +6,7 @@ export interface Schema extends BaseSchema {
   directory?: string;
   unitTestRunner: 'jest' | 'none';
   linter: Linter;
-  tags?: string;
+  tags?: string; 
   frontendProject?: string;
   baseWorkspaceTsConfig?: boolean;
 }
