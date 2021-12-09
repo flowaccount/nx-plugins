@@ -32,7 +32,8 @@
             "assets": ["libs/aws-cdk-core/*.md"]
           }
         }
-      }
+      },
+      "tags": []
     },
     "aws-cdk-stack": {
       "root": "libs/aws-cdk-stack",
@@ -65,7 +66,8 @@
             "assets": ["libs/aws-cdk-stack/*.md"]
           }
         }
-      }
+      },
+      "tags": []
     },
     "nx-aws-cdk": {
       "root": "libs/nx-aws-cdk",
@@ -129,7 +131,8 @@
           },
           "outputs": ["{options.outputPath}"]
         }
-      }
+      },
+      "tags": []
     },
     "nx-aws-cdk-e2e": {
       "projectType": "application",
@@ -145,7 +148,9 @@
             "jestConfig": "apps/nx-aws-cdk-e2e/jest.config.js"
           }
         }
-      }
+      },
+      "tags": [],
+      "implicitDependencies": ["nx-aws-cdk"]
     },
     "nx-serverless": {
       "root": "libs/nx-serverless",
@@ -205,7 +210,8 @@
           },
           "outputs": ["{options.outputPath}"]
         }
-      }
+      },
+      "tags": []
     },
     "nx-serverless-e2e": {
       "projectType": "application",
@@ -221,7 +227,9 @@
             "jestConfig": "apps/nx-serverless-e2e/jest.config.js"
           }
         }
-      }
+      },
+      "tags": [],
+      "implicitDependencies": ["nx-serverless"]
     },
     "scully-plugin-angular-delay": {
       "root": "libs/scully-plugin-angular-delay",
@@ -264,7 +272,8 @@
           },
           "outputs": ["{options.outputPath}"]
         }
-      }
+      },
+      "tags": []
     },
     "scully-plugin-google-analytics": {
       "root": "libs/scully-plugin-google-analytics",
@@ -306,7 +315,8 @@
           },
           "outputs": ["{options.outputPath}"]
         }
-      }
+      },
+      "tags": []
     },
     "scully-plugin-lazy-load-picture-tag": {
       "root": "libs/scully-plugin-lazy-load-picture-tag",
@@ -348,63 +358,8 @@
           },
           "outputs": ["{options.outputPath}"]
         }
-      }
-    }
-  },
-  "cli": {
-    "defaultCollection": "@nrwl/workspace"
-  },
-  "schematics": {
-    "@nrwl/workspace": {
-      "library": {
-        "linter": "eslint"
-      }
-    },
-    "@nrwl/cypress": {
-      "cypress-project": {
-        "linter": "eslint"
-      }
-    },
-    "@nrwl/react": {
-      "application": {
-        "linter": "eslint"
       },
-      "library": {
-        "linter": "eslint"
-      }
-    },
-    "@nrwl/next": {
-      "application": {
-        "linter": "eslint"
-      }
-    },
-    "@nrwl/web": {
-      "application": {
-        "linter": "eslint"
-      }
-    },
-    "@nrwl/node": {
-      "application": {
-        "linter": "eslint"
-      },
-      "library": {
-        "linter": "eslint"
-      }
-    },
-    "@nrwl/nx-plugin": {
-      "plugin": {
-        "linter": "eslint"
-      }
-    },
-    "@nrwl/nest": {
-      "application": {
-        "linter": "eslint"
-      }
-    },
-    "@nrwl/express": {
-      "application": {
-        "linter": "eslint"
-      }
+      "tags": []
     }
   }
 }
