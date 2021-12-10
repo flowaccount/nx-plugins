@@ -1,7 +1,7 @@
 import { ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import { Duration } from '@aws-cdk/core';
-import { IApplicationStackEnvironmentConfig } from '../../../../types';
+import { IApplicationStackEnvironmentConfig } from '@flowaccount/aws-cdk-stack';
 
 const _region = `<%= region %>`
 const _stage = `<%= stage %>`

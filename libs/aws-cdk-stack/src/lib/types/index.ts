@@ -1,18 +1,20 @@
 import {
   InstanceType,
+  IPeer,
   IVpc,
+  Port,
   SubnetAttributes,
   SubnetSelection,
   VpcAttributes,
 } from '@aws-cdk/aws-ec2';
-import { Conditions, IPrincipal, IRole } from '@aws-cdk/aws-iam';
+import { Conditions, IPrincipal, IRole, ServicePrincipal } from '@aws-cdk/aws-iam';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { IQueue, QueueProps } from '@aws-cdk/aws-sqs';
 import { Duration, NestedStackProps, StackProps } from '@aws-cdk/core';
 import { SqsEventSourceProps } from '@aws-cdk/aws-lambda-event-sources';
 import { TableProps } from '@aws-cdk/aws-dynamodb';
-import { DatabaseInstance, DatabaseInstanceAttributes } from '@aws-cdk/aws-rds';
+import { MountPoint, NetworkMode, PlacementConstraint, PlacementStrategy, PortMapping, Volume } from "@aws-cdk/aws-ecs"
 
 export interface VpcStackProperties extends StackProps {
   vpcAttributes: VpcAttributes;
@@ -258,3 +260,108 @@ export interface ServerlessConfigurationBuilderOption
   lambdaFunctions: LambdaConfigurationBuilderOption[];
 }
 //* For building up evnironment.ts files
+
+/* Start of ECS Models */
+export interface IECSStackEnvironmentConfig {
+  stage: string
+  awsCredentials: AWSCredentialsModel
+  vpc: VpcStackProperties
+  ecs: ECSModel
+  service: ECSServiceModel[]
+  tag: TagModel[]
+  s3MountConfig? : S3MountConfig
+}
+export class RoleModel{
+  name: string
+  assumedBy: ServicePrincipal
+}
+export class AutoScalingGroupModel {
+  launchTemplate: {
+      name: string
+      imageId?: string
+      instanceType: string
+      keyName: string
+      version: number | string
+  }
+  asg: {
+      name: string
+      min: string
+      max: string
+      desired: string
+      overrides: any[]
+      onDemandBaseCapacity: number
+      onDemandPercentage: number
+      protectionFromScaleIn: boolean
+  }
+}
+class SecurityGroupsInboudRuleModel {
+  peer: IPeer
+  connection: Port
+}
+class SecurityGroupsModel {
+  name: string
+  inboudRule: SecurityGroupsInboudRuleModel[]
+}
+class PolicyStatementModel {
+  actions: string[]
+  resources: string[]
+  conditions?: Conditions
+}
+export class PolicyModel {
+  statements?: PolicyStatementModel[]
+  statement?: PolicyStatementModel
+  name: string
+}
+export class ECSModel{
+    instanceSecurityGroup: SecurityGroupsModel
+    instancePolicy: PolicyModel
+    instanceRole: RoleModel
+    executionPolicy: PolicyModel
+    executionRole: RoleModel
+    instanceProfile: InstanceProfileModel
+    asgList: AutoScalingGroupModel[]
+    clusterName: string
+}
+
+export class ECSServiceModel{
+    cpu: number
+    memory: number
+    networkMode?: NetworkMode
+    taskDefinition: TaskDefinitionModel
+    name: string
+    desired: number
+    minHealthyPercent: number
+    placementStrategy?: PlacementStrategy[]
+    placementConstraint: PlacementConstraint[]
+    targetGroupArn?: string
+}
+
+class TaskDefinitionModel{
+    name: string
+    user?: string
+    volume?: Volume[]
+    containerDefinitionOptions: ContainerDefinitionOptionsModel
+    portMapping: PortMapping[]
+    mountPoints?: MountPoint[]
+}
+
+class ContainerDefinitionOptionsModel{
+    image: string
+    memoryLimitMiB: number
+    cpu: number
+    hostname: string
+    environment?: EnvironmentModel
+}
+
+class EnvironmentModel{
+    GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS?: string
+}
+export class TagModel {
+  key: string
+  value: string
+}
+export class  S3MountConfig {
+  bucketName: string
+  localPath: string
+}
+/* End of ECS Models */

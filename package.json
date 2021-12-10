@@ -58,6 +58,8 @@
     "@aws-cdk/aws-sns": "~1.121.0",
     "@aws-cdk/aws-sqs": "~1.121.0",
     "@aws-cdk/core": "~1.121.0",
+    "@aws-cdk/aws-ecs": "~1.121.0",
+    "@aws-cdk/aws-autoscaling": "~1.121.0",
     "@babel/code-frame": "^7.8.3",
     "@nrwl/cli": "12.9.0",
     "@nrwl/devkit": "12.9.0",

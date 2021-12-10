@@ -1,0 +1,175 @@
+import { ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Runtime } from '@aws-cdk/aws-lambda';
+import { Duration } from '@aws-cdk/core';
+import { IECSStackEnvironmentConfig } from '@flowaccount/aws-cdk-stack';
+
+const _region = `<%= region %>`
+const _stage = `<%= stage %>`
+const _stackName = `<%= name %>`
+const _isProduction = `<%= isProduction %>`
+
+export const environment: IECSStackEnvironmentConfig = {
+  stackName: `${_stage}-${_stackName}`,
+  isProduction: _isProduction,
+  awsCredentials: { account: '<%= accountid %>', region: '<%= region %>'},  
+  envName: _stage,
+  vpc: {
+    vpcAttributes: {
+        vpcId:  '<%= vpcId %>',
+        availabilityZones: [ `${_region}a`, `${_region}b` ],
+        privateSubnetIds: [ <% for(let index in vpcPrivateSubnetIds){ %> `<%= vpcPrivateSubnetIds[index] %>`, <% } %> ]
+    },
+    subnets: [ <% for(let index in subnets){ %> { subnetId: '<%= subnets[index].id %>', availabilityZone: '<%= subnets[index].availabilityZone %>' }, <% } %> ],
+  },
+  ecs: {
+      instanceSecurityGroup: {
+          name: `${_stackName}-${_stage}-ecs-sg-stack`,
+          inboudRule: [
+              { peer: Peer.anyIpv4(), connection: Port.allTcp() }
+          ]
+      },
+      instancePolicy: {
+          statements: [
+            {
+              actions: [
+                  `ec2:*`,
+                  `ecs:CreateCluster`,
+                  `ecs:DeregisterContainerInstance`,
+                  `ecs:DiscoverPollEndpoint`,
+                  `ecs:Poll`,
+                  `ecs:RegisterContainerInstance`,
+                  `ecs:StartTelemetrySession`,
+                  `ecs:UpdateContainerInstancesState`,
+                  `ecs:Submit*`,
+                  `ecr:GetAuthorizationToken`,
+                  `ecr:BatchCheckLayerAvailability`,
+                  `ecr:GetDownloadUrlForLayer`,
+                  `ecr:BatchGetImage`,
+                  `logs:CreateLogGroup`,
+                  `logs:CreateLogStream`,
+                  `logs:PutLogEvents`,
+                  `logs:DescribeLogStreams`,
+                  `secretsmanager:GetSecretValue`,
+              ],
+              resources: [
+                  `*`
+              ]
+           },
+           {
+            actions: [ "iam:PassRole" ],
+            resources: [ `arn:aws:iam::<%= accountid %>:role/${_stackName}-${_stage}-cluster-role` ]
+           }
+          ],
+          name: `${_stackName}-${_stage}-cluster-policy`
+      },
+      instanceRole: {
+          name: `${_stackName}-${_stage}-cluster-role`,
+          assumedBy: new ServicePrincipal(`ec2.amazonaws.com`)
+      },
+      executionPolicy: {
+          statements: [{
+              actions: [
+                  `ecr:GetAuthorizationToken`,
+                  `ecr:BatchCheckLayerAvailability`,
+                  `ecr:GetDownloadUrlForLayer`,
+                  `ecr:BatchGetImage`,
+                  `logs:CreateLogStream`,
+                  `logs:PutLogEvents`
+              ],
+              resources: [
+                  `*`
+              ]
+          }],
+          name: `${_stackName}-${_stage}-task-policy`
+      },
+      executionRole: {
+          name: `${_stackName}-${_stage}-task-role`,
+          assumedBy: new ServicePrincipal(`ecs-tasks.amazonaws.com`)
+      },
+      instanceProfile: {
+          name: `${_stackName}-${_stage}-cluster-instance-profile`
+      },
+      asgList: [
+          {
+              launchTemplate: {
+                  name: `${_stackName}-${_stage}-lt`,
+                  instanceType: "t3.small",
+                  keyName: "<your-key-name>",
+                  version: 1
+              },
+              asg: {
+                  name: `${_stackName}-${_stage}-asg`,
+                  min: "1",
+                  max: "1",
+                  desired: "1",
+                  overrides: [
+                        {
+                            InstanceType: "t3.small"
+                        },
+                        {
+                            InstanceType: "t3a.small"
+                        }
+                    ],
+                  onDemandBaseCapacity: 0,
+                  onDemandPercentage: 0,
+                  protectionFromScaleIn: false
+              }
+          }
+      ],
+      clusterName: `${_stackName}-${_stage}-cluster`
+    },
+    service: [
+        {
+            cpu: 1536,
+            memory: 1420,
+            taskDefinition: {
+                name: `${_stackName}-grafana-${_stage}-taskdef`,
+                containerDefinitionOptions: {
+                    image: `grafana/grafana:latest-ubuntu`,
+                    cpu: 1536,
+                    memoryLimitMiB: 1420,
+                    hostname: `${_stackName}-grafana-${_stage}`,
+                    environment: {
+                        
+                    }
+                },
+                portMapping: [
+                    { hostPort: 0, containerPort: 3000 }
+                ],
+                volume: [
+                    {
+                        name: `grafana-data`,
+                        dockerVolumeConfiguration: {
+                            driver: "rexray/ebs",
+                            scope: Scope.SHARED,
+                            autoprovision: true,
+                            driverOpts: {
+                                "volumetype": "gp3",
+                                "size": "100"
+                            }
+                        }
+                    }
+                ],
+                mountPoints: [
+                    {
+                        containerPath: `/var/lib/grafana`,
+                        sourceVolume: `grafana-data`,
+                        readOnly: false
+                    }
+                ]
+            },
+            name: `${_stackName}-grafana-${_stage}-service`,
+            desired: 1,
+            minHealthyPercent: 0,
+            placementStrategy: [
+            ],
+            placementConstraint: [
+                PlacementConstraint.memberOf(`attribute:ecs.os-type == linux and attribute:ecs.instance-type in [t3.small, t3a.small]`)
+            ],
+            targetGroupArn: `<your-target-group-arn>`
+        }
+    ],
+    tag: [
+        {key: "AppStack", value: `${_stackName}-${_stage}-stack`}
+    ]
+};
