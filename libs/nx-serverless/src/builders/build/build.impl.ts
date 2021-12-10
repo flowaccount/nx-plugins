@@ -24,10 +24,11 @@ import copyAssetFiles, {
 } from '../../utils/copy-asset-files';
 import normalizeAssetOptions from '../../utils/normalize-options';
 import { convertNxExecutor, ExecutorContext, logger } from '@nrwl/devkit';
-import { runWebpack } from '@nrwl/workspace/src/utilities/run-webpack';
+
 import * as webpack from 'webpack';
 
 import { eachValueFrom } from 'rxjs-for-await';
+import { runWebpack } from '../../utils/run-webpack';
 
 export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {}
 export type ServerlessBuildEvent = BuildResult &
@@ -72,7 +73,7 @@ export async function buildExecutor(
         }
       }*/
   const iterator = eachValueFrom(
-    runWebpack(config, webpack).pipe(
+    runWebpack(config).pipe(
       tap((stats) => {
         console.info(stats.toString(config.stats));
 
