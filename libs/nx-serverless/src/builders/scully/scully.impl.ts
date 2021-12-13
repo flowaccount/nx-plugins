@@ -2,10 +2,16 @@
 
 import { BuilderOutput } from '@angular-devkit/architect';
 import { JsonObject } from '@angular-devkit/core';
-import { ExecutorContext, logger } from '@nrwl/devkit';
+import {
+  ExecutorContext,
+  logger,
+  parseTargetString,
+  readTargetOptions,
+} from '@nrwl/devkit';
 import { of } from 'rxjs';
 import { buildTarget } from '../deploy/deploy.impl';
 import runCommand from '@nrwl/workspace/src/executors/run-commands/run-commands.impl';
+import { getSourceRoot, normalizeBuildOptions } from '../../utils/normalize';
 export interface ScullyBuilderOptions extends JsonObject {
   buildTarget: string;
   skipBuild: boolean;
@@ -53,10 +59,11 @@ async function runScully(
       command: `scully --configFile=${fileName} ${args.join(' ')}`,
     });
   });
+  const root = getSourceRoot(context);
   await runCommand(
     {
       commands: commands,
-      cwd: options.root.toString(),
+      cwd: root,
       color: true,
       parallel: false,
     },

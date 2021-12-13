@@ -1,0 +1,15 @@
+{
+  "name": "@flowaccount/aws-cdk-stack",
+  "version": "1.0.0-beta.9",
+  "dependencies": {
+    "@aws-cdk/core": "~1.121.0",
+    "@aws-cdk/aws-ec2": "~1.121.0",
+    "@aws-cdk/aws-dynamodb": "~1.121.0",
+    "@aws-cdk/aws-sqs": "~1.121.0",
+    "@aws-cdk/aws-sns": "~1.121.0",
+    "@aws-cdk/aws-lambda": "~1.121.0",
+    "@aws-cdk/aws-rds": "~1.121.0",
+    "@aws-cdk/aws-elasticsearch": "~1.121.0",
+    "@aws-cdk/aws-lambda-event-sources": "~1.121.0"
+  }
+}

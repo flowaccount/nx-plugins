@@ -1,0 +1,99 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "cli": "nx",
+  "title": "NxAWSCdk Deploy",
+  "description": "Deploy an app via the `cdk` cli command.",
+  "type": "object",
+  "properties": {
+    "profile": {
+      "type": "string",
+      "description": "Use the indicated AWS profile as the default environment"
+    },
+    "stackName": {
+      "type": "string",
+      "description": "The name of the cdk stack you want to execute on"
+    },
+    "build-exclude": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Do not rebuild asset with the given ID. Can be specified multiple times"
+    },
+    "exclusively": {
+      "type": "boolean",
+      "description": "Only deploy requested stacks, don't include dependencies"
+    },
+    "require-approval": {
+      "type": "string",
+      "enum": ["never", "any-changes", "broadening"],
+      "description": "What security-sensitive changes need manual approval"
+    },
+    "ci": {
+      "type": "boolean",
+      "default": false,
+      "description": "Force CI detection"
+    },
+    "notification-arns": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "ARNs of SNS topics that CloudFormation will notify with stack related events"
+    },
+    "no-execute": {
+      "type": "boolean",
+      "default": false,
+      "description": "--no-execute will NOT execute the ChangeSet"
+    },
+    "change-set-name": {
+      "type": "string",
+      "description": "Name of the CloudFormation change set to create"
+    },
+    "output": {
+      "type": "string",
+      "description": "Directory in which to place the synthesizer output."
+    },
+    "force": {
+      "type": "boolean",
+      "default": false,
+      "description": "Always deploy stack even if templates are identical"
+    },
+    "parameters": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Additional parameters passed to CloudFormation at deploy time (STACK:KEY=VALUE)"
+    },
+    "output-file": {
+      "type": "string",
+      "description": "Path to file where stack outputs will be written as JSON"
+    },
+    "previous-parameters": {
+      "type": "boolean",
+      "default": true,
+      "description": "Use previous values for existing parameters (you must specify all parameters on every deployment if this is disabled)"
+    },
+    "progress": {
+      "type": "string",
+      "enum": ["bar", "events"],
+      "description": "Display mode for stack activity events"
+    },
+    "no-rollback": {
+      "type": "boolean",
+      "default": false,
+      "description": "Don't Rollback stack to stable state on failure"
+    },
+    "debug": {
+      "type": "boolean",
+      "default": false
+    },
+    "verbose": {
+      "type": "boolean",
+
+      "default": false
+    }
+  },
+  "required": ["profile", "output", "stackName"]
+}

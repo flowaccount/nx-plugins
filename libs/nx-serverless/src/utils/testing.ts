@@ -26,21 +26,21 @@ export function callRule(rule: Rule, tree: Tree) {
   return testRunner.callRule(rule, tree).toPromise();
 }
 
-export async function getMockContext() {
-  const registry = new schema.CoreSchemaRegistry();
-  registry.addPostTransform(schema.transforms.addUndefinedDefaults);
+// export async function getMockContext() {
+//   const registry = new schema.CoreSchemaRegistry();
+//   registry.addPostTransform(schema.transforms.addUndefinedDefaults);
 
-  const architectHost = new TestingArchitectHost('/root', '/root');
-  const architect = new Architect(architectHost, registry);
+//   const architectHost = new TestingArchitectHost('/root', '/root');
+//   const architect = new Architect(architectHost, registry);
 
-  await architectHost.addBuilderFromPackage(join(__dirname, '../..'));
+//   await architectHost.addBuilderFromPackage(join(__dirname, '../..'));
 
-  const context = new MockBuilderContext(architect, architectHost);
-  await context.addBuilderFromPackage(join(__dirname, '../..'));
-  await context.addTarget({ project: 'test', target: 'test' }, 'build');
+//   const context = new MockBuilderContext(architect, architectHost);
+//   await context.addBuilderFromPackage(join(__dirname, '../..'));
+//   await context.addTarget({ project: 'test', target: 'test' }, 'build');
 
-  return [architect, context] as [Architect, MockBuilderContext];
-}
+//   return [architect, context] as [Architect, MockBuilderContext];
+// }
 
 export async function createTestUILib(
   libName: string,

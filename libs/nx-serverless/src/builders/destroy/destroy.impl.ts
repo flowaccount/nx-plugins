@@ -21,7 +21,7 @@ export async function destroyExecutor(
     // build into output path before running serverless offline.
     const commands = [];
     commands.push('remove');
-    await runServerlessCommand(options, commands, options.location);
+    await runServerlessCommand(options, commands);
     return { success: true };
   } else {
     logger.error('There was an error with the build. See above.');

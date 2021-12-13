@@ -136,7 +136,7 @@ export const getEntryForFunction = (
 ) => {
   const handler = serverlessFunction.handler;
 
-  const handlerFile = getHandlerFile(handler);
+  let handlerFile = getHandlerFile(handler);
   if (!handlerFile) {
     _.get(serverless, 'service.provider.name') !== 'google' &&
       serverless.cli.log(
@@ -144,7 +144,12 @@ export const getEntryForFunction = (
       );
     return {};
   }
-  const ext = getEntryExtension(handlerFile, serverless);
+  const servicePath = sourceroot.replace('/src', '');
+  // Sometimes the service path and handlerFile path overlap, unusually caused by plugins. This regex removes the overlap
+  const regex = new RegExp(`^${servicePath.replace(/\/([^/]*)/g, `($1\\/)?`)}`);
+  handlerFile = handlerFile.replace(regex, ``);
+
+  const ext = getEntryExtension(handlerFile, serverless, servicePath);
 
   // Create a valid entry key
   let handlerFileFinal = `${sourceroot.replace(
@@ -169,9 +174,9 @@ const getHandlerFile = (handler) => {
   }
 };
 
-const getEntryExtension = (fileName, serverless) => {
+const getEntryExtension = (fileName, serverless, servicePath) => {
   const files = glob.sync(`${fileName}.*`, {
-    cwd: serverless.config.servicePath,
+    cwd: servicePath,
     nodir: true,
     // ignore: this.configuration.excludeFiles ? this.configuration.excludeFiles : undefined
   });
@@ -179,7 +184,7 @@ const getEntryExtension = (fileName, serverless) => {
   if (_.isEmpty(files)) {
     // If we cannot find any handler we should terminate with an error
     throw new serverless.classes.Error(
-      `No matching handler found for '${fileName}' in '${serverless.config.servicePath}'. Check your service definition.`
+      `No matching handler found for '${fileName}' in '${servicePath}'. Check your service definition.`
     );
   }
 

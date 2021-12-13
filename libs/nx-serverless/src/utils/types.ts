@@ -79,7 +79,7 @@ type normalizeExternalDependencies = (
   packageJson: any,
   originPackageJsonPath: string,
   verbose: boolean,
-  webpackStats?: Stats,
+  webpackStats?: Stats.ToJsonOutput,
   dependencyGraph?: any,
   sourceRoot?: string,
   tsconfig?: string

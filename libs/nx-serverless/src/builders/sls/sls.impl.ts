@@ -13,6 +13,7 @@ import { runWaitUntilTargets } from '../../utils/target.schedulers';
 import { Packager } from '../../utils/enums';
 import { buildTarget } from '../deploy/deploy.impl';
 import { ExecutorContext } from '@nrwl/devkit';
+import { BuildResult } from '@angular-devkit/build-webpack';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 export const enum InspectType {
@@ -45,7 +46,6 @@ export async function slsExecutor(
   options: JsonObject & ServerlessSlsBuilderOptions,
   context: ExecutorContext
 ) {
-  let packagePath = options.location;
   if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
     const results = await runWaitUntilTargets(
       options.waitUntilTargets,
@@ -61,20 +61,20 @@ export async function slsExecutor(
     }
   }
   const iterator = await buildTarget(options, context);
-  const event = <BuilderOutput>(await iterator.next()).value;
+  const builderOutput = <BuildResult>(await iterator.next()).value;
   const prepResult = await preparePackageJson(
     options,
     context,
-    event.webpackStats,
-    event.resolverName.toString(),
-    event.tsconfig.toString()
+    builderOutput.webpackStats,
+    builderOutput.resolverName.toString(),
+    builderOutput.tsconfig.toString()
   ).toPromise();
   if (!prepResult.success) {
     throw new Error(`There was an error with the build. ${prepResult.error}`);
   }
-  packagePath = await makeDistFileReadyForPackaging(options, packagePath);
+  await makeDistFileReadyForPackaging(options);
   const commands = [];
   commands.push(options.command);
-  await runServerlessCommand(options, commands, packagePath);
+  await runServerlessCommand(options, commands);
   return { success: true };
 }

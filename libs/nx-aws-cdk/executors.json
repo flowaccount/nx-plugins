@@ -1,0 +1,15 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "executors": {
+    "synth": {
+      "implementation": "./src/builders/synth/synth.executor",
+      "schema": "./src/builders/synth/schema.json",
+      "description": "Synthesizes and prints the CloudFormation template for this stack"
+    },
+    "deploy": {
+      "implementation": "./src/builders/deploy/deploy.executor",
+      "schema": "./src/builders/deploy/schema.json",
+      "description": "Deploy the stack"
+    }
+  }
+}

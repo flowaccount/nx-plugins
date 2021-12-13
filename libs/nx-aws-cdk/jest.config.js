@@ -7,4 +7,5 @@ module.exports = {
   coverageDirectory: '../../coverage/libs/nx-aws-cdk',
   globals: { 'ts-jest': { tsConfig: '<rootDir>/tsconfig.spec.json' } },
   displayName: 'nx-aws-cdk',
+  testEnvironment: 'node',
 };
