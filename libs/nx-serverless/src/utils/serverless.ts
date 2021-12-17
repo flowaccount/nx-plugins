@@ -157,7 +157,9 @@ export class ServerlessWrapper {
       await this.serverless$.service.load({
         config: buildOptions.serverlessConfig,
       });
-      this.serverless$.service.provider.stage = 'dev-monthly';
+      if (deployOptions) {
+        this.serverless$.service.provider.stage = deployOptions.stage;
+      }
       await this.serverless$.variables
         .populateService(this.serverless$.pluginManager.cliOptions)
         .then(() => {
