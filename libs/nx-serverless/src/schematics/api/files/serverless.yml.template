@@ -9,7 +9,7 @@ provider:
   name: <%= provider %> 
   region: <%= region %> 
   <% if(endpointType) { %> ? endpointType: <%= endpointType %> <% } %>
-  runtime: nodejs10.x
+  runtime: nodejs14.x
 functions:
   hello-world:
     handler: src/handler.helloWorld

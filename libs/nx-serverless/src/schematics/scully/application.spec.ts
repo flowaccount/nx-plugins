@@ -111,7 +111,7 @@ describe('scully app', () => {
               outputPath: 'dist',
               package: 'apps/my-app',
               processEnvironmentFile: 'env.json',
-              serverlessConfig: 'apps/my-app/serverless.yml',
+              serverlessConfig: 'apps/my-app/serverless.ts',
               servicePath: 'apps/my-app',
               tsConfig: 'apps/my-app/tsconfig.serverless.json',
               skipClean: true,
@@ -122,7 +122,7 @@ describe('scully app', () => {
             options: {
               waitUntilTargets: ['my-app:scully'],
               buildTarget: 'my-app:compile:production',
-              config: 'apps/my-app/serverless.yml',
+              config: 'apps/my-app/serverless.ts',
               location: 'dist/apps/my-app',
               package: 'dist/apps/my-app',
             },
@@ -131,7 +131,7 @@ describe('scully app', () => {
             builder: '@flowaccount/nx-serverless:destroy',
             options: {
               buildTarget: 'my-app:compile:production',
-              config: 'apps/my-app/serverless.yml',
+              config: 'apps/my-app/serverless.ts',
               location: 'dist/apps/my-app',
               package: 'dist/apps/my-app',
             },
@@ -159,7 +159,7 @@ describe('scully app', () => {
             options: {
               waitUntilTargets: ['my-app:scully'],
               buildTarget: 'my-app:compile',
-              config: 'apps/my-app/serverless.yml',
+              config: 'apps/my-app/serverless.ts',
               location: 'dist/apps/my-app',
             },
           },
@@ -179,7 +179,7 @@ describe('scully app', () => {
       expect(tree.exists('apps/my-app/serve-static.ts')).toBeTruthy();
       expect(tree.exists('apps/my-app/handler.ts')).toBeTruthy();
       expect(tree.exists('apps/my-app/tsconfig.serverless.json')).toBeTruthy();
-      expect(tree.exists('apps/my-app/serverless.yml')).toBeTruthy();
+      expect(tree.exists('apps/my-app/serverless.ts')).toBeTruthy();
       const tsconfig = readJsonInTree(
         tree,
         'apps/my-app/tsconfig.serverless.json'
@@ -234,7 +234,7 @@ describe('scully app', () => {
   //     [
   //       'apps/my-dir/my-serveless-app/env.json',
   //       'apps/my-dir/my-serveless-app/src/handler.ts',
-  //       'apps/my-dir/my-serveless-app/serverless.yml'
+  //       'apps/my-dir/my-serveless-app/serverless.ts'
   //     ].forEach(path => {
   //       expect(tree.exists(path)).toBeTruthy();
   //     });

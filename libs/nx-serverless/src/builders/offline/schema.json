@@ -18,7 +18,7 @@
     },
     "config": {
       "type": "string",
-      "description": "The serverless.yml location"
+      "description": "The serverless.yml/serverless.ts location"
     },
     "location": {
       "type": "string",

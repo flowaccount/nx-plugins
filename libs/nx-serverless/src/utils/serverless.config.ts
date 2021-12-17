@@ -14,9 +14,10 @@ export function consolidateExcludes(options: BuildBuilderOptions) {
   const packageExcludes =
     ServerlessWrapper.serverless.service.package.exclude || [];
   // add local service plugins Path
-  let pluginsLocalPath = ServerlessWrapper.serverless.pluginManager.parsePluginsObject(
-    ServerlessWrapper.serverless.service.plugins
-  ).localPath;
+  let pluginsLocalPath =
+    ServerlessWrapper.serverless.pluginManager.parsePluginsObject(
+      ServerlessWrapper.serverless.service.plugins
+    ).localPath;
   pluginsLocalPath = /^win/.test(process.platform)
     ? upath.toUnix(pluginsLocalPath)
     : pluginsLocalPath;
@@ -38,21 +39,23 @@ export function consolidateExcludes(options: BuildBuilderOptions) {
     // functionExcludes
   );
   // const parsedTSConfig = readTsConfig(options.tsConfig);
-  const parsedTSConfig = ts.readConfigFile(options.tsConfig, ts.sys.readFile)
-    .config;
+  const parsedTSConfig = ts.readConfigFile(
+    options.tsConfig,
+    ts.sys.readFile
+  ).config;
   const appRoot = options.sourceRoot.replace('src', '');
   logger.info(`Adding excluding list to tsconfig ${excludeList}`);
   if (excludeList.length > 0) {
     /* Handle excludes for handlers */
     logger.info('Checking if exclude paths overlaps with handlers...');
-    const handlerPaths: string[] = Object.values(
-      options.files
-    ).map((m: string) => relative(appRoot, m));
+    const handlerPaths: string[] = Object.values(options.files).map(
+      (m: string) => relative(appRoot, m)
+    );
     const ig = ignore().add(excludeList);
     const filteredPaths = ig.filter(handlerPaths);
     if (filteredPaths.length < handlerPaths.length) {
       logger.warn(
-        'There is an overlap!\nPlease make sure you are purposely doing this!\nI will build, taking your handlers defined in serverless.yml as the only "entry points"!'
+        'There is an overlap!\nPlease make sure you are purposely doing this!\nI will build, taking your handlers defined in serverless.yml/serverless.ts as the only "entry points"!'
       );
       logger.warn(`handlers ---> ${JSON.stringify(options.files)}`);
     }

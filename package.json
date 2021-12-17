@@ -59,7 +59,7 @@
     "@nrwl/nx-plugin": "12.9.0",
     "@nrwl/workspace": "12.9.0",
     "@nrwl/tao": "12.9.0",
-    "@scullyio/scully": "^1.1.1",
+    "@scullyio/scully": "1.0.8",
     "@types/express": "^4.17.2",
     "@types/fs-extra": "^8.1.0",
     "@types/jest": "26.0.8",

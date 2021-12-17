@@ -74,7 +74,7 @@ describe('express app', () => {
               outputPath: 'dist',
               package: 'apps/my-app',
               processEnvironmentFile: 'env.json',
-              serverlessConfig: 'apps/my-app/serverless.yml',
+              serverlessConfig: 'apps/my-app/serverless.ts',
               servicePath: 'apps/my-app',
               tsConfig: 'apps/my-app/tsconfig.serverless.json',
               skipClean: true,
@@ -85,7 +85,7 @@ describe('express app', () => {
             options: {
               waitUntilTargets: ['my-app:build:production'],
               buildTarget: 'my-app:compile:production',
-              config: 'apps/my-app/serverless.yml',
+              config: 'apps/my-app/serverless.ts',
               location: 'dist/apps/my-app',
               package: 'dist/apps/my-app',
               stage: 'dev',
@@ -95,7 +95,7 @@ describe('express app', () => {
             executor: '@flowaccount/nx-serverless:destroy',
             options: {
               buildTarget: 'my-app:compile:production',
-              config: 'apps/my-app/serverless.yml',
+              config: 'apps/my-app/serverless.ts',
               location: 'dist/apps/my-app',
               package: 'dist/apps/my-app',
             },
@@ -113,7 +113,7 @@ describe('express app', () => {
             options: {
               waitUntilTargets: ['my-app:build'],
               buildTarget: 'my-app:compile',
-              config: 'apps/my-app/serverless.yml',
+              config: 'apps/my-app/serverless.ts',
               location: 'dist/apps/my-app',
             },
           },
@@ -130,7 +130,7 @@ describe('express app', () => {
       expect(tree.exists('apps/my-app/env.json')).toBeTruthy();
       expect(tree.exists('apps/my-app/handler.ts')).toBeTruthy();
       expect(tree.exists('apps/my-app/tsconfig.serverless.json')).toBeTruthy();
-      expect(tree.exists('apps/my-app/serverless.yml')).toBeTruthy();
+      expect(tree.exists('apps/my-app/serverless.ts')).toBeTruthy();
       const tsconfig = readJsonInTree(
         tree,
         'apps/my-app/tsconfig.serverless.json'
@@ -179,7 +179,7 @@ describe('express app', () => {
         'apps/my-dir/my-app/env.json',
         'apps/my-dir/my-app/handler.ts',
         'apps/my-dir/my-app/tsconfig.serverless.json',
-        'apps/my-dir/my-app/serverless.yml',
+        'apps/my-dir/my-app/serverless.ts',
       ].forEach((path) => {
         expect(tree.exists(path)).toBeTruthy();
       });

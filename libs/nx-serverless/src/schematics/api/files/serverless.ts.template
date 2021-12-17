@@ -1,0 +1,36 @@
+import type { Serverless } from 'serverless';
+const serverlessConfiguration: Serverless = {
+  service: '<%= serviceName %>',
+  frameworkVersion: '>=1.1.0',
+  plugins: [
+      'serverless-offline'
+  ],
+  package: {
+    individually: true,
+    excludeDevDependencies: false
+  },
+  provider: {
+    name: '<%= provider %>',
+    region: '<%= region %>',
+    <% if(endpointType) { %> ? endpointType: '<%= endpointType %>', <% } %>
+    runtime: 'nodejs14.x'
+  },
+  functions: {
+    helloWorld: {
+      handler: `src/handler.helloWorld`,
+      events: [
+        {
+          http: {
+            method: 'get',
+            path: 'hello-world',
+          },
+        },
+      ],
+    },
+  },
+  resources: {
+      
+  },
+};
+
+module.exports = serverlessConfiguration;

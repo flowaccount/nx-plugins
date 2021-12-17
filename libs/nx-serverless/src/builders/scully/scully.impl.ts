@@ -54,10 +54,18 @@ async function runScully(
 ) {
   const commands: { command: string }[] = [];
   const args = getExecArgv(options);
+
   options.configFiles.forEach((fileName) => {
     commands.push({
-      command: `scully --configFile=${fileName} ${args.join(' ')}`,
+      command: `scully --configFile=${fileName} --disableProjectFolderCheck ${args.join(
+        ' '
+      )}`,
     });
+    console.log(
+      `scully --configFile=${fileName} --disableProjectFolderCheck ${args.join(
+        ' '
+      )}`
+    );
   });
   const root = getSourceRoot(context);
   await runCommand(

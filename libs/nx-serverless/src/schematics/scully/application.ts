@@ -22,7 +22,7 @@ function getServeConfig(options: NormalizedSchema) {
     options: {
       waitUntilTargets: [options.project + ':scully'],
       buildTarget: options.project + ':compile',
-      config: join(options.appProjectRoot, 'serverless.yml'),
+      config: join(options.appProjectRoot, 'serverless.ts'),
       location: join(normalize('dist'), options.appProjectRoot),
     },
     configurations: {
@@ -55,7 +55,7 @@ function getDeployConfig(options: NormalizedSchema) {
     options: {
       waitUntilTargets: [options.project + ':scully'],
       buildTarget: options.project + ':compile:production',
-      config: join(options.appProjectRoot, 'serverless.yml'),
+      config: join(options.appProjectRoot, 'serverless.ts'),
       location: join(normalize('dist'), options.appProjectRoot),
       package: join(normalize('dist'), options.appProjectRoot),
     },
@@ -67,7 +67,7 @@ function getDestroyConfig(options: NormalizedSchema) {
     executor: '@flowaccount/nx-serverless:destroy',
     options: {
       buildTarget: options.project + ':compile:production',
-      config: join(options.appProjectRoot, 'serverless.yml'),
+      config: join(options.appProjectRoot, 'serverless.ts'),
       location: join(normalize('dist'), options.appProjectRoot),
       package: join(normalize('dist'), options.appProjectRoot),
     },
@@ -126,7 +126,7 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
 // function addServerlessYMLFile(options: NormalizedSchema): Rule {
 //   return (host: Tree) => {
 //     host.create(
-//       join(options.appProjectRoot, 'serverless.yml'),
+//       join(options.appProjectRoot, 'serverless.ts'),
 //       `service: ${options.project}
 // frameworkVersion: ">=1.1.0"
 // plugins:

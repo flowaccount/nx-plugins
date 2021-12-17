@@ -78,7 +78,7 @@ describe('node api app', () => {
               outputPath: 'dist/apps/my-serveless-app',
               package: 'apps/my-serveless-app',
               processEnvironmentFile: 'env.json',
-              serverlessConfig: 'apps/my-serveless-app/serverless.yml',
+              serverlessConfig: 'apps/my-serveless-app/serverless.ts',
               servicePath: 'apps/my-serveless-app',
               tsConfig: 'apps/my-serveless-app/tsconfig.app.json',
             },
@@ -87,7 +87,7 @@ describe('node api app', () => {
             builder: '@flowaccount/nx-serverless:deploy',
             options: {
               buildTarget: 'my-serveless-app:build:production',
-              config: 'apps/my-serveless-app/serverless.yml',
+              config: 'apps/my-serveless-app/serverless.ts',
               location: 'dist/apps/my-serveless-app',
               package: 'dist/apps/my-serveless-app',
               stage: 'dev',
@@ -97,7 +97,7 @@ describe('node api app', () => {
             builder: '@flowaccount/nx-serverless:destroy',
             options: {
               buildTarget: 'my-serveless-app:build:production',
-              config: 'apps/my-serveless-app/serverless.yml',
+              config: 'apps/my-serveless-app/serverless.ts',
               location: 'dist/apps/my-serveless-app',
               package: 'dist/apps/my-serveless-app',
             },
@@ -124,7 +124,7 @@ describe('node api app', () => {
             },
             options: {
               buildTarget: 'my-serveless-app:build',
-              config: 'apps/my-serveless-app/serverless.yml',
+              config: 'apps/my-serveless-app/serverless.ts',
               location: 'dist/apps/my-serveless-app',
             },
           },
@@ -187,7 +187,7 @@ describe('node api app', () => {
         tree.exists('apps/my-serveless-app/environment.prod.ts')
       ).toBeTruthy();
       expect(tree.exists('apps/my-serveless-app/src/handler.ts')).toBeTruthy();
-      expect(tree.exists('apps/my-serveless-app/serverless.yml')).toBeTruthy();
+      expect(tree.exists('apps/my-serveless-app/serverless.ts')).toBeTruthy();
 
       const tsconfig = readJsonInTree(
         tree,
@@ -285,7 +285,7 @@ describe('node api app', () => {
         'apps/my-dir/my-serveless-app/environment.ts',
         'apps/my-dir/my-serveless-app/environment.prod.ts',
         'apps/my-dir/my-serveless-app/src/handler.ts',
-        'apps/my-dir/my-serveless-app/serverless.yml',
+        'apps/my-dir/my-serveless-app/serverless.ts',
       ].forEach((path) => {
         expect(tree.exists(path)).toBeTruthy();
       });

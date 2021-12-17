@@ -58,7 +58,7 @@
 //       watch: false,
 //       sourceMap: false,
 //       package: 'apps/serverlessapp',
-//       serverlessConfig: 'apps/serverlessapp/serverless.yml',
+//       serverlessConfig: 'apps/serverlessapp/serverless.ts',
 //       servicePath: 'apps/serverlessapp',
 //       processEnvironmentFile: 'env.json',
 //       skipClean: false

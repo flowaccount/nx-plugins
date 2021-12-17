@@ -99,12 +99,19 @@ export class ServerlessWrapper {
         logger.error(e);
       }
       logger.debug('Reading Configuration');
+      const typescriptConfig = fs.existsSync(
+        path.join(buildOptions.servicePath, 'serverless.ts')
+      );
+      const configFileName = typescriptConfig
+        ? 'serverless.ts'
+        : 'serverless.yml';
       const configurationInput = await readConfiguration(
-        path.resolve(buildOptions.servicePath, 'serverless.yml')
+        path.resolve(buildOptions.servicePath, configFileName)
       );
       logger.debug('Resolved configurations');
       configurationInput.useDotenv = false;
       logger.debug('Initiating Serverless Instance');
+
       const serverlessConfig: any = {
         commands: [
           'deploy',
@@ -116,7 +123,7 @@ export class ServerlessWrapper {
         ],
         configuration: configurationInput,
         serviceDir: buildOptions.servicePath,
-        configurationFilename: 'serverless.yml',
+        configurationFilename: configFileName,
       };
       if (
         deployOptions &&
@@ -150,6 +157,7 @@ export class ServerlessWrapper {
       await this.serverless$.service.load({
         config: buildOptions.serverlessConfig,
       });
+      this.serverless$.service.provider.stage = 'dev-monthly';
       await this.serverless$.variables
         .populateService(this.serverless$.pluginManager.cliOptions)
         .then(() => {
@@ -196,6 +204,7 @@ export function getExecArgv(
   Object.keys(extraArgs).map((a) =>
     serverlessOptions.push(`--${a} ${extraArgs[a]}`)
   );
+  console.log(serverlessOptions);
   return serverlessOptions;
 }
 

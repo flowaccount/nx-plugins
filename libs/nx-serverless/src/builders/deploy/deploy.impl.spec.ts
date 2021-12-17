@@ -39,7 +39,7 @@ describe('Serverless Deploy Builder', () => {
       buildTarget: 'serverlessapp:build:production',
       location: 'dist/apps/serverlessapp',
       package: 'dist/apps/serverlessapp',
-      config: 'apps/serverlessapp/serverless.yml',
+      config: 'apps/serverlessapp/serverless.ts',
       waitUntilTargets: [],
       inspect: false,
       host: null,
