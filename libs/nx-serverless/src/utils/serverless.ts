@@ -1,8 +1,6 @@
 import * as Serverless from 'serverless/lib/Serverless';
 import * as readConfiguration from 'serverless/lib/configuration/read';
 import { ServerlessBaseOptions } from './types';
-import { mergeMap, concatMap } from 'rxjs/operators';
-import { of, Observable, from } from 'rxjs';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
