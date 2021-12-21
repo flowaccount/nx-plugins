@@ -1,29 +1,28 @@
 import { BuilderOutput } from '@angular-devkit/architect';
-import { copy } from 'fs-extra';
+import { copy, remove  } from 'fs-extra';
 import { ServerlessSlsBuilderOptions } from '../builders/sls/sls.impl';
 import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
 import { BuildBuilderOptions, FileInputOutput } from './types';
 import { logger } from '@nrwl/devkit';
 
-export default function copyAssetFiles(
+export default async function copyAssetFiles(
   options: BuildBuilderOptions
 ): Promise<BuilderOutput> {
   logger.info('Copying asset files...');
-  return Promise.all(
-    options.assetFiles.map((file) => copy(file.input, file.output))
-  )
-    .then(() => {
-      logger.info('Done copying asset files.');
-      return {
-        success: true,
-      };
-    })
-    .catch((err: Error) => {
-      return {
-        error: err.message,
-        success: false,
-      };
-    });
+  try {
+    await Promise.all(
+      options.assetFiles.map((file) => copy(file.input, file.output))
+    )
+    logger.info('Done copying asset files.')
+    return {
+      success: true,
+    }
+  } catch (err) {
+    return {
+      error: err.message,
+      success: false,
+    }
+  }
 }
 
 export function copyAssetFilesSync(
@@ -47,25 +46,25 @@ export function copyAssetFilesSync(
   }
 }
 
-export function copyBuildOutputToBePackaged(
+export async function copyBuildOutputToBePackaged(
   options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions
 ): Promise<BuilderOutput> {
   logger.info(
     `Copying build output files from ${options.package} to ${options.serverlessPackagePath} to be packaged`
   );
-  return copy(options.package, options.serverlessPackagePath)
-    .then(() => {
-      logger.info('Done copying build output files.');
-      return {
-        success: true,
-      };
-    })
-    .catch((err: Error) => {
-      return {
-        error: err.message,
-        success: false,
-      };
-    });
+  try {
+    await remove(options.serverlessPackagePath) // remove old build output files (Support macOS issue)
+    await copy(options.package, options.serverlessPackagePath)
+    logger.info('Done copying build output files.')
+    return {
+      success: true,
+    }
+  } catch (err) {
+    return {
+      error: err.message,
+      success: false,
+    }
+  }
 }
 
 const propKeys = [

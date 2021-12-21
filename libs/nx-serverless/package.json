@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/nx-serverless",
-  "version": "1.0.2",
+  "version": "1.1.0",
   "main": "src/index.js",
   "description": "Serverless schematics for nx workspace",
   "keywords": [
@@ -46,7 +46,8 @@
     "serverless-offline": "^7.0.0",
     "serverless-apigw-binary": "^0.4.4",
     "is-builtin-module": "^3.0.0",
-    "rxjs-for-await": "0.0.2"
+    "rxjs-for-await": "0.0.2",
+    "graceful-fs": "4.2.1"
   },
   "devDependencies": {},
   "repository": {

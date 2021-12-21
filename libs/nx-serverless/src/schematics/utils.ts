@@ -17,7 +17,7 @@ export function getBuildConfig(options: BaseSchema) {
       package: options.appProjectRoot,
       serverlessConfig: joinPathFragments(
         options.appProjectRoot,
-        'serverless.yml'
+        'serverless.ts'
       ),
       servicePath: options.appProjectRoot,
       tsConfig: joinPathFragments(options.appProjectRoot, 'tsconfig.app.json'),

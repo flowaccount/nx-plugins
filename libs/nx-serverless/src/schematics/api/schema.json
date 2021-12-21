@@ -51,8 +51,7 @@
     "provider": {
       "type": "string",
       "description": "The cloud provider for this serverless api.",
-      "default": "aws",
-      "x-prompt": "Which cloud provider are you using for this serverless api? ( aws | azure | google ) etc."
+      "default": "aws"
     },
     "baseWorkspaceTsConfig": {
       "type": "boolean",

@@ -1,8 +1,6 @@
 import * as Serverless from 'serverless/lib/Serverless';
 import * as readConfiguration from 'serverless/lib/configuration/read';
 import { ServerlessBaseOptions } from './types';
-import { mergeMap, concatMap } from 'rxjs/operators';
-import { of, Observable, from } from 'rxjs';
 import * as path from 'path';
 import * as fs from 'fs';
 import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
@@ -99,12 +97,19 @@ export class ServerlessWrapper {
         logger.error(e);
       }
       logger.debug('Reading Configuration');
+      const typescriptConfig = fs.existsSync(
+        path.join(buildOptions.servicePath, 'serverless.ts')
+      );
+      const configFileName = typescriptConfig
+        ? 'serverless.ts'
+        : 'serverless.yml';
       const configurationInput = await readConfiguration(
-        path.resolve(buildOptions.servicePath, 'serverless.yml')
+        path.resolve(buildOptions.servicePath, configFileName)
       );
       logger.debug('Resolved configurations');
       configurationInput.useDotenv = false;
       logger.debug('Initiating Serverless Instance');
+
       const serverlessConfig: any = {
         commands: [
           'deploy',
@@ -116,7 +121,7 @@ export class ServerlessWrapper {
         ],
         configuration: configurationInput,
         serviceDir: buildOptions.servicePath,
-        configurationFilename: 'serverless.yml',
+        configurationFilename: configFileName,
       };
       if (
         deployOptions &&
@@ -150,6 +155,9 @@ export class ServerlessWrapper {
       await this.serverless$.service.load({
         config: buildOptions.serverlessConfig,
       });
+      if (deployOptions) {
+        this.serverless$.service.provider.stage = deployOptions.stage;
+      }
       await this.serverless$.variables
         .populateService(this.serverless$.pluginManager.cliOptions)
         .then(() => {
@@ -196,6 +204,7 @@ export function getExecArgv(
   Object.keys(extraArgs).map((a) =>
     serverlessOptions.push(`--${a} ${extraArgs[a]}`)
   );
+  console.log(serverlessOptions);
   return serverlessOptions;
 }
 

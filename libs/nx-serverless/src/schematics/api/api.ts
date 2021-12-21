@@ -41,7 +41,7 @@ function getServeConfig(project: any, options: NormalizedSchema) {
     builder: '@flowaccount/nx-serverless:offline',
     options: {
       buildTarget: options.name + ':build',
-      config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
+      config: joinPathFragments(options.appProjectRoot, 'serverless.ts'),
       location: joinPathFragments(normalize('dist'), options.appProjectRoot),
       port: 7777,
     },
@@ -61,7 +61,7 @@ function getDeployConfig(project: any, options: NormalizedSchema) {
     builder: '@flowaccount/nx-serverless:deploy',
     options: {
       buildTarget: options.name + ':build:production',
-      config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
+      config: joinPathFragments(options.appProjectRoot, 'serverless.ts'),
       location: joinPathFragments(normalize('dist'), options.appProjectRoot),
       package: joinPathFragments(normalize('dist'), options.appProjectRoot),
       stage: 'dev',
@@ -74,7 +74,7 @@ function getDestroyConfig(options: NormalizedSchema) {
     builder: '@flowaccount/nx-serverless:destroy',
     options: {
       buildTarget: options.name + ':build:production',
-      config: joinPathFragments(options.appProjectRoot, 'serverless.yml'),
+      config: joinPathFragments(options.appProjectRoot, 'serverless.ts'),
       location: joinPathFragments(normalize('dist'), options.appProjectRoot),
       package: joinPathFragments(normalize('dist'), options.appProjectRoot),
     },
@@ -119,6 +119,7 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
     offset: offsetFromRoot(options.appProjectRoot),
     template: '',
     root: options.appProjectRoot,
+    serviceName: options.name.replace('.', '-'),
     baseWorkspaceTsConfig: options.baseWorkspaceTsConfig,
   };
   generateFiles(
@@ -145,7 +146,7 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
 // function addServerlessYMLFile(host: Tree, options: NormalizedSchema) {
 //   // return (host: Tree) => {
 //     host.create(
-//       join(options.appProjectRoot, 'serverless.yml'),
+//       join(options.appProjectRoot, 'serverless.ts'),
 //       `service: ${options.name}
 // frameworkVersion: ">=1.1.0"
 // plugins:
