@@ -4,7 +4,7 @@ import { BuildResult } from '@angular-devkit/build-webpack';
 import {
   BuildBuilderOptions,
   NormalizedBuildServerlessBuilderOptions,
-  ServerlessEventResult,
+  ServerlessEventResult
 } from '../../utils/types';
 import { tap, map } from 'rxjs/operators';
 
@@ -12,7 +12,7 @@ import { getNodeWebpackConfig } from '../../utils/node.config';
 import {
   normalizeBuildOptions,
   assignEntriesToFunctionsFromServerless,
-  getSourceRoot,
+  getSourceRoot
 } from '../../utils/normalize';
 import { ServerlessWrapper } from '../../utils/serverless';
 // import { wrapMiddlewareBuildOptions } from '../../utils/middleware';;
@@ -20,7 +20,7 @@ import { resolve } from 'path';
 import { fstat, writeFileSync } from 'fs';
 import { consolidateExcludes } from '../../utils/serverless.config';
 import copyAssetFiles, {
-  copyAssetFilesSync,
+  copyAssetFilesSync
 } from '../../utils/copy-asset-files';
 import normalizeAssetOptions from '../../utils/normalize-options';
 import { convertNxExecutor, ExecutorContext, logger } from '@nrwl/devkit';
@@ -51,7 +51,7 @@ export async function buildExecutor(
   )).webpackConfig.reduce((currentConfig, plugin) => {
     return require(plugin)(currentConfig, {
       options,
-      configuration: context.configurationName,
+      configuration: context.configurationName
     });
   }, getNodeWebpackConfig(options));
 
@@ -73,7 +73,7 @@ export async function buildExecutor(
       }*/
   const iterator = eachValueFrom(
     runWebpack(config, webpack).pipe(
-      tap((stats) => {
+      tap(stats => {
         console.info(stats.toString(config.stats));
 
         if (options.statsJson) {
@@ -85,13 +85,13 @@ export async function buildExecutor(
           writeFileSync(statsJsonFile, stats.toJson('verbose'));
         }
       }),
-      map((stats) => {
+      map(stats => {
         return {
           success: !stats.hasErrors(),
           outfile: resolve(context.root, options.outputPath),
           webpackStats: stats.toJson(config.stats),
           resolverName: 'WebpackDependencyResolver',
-          tsconfig: options.tsConfig,
+          tsconfig: options.tsConfig
         } as ServerlessBuildEvent;
       })
     )
