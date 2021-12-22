@@ -1,5 +1,5 @@
 import { BuilderOutput } from '@angular-devkit/architect';
-import { copy, remove  } from 'fs-extra';
+import { copy, remove } from 'fs-extra';
 import { ServerlessSlsBuilderOptions } from '../builders/sls/sls.impl';
 import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
 import { BuildBuilderOptions, FileInputOutput } from './types';
@@ -12,16 +12,16 @@ export default async function copyAssetFiles(
   try {
     await Promise.all(
       options.assetFiles.map((file) => copy(file.input, file.output))
-    )
-    logger.info('Done copying asset files.')
+    );
+    logger.info('Done copying asset files.');
     return {
       success: true,
-    }
+    };
   } catch (err) {
     return {
       error: err.message,
       success: false,
-    }
+    };
   }
 }
 
@@ -53,17 +53,17 @@ export async function copyBuildOutputToBePackaged(
     `Copying build output files from ${options.package} to ${options.serverlessPackagePath} to be packaged`
   );
   try {
-    await remove(options.serverlessPackagePath) // remove old build output files (Support macOS issue)
-    await copy(options.package, options.serverlessPackagePath)
-    logger.info('Done copying build output files.')
+    await remove(options.serverlessPackagePath); // remove old build output files (Support macOS issue)
+    await copy(options.package, options.serverlessPackagePath);
+    logger.info('Done copying build output files.');
     return {
       success: true,
-    }
+    };
   } catch (err) {
     return {
       error: err.message,
       success: false,
-    }
+    };
   }
 }
 

@@ -119,10 +119,8 @@ async function killProcess() {
     return;
   }
 
-  const promisifiedTreeKill: (
-    pid: number,
-    signal: string
-  ) => Promise<void> = promisify(treeKill);
+  const promisifiedTreeKill: (pid: number, signal: string) => Promise<void> =
+    promisify(treeKill);
   try {
     await promisifiedTreeKill(subProcess.pid, 'SIGTERM');
   } catch (err) {
