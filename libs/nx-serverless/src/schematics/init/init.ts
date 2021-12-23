@@ -37,9 +37,8 @@ function addDependencies(
   if (expressProxy) {
     dependencies['aws-serverless-express'] = awsServerlessExpressVersion;
     dependencies['express'] = expressVersion;
-    devDependencies[
-      '@types/aws-serverless-express'
-    ] = awsServerlessExpressVersion;
+    devDependencies['@types/aws-serverless-express'] =
+      awsServerlessExpressVersion;
     devDependencies['serverless-apigw-binary'] = serverlessApigwBinaryVersion;
   } else {
     devDependencies['@types/aws-lambda'] = awsTypeLambdaVersion;

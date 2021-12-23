@@ -17,6 +17,7 @@ import {
 import { ServerlessWrapper } from '../../utils/serverless';
 // import { wrapMiddlewareBuildOptions } from '../../utils/middleware';;
 import { resolve } from 'path';
+import { fstat, writeFileSync } from 'fs';
 import { consolidateExcludes } from '../../utils/serverless.config';
 import copyAssetFiles, {
   copyAssetFilesSync,
@@ -74,6 +75,15 @@ export async function buildExecutor(
     runWebpack(config, webpack).pipe(
       tap((stats) => {
         console.info(stats.toString(config.stats));
+
+        if (options.statsJson) {
+          const statsJsonFile = resolve(
+            context.root,
+            options.outputPath,
+            'stats.json'
+          );
+          writeFileSync(statsJsonFile, stats.toJson('verbose'));
+        }
       }),
       map((stats) => {
         return {
