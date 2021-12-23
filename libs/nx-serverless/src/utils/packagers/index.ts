@@ -127,6 +127,13 @@ export function preparePackageJson(
           join(options.package, packagerInstance.lockfileName),
           result.stdout.toString()
         );
+      } else if (packagerInstance === NPM) {
+        // need to install deps for dep-graph to work
+        const result = packagerInstance.install(dirname(packageJsonPath));
+        if (result.error) {
+          logger.error('ERROR: generating lock file!');
+          return of({ success: false, error: result.error.toString() });
+        }
       }
       // Get the packagelist with dependency graph and depth=2 level
       // review: Change depth to options?

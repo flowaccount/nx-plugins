@@ -31,7 +31,7 @@
     },
     "port": {
       "type": "number",
-      "default": "7777",
+      "default": 7777,
       "description": "The port to inspect the process on. Setting port to 0 will assign random free ports to all forked processes."
     },
     "runtimeArgs": {
