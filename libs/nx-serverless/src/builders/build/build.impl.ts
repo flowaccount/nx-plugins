@@ -82,7 +82,7 @@ export async function buildExecutor(
             options.outputPath,
             'stats.json'
           );
-          writeFileSync(statsJsonFile, stats.toJson('verbose'));
+          writeFileSync(statsJsonFile, JSON.stringify(stats.toJson('verbose')));
         }
       }),
       map((stats) => {
