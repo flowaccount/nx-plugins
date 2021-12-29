@@ -123,12 +123,8 @@ export class ServerlessWrapper {
         serviceDir: buildOptions.servicePath,
         configurationFilename: configFileName,
       };
-      if (
-        deployOptions &&
-        deployOptions.function &&
-        deployOptions.function != ''
-      ) {
-        serverlessConfig.servicePath = getPackagePath(deployOptions);
+      if (deployOptions) {
+        serverlessConfig.serviceDir = getPackagePath(deployOptions);
       }
       this.serverless$ = new Serverless(serverlessConfig);
       // if (componentsV2.runningComponents()) return () => componentsV2.runComponents();
