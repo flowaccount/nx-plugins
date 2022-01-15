@@ -6,7 +6,6 @@ import { of } from 'rxjs';
 import { ExecutorContext } from '@nrwl/devkit';
 import { Stats } from 'webpack';
 
-
 export class WebpackDependencyResolver implements DependencyResolver {
   constructor(private context: ExecutorContext) {}
 
