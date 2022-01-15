@@ -52,3 +52,5 @@ As time goes by, we have been adding serveral open-source utilities and plugins 
 ## Want to help?
 
 You are most welcome to help! Please file a bug or submit a PR, read the [guidelines for contributing](https://github.com/flowaccount/nx-plugins/blob/master/CONTRIBUTING.md) and start right on!
+
+**join our community** [@flowaccount/community](https://join.slack.com/t/flowaccountcommunity/shared_invite/zt-10dw6janp-JVE7k6y7OXf8ET9t2Y2BKQ)

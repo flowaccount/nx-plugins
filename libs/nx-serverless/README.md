@@ -30,6 +30,8 @@
 
 Simplify any workflow that can be abstracted into one command using the same configuration structure as `workspace.json/angular.json`. Make development life-cycle easier, more effective and having less rituals. Communications through configurations and not documentations.
 
+**join our community** [@flowaccount/community](https://join.slack.com/t/flowaccountcommunity/shared_invite/zt-10dw6janp-JVE7k6y7OXf8ET9t2Y2BKQ)
+
 ## Feature sets to support for Serverless Framework
 
 ### Frameworks Schematics
