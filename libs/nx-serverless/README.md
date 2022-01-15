@@ -1,6 +1,5 @@
 <p float="left">
 <img src="https://raw.githubusercontent.com/nrwl/nx/master/nx-logo.png" height="100">
-<img src="https://angular.io/assets/images/logos/angular/angular.svg" height="145">
 <img src="https://res.cloudinary.com/practicaldev/image/fetch/s--ipV6F4tM--/c_limit%2Cf_auto%2Cfl_progressive%2Cq_auto%2Cw_880/https://raw.githubusercontent.com/serverless/assets/master/Icon/Framework/PNG/Serverless_Framework-icon01.png" height="120">
 <img src="https://upload.wikimedia.org/wikipedia/commons/d/d9/Node.js_logo.svg" height="145">
 </p>
@@ -23,36 +22,32 @@
 
 <hr>
 
-# What is Nx
-
-🔎 **Extensible Dev Tools for Monorepos.**
-
 # What is @flowaccount/nx-serverless
 
-🔎 **Extensible Continous Delivery/Depolyment Tools on top of Nx workspace for Serverless Framework. Because on multiple lambda in one repository is an awesome thing!**
+🔎 **Extensible Continous Delivery/Depolyment Tools on top of Nx workspace for Serverless Framework. Because managing multiple lambda in one repository is an awesome thing!**
 
 ## Our Mission
 
-Simplify any workflow that can be abstracted into one command using the same configuration structure as `angular.json`, `workspace.json` or `nx.json`. Make development life-cycle easier, more effective and having less rituals. Communication through configurations and not documentations.
+Simplify any workflow that can be abstracted into one command using the same configuration structure as `workspace.json/angular.json`. Make development life-cycle easier, more effective and having less rituals. Communications through configurations and not documentations.
 
 ## Feature sets to support for Serverless Framework
 
 ### Frameworks Schematics
 
-| Framework Name                   | AWS                | Azure      | GCP        |
-| -------------------------------- | ------------------ | ---------- | ---------- |
-| Node-Typescript (Webpack)        | :white_check_mark: | :calendar: | :calendar: |
-| :white_check_mark:               | :calendar:         | :calendar: |
-| Express-js (Typescript-compiler) | :white_check_mark: | :calendar: | :calendar: |
+| Framework Name                   | AWS                
+| -------------------------------- | ------------------
+| Node-Typescript (Webpack)        | :white_check_mark: 
+| :white_check_mark:               | :calendar:         
+| Express-js (Typescript-compiler) | :white_check_mark: 
 
 ### Serverless Framework Commands
 
-| Command Names      | AWS                | Azure      | GCP        |
-| ------------------ | ------------------ | ---------- | ---------- |
-| Deploy             | :white_check_mark: | :calendar: | :calendar: |
-| Destroy            | :white_check_mark: | :calendar: | :calendar: |
-| Sls Command        | :white_check_mark: | :calendar: | :calendar: |
-| Serverless-offline | :white_check_mark: | :calendar: | :calendar: |
+| Command Names      | AWS                
+| ------------------ | ------------------ 
+| Deploy             | :white_check_mark: 
+| Destroy            | :white_check_mark:
+| Sls Command        | :white_check_mark:
+| Serverless-offline | :white_check_mark:
 
 ### Supported Serverless Framework Versions
 
