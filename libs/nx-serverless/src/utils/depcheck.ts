@@ -5,7 +5,7 @@ import { getProdModules } from './normalize';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ExecutorContext, logger } from '@nrwl/devkit';
-import { Stats } from 'webpack';
+// import { Stats } from 'webpack';
 export class DependencyCheckResolver implements DependencyResolver {
   options = {
     ignoreBinPackage: false, // ignore the packages with bin entry
@@ -39,7 +39,7 @@ export class DependencyCheckResolver implements DependencyResolver {
     packageJson: any,
     originPackageJsonPath: string,
     verbose: boolean,
-    webpackStats?: Stats.ToJsonOutput,
+    // webpackStats?: Stats,
     dependencyGraph?: any,
     sourceRoot?: string,
     tsconfig?: string

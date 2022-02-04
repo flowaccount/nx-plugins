@@ -1,6 +1,6 @@
 import { Path } from '@angular-devkit/core';
 // import { JsonObject } from '@angular-devkit/core';
-import { Stats } from 'webpack';
+import { StatsCompilation } from 'webpack';
 import { Observable } from 'rxjs';
 import { Target } from '@nrwl/devkit';
 
@@ -79,7 +79,7 @@ type normalizeExternalDependencies = (
   packageJson: any,
   originPackageJsonPath: string,
   verbose: boolean,
-  webpackStats?: Stats.ToJsonOutput,
+  webpackStats?: StatsCompilation,
   dependencyGraph?: any,
   sourceRoot?: string,
   tsconfig?: string

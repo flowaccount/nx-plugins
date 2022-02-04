@@ -4,7 +4,7 @@ import { DependencyResolver } from './types';
 import { getProdModules } from './normalize';
 import { of } from 'rxjs';
 import { ExecutorContext } from '@nrwl/devkit';
-import { Stats } from 'webpack';
+import { StatsCompilation } from 'webpack';
 
 export class WebpackDependencyResolver implements DependencyResolver {
   constructor(private context: ExecutorContext) {}
@@ -13,7 +13,7 @@ export class WebpackDependencyResolver implements DependencyResolver {
     packageJson: any,
     originPackageJsonPath: string,
     verbose: boolean,
-    webpackStats?: Stats.ToJsonOutput,
+    webpackStats?: StatsCompilation,
     dependencyGraph?: any,
     sourceRoot?: string,
     tsconfig?: string
@@ -55,7 +55,7 @@ export class WebpackDependencyResolver implements DependencyResolver {
     return main;
   }
 
-  getExternalModules(stats: Stats.ToJsonOutput) {
+  getExternalModules(stats: StatsCompilation) {
     if (!stats.chunks) {
       return [];
     }

@@ -1,0 +1,17 @@
+yarn run v1.22.15
+$ nx build nx-serverless
+
+> nx run nx-serverless:build 
+Compiling TypeScript files for project "nx-serverless"...
+
+ΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇöΓÇö
+
+>  NX   ERROR  Running target "nx-serverless:build" failed
+
+  Failed tasks:
+  
+  - nx-serverless:build
+  
+  Hint: run the command with --verbose for more details.
+
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.

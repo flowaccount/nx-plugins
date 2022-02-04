@@ -1,5 +1,5 @@
 import { Configuration } from 'webpack';
-import * as mergeWebpack from 'webpack-merge';
+import { merge } from 'webpack-merge';
 import * as nodeExternals from 'webpack-node-externals';
 
 import { getBaseWebpackPartial } from './config';
@@ -24,13 +24,16 @@ function getNodePartial(options: BuildBuilderOptions) {
     webpackConfig.externals = [nodeExternals()];
   } else if (Array.isArray(options.externalDependencies)) {
     webpackConfig.externals = [
-      function (context, request, callback: Function) {
-        if (options.externalDependencies.includes(request)) {
-          // not bundled
-          return callback(null, `commonjs ${request}`);
-        }
-        // bundled
-        callback();
+      (data,
+				callback) =>
+      {
+        // function (context, request, callback: Function) {
+          if (options.externalDependencies.includes(data.request)) {
+            // not bundled
+            return callback(null, `commonjs ${data.request}`);
+          }
+          // bundled
+          callback();
       },
     ];
   }
@@ -39,5 +42,5 @@ function getNodePartial(options: BuildBuilderOptions) {
 }
 
 export function getNodeWebpackConfig(options: BuildBuilderOptions) {
-  return mergeWebpack(getBaseWebpackPartial(options), getNodePartial(options));
+  return merge(getBaseWebpackPartial(options), getNodePartial(options));
 }
