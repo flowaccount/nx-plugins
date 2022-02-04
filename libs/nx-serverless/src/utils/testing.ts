@@ -1,10 +1,6 @@
-import { Architect } from '@angular-devkit/architect';
-import { schema } from '@angular-devkit/core';
-import { TestingArchitectHost } from '@angular-devkit/architect/testing';
 import { join } from 'path';
 import {
   createEmptyWorkspace,
-  MockBuilderContext,
 } from '@nrwl/workspace/testing';
 import { externalSchematic, Rule, Tree } from '@angular-devkit/schematics';
 import { SchematicTestRunner } from '@angular-devkit/schematics/testing';

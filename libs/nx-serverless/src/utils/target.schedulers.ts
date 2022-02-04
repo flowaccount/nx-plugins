@@ -1,20 +1,10 @@
 import {
-  BuilderContext,
-  BuilderOutput,
-  targetFromTargetString,
-  scheduleTargetAndForget,
-} from '@angular-devkit/architect';
-import { JsonObject } from '@angular-devkit/core';
-import { Observable, of, from, zip } from 'rxjs';
-import { concatMap, tap, map, filter, first } from 'rxjs/operators';
-import { stripIndents } from '@angular-devkit/core/src/utils/literals';
-import {
   ExecutorContext,
-  logger,
   parseTargetString,
   readTargetOptions,
   runExecutor,
 } from '@nrwl/devkit';
+import { SimpleBuildEvent } from './types';
 
 // export function runWaitUntilTargets(
 //   waitUntilTargets: string[],
@@ -59,11 +49,11 @@ export function runWaitUntilTargets(
 }
 
 export async function* startBuild(
-  options: { buildTarget: string } & JsonObject,
+  options: { buildTarget: string; watch: boolean },
   context: ExecutorContext
 ) {
   const buildTarget = parseTargetString(options.buildTarget);
-  const buildOptions = readTargetOptions<{ buildTarget: string } & JsonObject>(
+  const buildOptions = readTargetOptions<{ buildTarget: string, optimization: boolean }>(
     buildTarget,
     context
   );
@@ -78,7 +68,7 @@ export async function* startBuild(
     //         ************************************************`);
   }
 
-  yield* await runExecutor<BuilderOutput>(
+  yield* await runExecutor<SimpleBuildEvent>(
     buildTarget,
     {
       watch: options.watch,
@@ -86,31 +76,3 @@ export async function* startBuild(
     context
   );
 }
-
-// export function startBuild(
-//   options: { buildTarget: string } & JsonObject,
-//   context: ExecutorContext
-// ): Observable<BuilderOutput> {
-//   const target = targetFromTargetString(options.buildTarget);
-//   return from(
-//     Promise.all([
-//       .getTargetOptions(target),
-//       context.getBuilderNameForTarget(target)
-//     ]).then(([options, builderName]) =>
-//       context.validateOptions(context.target.options, context.target)
-//     )
-//   ).pipe(
-//     tap(options => {
-//       logger.info(stripIndents`
-//               ************************************************
-//               This is a custom wrapper of serverless ${context.builder.builderName}
-//               ************************************************`);
-//     }),
-//     concatMap(
-//       () =>
-//         (scheduleTargetAndForget(context, target, {
-//           watch: false
-//         }) as unknown) as Observable<BuilderOutput>
-//     )
-//   );
-// }

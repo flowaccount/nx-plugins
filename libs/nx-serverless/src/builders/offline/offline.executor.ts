@@ -4,78 +4,78 @@ import ignore from 'ignore';
 import { readFileSync } from 'fs';
 import { watch } from 'chokidar';
 import { workspaceLayout } from '@nrwl/workspace/src/core/file-utils';
-import { InspectType, ServerlessExecuteBuilderOptions } from './offline.impl';
+import { InspectType, ServerlessExecuteBuilderOptions } from '../../utils/types';
 
-function getHttpServerArgs(options: ServerlessExecuteBuilderOptions) {
-  const args = [] as any[];
-  if (options.port) {
-    args.push(`-p ${options.port}`);
-  }
-  if (options.host) {
-    args.push(`-a ${options.host}`);
-  }
-  if (options.ssl) {
-    args.push(`-S`);
-  }
-  if (options.sslCert) {
-    args.push(`-C ${options.sslCert}`);
-  }
-  if (options.sslKey) {
-    args.push(`-K ${options.sslKey}`);
-  }
-  if (options.proxyUrl) {
-    args.push(`-P ${options.proxyUrl}`);
-  }
-  return args;
-}
+// function getHttpServerArgs(options: ServerlessExecuteBuilderOptions) {
+//   const args = [] as any[];
+//   if (options.port) {
+//     args.push(`-p ${options.port}`);
+//   }
+//   if (options.host) {
+//     args.push(`-a ${options.host}`);
+//   }
+//   if (options.ssl) {
+//     args.push(`-S`);
+//   }
+//   if (options.sslCert) {
+//     args.push(`-C ${options.sslCert}`);
+//   }
+//   if (options.sslKey) {
+//     args.push(`-K ${options.sslKey}`);
+//   }
+//   if (options.proxyUrl) {
+//     args.push(`-P ${options.proxyUrl}`);
+//   }
+//   return args;
+// }
 
-function getBuildTargetCommand(options: ServerlessExecuteBuilderOptions) {
-  // "config": "apps/test-api-8/serverless.yml",
-  //         "location": "dist/apps/test-api-8",
-  //         "port": 7777
-  const cmd = [
-    'node',
-    'D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/bin/serverless.js',
-    'offline',
-    '--config apps/test-api-11/serverless.yml --location dist/apps/test-api-11 --port 7777',
-  ];
-  //   cmd.push(`offline`);
+// function getBuildTargetCommand(options: ServerlessExecuteBuilderOptions) {
+//   // "config": "apps/test-api-8/serverless.yml",
+//   //         "location": "dist/apps/test-api-8",
+//   //         "port": 7777
+//   const cmd = [
+//     'node',
+//     'D:/Projects/opensource/nx-11-test/nx-11-test-serverless/node_modules/serverless/bin/serverless.js',
+//     'offline',
+//     '--config apps/test-api-11/serverless.yml --location dist/apps/test-api-11 --port 7777',
+//   ];
+//   //   cmd.push(`offline`);
 
-  // //   if (options.parallel) {
-  // //     cmd.push(`--parallel`);
-  // //   }
-  // //   if (options.maxParallel) {
-  // //     cmd.push(`--maxParallel=${options.maxParallel}`);
-  // //   }
-  return cmd.join(' ');
-}
+//   // //   if (options.parallel) {
+//   // //     cmd.push(`--parallel`);
+//   // //   }
+//   // //   if (options.maxParallel) {
+//   // //     cmd.push(`--maxParallel=${options.maxParallel}`);
+//   // //   }
+//   return cmd.join(' ');
+// }
 
-function getBuildTargetOutputPath(
-  options: ServerlessExecuteBuilderOptions,
-  context: ExecutorContext
-) {
-  let buildOptions;
-  try {
-    const [project, target, config] = options.buildTarget.split(':');
+// function getBuildTargetOutputPath(
+//   options: ServerlessExecuteBuilderOptions,
+//   context: ExecutorContext
+// ) {
+//   let buildOptions;
+//   try {
+//     const [project, target, config] = options.buildTarget.split(':');
 
-    const buildTarget = context.workspace.projects[project].targets[target];
-    buildOptions = config
-      ? { ...buildTarget.options, ...buildTarget.configurations[config] }
-      : buildTarget.options;
-  } catch (e) {
-    throw new Error(`Invalid buildTarget: ${options.buildTarget}`);
-  }
+//     const buildTarget = context.workspace.projects[project].targets[target];
+//     buildOptions = config
+//       ? { ...buildTarget.options, ...buildTarget.configurations[config] }
+//       : buildTarget.options;
+//   } catch (e) {
+//     throw new Error(`Invalid buildTarget: ${options.buildTarget}`);
+//   }
 
-  // TODO: vsavkin we should also check outputs
-  const outputPath = buildOptions.outputPath;
-  if (!outputPath) {
-    throw new Error(
-      `Invalid buildTarget: ${options.buildTarget}. The target must contain outputPath property.`
-    );
-  }
+//   // TODO: vsavkin we should also check outputs
+//   const outputPath = buildOptions.outputPath;
+//   if (!outputPath) {
+//     throw new Error(
+//       `Invalid buildTarget: ${options.buildTarget}. The target must contain outputPath property.`
+//     );
+//   }
 
-  return outputPath;
-}
+//   return outputPath;
+// }
 
 function getIgnoredGlobs(root: string) {
   const ig = ignore();
@@ -185,7 +185,7 @@ export async function* serverlessOfflineExecutor(
 
   yield {
     success: true,
-    baseUrl: `${options.ssl ? 'https' : 'http'}://${options.host}:${
+    baseUrl: `'http'}://${options.host}:${
       options.port
     }`,
   };

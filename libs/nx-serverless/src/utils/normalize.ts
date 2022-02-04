@@ -1,9 +1,5 @@
-import { normalize, workspaces } from '@angular-devkit/core';
-import { BuilderContext } from '@angular-devkit/architect';
-import { NodeJsSyncHost } from '@angular-devkit/core/node';
-import { resolve, dirname, relative, basename } from 'path';
+import { resolve, dirname, relative, basename, normalize } from 'path';
 import {
-  NormalizedBuildServerlessBuilderOptions,
   ServerlessBaseOptions,
 } from './types';
 import { statSync } from 'fs';
@@ -14,8 +10,6 @@ import { ServerlessWrapper } from './serverless';
 import {
   ExecutorContext,
   logger,
-  readProjectConfiguration,
-  Tree,
 } from '@nrwl/devkit';
 
 export interface FileReplacement {

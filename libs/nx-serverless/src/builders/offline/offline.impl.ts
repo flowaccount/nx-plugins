@@ -1,56 +1,17 @@
-import { BuilderOutput } from '@angular-devkit/architect';
-import { JsonObject } from '@angular-devkit/core';
-import { ChildProcess, execSync, fork } from 'child_process';
+import { ChildProcess, fork } from 'child_process';
 import * as treeKill from 'tree-kill';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { ExecutorContext, logger } from '@nrwl/devkit';
 import { promisify } from 'util';
+import { InspectType, ServerlessExecuteBuilderOptions, SimpleBuildEvent } from '../../utils/types';
 
 try {
   require('dotenv').config();
 } catch (e) {}
 
-export const enum InspectType {
-  Inspect = 'inspect',
-  InspectBrk = 'inspect-brk',
-}
-// https://www.npmjs.com/package/serverless-offline
-export interface ServerlessExecuteBuilderOptions extends JsonObject {
-  inspect: boolean | InspectType;
-  waitUntilTargets: string[];
-  buildTarget: string;
-  watch: boolean;
-  args: string[];
-  runtimeArgs: string[];
-  verbose?: boolean;
-  binPath?: string;
-  host?: string;
-  location?: string;
-  noAuth?: boolean;
-  noEnvironment?: boolean;
-  port?: number;
-  region?: string;
-  printOutput?: boolean;
-  preserveTrailingSlash?: boolean;
-  stage?: string;
-  useSeparateProcesses?: boolean;
-  websocketPort?: number;
-  prefix?: string;
-  hideStackTraces?: boolean;
-  corsAllowHeaders?: string;
-  corsAllowOrigin?: string;
-  corsDisallowCredentials?: string;
-  corsExposedHeaders?: string;
-  disableCookieValidation?: boolean;
-  enforceSecureCookies?: boolean;
-  exec?: string;
-  readyWhen: string;
-}
-
 let subProcess: ChildProcess = null;
-
 export async function* offlineExecutor(
-  options: JsonObject & ServerlessExecuteBuilderOptions,
+  options: ServerlessExecuteBuilderOptions,
   context: ExecutorContext
 ) {
   process.on('SIGTERM', () => {
@@ -91,7 +52,7 @@ export async function* offlineExecutor(
   });
 }
 async function handleBuildEvent(
-  event: BuilderOutput,
+  event: SimpleBuildEvent,
   options: ServerlessExecuteBuilderOptions
 ) {
   if ((!event.success || options.watch) && subProcess) {
@@ -102,7 +63,7 @@ async function handleBuildEvent(
 }
 
 function runProcess(
-  event: BuilderOutput,
+  event: SimpleBuildEvent,
   options: ServerlessExecuteBuilderOptions
 ) {
   if (subProcess || !event.success) {

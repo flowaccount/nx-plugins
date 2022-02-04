@@ -1,28 +1,20 @@
-import {
-  BuilderContext,
-  createBuilder,
-  BuilderOutput,
-} from '@angular-devkit/architect';
-import { JsonObject } from '@angular-devkit/core';
 import { ServerlessCompileOptions } from '../../utils/types';
 import { compileTypeScriptFiles } from '../../utils/typescript';
-import { of, from, Observable, combineLatest } from 'rxjs';
-import { switchMap, map, concatMap } from 'rxjs/operators';
 import {
   normalizeBuildOptions,
   assignEntriesToFunctionsFromServerless,
   getSourceRoot,
 } from '../../utils/normalize';
 import { ServerlessWrapper } from '../../utils/serverless';
-import { resolve, join } from 'path';
-import { convertNxExecutor, ExecutorContext, logger } from '@nrwl/devkit';
+import { resolve } from 'path';
+import { ExecutorContext, logger } from '@nrwl/devkit';
 
 export type ServerlesCompiledEvent = {
   outfile: string;
 };
 
 export async function compileExecutor(
-  options: JsonObject & ServerlessCompileOptions,
+  options: ServerlessCompileOptions,
   context: ExecutorContext
 ) {
   const root = getSourceRoot(context);

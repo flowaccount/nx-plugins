@@ -1,11 +1,9 @@
 import * as Serverless from 'serverless/lib/Serverless';
 import * as readConfiguration from 'serverless/lib/configuration/read';
-import { ServerlessBaseOptions } from './types';
+import { ServerlessBaseOptions, ServerlessDeployBuilderOptions, ServerlessSlsBuilderOptions, SimpleBuildEvent } from './types';
 import * as path from 'path';
 import * as fs from 'fs';
-import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
 import { copyBuildOutputToBePackaged, parseArgs } from './copy-asset-files';
-import { ServerlessSlsBuilderOptions } from '../builders/sls/sls.impl';
 // import * as componentsV2  from '@serverless/components';
 import {
   ExecutorContext,
@@ -13,8 +11,6 @@ import {
   parseTargetString,
   readTargetOptions,
 } from '@nrwl/devkit';
-import { JsonObject } from '@angular-devkit/core';
-import { BuilderOutput } from '@angular-devkit/architect';
 import * as gracefulFs from 'graceful-fs';
 gracefulFs.gracefulify(fs); // fix serverless too many files open error on windows. /wick
 export class ServerlessWrapper {
@@ -61,7 +57,7 @@ export class ServerlessWrapper {
           commands.push('list');
         }
         const buildTarget = parseTargetString(deployOptions.buildTarget);
-        buildOptions = readTargetOptions<{ buildTarget: string } & JsonObject>(
+        buildOptions = readTargetOptions<{ buildTarget: string }>(
           buildTarget,
           context
         );
@@ -177,8 +173,8 @@ export class ServerlessWrapper {
 
 function getPackagePath(
   deployOptions:
-    | (JsonObject & ServerlessDeployBuilderOptions)
-    | (JsonObject & ServerlessSlsBuilderOptions)
+    | (ServerlessDeployBuilderOptions)
+    | (ServerlessSlsBuilderOptions)
 ) {
   let packagePath = '';
   if (
@@ -210,8 +206,8 @@ export function getExecArgv(
 
 export async function runServerlessCommand(
   options:
-    | (JsonObject & ServerlessDeployBuilderOptions)
-    | (JsonObject & ServerlessSlsBuilderOptions),
+    | (ServerlessDeployBuilderOptions)
+    | (ServerlessSlsBuilderOptions),
   commands: string[],
   extraArgs: string[] = null
 ) {
@@ -241,10 +237,10 @@ export async function runServerlessCommand(
 
 export async function makeDistFileReadyForPackaging(
   options:
-    | (JsonObject & ServerlessDeployBuilderOptions)
-    | (JsonObject & ServerlessSlsBuilderOptions)
+    | (ServerlessDeployBuilderOptions)
+    | (ServerlessSlsBuilderOptions)
 ): Promise<void> {
-  let readyToPackaged: BuilderOutput = null;
+  let readyToPackaged: SimpleBuildEvent = null;
   options.serverlessPackagePath = getPackagePath(options);
   readyToPackaged = await copyBuildOutputToBePackaged(options);
   if (readyToPackaged == null) {

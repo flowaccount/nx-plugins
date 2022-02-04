@@ -1,18 +1,13 @@
 // npx scully --nw --configFile apps/frontend/flowaccount-landing/scully.config.js --removeStaticDist
-
-import { BuilderOutput } from '@angular-devkit/architect';
-import { JsonObject } from '@angular-devkit/core';
 import {
   ExecutorContext,
   logger,
-  parseTargetString,
-  readTargetOptions,
 } from '@nrwl/devkit';
-import { of } from 'rxjs';
 import { buildTarget } from '../deploy/deploy.impl';
 import runCommand from '@nrwl/workspace/src/executors/run-commands/run-commands.impl';
-import { getSourceRoot, normalizeBuildOptions } from '../../utils/normalize';
-export interface ScullyBuilderOptions extends JsonObject {
+import { getSourceRoot } from '../../utils/normalize';
+import { SimpleBuildEvent } from '../../utils/types';
+export interface ScullyBuilderOptions {
   buildTarget: string;
   skipBuild: boolean;
   configFiles: string[];
@@ -27,7 +22,7 @@ export interface ScullyBuilderOptions extends JsonObject {
 }
 
 export async function scullyCmdRunner(
-  options: JsonObject & ScullyBuilderOptions,
+  options: ScullyBuilderOptions,
   context: ExecutorContext
 ) {
   //
@@ -35,7 +30,7 @@ export async function scullyCmdRunner(
     await runScully(options, context);
   } else {
     const iterator = await buildTarget(options, context);
-    const event = <BuilderOutput>(await iterator.next()).value;
+    const event = <SimpleBuildEvent>(await iterator.next()).value;
 
     if (!event.success) {
       logger.error('Build target failed!');

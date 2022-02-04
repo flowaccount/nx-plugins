@@ -1,7 +1,5 @@
-import { JsonObject } from '@angular-devkit/core';
 import * as _ from 'lodash';
 import {
-  getExecArgv,
   makeDistFileReadyForPackaging,
   runServerlessCommand,
   ServerlessWrapper,
@@ -11,47 +9,18 @@ import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs'; // TODO: 0 this is not needed here anymore?
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
-import { Packager } from '../../utils/enums';
 import { ExecutorContext, logger } from '@nrwl/devkit';
-import { ServerlessSlsBuilderOptions } from '../sls/sls.impl';
 import { ScullyBuilderOptions } from '../scully/scully.impl';
-import { BuildResult } from '@angular-devkit/build-webpack';
+import { ServerlessDeployBuilderOptions, ServerlessSlsBuilderOptions, SimpleBuildEvent } from '../../utils/types';
 gracefulFs.gracefulify(fs); // TODO: 0 this is not needed here anymore?
 /* Fix for EMFILE: too many open files on serverless deploy */
-export const enum InspectType {
-  Inspect = 'inspect',
-  InspectBrk = 'inspect-brk',
-}
-
-// review: Have to spin off options and clarify schema.json for deploy,build,serve
-export interface ServerlessDeployBuilderOptions extends JsonObject {
-  inspect: boolean | InspectType;
-  waitUntilTargets: string[];
-  buildTarget: string;
-  host: string;
-  port: number;
-  watch: boolean;
-  package: string;
-  location: string;
-  stage: string;
-  list: boolean;
-  updateConfig: boolean;
-  function?: string;
-  verbose?: boolean;
-  sourceRoot?: string;
-  root?: string;
-  ignoreScripts: boolean;
-  packager?: Packager;
-  serverlessPackagePath?: string;
-  args?: string;
-}
 
 export async function deployExecutor(
-  options: JsonObject & ServerlessDeployBuilderOptions,
+  options: ServerlessDeployBuilderOptions,
   context: ExecutorContext
 ) {
   // build into output path before running serverless offline.
-  let packagePath = options.location;
+  // const packagePath = options.location;
   await ServerlessWrapper.init(options, context);
   if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
     const results = await runWaitUntilTargets(
@@ -68,14 +37,14 @@ export async function deployExecutor(
     }
   }
   const iterator = await buildTarget(options, context);
-  const buildOutput = <BuildResult>(await iterator.next()).value;
+  const buildOutput = <SimpleBuildEvent>(await iterator.next()).value;
 
   const prepResult = await preparePackageJson(
     options,
     context,
     buildOutput.webpackStats,
-    buildOutput.resolverName.toString(),
-    buildOutput.tsconfig.toString()
+    buildOutput.resolverName,
+    buildOutput.tsconfig
   ).toPromise();
 
   if (!prepResult.success) {
@@ -99,12 +68,12 @@ export async function deployExecutor(
 
 export async function* buildTarget(
   options:
-    | (JsonObject & ServerlessDeployBuilderOptions)
-    | (JsonObject & ServerlessSlsBuilderOptions)
-    | (JsonObject & ScullyBuilderOptions),
+    | (ServerlessDeployBuilderOptions)
+    | (ServerlessSlsBuilderOptions)
+    | (ScullyBuilderOptions),
   context: ExecutorContext
 ) {
-  for await (const event of startBuild(options, context)) {
+  for await (const event of startBuild({ buildTarget: options.buildTarget, watch: false}, context)) {
     if (!event.success) {
       logger.error('There was an error with the build. See above.');
       logger.info(`${event.outfile} was not restarted.`);

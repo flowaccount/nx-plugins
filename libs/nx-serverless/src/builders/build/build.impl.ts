@@ -1,6 +1,3 @@
-import { JsonObject } from '@angular-devkit/core';
-import { BuildResult } from '@angular-devkit/build-webpack';
-// import { NodeJsSyncHost } from '@angular-devkit/core/node';
 import {
   BuildBuilderOptions,
   NormalizedBuildServerlessBuilderOptions,
@@ -17,28 +14,25 @@ import {
 import { ServerlessWrapper } from '../../utils/serverless';
 // import { wrapMiddlewareBuildOptions } from '../../utils/middleware';;
 import { resolve } from 'path';
-import { fstat, writeFileSync } from 'fs';
+import { writeFileSync } from 'fs';
 import { consolidateExcludes } from '../../utils/serverless.config';
-import copyAssetFiles, {
+import {
   copyAssetFilesSync,
 } from '../../utils/copy-asset-files';
 import normalizeAssetOptions from '../../utils/normalize-options';
 import { convertNxExecutor, ExecutorContext, logger } from '@nrwl/devkit';
 
-import * as webpack from 'webpack';
-
 import { eachValueFrom } from 'rxjs-for-await';
 import { runWebpack } from '../../utils/run-webpack';
 
-export interface BuildServerlessBuilderOptions extends BuildBuilderOptions {}
-export type ServerlessBuildEvent = BuildResult &
+export type ServerlessBuildEvent = 
   ServerlessEventResult & {
     outfile: string;
     success: boolean;
   };
 
 export async function buildExecutor(
-  options: JsonObject & BuildServerlessBuilderOptions,
+  options: BuildBuilderOptions,
   context: ExecutorContext
 ) {
   const root = getSourceRoot(context);

@@ -1,5 +1,4 @@
 // import * as glob from 'glob';
-import { BuilderOutput } from '@angular-devkit/architect';
 import { Observable, Subscriber } from 'rxjs';
 import { finalize } from 'rxjs/operators';
 import { unlinkSync } from 'fs';
@@ -8,7 +7,7 @@ import { ChildProcess, fork } from 'child_process';
 import { ProjectGraphNode } from '@nrwl/workspace/src/core/project-graph';
 import { join } from 'path';
 import { removeSync } from 'fs-extra';
-import { ServerlessCompileOptions } from './types';
+import { ServerlessCompileOptions, SimpleBuildEvent } from './types';
 import { ExecutorContext, logger } from '@nrwl/devkit';
 let tscProcess: ChildProcess;
 
@@ -46,7 +45,7 @@ export function compileTypeScriptFiles(
   options: ServerlessCompileOptions,
   context: ExecutorContext
   // projectDependencies: DependentLibraryNode[]
-): Observable<BuilderOutput> {
+): Observable<SimpleBuildEvent> {
   if (tscProcess) {
     killProcess();
   }
@@ -55,7 +54,7 @@ export function compileTypeScriptFiles(
     removeSync(options.outputPath);
   }
   const tsConfigPath = options.tsConfig;
-  return Observable.create((subscriber: Subscriber<BuilderOutput>) => {
+  return Observable.create((subscriber: Subscriber<SimpleBuildEvent>) => {
     // if (projectDependencies.length > 0) {
     // const parsedTSConfig = readTsConfig(tsConfigPath);
     // const parsedTSConfig = ts.readConfigFile(tsConfigPath, ts.sys.readFile).config;

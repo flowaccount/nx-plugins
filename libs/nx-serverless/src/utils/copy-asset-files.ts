@@ -1,13 +1,10 @@
-import { BuilderOutput } from '@angular-devkit/architect';
 import { copy, remove } from 'fs-extra';
-import { ServerlessSlsBuilderOptions } from '../builders/sls/sls.impl';
-import { ServerlessDeployBuilderOptions } from '../builders/deploy/deploy.impl';
-import { BuildBuilderOptions, FileInputOutput } from './types';
+import { BuildBuilderOptions, ServerlessDeployBuilderOptions, ServerlessSlsBuilderOptions, SimpleBuildEvent } from './types';
 import { logger } from '@nrwl/devkit';
 
 export default async function copyAssetFiles(
   options: BuildBuilderOptions
-): Promise<BuilderOutput> {
+): Promise<SimpleBuildEvent> {
   logger.info('Copying asset files...');
   try {
     await Promise.all(
@@ -27,7 +24,7 @@ export default async function copyAssetFiles(
 
 export function copyAssetFilesSync(
   options: BuildBuilderOptions
-): BuilderOutput {
+): SimpleBuildEvent {
   logger.info('Copying asset files...');
   try {
     // options.assetFiles.map(file => copy(file.input, file.output))
@@ -48,7 +45,7 @@ export function copyAssetFilesSync(
 
 export async function copyBuildOutputToBePackaged(
   options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions
-): Promise<BuilderOutput> {
+): Promise<SimpleBuildEvent> {
   logger.info(
     `Copying build output files from ${options.package} to ${options.serverlessPackagePath} to be packaged`
   );

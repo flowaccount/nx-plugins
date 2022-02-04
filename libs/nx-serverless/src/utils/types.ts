@@ -1,8 +1,7 @@
-import { Path } from '@angular-devkit/core';
-// import { JsonObject } from '@angular-devkit/core';
 import { StatsCompilation } from 'webpack';
 import { Observable } from 'rxjs';
 import { Target } from '@nrwl/devkit';
+import { Packager } from './enums';
 
 export interface FileReplacement {
   replace: string;
@@ -48,7 +47,7 @@ export interface ServerlessBaseOptions {
   sourceMap?: boolean;
   files?: {};
   assetFiles?: Array<FileInputOutput>;
-  sourceRoot?: Path;
+  sourceRoot?: string;
 }
 
 export interface ServerlessCompileOptions extends ServerlessBaseOptions {
@@ -101,4 +100,96 @@ export interface ServerlessBuildEvent {
   };
   success: boolean;
   target?: Target;
+}
+
+export interface SimpleBuildEvent {
+  error?: string;
+  success: boolean;
+  target?: Target;
+  outfile?: string
+  webpackStats?: StatsCompilation
+  resolverName?: string
+  tsconfig?: string
+}
+
+export const enum InspectType {
+  Inspect = 'inspect',
+  InspectBrk = 'inspect-brk',
+}
+
+// review: Have to spin off options and clarify schema.json for deploy,build,serve
+export interface ServerlessDeployBuilderOptions {
+  inspect: boolean | InspectType;
+  waitUntilTargets: string[];
+  buildTarget: string;
+  host: string;
+  port: number;
+  watch: boolean;
+  package: string;
+  location: string;
+  stage: string;
+  list: boolean;
+  updateConfig: boolean;
+  function?: string;
+  verbose?: boolean;
+  sourceRoot?: string;
+  root?: string;
+  ignoreScripts: boolean;
+  packager?: Packager;
+  serverlessPackagePath?: string;
+  args?: string;
+}
+
+export interface ServerlessSlsBuilderOptions {
+  inspect: boolean | InspectType;
+  waitUntilTargets: string[];
+  buildTarget: string;
+  host: string;
+  port: number;
+  watch: boolean;
+  package: string;
+  location: string;
+  stage: string;
+  verbose?: boolean;
+  sourceRoot?: string;
+  root?: string;
+  command: string;
+  ignoreScripts: boolean;
+  packager?: Packager;
+  serverlessPackagePath?: string;
+  args?: string;
+}
+
+// https://www.npmjs.com/package/serverless-offline
+export interface ServerlessExecuteBuilderOptions {
+  inspect: boolean | InspectType;
+  waitUntilTargets: string[];
+  buildTarget: string;
+  watch: boolean;
+  args: string[];
+  runtimeArgs: string[];
+  verbose?: boolean;
+  binPath?: string;
+  host?: string;
+  location?: string;
+  noAuth?: boolean;
+  noEnvironment?: boolean;
+  port?: number;
+  region?: string;
+  printOutput?: boolean;
+  preserveTrailingSlash?: boolean;
+  stage?: string;
+  useSeparateProcesses?: boolean;
+  websocketPort?: number;
+  prefix?: string;
+  hideStackTraces?: boolean;
+  corsAllowHeaders?: string;
+  corsAllowOrigin?: string;
+  corsDisallowCredentials?: string;
+  corsExposedHeaders?: string;
+  disableCookieValidation?: boolean;
+  enforceSecureCookies?: boolean;
+  exec?: string;
+  readyWhen: string;
+  skipBuild?: boolean
 }

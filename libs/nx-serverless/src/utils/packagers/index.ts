@@ -26,14 +26,12 @@ import {
   writeJsonFile,
   writeToFile,
 } from '@nrwl/workspace/src/utils/fileutils';
-import { DependencyResolver } from '../types';
+import { DependencyResolver, ServerlessDeployBuilderOptions, ServerlessSlsBuilderOptions, SimpleBuildEvent } from '../types';
 import { WebpackDependencyResolver } from '../webpack.stats';
 import { DependencyCheckResolver } from '../depcheck';
 import { ServerlessWrapper } from '../serverless';
 import { concatMap, switchMap } from 'rxjs/operators';
 import { Observable, of, from } from 'rxjs';
-import { BuilderOutput } from '@angular-devkit/architect';
-import { JsonObject } from '@angular-devkit/core';
 import { join, dirname } from 'path';
 import { ExecutorContext, logger } from '@nrwl/devkit';
 import { StatsCompilation } from 'webpack';
@@ -57,17 +55,12 @@ export function packager(packagerId) {
 }
 
 export function preparePackageJson(
-  options: JsonObject & {
-    package: string;
-    ignoreScripts: boolean;
-    root?: string;
-    verbose?: boolean;
-  },
+  options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions,
   context: ExecutorContext,
   stats: StatsCompilation,
   resolverName: string,
   tsconfig?: string
-): Observable<BuilderOutput> {
+): Observable<SimpleBuildEvent> {
   const resolver = resolverFactory(resolverName, context);
   logger.info('getting external modules');
   const workspacePackageJsonPath = join(context.root, 'package.json');

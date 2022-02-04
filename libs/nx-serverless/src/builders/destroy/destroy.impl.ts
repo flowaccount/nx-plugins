@@ -1,22 +1,20 @@
-import { BuilderOutput } from '@angular-devkit/architect';
-import { JsonObject } from '@angular-devkit/core';
 import { runServerlessCommand } from '../../utils/serverless';
 import {
   buildTarget,
-  ServerlessDeployBuilderOptions,
 } from '../deploy/deploy.impl';
 import { ExecutorContext, logger } from '@nrwl/devkit';
+import { ServerlessDeployBuilderOptions, SimpleBuildEvent } from '../../utils/types';
 
 export type ServerlesCompiledEvent = {
   outfile: string;
 };
 
 export async function destroyExecutor(
-  options: JsonObject & ServerlessDeployBuilderOptions,
+  options: ServerlessDeployBuilderOptions,
   context: ExecutorContext
 ) {
   const iterator = await buildTarget(options, context);
-  const event = <BuilderOutput>(await iterator.next()).value; // ServerlessBuildEvent
+  const event = <SimpleBuildEvent>(await iterator.next()).value; // ServerlessBuildEvent
   if (event.success) {
     // build into output path before running serverless offline.
     const commands = [];
