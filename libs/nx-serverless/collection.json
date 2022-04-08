@@ -1,8 +1,8 @@
 {
+  "$schema": "../../node_modules/@angular-devkit/schematics/collection-schema.json",
   "name": "nx-serverless",
   "version": "0.0.1",
-  "extends": ["@nrwl/workspace"],
-  "generators": {
+  "schematics": {
     "init": {
       "factory": "./src/schematics/init/init",
       "schema": "./src/schematics/init/schema.json",
@@ -11,19 +11,19 @@
       "hidden": true
     },
     "api": {
-      "factory": "./src/schematics/api/api",
+      "factory": "./src/schematics/api/api#apiSchematic",
       "schema": "./src/schematics/api/schema.json",
       "aliases": ["api-serverless"],
       "description": "Create a serverless nodejs api application"
     },
     "express": {
-      "factory": "./src/schematics/express/application",
+      "factory": "./src/schematics/express/application#expressApiSchematic",
       "schema": "./src/schematics/express/schema.json",
       "aliases": ["express-serverless"],
       "description": "Create a serverless nodejs express server application"
     },
     "scully-app": {
-      "factory": "./src/schematics/scully/application",
+      "factory": "./src/schematics/scully/application#scullyAppSchematic",
       "schema": "./src/schematics/scully/schema.json",
       "description": "Adds scully files, builder and deploy configurations to current angular app and make it deployable",
       "aliases": ["add-scully"]

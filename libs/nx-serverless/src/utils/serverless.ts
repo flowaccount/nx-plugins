@@ -40,7 +40,7 @@ export class ServerlessWrapper {
     if (this.serverless$ === null) {
       logger.debug('Starting to Initiate Serverless Instance');
 
-      let buildOptions;
+      const buildOptions: { servicePath?: string, processEnvironmentFile?: string, serverlessConfig?: string, buildTarget?: string } = {};
       let deployOptions;
       // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
       const commands = [];
@@ -57,15 +57,18 @@ export class ServerlessWrapper {
           commands.push('list');
         }
         const buildTarget = parseTargetString(deployOptions.buildTarget);
-        buildOptions = readTargetOptions<{ buildTarget: string }>(
+        const targetObj = readTargetOptions<{ buildTarget: string }>(
           buildTarget,
           context
         );
-        if (buildOptions) {
-          options = buildOptions;
-        }
+        buildOptions.buildTarget = targetObj.buildTarget
+        // if (targetObj) {
+        //   options = targetObj;
+        // }
       } else {
-        buildOptions = options;
+        buildOptions.servicePath = options.servicePath
+        buildOptions.processEnvironmentFile = options.processEnvironmentFile
+        buildOptions.serverlessConfig = options.serverlessConfig
       }
       try {
         if (
@@ -118,6 +121,7 @@ export class ServerlessWrapper {
         configuration: configurationInput,
         serviceDir: buildOptions.servicePath,
         configurationFilename: configFileName,
+        options: {}
       };
       if (
         deployOptions &&
@@ -154,15 +158,15 @@ export class ServerlessWrapper {
       if (deployOptions) {
         this.serverless$.service.provider.stage = deployOptions.stage;
       }
-      await this.serverless$.variables
-        .populateService(this.serverless$.pluginManager.cliOptions)
-        .then(() => {
-          // merge arrays after variables have been populated
-          // (https://github.com/serverless/serverless/issues/3511)
-          this.serverless$.service.mergeArrays();
-          // validate the service configuration, now that variables are loaded
-          this.serverless$.service.validate();
-        });
+      // await this.serverless$.variables
+      //   .populateService(this.serverless$.pluginManager.cliOptions)
+      //   .then(() => {
+      //     // merge arrays after variables have been populated
+      //     // (https://github.com/serverless/serverless/issues/3511)
+      //     this.serverless$.service.mergeArrays();
+      //     // validate the service configuration, now that variables are loaded
+      //     this.serverless$.service.validate();
+      //   });
       this.serverless$.cli.asciiGreeting();
       return null;
     } else {

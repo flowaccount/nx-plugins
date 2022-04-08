@@ -4,7 +4,6 @@ import {
   convertNxGenerator,
   formatFiles,
   generateFiles,
-  getWorkspaceLayout,
   joinPathFragments,
   names,
   offsetFromRoot,
@@ -12,10 +11,10 @@ import {
 } from '@nrwl/devkit';
 import { Schema } from './schema';
 import { ProjectType } from '@nrwl/workspace';
-import { toFileName } from '@nrwl/workspace';
+
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
-import { join, normalize } from 'path';
+import { normalize } from 'path';
 import { jestProjectGenerator } from '@nrwl/jest';
 import { lintProjectGenerator } from '@nrwl/linter';
 
@@ -203,8 +202,8 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
 
 function normalizeOptions(options: Schema): NormalizedSchema {
   const appDirectory = options.directory
-    ? `${toFileName(options.directory)}/${toFileName(options.name)}`
-    : toFileName(options.name);
+    ? `${names(options.directory).fileName}/${names(options.name).fileName}`
+    : names(options.name).fileName;
 
   const appProjectName = appDirectory.replace(new RegExp('/', 'g'), '-');
 
@@ -216,9 +215,9 @@ function normalizeOptions(options: Schema): NormalizedSchema {
 
   return {
     ...options,
-    name: toFileName(appProjectName),
+    name: names(appProjectName).fileName,
     frontendProject: options.frontendProject
-      ? toFileName(options.frontendProject)
+      ? names(options.frontendProject).fileName
       : undefined,
     appProjectRoot,
     provider: options.provider,
