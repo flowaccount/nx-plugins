@@ -1,7 +1,6 @@
-import "reflect-metadata"
 import { Stack, StackProps, Construct, Fn, Tags } from '@aws-cdk/core'
 import { IVpc, CfnLaunchTemplate, SecurityGroup, SubnetType } from '@aws-cdk/aws-ec2'
-import { CfnInstanceProfile, Policy, PolicyStatement, Role } from '@aws-cdk/aws-iam'
+import { CfnInstanceProfile, IRole } from '@aws-cdk/aws-iam'
 import { Cluster, EcsOptimizedImage } from "@aws-cdk/aws-ecs"
 import { CfnAutoScalingGroup } from "@aws-cdk/aws-autoscaling"
 import { ECSModel, S3MountConfig, TagModel } from "../types"
@@ -13,10 +12,11 @@ interface ECSAutoScalingGroupProps extends StackProps {
     readonly ecs: ECSModel
     readonly taglist: TagModel[]
     readonly s3MountConfig: S3MountConfig
+    readonly instanceRole: IRole
 }
 
 export class ECSAutoScalingGroup extends Stack {
-    
+
   constructor(scope: Construct, id: string, stackProps: ECSAutoScalingGroupProps) {
     super(scope, id, stackProps)
 
@@ -36,28 +36,8 @@ export class ECSAutoScalingGroup extends Stack {
         stackProps.ecs.instanceSecurityGroup.inboudRule.forEach(_rule => {
             _securityGroup.addIngressRule(_rule.peer, _rule.connection)
         })
-        const _policyStatements: PolicyStatement[] = []
-        stackProps.ecs.instancePolicy.statements.forEach(statement => {
-            const _policyStatement = new PolicyStatement()
-            statement.actions.forEach((_psa: string) => {
-            _policyStatement.addActions(_psa)
-            })
-            statement.resources.forEach((_psr: string) => {
-                _policyStatement.addResources(_psr)
-            })
-            _policyStatements.push(_policyStatement)
-        })
-        const _policy = new Policy(this, stackProps.ecs.instancePolicy.name, {
-            policyName: stackProps.ecs.instancePolicy.name,
-            statements: _policyStatements
-        })
-        const _role = new Role(this, stackProps.ecs.instanceRole.name, {
-            roleName: stackProps.ecs.instanceRole.name,
-            assumedBy: stackProps.ecs.instanceRole.assumedBy
-        })
-        _role.attachInlinePolicy(_policy)
         const _instanceProfile = new CfnInstanceProfile(this, stackProps.ecs.instanceProfile.name, {
-            roles: [_role.roleName],
+            roles: [stackProps.instanceRole.roleName],
             instanceProfileName: stackProps.ecs.instanceProfile.name
         })
         let _launchTemplate :CfnLaunchTemplate
@@ -100,7 +80,7 @@ export class ECSAutoScalingGroup extends Stack {
             })
             _autoScalingGroup.addDependsOn(_launchTemplate)
         })
-        
+
         stackProps.taglist.forEach(tag => {
             Tags.of(this).add(tag.key, tag.value)
         })

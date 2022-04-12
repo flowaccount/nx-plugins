@@ -13,8 +13,10 @@ import * as lambda from '@aws-cdk/aws-lambda';
 import { IQueue, QueueProps } from '@aws-cdk/aws-sqs';
 import { Duration, NestedStackProps, StackProps } from '@aws-cdk/core';
 import { SqsEventSourceProps } from '@aws-cdk/aws-lambda-event-sources';
-import { TableProps } from '@aws-cdk/aws-dynamodb';
-import { MountPoint, NetworkMode, PlacementConstraint, PlacementStrategy, PortMapping, Volume } from "@aws-cdk/aws-ecs"
+import { EnableScalingProps, TableProps } from '@aws-cdk/aws-dynamodb';
+import { CloudMapNamespaceOptions, CpuUtilizationScalingProps, MountPoint, NetworkMode, PlacementConstraint, PlacementStrategy, PortMapping, Volume } from "@aws-cdk/aws-ecs"
+import { DnsRecordType, PrivateDnsNamespaceAttributes, RoutingPolicy } from '@aws-cdk/aws-servicediscovery';
+import { ScalingSchedule } from "@aws-cdk/aws-applicationautoscaling"
 
 export interface VpcStackProperties extends StackProps {
   vpcAttributes: VpcAttributes;
@@ -44,7 +46,7 @@ export interface InlineRoleStackProperties extends StackProps {
 
 export interface RoleStackProperties extends StackProps {
   name: string;
-  assumedBy: IPrincipal;
+  assumedBy: ServicePrincipal[];
   // policies: Policy[]
 }
 
@@ -263,6 +265,8 @@ export interface ServerlessConfigurationBuilderOption
 
 /* Start of ECS Models */
 export interface IECSStackEnvironmentConfig {
+  apiprefix: string,
+  app: string,
   stage: string
   awsCredentials: AWSCredentialsModel
   vpc: VpcStackProperties
@@ -273,7 +277,7 @@ export interface IECSStackEnvironmentConfig {
 }
 export class RoleModel{
   name: string
-  assumedBy: ServicePrincipal
+  assumedBy: ServicePrincipal[]
 }
 export class AutoScalingGroupModel {
   launchTemplate: {
@@ -316,11 +320,15 @@ export class ECSModel{
     instanceSecurityGroup: SecurityGroupsModel
     instancePolicy: PolicyModel
     instanceRole: RoleModel
-    executionPolicy: PolicyModel
-    executionRole: RoleModel
+    taskExecutionRolePolicy: PolicyModel
+    taskExecutionRole: RoleModel
+    taskRolePolicy: PolicyModel
+    taskRole: RoleModel
     instanceProfile: InstanceProfileModel
     asgList: AutoScalingGroupModel[]
     clusterName: string
+    defaultServiceDiscoveryNamespace?: PrivateDnsNamespaceAttributes
+    defaultCloudMapNamespace?: CloudMapNamespaceOptions
 }
 
 export class ECSServiceModel{
@@ -334,6 +342,26 @@ export class ECSServiceModel{
     placementStrategy?: PlacementStrategy[]
     placementConstraint: PlacementConstraint[]
     targetGroupArn?: string
+    targetGroupNetworkArn?: string
+    serviceDiscoveryNamespace?: ServiceAttributesProps
+    scaleProps?: EnableScalingProps
+    cpuScalingProps?: CpuUtilizationScalingProps
+    scaleOnScheduleList?: ScalingSchduleModel[]
+    daemon?: boolean
+}
+
+class ScalingSchduleModel {
+  id: string
+  props: ScalingSchedule
+}
+
+
+export interface ServiceAttributesProps {
+  readonly serviceName: string
+  readonly serviceId: string
+  readonly serviceArn: string
+  readonly dnsRecordType: DnsRecordType
+  readonly routingPolicy: RoutingPolicy
 }
 
 class TaskDefinitionModel{
@@ -343,6 +371,10 @@ class TaskDefinitionModel{
     containerDefinitionOptions: ContainerDefinitionOptionsModel
     portMapping: PortMapping[]
     mountPoints?: MountPoint[]
+    isLogs?: boolean
+    logsRetention?: number
+    logsPrefix?: string
+    logGroupName?: string
 }
 
 class ContainerDefinitionOptionsModel{
@@ -351,10 +383,16 @@ class ContainerDefinitionOptionsModel{
     cpu: number
     hostname: string
     environment?: EnvironmentModel
+    command?: string[]
+    secrets?: SecretModel
+}
+
+class SecretModel {
+  [name: string]: string
 }
 
 class EnvironmentModel{
-    GF_PLUGINS_ALLOW_LOADING_UNSIGNED_PLUGINS?: string
+  [name: string]: string | boolean | number
 }
 export class TagModel {
   key: string
