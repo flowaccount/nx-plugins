@@ -23,6 +23,7 @@ export class ECSAutoScalingGroup extends Stack {
         const _linuxUserData = `
         #!/bin/bash
         echo ECS_CLUSTER=${stackProps.cluster.clusterName} >> /etc/ecs/ecs.config
+        echo ECS_ENABLE_CONTAINER_METADATA=true >> /etc/ecs/ecs.config
         docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
         sudo yum update -y
         sudo yum -y install python-pip
