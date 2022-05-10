@@ -14,7 +14,7 @@ import { IQueue, QueueProps } from '@aws-cdk/aws-sqs';
 import { Duration, NestedStackProps, StackProps } from '@aws-cdk/core';
 import { SqsEventSourceProps } from '@aws-cdk/aws-lambda-event-sources';
 import { EnableScalingProps, TableProps } from '@aws-cdk/aws-dynamodb';
-import { CloudMapNamespaceOptions, CpuUtilizationScalingProps, MountPoint, NetworkMode, PlacementConstraint, PlacementStrategy, PortMapping, Volume } from "@aws-cdk/aws-ecs"
+import { CloudMapNamespaceOptions, ContainerDefinitionOptions, CpuUtilizationScalingProps, MemoryUtilizationScalingProps, MountPoint, NetworkMode, PlacementConstraint, PlacementStrategy, PortMapping, Volume } from "@aws-cdk/aws-ecs"
 import { DnsRecordType, PrivateDnsNamespaceAttributes, RoutingPolicy } from '@aws-cdk/aws-servicediscovery';
 import { ScalingSchedule } from "@aws-cdk/aws-applicationautoscaling"
 
@@ -337,7 +337,7 @@ export class ECSServiceModel{
     networkMode?: NetworkMode
     taskDefinition: TaskDefinitionModel
     name: string
-    desired: number
+    desired?: number
     minHealthyPercent: number
     placementStrategy?: PlacementStrategy[]
     placementConstraint: PlacementConstraint[]
@@ -346,6 +346,7 @@ export class ECSServiceModel{
     serviceDiscoveryNamespace?: ServiceAttributesProps
     scaleProps?: EnableScalingProps
     cpuScalingProps?: CpuUtilizationScalingProps
+    memScalingProps?: MemoryUtilizationScalingProps
     scaleOnScheduleList?: ScalingSchduleModel[]
     daemon?: boolean
 }
@@ -368,32 +369,37 @@ class TaskDefinitionModel{
     name: string
     user?: string
     volume?: Volume[]
-    containerDefinitionOptions: ContainerDefinitionOptionsModel
-    portMapping: PortMapping[]
-    mountPoints?: MountPoint[]
+    containerDefinitionOptions: ContainerDefinitionOptions | ContainerDefinitionOptions[]
+    mountPoints?: ContainerMountPoints[]
     isLogs?: boolean
     logsRetention?: number
     logsPrefix?: string
     logGroupName?: string
+    secrets?: ContainerSecrets[]
 }
 
-class ContainerDefinitionOptionsModel{
-    image: string
-    memoryLimitMiB: number
-    cpu: number
-    hostname: string
-    environment?: EnvironmentModel
-    command?: string[]
-    secrets?: SecretModel
+interface ContainerMountPoints {
+  mounts : MountPoint[]
 }
 
-class SecretModel {
-  [name: string]: string
+// class ContainerDefinitionOptionsModel{
+//     image: string
+//     memoryLimitMiB: number
+//     cpu: number
+//     hostname: string
+//     environment?: EnvironmentModel
+//     command?: string[]
+//     secrets?: SecretModel
+// }
+
+interface ContainerSecrets {
+  [secretName: string]: string
 }
 
-class EnvironmentModel{
-  [name: string]: string | boolean | number
-}
+// class EnvironmentModel{
+//   [name: string]: string | boolean | number
+// }
+
 export class TagModel {
   key: string
   value: string

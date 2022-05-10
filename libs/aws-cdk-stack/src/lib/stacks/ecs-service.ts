@@ -1,5 +1,5 @@
 import { Stack, StackProps, Construct, Tags } from '@aws-cdk/core'
-import { Cluster, TaskDefinition, Compatibility, NetworkMode, Ec2Service, ContainerDefinition, ContainerImage, LogDrivers, AwsLogDriverMode, Secret, AssociateCloudMapServiceOptions, ScalableTaskCount } from '@aws-cdk/aws-ecs'
+import { Cluster, TaskDefinition, Compatibility, NetworkMode, Ec2Service, ContainerDefinition, ContainerImage, LogDrivers, AwsLogDriverMode, Secret, AssociateCloudMapServiceOptions, ScalableTaskCount, ContainerDefinitionOptions } from '@aws-cdk/aws-ecs'
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { IRole } from '@aws-cdk/aws-iam';
 import { logger } from '@nrwl/devkit';
@@ -48,52 +48,51 @@ export class ECSService extends Stack {
             memoryMiB: `${s.memory}`,
             volumes: s.taskDefinition.volume
         })
-        const taskDef = {
-          image: ContainerImage.fromRegistry(s.taskDefinition.containerDefinitionOptions.image),
-          memoryLimitMiB: s.taskDefinition.containerDefinitionOptions.memoryLimitMiB,
-          cpu: s.taskDefinition.containerDefinitionOptions.cpu,
-          hostname: s.taskDefinition.containerDefinitionOptions.hostname,
-          environment: {},
-          secrets: {},
-          command: s.taskDefinition.containerDefinitionOptions.command,
-          logging: s.taskDefinition.isLogs ? LogDrivers.awsLogs({
-            logGroup: s.taskDefinition.logGroupName ?
-            LogGroup.fromLogGroupName(this, s.taskDefinition.containerDefinitionOptions.hostname, s.taskDefinition.logGroupName)
-            : new LogGroup(this, s.taskDefinition.containerDefinitionOptions.hostname, {
-              logGroupName: s.taskDefinition.containerDefinitionOptions.hostname,
-              retention: s.taskDefinition.logsRetention ? s.taskDefinition.logsRetention : 1
-            }),
-            streamPrefix: s.taskDefinition.logsPrefix ? s.taskDefinition.logsPrefix : s.taskDefinition.containerDefinitionOptions.hostname,
-            mode: AwsLogDriverMode.NON_BLOCKING
-          }) : undefined,
-        };
 
-        if(s.taskDefinition.containerDefinitionOptions.environment){
-          Object.keys(s.taskDefinition.containerDefinitionOptions.environment).forEach((k,v) => {
-            taskDef.environment[k] = s.taskDefinition.containerDefinitionOptions.environment[k].toString()
+        const containerDefinitionOptions: ContainerDefinitionOptions[] = s.taskDefinition.containerDefinitionOptions.constructor.name == "Array" ? s.taskDefinition.containerDefinitionOptions as ContainerDefinitionOptions[] : [ s.taskDefinition.containerDefinitionOptions as ContainerDefinitionOptions ];
+
+        let ccount = 0
+        containerDefinitionOptions.forEach(containerOption => {
+          const environment = {}
+          if(containerOption.environment){
+            Object.keys(containerOption.environment).forEach((k,v) => {
+              environment[k] = containerOption.environment[k].toString()
+            })
+          }
+          const secrets = {}
+          if(s.taskDefinition.secrets && s.taskDefinition.secrets[ccount]){
+            Object.keys(s.taskDefinition.secrets[ccount]).forEach( (k) => {
+              secrets[k] = Secret.fromSecretsManager(ssm.Secret.fromSecretAttributes(this, `secret-${k}`, {secretArn: `${ s.taskDefinition.secrets[ccount][k]}` }))
+            })
+          }
+
+          if(s.taskDefinition.isLogs) {
+            const loggingObj = LogDrivers.awsLogs({
+              logGroup: s.taskDefinition.logGroupName ?
+              LogGroup.fromLogGroupName(this, containerOption.hostname, s.taskDefinition.logGroupName)
+              : new LogGroup(this, containerOption.hostname, {
+                logGroupName: containerOption.hostname,
+                retention: s.taskDefinition.logsRetention ? s.taskDefinition.logsRetention : 1
+              }),
+              streamPrefix: s.taskDefinition.logsPrefix ? s.taskDefinition.logsPrefix : containerOption.hostname,
+              mode: AwsLogDriverMode.NON_BLOCKING
+            })
+            containerOption = {...containerOption, environment: environment, secrets: secrets, logging: loggingObj }
+         }
+
+          _container = _taskDefinition.addContainer(`${s.taskDefinition.name}-container`, containerOption)
+          logger.info("add Port Mappings")
+          containerOption.portMappings.forEach(_pm => {
+              _container.addPortMappings(_pm)
           })
-        }
-        if(s.taskDefinition.containerDefinitionOptions.secrets){
-        const self = this;
-        Object.keys(s.taskDefinition.containerDefinitionOptions.secrets).forEach( (k) => {
-          taskDef.secrets[k] = Secret.fromSecretsManager(ssm.Secret.fromSecretAttributes(self, `secret-${k}`, {secretArn: `${s.taskDefinition.containerDefinitionOptions.secrets[k]}` }))
-         })
-        }
-        _container = _taskDefinition.addContainer(`${s.taskDefinition.name}-container`, taskDef)
-        logger.info("add Port Mappings")
-        s.taskDefinition.portMapping.forEach(_pm => {
-            _container.addPortMappings(_pm)
-        })
-        logger.info("creating mountPoints")
-        if( s.taskDefinition.mountPoints) {
-          s.taskDefinition.mountPoints.forEach(_mp => {
-              _container.addMountPoints(_mp)
-          })
-        }
+          logger.info("creating mountPoints")
+          if( s.taskDefinition.mountPoints && s.taskDefinition.mountPoints[ccount]) {
+            _container.addMountPoints(...s.taskDefinition.mountPoints[ccount].mounts)
+          }
+          ccount++
+        });
+
         logger.info("creating the sergvice itself")
-
-
-
         _service = new Ec2Service(this, s.name, {
               serviceName: s.name,
               cluster: _cluster,
@@ -101,6 +100,7 @@ export class ECSService extends Stack {
               assignPublicIp: false,
               desiredCount: s.desired,
               minHealthyPercent: s.minHealthyPercent,
+              daemon: s.daemon
               // cloudMapOptions: cloudMapOptions
         })
         if(s.serviceDiscoveryNamespace) {
@@ -122,6 +122,10 @@ export class ECSService extends Stack {
         if(s.cpuScalingProps) {
           logger.info("add cpu scaling")
           _scalableTaskCount.scaleOnCpuUtilization(`${s.name}-cpu-auto-scale`, s.cpuScalingProps)
+        }
+        if(s.memScalingProps) {
+          logger.info("add memory scaling")
+          _scalableTaskCount.scaleOnMemoryUtilization(`${s.name}-mem-auto-scale`, s.memScalingProps)
         }
         if(s.scaleOnScheduleList) {
           logger.info("add schedule scaling")
