@@ -20,15 +20,22 @@ export class ECSAutoScalingGroup extends Stack {
   constructor(scope: Construct, id: string, stackProps: ECSAutoScalingGroupProps) {
     super(scope, id, stackProps)
 
-        const _linuxUserData = `
+        let _linuxUserData = `
         #!/bin/bash
         echo ECS_CLUSTER=${stackProps.cluster.clusterName} >> /etc/ecs/ecs.config
         echo ECS_ENABLE_CONTAINER_METADATA=true >> /etc/ecs/ecs.config
         docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
-        sudo yum update -y
-        sudo yum -y install python-pip
         `
-
+        if(stackProps.s3MountConfig) {
+          _linuxUserData += _linuxUserData +`
+          sudo yum update -y
+          sudo yum -y install python-pip
+          sudo pip install s3cmd
+          mkdir ${stackProps.s3MountConfig.localPath}
+          sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}
+          { sudo crontab -l; sudo echo "* * * * * sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}"; } | sudo crontab -
+          `
+        }
         const _securityGroup = new SecurityGroup(this, stackProps.ecs.instanceSecurityGroup.name, {
             vpc: stackProps.vpc,
             allowAllOutbound: true,

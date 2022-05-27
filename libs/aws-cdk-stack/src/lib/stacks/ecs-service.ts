@@ -44,8 +44,8 @@ export class ECSService extends Stack {
             executionRole: stackProps.executionRole,
             taskRole: stackProps.taskRole,
             networkMode: s.networkMode ? s.networkMode : NetworkMode.NAT,
-            cpu: `${s.cpu}`,
-            memoryMiB: `${s.memory}`,
+            cpu: s.taskDefinition.cpu,
+            memoryMiB: s.taskDefinition.memory,
             volumes: s.taskDefinition.volume
         })
 
@@ -62,7 +62,7 @@ export class ECSService extends Stack {
           const secrets = {}
           if(s.taskDefinition.secrets && s.taskDefinition.secrets[ccount]){
             Object.keys(s.taskDefinition.secrets[ccount]).forEach( (k) => {
-              secrets[k] = Secret.fromSecretsManager(ssm.Secret.fromSecretAttributes(this, `secret-${k}`, {secretArn: `${ s.taskDefinition.secrets[ccount][k]}` }))
+              secrets[k] = Secret.fromSecretsManager(ssm.Secret.fromSecretAttributes(this, `${containerOption.hostname}-secret-${k}`, {secretArn: `${ s.taskDefinition.secrets[ccount][k]}` }))
             })
           }
 
@@ -80,13 +80,15 @@ export class ECSService extends Stack {
             containerOption = {...containerOption, environment: environment, secrets: secrets, logging: loggingObj }
          }
 
-          _container = _taskDefinition.addContainer(`${s.taskDefinition.name}-container`, containerOption)
+          _container = _taskDefinition.addContainer(`${containerOption.hostname}-container`, containerOption)
           logger.info("add Port Mappings")
           containerOption.portMappings.forEach(_pm => {
               _container.addPortMappings(_pm)
           })
           logger.info("creating mountPoints")
-          if( s.taskDefinition.mountPoints && s.taskDefinition.mountPoints[ccount]) {
+          if( s.taskDefinition.mountPoints
+            && s.taskDefinition.mountPoints[ccount]
+            && s.taskDefinition.mountPoints[ccount].mounts.length > 0) {
             _container.addMountPoints(...s.taskDefinition.mountPoints[ccount].mounts)
           }
           ccount++

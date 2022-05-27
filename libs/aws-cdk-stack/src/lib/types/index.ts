@@ -332,8 +332,8 @@ export class ECSModel{
 }
 
 export class ECSServiceModel{
-    cpu: number
-    memory: number
+    cpu?: number
+    memory?: number
     networkMode?: NetworkMode
     taskDefinition: TaskDefinitionModel
     name: string
@@ -376,6 +376,8 @@ class TaskDefinitionModel{
     logsPrefix?: string
     logGroupName?: string
     secrets?: ContainerSecrets[]
+    cpu?: string
+    memory?: string
 }
 
 interface ContainerMountPoints {
