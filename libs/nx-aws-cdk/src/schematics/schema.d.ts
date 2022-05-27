@@ -25,7 +25,7 @@ export function iscdkSchematicFlag(
 }
 
 export type Schema = {
-  accountid: string
+  accountid: string;
   vpcPrivateSubnetIds: [];
   subnetIds: string[];
   availabilityZones: string[];

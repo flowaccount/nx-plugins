@@ -118,7 +118,5 @@
       "description": "Array for event ARNS"
     }
   },
-  "required": [
-    "name"
-  ]
+  "required": ["name"]
 }

@@ -1,7 +1,6 @@
 {
   "name": "@flowaccount/aws-cdk-stack",
   "version": "99.99.99",
-
   "dependencies": {
     "@aws-cdk/core": "~1.121.0",
     "@aws-cdk/aws-ec2": "~1.121.0",
@@ -22,7 +21,6 @@
     "@aws-cdk/aws-elasticloadbalancingv2": "~1.121.0",
     "@angular-devkit/schematics": "11.2.13",
     "@angular-devkit/core": "12.2.11"
-
   },
   "devDependencies": {}
 }

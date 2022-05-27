@@ -12,7 +12,7 @@ export class RoleStack extends Stack {
     logger.debug(`creating role -- ${_props.name}`);
     const role = new Role(this, `${_props.name}`, {
       roleName: _props.name,
-      assumedBy: new CompositePrincipal(..._props.assumedBy)
+      assumedBy: new CompositePrincipal(..._props.assumedBy),
     });
 
     this.output = { role: role };

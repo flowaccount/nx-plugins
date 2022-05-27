@@ -23,8 +23,13 @@ import {
 } from '@flowaccount/aws-cdk-stack';
 // import { SqsStackBuilder } from '../../stacks/builders/sqs-stack-builder';
 // import { ServerlessApplicationBuilder } from "../../stacks/builders/serverless-application-builder";
-import { classify, dasherize, camelize, underscore } from '@angular-devkit/core/src/utils/strings';
-const stringUtils = {classify, dasherize, camelize, underscore };
+import {
+  classify,
+  dasherize,
+  camelize,
+  underscore,
+} from '@angular-devkit/core/src/utils/strings';
+const stringUtils = { classify, dasherize, camelize, underscore };
 
 function initStack(
   host: Tree,
@@ -44,8 +49,8 @@ function initStack(
     stackName: options.name,
     stage: 'production',
     _app: options.name,
-    _isProduction: false
-  }
+    _isProduction: false,
+  };
 
   const sqsOptions: SqsConfigurationBuilderOption = {
     builderName: 'SqsConfigurationBuilder',
@@ -54,7 +59,7 @@ function initStack(
   };
   stagingEnvironmentConfig.sqs = [
     new SqsStackBuilder(stagingEnvironmentConfig, sqsOptions).BuildSqsStack(),
-  ]; 
+  ];
 
   const _lambdaFunctions: LambdaConfigurationBuilderOption[] = [];
 
@@ -67,7 +72,6 @@ function initStack(
       timeout: options.timeouts[i] ? options.timeouts[i] : 60,
       name: options.functionNames[i],
     });
-   
   }
   const subnets: { id: string; availabilityZone: string }[] = [];
   for (let i = 0; i < options.subnetIds.length; i++) {
@@ -78,7 +82,7 @@ function initStack(
       });
     }
   }
-  
+
   // _lambdaFunctions[0].eventProperties.sqsEventSource = options.sqsEvent ?  :
 
   // stagingEnvironmentConfig.serverless = <ServerlessApplicationStackConfiguration>(new ServerlessApplicationBuilder(stagingEnvironmentConfig, _lambdaFunctions).BuildStackConfiguration())
@@ -97,7 +101,7 @@ function initStack(
     subnets: subnets,
     stage: stagingEnvironmentConfig.stage,
     isProduction: stagingEnvironmentConfig._isProduction,
-    accountid: options.accountid
+    accountid: options.accountid,
   };
 
   generateFiles(

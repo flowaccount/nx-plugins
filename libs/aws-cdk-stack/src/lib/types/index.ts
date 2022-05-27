@@ -7,16 +7,36 @@ import {
   SubnetSelection,
   VpcAttributes,
 } from '@aws-cdk/aws-ec2';
-import { Conditions, IPrincipal, IRole, ServicePrincipal } from '@aws-cdk/aws-iam';
+import {
+  Conditions,
+  IPrincipal,
+  IRole,
+  ServicePrincipal,
+} from '@aws-cdk/aws-iam';
 import { Runtime } from '@aws-cdk/aws-lambda';
 import * as lambda from '@aws-cdk/aws-lambda';
 import { IQueue, QueueProps } from '@aws-cdk/aws-sqs';
 import { Duration, NestedStackProps, StackProps } from '@aws-cdk/core';
 import { SqsEventSourceProps } from '@aws-cdk/aws-lambda-event-sources';
 import { EnableScalingProps, TableProps } from '@aws-cdk/aws-dynamodb';
-import { CloudMapNamespaceOptions, ContainerDefinitionOptions, CpuUtilizationScalingProps, MemoryUtilizationScalingProps, MountPoint, NetworkMode, PlacementConstraint, PlacementStrategy, PortMapping, Volume } from "@aws-cdk/aws-ecs"
-import { DnsRecordType, PrivateDnsNamespaceAttributes, RoutingPolicy } from '@aws-cdk/aws-servicediscovery';
-import { ScalingSchedule } from "@aws-cdk/aws-applicationautoscaling"
+import {
+  CloudMapNamespaceOptions,
+  ContainerDefinitionOptions,
+  CpuUtilizationScalingProps,
+  MemoryUtilizationScalingProps,
+  MountPoint,
+  NetworkMode,
+  PlacementConstraint,
+  PlacementStrategy,
+  PortMapping,
+  Volume,
+} from '@aws-cdk/aws-ecs';
+import {
+  DnsRecordType,
+  PrivateDnsNamespaceAttributes,
+  RoutingPolicy,
+} from '@aws-cdk/aws-servicediscovery';
+import { ScalingSchedule } from '@aws-cdk/aws-applicationautoscaling';
 
 export interface VpcStackProperties extends StackProps {
   vpcAttributes: VpcAttributes;
@@ -265,123 +285,124 @@ export interface ServerlessConfigurationBuilderOption
 
 /* Start of ECS Models */
 export interface IECSStackEnvironmentConfig {
-  apiprefix: string,
-  app: string,
-  stage: string
-  awsCredentials: AWSCredentialsModel
-  vpc: VpcStackProperties
-  ecs: ECSModel
-  service: ECSServiceModel[]
-  tag: TagModel[]
-  s3MountConfig? : S3MountConfig
+  apiprefix: string;
+  app: string;
+  stage: string;
+  awsCredentials: AWSCredentialsModel;
+  vpc: VpcStackProperties;
+  ecs: ECSModel;
+  service: ECSServiceModel[];
+  tag: TagModel[];
+  s3MountConfig?: S3MountConfig;
 }
-export class RoleModel{
-  name: string
-  assumedBy: ServicePrincipal[]
+export class RoleModel {
+  name: string;
+  assumedBy: ServicePrincipal[];
 }
 export class AutoScalingGroupModel {
   launchTemplate: {
-      name: string
-      imageId?: string
-      instanceType: string
-      keyName: string
-      version: number | string
-  }
+    name: string;
+    imageId?: string;
+    instanceType: string;
+    keyName: string;
+    version: number | string;
+  };
   asg: {
-      name: string
-      min: string
-      max: string
-      desired: string
-      overrides: any[]
-      onDemandBaseCapacity: number
-      onDemandPercentage: number
-      protectionFromScaleIn: boolean
-  }
+    name: string;
+    min: string;
+    max: string;
+    desired: string;
+    overrides: any[];
+    onDemandBaseCapacity: number;
+    onDemandPercentage: number;
+    protectionFromScaleIn: boolean;
+  };
 }
 class SecurityGroupsInboudRuleModel {
-  peer: IPeer
-  connection: Port
+  peer: IPeer;
+  connection: Port;
 }
 class SecurityGroupsModel {
-  name: string
-  inboudRule: SecurityGroupsInboudRuleModel[]
+  name: string;
+  inboudRule: SecurityGroupsInboudRuleModel[];
 }
 class PolicyStatementModel {
-  actions: string[]
-  resources: string[]
-  conditions?: Conditions
+  actions: string[];
+  resources: string[];
+  conditions?: Conditions;
 }
 export class PolicyModel {
-  statements?: PolicyStatementModel[]
-  statement?: PolicyStatementModel
-  name: string
+  statements?: PolicyStatementModel[];
+  statement?: PolicyStatementModel;
+  name: string;
 }
-export class ECSModel{
-    instanceSecurityGroup: SecurityGroupsModel
-    instancePolicy: PolicyModel
-    instanceRole: RoleModel
-    taskExecutionRolePolicy: PolicyModel
-    taskExecutionRole: RoleModel
-    taskRolePolicy: PolicyModel
-    taskRole: RoleModel
-    instanceProfile: InstanceProfileModel
-    asgList: AutoScalingGroupModel[]
-    clusterName: string
-    defaultServiceDiscoveryNamespace?: PrivateDnsNamespaceAttributes
-    defaultCloudMapNamespace?: CloudMapNamespaceOptions
+export class ECSModel {
+  instanceSecurityGroup: SecurityGroupsModel;
+  instancePolicy: PolicyModel;
+  instanceRole: RoleModel;
+  taskExecutionRolePolicy: PolicyModel;
+  taskExecutionRole: RoleModel;
+  taskRolePolicy: PolicyModel;
+  taskRole: RoleModel;
+  instanceProfile: InstanceProfileModel;
+  asgList: AutoScalingGroupModel[];
+  clusterName: string;
+  defaultServiceDiscoveryNamespace?: PrivateDnsNamespaceAttributes;
+  defaultCloudMapNamespace?: CloudMapNamespaceOptions;
 }
 
-export class ECSServiceModel{
-    cpu?: number
-    memory?: number
-    networkMode?: NetworkMode
-    taskDefinition: TaskDefinitionModel
-    name: string
-    desired?: number
-    minHealthyPercent: number
-    placementStrategy?: PlacementStrategy[]
-    placementConstraint: PlacementConstraint[]
-    targetGroupArn?: string
-    targetGroupNetworkArn?: string
-    serviceDiscoveryNamespace?: ServiceAttributesProps
-    scaleProps?: EnableScalingProps
-    cpuScalingProps?: CpuUtilizationScalingProps
-    memScalingProps?: MemoryUtilizationScalingProps
-    scaleOnScheduleList?: ScalingSchduleModel[]
-    daemon?: boolean
+export class ECSServiceModel {
+  cpu?: number;
+  memory?: number;
+  networkMode?: NetworkMode;
+  taskDefinition: TaskDefinitionModel;
+  name: string;
+  desired?: number;
+  minHealthyPercent: number;
+  placementStrategy?: PlacementStrategy[];
+  placementConstraint: PlacementConstraint[];
+  targetGroupArn?: string;
+  targetGroupNetworkArn?: string;
+  serviceDiscoveryNamespace?: ServiceAttributesProps;
+  scaleProps?: EnableScalingProps;
+  cpuScalingProps?: CpuUtilizationScalingProps;
+  memScalingProps?: MemoryUtilizationScalingProps;
+  scaleOnScheduleList?: ScalingSchduleModel[];
+  daemon?: boolean;
 }
 
 class ScalingSchduleModel {
-  id: string
-  props: ScalingSchedule
+  id: string;
+  props: ScalingSchedule;
 }
-
 
 export interface ServiceAttributesProps {
-  readonly serviceName: string
-  readonly serviceId: string
-  readonly serviceArn: string
-  readonly dnsRecordType: DnsRecordType
-  readonly routingPolicy: RoutingPolicy
+  readonly serviceName: string;
+  readonly serviceId: string;
+  readonly serviceArn: string;
+  readonly dnsRecordType: DnsRecordType;
+  readonly routingPolicy: RoutingPolicy;
 }
 
-class TaskDefinitionModel{
-    name: string
-    user?: string
-    volume?: Volume[]
-    containerDefinitionOptions: ContainerDefinitionOptions | ContainerDefinitionOptions[]
-    mountPoints?: ContainerMountPoints[]
-    isLogs?: boolean
-    logsRetention?: number
-    logsPrefix?: string
-    logGroupName?: string
-    secrets?: ContainerSecrets[]
-    cpu?: string
-    memory?: string
+class TaskDefinitionModel {
+  name: string;
+  user?: string;
+  volume?: Volume[];
+  containerDefinitionOptions:
+    | ContainerDefinitionOptions
+    | ContainerDefinitionOptions[];
+  mountPoints?: ContainerMountPoints[];
+  isLogs?: boolean;
+  logsRetention?: number;
+  logsPrefix?: string;
+  logGroupName?: string;
+  secrets?: ContainerSecrets[];
+  cpu?: string;
+  memory?: string;
 }
 
 interface ContainerMountPoints {
-  mounts : MountPoint[]
+  mounts: MountPoint[];
 }
 
 // class ContainerDefinitionOptionsModel{
@@ -395,7 +416,7 @@ interface ContainerMountPoints {
 // }
 
 interface ContainerSecrets {
-  [secretName: string]: string
+  [secretName: string]: string;
 }
 
 // class EnvironmentModel{
@@ -403,11 +424,11 @@ interface ContainerSecrets {
 // }
 
 export class TagModel {
-  key: string
-  value: string
+  key: string;
+  value: string;
 }
-export class  S3MountConfig {
-  bucketName: string
-  localPath: string
+export class S3MountConfig {
+  bucketName: string;
+  localPath: string;
 }
 /* End of ECS Models */

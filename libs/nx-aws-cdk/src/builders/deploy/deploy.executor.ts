@@ -43,11 +43,7 @@ export default async function runSynthExecutor(
   cdkOptionFlag.app = `node ${buildOutput.outfile}`;
   const deployOption = getDeployOptions(deployOptionFlag);
   const cdkOption = getCdkOptions(cdkOptionFlag);
-  awscdkClient.deploy(
-    `${options.stackName}`,
-    cdkOption,
-    deployOption
-  );
+  awscdkClient.deploy(`${options.stackName}`, cdkOption, deployOption);
   return {
     success: true,
   };
