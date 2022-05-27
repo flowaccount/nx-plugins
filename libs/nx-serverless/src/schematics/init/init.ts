@@ -80,7 +80,7 @@ function updateDependencies(tree: Tree) {
   });
 }
 
-export async function serverlessInitGenerator(tree: Tree, options: Schema) {
+export async function initGenerator<T extends Schema>(tree: Tree, options: T) {
   const tasks: GeneratorCallback[] = [];
 
   if (!options.unitTestRunner || options.unitTestRunner === 'jest') {
@@ -98,4 +98,6 @@ export async function serverlessInitGenerator(tree: Tree, options: Schema) {
   return runTasksInSerial(...tasks);
 }
 
-export const initSchematic = convertNxGenerator(serverlessInitGenerator);
+
+
+export const initSchematic = convertNxGenerator(initGenerator);
