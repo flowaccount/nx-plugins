@@ -1,4 +1,5 @@
-module.exports = {
+/* eslint-disable */
+export default {
   displayName: 'aws-cdk-core',
   preset: '../../jest.preset.js',
   globals: {
