@@ -1,10 +1,9 @@
 import * as depcheck from 'depcheck';
-import { readJsonFile } from '@nrwl/workspace';
 import { DependencyResolver } from './types';
 import { getProdModules } from './normalize';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { ExecutorContext, logger } from '@nrwl/devkit';
+import { ExecutorContext, logger, readJsonFile } from '@nrwl/devkit';
 // import { Stats } from 'webpack';
 export class DependencyCheckResolver implements DependencyResolver {
   options = {

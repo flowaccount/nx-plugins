@@ -21,11 +21,6 @@ import * as _ from 'lodash';
 import { NPM } from './npm';
 import { Yarn } from './yarn';
 import { getProjectRoot } from '../normalize';
-import { readJsonFile } from '@nrwl/workspace';
-import {
-  writeJsonFile,
-  writeToFile,
-} from '@nrwl/workspace/src/utils/fileutils';
 import { DependencyResolver, ServerlessDeployBuilderOptions, ServerlessSlsBuilderOptions, SimpleBuildEvent } from '../types';
 import { WebpackDependencyResolver } from '../webpack.stats';
 import { DependencyCheckResolver } from '../depcheck';
@@ -33,7 +28,7 @@ import { ServerlessWrapper } from '../serverless';
 import { concatMap, switchMap } from 'rxjs/operators';
 import { Observable, of, from } from 'rxjs';
 import { join, dirname } from 'path';
-import { ExecutorContext, logger } from '@nrwl/devkit';
+import { ExecutorContext, logger,  writeJsonFile, readJsonFile } from '@nrwl/devkit';
 import { StatsCompilation } from 'webpack';
 
 const registeredPackagers = {
@@ -116,7 +111,7 @@ export function preparePackageJson(
           logger.error('ERROR: generating lock file!');
           return of({ success: false, error: result.error.toString() });
         }
-        writeToFile(
+        writeJsonFile(
           join(options.package, packagerInstance.lockfileName),
           result.stdout.toString()
         );

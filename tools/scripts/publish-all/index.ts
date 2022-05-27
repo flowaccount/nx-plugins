@@ -12,9 +12,15 @@ export function PublishAll(version: string, tag = 'latest') {
 
   PatchPackageVersions(version, false);
 
-  execSync('npx nx run-many --all --target="build" --with-deps', {
+  // execSync('npx nx run-many --all --target="build" --with-deps', {
+  //   stdio: 'inherit',
+  // });
+
+  execSync('npx nx build nx-serverless', {
     stdio: 'inherit',
   });
+
+
 
   const projects = Object.values(workspace.projects);
   const environment = {
@@ -22,15 +28,20 @@ export function PublishAll(version: string, tag = 'latest') {
     NPM_CONFIG_REGISTRY: undefined,
   };
 
-  projects.forEach((projectConfiguration, idx) => {
-    const outputPath = projectConfiguration.targets?.build?.options?.outputPath;
-    if (existsSync(`${outputPath}/package.json`)) {
-      execSync(`npm publish ${outputPath} --tag=${tag} --access=public`, {
-        stdio: 'inherit',
-        env: environment,
-      });
-    }
+  execSync(`npm publish dist/libs/nx-serverless --tag=nx-serverless --access=public`, {
+    stdio: 'inherit',
+    env: environment,
   });
+
+  // projects.forEach((projectConfiguration, idx) => {
+  //   const outputPath = projectConfiguration.targets?.build?.options?.outputPath;
+  //   if (existsSync(`${outputPath}/package.json`)) {
+  //     execSync(`npm publish ${outputPath} --tag=${tag} --access=public`, {
+  //       stdio: 'inherit',
+  //       env: environment,
+  //     });
+  //   }
+  // });
 }
 
 if (require.main === module) {

@@ -1,6 +1,4 @@
 import { Schema } from './schema';
-import { updateWorkspaceInTree, getProjectConfig } from '@nrwl/workspace';
-import { offsetFromRoot } from '@nrwl/workspace';
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
 import { join, normalize } from 'path';
@@ -12,6 +10,7 @@ import {
   readProjectConfiguration,
   Tree,
   updateProjectConfiguration,
+  offsetFromRoot
 } from '@nrwl/devkit';
 
 interface NormalizedSchema extends Schema {}

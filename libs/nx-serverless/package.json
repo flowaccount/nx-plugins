@@ -20,7 +20,7 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@nrwl/workspace": "^13.2.4"
+    "@nrwl/workspace": "^14.0.0"
   },
   "dependencies": {
     "@angular-devkit/architect": "0.1200.1",

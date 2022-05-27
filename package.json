@@ -36,7 +36,7 @@
     "workspace-generator": "nx workspace-generator",
     "e2e-registry": "yarn verdaccio --config ./tools/scripts/local-registry/config.yml --listen 4872",
     "publish-beta": "ts-node tools/scripts/publish-beta",
-    "publish-local": "cp .npmrc.local .npmrc && run-p \"rimraf tmp\" e2e-registry \"ts-node ./tools/scripts/publish-all 99.99.99 local\"",
+    "publish-local": "copy .npmrc.local .npmrc && run-p \"rimraf tmp\" e2e-registry \"ts-node ./tools/scripts/publish-all 99.99.99 local\"",
     "semantic-release": "semantic-release",
     "ts-node": "ts-node",
     "rimraf": "rimraf"
@@ -69,6 +69,7 @@
     "@nrwl/nx-cloud": "14.0.5",
     "@nrwl/nx-plugin": "14.1.5",
     "@nrwl/workspace": "14.1.5",
+    "@nrwl/tao": "14.1.5",
     "@nx-dotnet/utils": "^1.3.2",
     "@scullyio/scully": "^1.1.1",
     "@semantic-release/changelog": "^5.0.1",

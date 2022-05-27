@@ -1,10 +1,4 @@
 import { Schema } from './schema';
-import {
-  updateWorkspaceInTree,
-  toFileName,
-  addPackageWithInit,
-} from '@nrwl/workspace';
-import { offsetFromRoot } from '@nrwl/workspace';
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
 import { join, normalize } from 'path';
@@ -17,6 +11,7 @@ import {
   generateFiles,
   convertNxGenerator,
   joinPathFragments,
+  offsetFromRoot,
 } from '@nrwl/devkit';
 import { applicationGenerator } from '@nrwl/express';
 import { initGenerator as initGeneratorExpress } from '@nrwl/express/src/generators/init/init';
@@ -204,8 +199,8 @@ function addAppFiles(host: Tree, options: NormalizedSchema) {
 
 function normalizeOptions(options: Schema): NormalizedSchema {
   const appDirectory = options.directory
-    ? `${toFileName(options.directory)}/${toFileName(options.name)}`
-    : toFileName(options.name);
+    ? `${names(options.directory).fileName}/${names(options.name).fileName}`
+    : names(options.name).fileName;
 
   const appProjectName = appDirectory.replace(new RegExp('/', 'g'), '-');
 
@@ -217,10 +212,10 @@ function normalizeOptions(options: Schema): NormalizedSchema {
 
   return {
     ...options,
-    name: toFileName(appProjectName),
-    frontendProject: options.frontendProject
-      ? toFileName(options.frontendProject)
-      : undefined,
+    name: names(appProjectName).fileName,
+    // frontendProject: options.frontendProject
+    //   ? names(options.frontendProject)
+    //   : undefined,
     appProjectRoot,
     provider: options.provider,
     parsedTags,

@@ -3,10 +3,9 @@ import { ServerlessWrapper } from './serverless';
 import * as _ from 'lodash';
 import * as ts from 'typescript';
 import * as upath from 'upath';
-import { writeJsonFile } from '@nrwl/workspace/src/utils/fileutils';
 import { join, relative } from 'path';
 import ignore from 'ignore';
-import { logger } from '@nrwl/devkit';
+import { logger, writeJsonFile } from '@nrwl/devkit';
 
 const defaultExcludes = ['.serverless_plugins/**'];
 

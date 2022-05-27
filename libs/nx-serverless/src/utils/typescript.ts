@@ -4,11 +4,10 @@ import { finalize } from 'rxjs/operators';
 import { unlinkSync } from 'fs';
 const treeKill = require('tree-kill');
 import { ChildProcess, fork } from 'child_process';
-import { ProjectGraphNode } from '@nrwl/workspace/src/core/project-graph';
 import { join } from 'path';
 import { removeSync } from 'fs-extra';
 import { ServerlessCompileOptions, SimpleBuildEvent } from './types';
-import { ExecutorContext, logger } from '@nrwl/devkit';
+import { ExecutorContext, logger, ProjectGraphNode } from '@nrwl/devkit';
 let tscProcess: ChildProcess;
 
 /**
