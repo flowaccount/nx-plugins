@@ -24,8 +24,9 @@ import { convertNxExecutor, ExecutorContext, logger } from '@nrwl/devkit';
 
 import { eachValueFrom } from 'rxjs-for-await';
 import { runWebpack } from '../../utils/run-webpack';
+// import { runWebpack } from '@nrwl/node/src/utils/
 
-export type ServerlessBuildEvent = 
+export type ServerlessBuildEvent =
   ServerlessEventResult & {
     outfile: string;
     success: boolean;
