@@ -1,17 +1,18 @@
-import { Configuration, ProgressPlugin, Stats } from 'webpack';
+import { Configuration, ProgressPlugin, Stats } from 'webpack'
 
-import * as ts from 'typescript';
+import * as ts from 'typescript'
 
-import { LicenseWebpackPlugin } from 'license-webpack-plugin';
-import CircularDependencyPlugin = require('circular-dependency-plugin');
-import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-import { readTsConfig } from '@nrwl/workspace';
-import { BuildBuilderOptions } from './types';
+import { LicenseWebpackPlugin } from 'license-webpack-plugin'
+import CircularDependencyPlugin = require('circular-dependency-plugin')
+import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
+import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
+// const CopyPlugin = require('copy-webpack-plugin')
+import * as copyPlugin from 'copy-webpack-plugin'
+import { readTsConfig } from '@nrwl/workspace'
+import { BuildBuilderOptions } from './types'
 
-export const OUT_FILENAME = '[name].js';
-export const OUT_CHUNK_FILENAME = '[name]-[id].js';
+export const OUT_FILENAME = '[name].js'
+export const OUT_CHUNK_FILENAME = '[name]-[id].js'
 
 function getAliases(options: BuildBuilderOptions): { [key: string]: string } {
   return options.fileReplacements.reduce(
@@ -20,7 +21,7 @@ function getAliases(options: BuildBuilderOptions): { [key: string]: string } {
       [replacement.replace]: replacement.with,
     }),
     {}
-  );
+  )
 }
 
 function getStatsConfig(options: BuildBuilderOptions) {
@@ -43,18 +44,18 @@ function getStatsConfig(options: BuildBuilderOptions) {
     errorDetails: !!options.verbose,
     moduleTrace: !!options.verbose,
     usedExports: !!options.verbose,
-  };
+  }
 }
 
 export function getBaseWebpackPartial(
   options: BuildBuilderOptions
 ): Configuration {
-  const { options: compilerOptions } = readTsConfig(options.tsConfig);
+  const { options: compilerOptions } = readTsConfig(options.tsConfig)
   const supportsEs2015 =
     compilerOptions.target !== ts.ScriptTarget.ES3 &&
-    compilerOptions.target !== ts.ScriptTarget.ES5;
-  const mainFields = [...(supportsEs2015 ? ['es2015'] : []), 'module', 'main'];
-  const extensions = ['.ts', '.tsx', '.mjs', '.js', '.jsx'];
+    compilerOptions.target !== ts.ScriptTarget.ES5
+  const mainFields = [...(supportsEs2015 ? ['es2015'] : []), 'module', 'main']
+  const extensions = ['.ts', '.tsx', '.mjs', '.js', '.jsx']
   const webpackConfig: Configuration = {
     entry: options.entry,
     profile: true,
@@ -106,12 +107,12 @@ export function getBaseWebpackPartial(
       poll: options.poll,
     },
     stats: getStatsConfig(options),
-  };
+  }
 
-  const extraPlugins: any[] = [];
+  const extraPlugins: any[] = []
 
   if (options.progress) {
-    extraPlugins.push(new ProgressPlugin());
+    extraPlugins.push(new ProgressPlugin())
   }
 
   if (options.extractLicenses) {
@@ -123,44 +124,46 @@ export function getBaseWebpackPartial(
         perChunkOutput: false,
         outputFilename: '3rdpartylicenses.txt',
       })
-    );
+    )
   }
 
+  // TODO: Re check if option assets exist
   // process asset entries
-  if (options.assets) {
+  if (options.assets && options.assets.length) {
+
     const copyWebpackPluginPatterns = options.assets.map((asset: any) => {
       return {
         context: asset.input,
-        // Now we remove starting slash to make Webpack place it from the output root.
         to: asset.output,
+        from: asset.glob,
         ignore: asset.ignore,
-        from: {
-          glob: asset.glob,
-          dot: true,
-        },
-      };
-    });
-
-    const copyWebpackPluginOptions = {
-      ignore: ['.gitkeep', '**/.DS_Store', '**/Thumbs.db'],
-    };
-
-    const copyWebpackPluginInstance = new CopyWebpackPlugin(
-      copyWebpackPluginPatterns,
-      copyWebpackPluginOptions
-    );
-    extraPlugins.push(copyWebpackPluginInstance);
+        // from: {
+        //   glob: asset.glob,
+        //   dot: true,
+        // }
+      }
+    })
+  const copyOptions = {
+    patterns: copyWebpackPluginPatterns,
+    // options: {ignore: ['.gitkeep', '**/.DS_Store', '**/Thumbs.db'],}
+    // Now we remove starting slash to make Webpack place it from the output root.
   }
+
+  const copyWebpackPluginInstance = new copyPlugin(
+    copyOptions
+  );
+  extraPlugins.push(copyWebpackPluginInstance);
+}
 
   if (options.showCircularDependencies) {
     extraPlugins.push(
       new CircularDependencyPlugin({
         exclude: /[\\\/]node_modules[\\\/]/,
       })
-    );
+    )
   }
 
-  webpackConfig.plugins = [...webpackConfig.plugins, ...extraPlugins];
+  webpackConfig.plugins = [...webpackConfig.plugins, ...extraPlugins]
 
-  return webpackConfig;
+  return webpackConfig
 }
