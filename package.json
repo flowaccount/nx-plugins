@@ -114,7 +114,7 @@
     "@types/webpack": "^4.4.24",
     "@types/webpack-dev-server": "^3.11.1",
     "rxjs-for-await": "0.0.2",
-    "semantic-release": "^17.4.7",
+    "semantic-release": "^19.0.3",
     "verdaccio": "^5.1.5"
   },
   "config": {
