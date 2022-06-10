@@ -6,10 +6,9 @@ import { LicenseWebpackPlugin } from 'license-webpack-plugin'
 import CircularDependencyPlugin = require('circular-dependency-plugin')
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
 import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
-// const CopyPlugin = require('copy-webpack-plugin')
-import * as copyPlugin from 'copy-webpack-plugin'
 import { readTsConfig } from '@nrwl/workspace'
 import { BuildBuilderOptions } from './types'
+import CopyPlugin = require('copy-webpack-plugin')
 
 export const OUT_FILENAME = '[name].js'
 export const OUT_CHUNK_FILENAME = '[name]-[id].js'
@@ -127,33 +126,52 @@ export function getBaseWebpackPartial(
     )
   }
 
-  // TODO: Re check if option assets exist
   // process asset entries
   if (options.assets && options.assets.length) {
 
     const copyWebpackPluginPatterns = options.assets.map((asset: any) => {
+      // return {
+      //   context: asset.input,
+      //   to: asset.output,
+      //   from: asset.glob,
+      //   ignore: asset.ignore,
+      //   // from: {
+      //   //   glob: asset.glob,
+      //   //   dot: true,
+      //   // }
+      // }
+
       return {
-        context: asset.input,
+        from: asset.input,
         to: asset.output,
-        from: asset.glob,
-        ignore: asset.ignore,
-        // from: {
-        //   glob: asset.glob,
-        //   dot: true,
-        // }
+        globOptions: {
+          dot: true,
+          gitignore: true,
+          ignore: ['.gitkeep', '**/.DS_Store', '**/Thumbs.db'],
+        }
       }
     })
-  const copyOptions = {
-    patterns: copyWebpackPluginPatterns,
-    // options: {ignore: ['.gitkeep', '**/.DS_Store', '**/Thumbs.db'],}
-    // Now we remove starting slash to make Webpack place it from the output root.
-  }
 
-  const copyWebpackPluginInstance = new copyPlugin(
-    copyOptions
-  );
-  extraPlugins.push(copyWebpackPluginInstance);
-}
+    // const copyOptions = {
+    //   patterns: copyWebpackPluginPatterns,
+    //   // options: {ignore: ['.gitkeep', '**/.DS_Store', '**/Thumbs.db'],}
+    //   // Now we remove starting slash to make Webpack place it from the output root.
+    // }
+
+    // const copyWebpackPluginInstance = new copyPlugin(
+    //   copyOptions
+    // )
+
+    console.log(`----------------------`)
+    console.log(copyWebpackPluginPatterns)
+    console.log(`----------------------`)
+    
+    const copyWebpackPluginInstance = new CopyPlugin({
+      patterns: copyWebpackPluginPatterns,
+    })
+
+    extraPlugins.push(copyWebpackPluginInstance)
+  }
 
   if (options.showCircularDependencies) {
     extraPlugins.push(
