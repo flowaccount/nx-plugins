@@ -17,10 +17,12 @@ export function consolidateExcludes(options: BuildBuilderOptions) {
     ServerlessWrapper.serverless.pluginManager.parsePluginsObject(
       ServerlessWrapper.serverless.service.plugins
     ).localPath;
-  pluginsLocalPath = /^win/.test(process.platform)
-    ? upath.toUnix(pluginsLocalPath)
-    : pluginsLocalPath;
-  const localPathExcludes = pluginsLocalPath.localPath
+  if(pluginsLocalPath) {
+    pluginsLocalPath = /^win/.test(process.platform)
+      ? upath.toUnix(pluginsLocalPath)
+      : pluginsLocalPath;
+  }
+  const localPathExcludes = pluginsLocalPath && pluginsLocalPath.localPath
     ? [pluginsLocalPath.localPath]
     : [];
   // add layer paths
@@ -37,6 +39,8 @@ export function consolidateExcludes(options: BuildBuilderOptions) {
     // layerExcludes,
     // functionExcludes
   );
+  console.log("Exclud lists ---------------------------> ")
+  console.log(excludeList)
   // const parsedTSConfig = readTsConfig(options.tsConfig);
   const parsedTSConfig = ts.readConfigFile(
     options.tsConfig,

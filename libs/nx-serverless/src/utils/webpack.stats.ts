@@ -44,7 +44,12 @@ export class WebpackDependencyResolver implements DependencyResolver {
   }
 
   getExternalModuleName(module) {
-    const path = /^external "(.*)"$/.exec(module.identifier)[1];
+    // console.log('----------------------------------------------------------------')
+    // console.log(module.identifier)
+    // console.log('----------------------------------------------------------------')
+    // console.log(/external (.*)$/.exec(module.identifier))
+    // console.log('----------------------------------------------------------------')
+    const path = /^external (.*)$/.exec(module.identifier)[1];
     const pathComponents = path.split('/');
     const main = pathComponents[0];
 

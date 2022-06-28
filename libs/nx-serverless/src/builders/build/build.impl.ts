@@ -40,6 +40,7 @@ export async function buildExecutor(
   options = normalizeBuildOptions(options, context.root, root);
   await ServerlessWrapper.init(options, context);
   options = assignEntriesToFunctionsFromServerless(options, context.root);
+  console.log(options)
   options.tsConfig = consolidateExcludes(options);
   options.entry = options.files;
   const config = (<NormalizedBuildServerlessBuilderOptions>(

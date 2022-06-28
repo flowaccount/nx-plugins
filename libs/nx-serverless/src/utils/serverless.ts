@@ -57,13 +57,15 @@ export class ServerlessWrapper {
           commands.push('list');
         }
         const buildTarget = parseTargetString(deployOptions.buildTarget);
-        const targetObj = readTargetOptions<{ buildTarget: string }>(
+        const targetObj: any = readTargetOptions<{ buildTarget: string }>(
           buildTarget,
           context
         );
         buildOptions.buildTarget = targetObj.buildTarget
         // if (targetObj) {
-        //   options = targetObj;
+          buildOptions.servicePath = targetObj.servicePath;
+          buildOptions.processEnvironmentFile = targetObj.processEnvironmentFile;
+          buildOptions.serverlessConfig = targetObj.serverlessConfig;
         // }
       } else {
         buildOptions.servicePath = options.servicePath
@@ -79,7 +81,7 @@ export class ServerlessWrapper {
             )
           )
         ) {
-          logger.debug('Loading Environment Variables');
+          logger.debug('Loading Environment Variables', buildOptions.servicePath, buildOptions.processEnvironmentFile);
           require('dotenv-json')({
             path: path.join(
               buildOptions.servicePath,
@@ -120,6 +122,7 @@ export class ServerlessWrapper {
         ],
         configuration: configurationInput,
         serviceDir: buildOptions.servicePath,
+        servicePath: buildOptions.servicePath,
         configurationFilename: configFileName,
         options: {}
       };
@@ -152,6 +155,7 @@ export class ServerlessWrapper {
       }
       // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
       await this.serverless$.init();
+      console.log('loading service', buildOptions.serverlessConfig)
       await this.serverless$.service.load({
         config: buildOptions.serverlessConfig,
       });

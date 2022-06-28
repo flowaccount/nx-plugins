@@ -42,7 +42,7 @@
     "webpack-node-externals": "^3.0.0",
     "webpack-dev-server": "^4.3.1",
     "depcheck": "0.9.2",
-    "serverless": "^3.1.1",
+    "serverless": "2.26.0",
     "serverless-offline": "^8.4.0",
     "serverless-apigw-binary": "^0.4.4",
     "is-builtin-module": "^3.0.0",
