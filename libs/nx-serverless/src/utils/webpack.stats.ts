@@ -47,9 +47,12 @@ export class WebpackDependencyResolver implements DependencyResolver {
     // console.log('----------------------------------------------------------------')
     // console.log(module.identifier)
     // console.log('----------------------------------------------------------------')
-    // console.log(/external (.*)$/.exec(module.identifier))
+    // console.log(/"(.*)"$/.exec(module.identifier))
     // console.log('----------------------------------------------------------------')
-    const path = /^external (.*)$/.exec(module.identifier)[1]
+    const path = /"(.*)"$/.exec(module.identifier)[1]
+    // console.log('----------------------------------------------------------------')
+    // console.log(path)
+    // console.log('----------------------------------------------------------------')
     // const path = (/^external "(.*)"$/.exec(module.identifier)) != null && (/^external "(.*)"$/.exec(module.identifier)).length > 0 ? /^external "(.*)"$/.exec(module.identifier)[1] : module.identifier
     const pathComponents = path.split('/');
     const main = pathComponents[0];
@@ -58,6 +61,9 @@ export class WebpackDependencyResolver implements DependencyResolver {
     if (main.charAt(0) == '@') {
       return `${main}/${pathComponents[1]}`;
     }
+    // console.log('----------------------------------------------------------------')
+    // console.log(main)
+    // console.log('----------------------------------------------------------------')
     return main;
   }
 

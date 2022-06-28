@@ -57,10 +57,10 @@ export function preparePackageJson(
   tsconfig?: string
 ): Observable<SimpleBuildEvent> {
   const resolver = resolverFactory(resolverName, context);
-  logger.info('getting external modules');
   const workspacePackageJsonPath = join(context.root, 'package.json');
   const packageJsonPath = join(options.package, 'package.json');
   const packageJson = readJsonFile(workspacePackageJsonPath);
+  logger.info(`getting external modules and compilingh into ${packageJsonPath}`);
   logger.info('create a package.json with first level dependencies'); //First create a package.json with first level dependencies
   // Get the packager for the current process.
   let packagerInstance = null;
@@ -270,6 +270,7 @@ function addModulesToPackageJson(
     packageJson.dependencies = packageJson.dependencies || {};
     packageJson.dependencies[_.first(splitModule)] = moduleVersion;
   });
+  logger.info(packageJson)
 }
 
 function rebaseFileReferences(pathToPackageRoot, moduleVersion) {

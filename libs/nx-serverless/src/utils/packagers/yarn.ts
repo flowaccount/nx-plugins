@@ -27,7 +27,7 @@ export class Yarn {
 
   static generateLockFile(cwd) {
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
-    const args = ['generate-lock-entry'];
+    const args = ['install', '--non-interactive'];
     return spawnSync(command, args, {
       cwd: cwd,
     });

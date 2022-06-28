@@ -40,7 +40,12 @@ export class ServerlessWrapper {
     if (this.serverless$ === null) {
       logger.debug('Starting to Initiate Serverless Instance')
 
-      const buildOptions: { servicePath?: string, processEnvironmentFile?: string, serverlessConfig?: string, buildTarget?: string } = {}
+      const buildOptions: {
+        outputPath?: string,
+        servicePath?: string,
+        processEnvironmentFile?: string,
+        serverlessConfig?: string,
+        buildTarget?: string } = {}
       let deployOptions
       // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
       const commands = []
@@ -57,7 +62,7 @@ export class ServerlessWrapper {
           commands.push('list')
         }
         const buildTarget = parseTargetString(deployOptions.buildTarget)
-        const targetObj = readTargetOptions<{ buildTarget: string, servicePath: string, processEnvironmentFile: string, serverlessConfig: string }>(
+        const targetObj = readTargetOptions<{ outputPath:string, buildTarget: string, servicePath: string, processEnvironmentFile: string, serverlessConfig: string }>(
           buildTarget,
           context
         )
@@ -65,10 +70,12 @@ export class ServerlessWrapper {
         buildOptions.servicePath = targetObj.servicePath
         buildOptions.processEnvironmentFile = targetObj.processEnvironmentFile
         buildOptions.serverlessConfig = targetObj.serverlessConfig
+        buildOptions.outputPath = targetObj.outputPath
       } else {
         buildOptions.servicePath = options.servicePath
         buildOptions.processEnvironmentFile = options.processEnvironmentFile
         buildOptions.serverlessConfig = options.serverlessConfig
+        buildOptions.outputPath = options.outputPath
       }
       try {
         if (
@@ -108,7 +115,6 @@ export class ServerlessWrapper {
       logger.debug('Resolved configurations')
       configurationInput.useDotenv = false
       logger.debug('Initiating Serverless Instance')
-
       const serverlessConfig: any = {
         commands: [
           'deploy',
@@ -122,23 +128,18 @@ export class ServerlessWrapper {
         serviceDir: buildOptions.servicePath,
         servicePath: buildOptions.servicePath,
         configurationFilename: configFileName,
+        configurationPath: configFileName,
         options: {}
       }
-      if (
-        deployOptions &&
-        deployOptions.function &&
-        deployOptions.function != ''
-      ) {
-        serverlessConfig.servicePath = getPackagePath(deployOptions)
-      }
+      serverlessConfig.servicePath = getPackagePath(buildOptions)
+      logger.info(`setting serverlessConfig.servicePath to packagePath: ${serverlessConfig.servicePath}`)
       this.serverless$ = new Serverless(serverlessConfig)
-      // if (componentsV2.runningComponents()) return () => componentsV2.runComponents();
       if (
         this.serverless$.version &&
         this.serverless$.version.split('.')[0] > '1'
       ) {
         logger.info(
-          'Disable "Resolve Configuration Internally" for serverless 2.0+.'
+          'Disabling "Resolve Configuration Internally" for serverless 2.0+.'
         )
         this.serverless$._shouldResolveConfigurationInternally = false
         this.serverless$.isLocallyInstalled = true
@@ -160,15 +161,6 @@ export class ServerlessWrapper {
       if (deployOptions) {
         this.serverless$.service.provider.stage = deployOptions.stage
       }
-      // await this.serverless$.variables
-      //   .populateService(this.serverless$.pluginManager.cliOptions)
-      //   .then(() => {
-      //     // merge arrays after variables have been populated
-      //     // (https://github.com/serverless/serverless/issues/3511)
-      //     this.serverless$.service.mergeArrays();
-      //     // validate the service configuration, now that variables are loaded
-      //     this.serverless$.service.validate();
-      //   });
       this.serverless$.cli.asciiGreeting()
       return null
     } else {
@@ -177,23 +169,30 @@ export class ServerlessWrapper {
   }
 }
 
-function getPackagePath(
-  deployOptions:
+export function getPackagePath(
+  options:
     | (ServerlessDeployBuilderOptions)
     | (ServerlessSlsBuilderOptions)
+    | (any)
 ) {
   let packagePath = ''
   if (
-    !deployOptions.serverlessPackagePath &&
-    deployOptions.location.indexOf('dist/') > -1
+    !options.serverlessPackagePath && options.location &&
+    options.location.indexOf('dist/') > -1
   ) {
-    packagePath = deployOptions.location.replace(
+    packagePath = options.location.replace(
       'dist/',
       'dist/.serverlessPackages/'
     )
-  } else if (deployOptions.serverlessPackagePath) {
-    packagePath = deployOptions.serverlessPackagePath
+  } else if (options.serverlessPackagePath) {
+    packagePath = options.serverlessPackagePath
+  } else if (options.outputPath.indexOf('dist/') > -1) {
+    packagePath = options.outputPath.replace(
+      'dist/',
+      'dist/.serverlessPackages/'
+    )
   }
+  logger.info(`packagePath: ${packagePath}`)
   return packagePath
 }
 
@@ -221,6 +220,7 @@ export async function runServerlessCommand(
   // review: Change options from location to outputpath?\
   let args = getExecArgv(options)
   const serviceDir = ServerlessWrapper.serverless.serviceDir
+  const servicePath = ServerlessWrapper.serverless.config.servicePath
   if (extraArgs) {
     args = args.concat(extraArgs)
   }
@@ -234,8 +234,10 @@ export async function runServerlessCommand(
     const packagePath = getPackagePath(options)
     logger.debug(`Serverless service path is ${packagePath}`)
     ServerlessWrapper.serverless.serviceDir = packagePath
+    ServerlessWrapper.serverless.config.servicePath = packagePath
     await ServerlessWrapper.serverless.run()
     ServerlessWrapper.serverless.serviceDir = serviceDir
+    ServerlessWrapper.serverless.config.servicePath = servicePath
   } catch (ex) {
     throw new Error(`There was an error with the build. ${ex}.`)
   }

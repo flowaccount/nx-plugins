@@ -1,5 +1,6 @@
 import * as _ from 'lodash';
 import {
+  getPackagePath,
   makeDistFileReadyForPackaging,
   runServerlessCommand,
   ServerlessWrapper,
@@ -10,8 +11,8 @@ import * as gracefulFs from 'graceful-fs'; // TODO: 0 this is not needed here an
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { ExecutorContext, logger } from '@nrwl/devkit';
-import { ScullyBuilderOptions } from '../scully/scully.impl';
 import { ServerlessDeployBuilderOptions, ServerlessSlsBuilderOptions, SimpleBuildEvent } from '../../utils/types';
+import { ScullyBuilderOptions } from '../scully/scully.impl';
 gracefulFs.gracefulify(fs); // TODO: 0 this is not needed here anymore?
 /* Fix for EMFILE: too many open files on serverless deploy */
 
@@ -38,7 +39,9 @@ export async function deployExecutor(
   }
   const iterator = await buildTarget(options, context);
   const buildOutput = <SimpleBuildEvent>(await iterator.next()).value;
-
+  await makeDistFileReadyForPackaging(options);
+  options.package = getPackagePath(options)
+  logger.info(`options.package: ${options.package}`)
   const prepResult = await preparePackageJson(
     options,
     context,
@@ -51,7 +54,7 @@ export async function deployExecutor(
     throw new Error(`There was an error with the build. ${prepResult.error}`);
   }
 
-  await makeDistFileReadyForPackaging(options);
+
   const extraArgs = [];
   const commands = [];
   commands.push('deploy');
