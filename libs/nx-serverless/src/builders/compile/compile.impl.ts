@@ -17,6 +17,7 @@ export async function compileExecutor(
   options: ServerlessCompileOptions,
   context: ExecutorContext
 ) {
+  logger.info(`executing typescript compilation with tsConfig:${resolve(context.root, options.tsConfig)}`);
   const root = getSourceRoot(context);
   options = normalizeBuildOptions(options, context.root, root);
   await ServerlessWrapper.init(options, context);
@@ -28,11 +29,13 @@ export async function compileExecutor(
     context
     // libDependencies
   ).toPromise();
-  return {
+  const toReturn = {
     ...result,
     outfile: resolve(context.root, options.outputPath),
     resolverName: 'DependencyCheckResolver',
     tsconfig: resolve(context.root, options.tsConfig),
   };
+  logger.info(toReturn)
+  return toReturn;
 }
 export default compileExecutor;

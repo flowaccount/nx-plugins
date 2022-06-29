@@ -62,6 +62,7 @@ export function preparePackageJson(
   const packageJson = readJsonFile(workspacePackageJsonPath);
   logger.info(`getting external modules and compilingh into ${packageJsonPath}`);
   logger.info('create a package.json with first level dependencies'); //First create a package.json with first level dependencies
+  logger.info(tsconfig)
   // Get the packager for the current process.
   let packagerInstance = null;
   if (options.packager && options.packager.toString().toLowerCase() == 'npm') {

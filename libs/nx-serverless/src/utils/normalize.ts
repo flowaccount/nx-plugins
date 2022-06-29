@@ -280,6 +280,10 @@ export function getProdModules(
     '@types/aws-serverless-express',
     '@types/aws-lambda',
     '@types/node',
+    '@nrwl/eslint-plugin-nx',
+    '@typescript-eslint/parser',
+    'eslint-config-prettier',
+    '@types/compression'
   ];
   // Get versions of all transient modules
   _.forEach(externalModules, (module) => {

@@ -42,6 +42,8 @@ export async function deployExecutor(
   await makeDistFileReadyForPackaging(options);
   options.package = getPackagePath(options)
   logger.info(`options.package: ${options.package}`)
+  logger.info(`build output ------->`)
+  logger.info(buildOutput)
   const prepResult = await preparePackageJson(
     options,
     context,

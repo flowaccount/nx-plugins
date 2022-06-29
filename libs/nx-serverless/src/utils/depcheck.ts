@@ -4,6 +4,7 @@ import { getProdModules } from './normalize';
 import { from, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { ExecutorContext, logger, readJsonFile } from '@nrwl/devkit';
+import { StatsCompilation } from 'webpack';
 // import { Stats } from 'webpack';
 export class DependencyCheckResolver implements DependencyResolver {
   options = {
@@ -38,7 +39,7 @@ export class DependencyCheckResolver implements DependencyResolver {
     packageJson: any,
     originPackageJsonPath: string,
     verbose: boolean,
-    // webpackStats?: Stats,
+    webpackStats?: StatsCompilation,
     dependencyGraph?: any,
     sourceRoot?: string,
     tsconfig?: string
@@ -78,6 +79,7 @@ export class DependencyCheckResolver implements DependencyResolver {
     sourceRoot: string,
     tsconfig: string
   ): Observable<depcheck.Results> {
+    logger.info(`checking depedencies in depcheck.dependencyCheck ${tsconfig}`)
     const tsconfigJson = readJsonFile(tsconfig);
     const parsers = {};
     if (tsconfigJson.files) {
@@ -92,6 +94,8 @@ export class DependencyCheckResolver implements DependencyResolver {
     }
     this.options.parsers = parsers;
     this.options.package = packageJson;
+
+
     return from(depcheck(sourceRoot, this.options));
   }
 }
