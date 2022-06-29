@@ -144,7 +144,8 @@ export function preparePackageJson(
       }
       const data = getDependenciesResult.stdout.toString();
       if (packagerInstance === Yarn) {
-        dependencyGraph = convertDependencyTrees(JSON.parse(data.toString()));
+        // dependencyGraph = convertDependencyTrees(JSON.parse(data.toString()));
+        dependencyGraph = convertDependencyTrees(data)
       } else if (packagerInstance === NPM) {
         dependencyGraph = JSON.parse(data.toString());
       }
