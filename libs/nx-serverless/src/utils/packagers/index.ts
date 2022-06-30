@@ -25,8 +25,6 @@ import { DependencyResolver, ServerlessDeployBuilderOptions, ServerlessSlsBuilde
 import { WebpackDependencyResolver } from '../webpack.stats';
 import { DependencyCheckResolver } from '../depcheck';
 import { ServerlessWrapper } from '../serverless';
-import { concatMap, switchMap } from 'rxjs/operators';
-import { Observable, of, from } from 'rxjs';
 import { join, dirname } from 'path';
 import { ExecutorContext, logger,  writeJsonFile, readJsonFile } from '@nrwl/devkit';
 import { StatsCompilation } from 'webpack';
@@ -95,7 +93,7 @@ export async function preparePackageJson(
         {},
         options.root,
         tsconfig
-      ).toPromise();
+      );
       createPackageJson(prodModules, packageJsonPath, workspacePackageJsonPath);
       //got to generate lock entry for yarn for dependency graph to work.
       if (packagerInstance === Yarn) {
@@ -130,6 +128,8 @@ export async function preparePackageJson(
         1,
         4
       );
+      logger.info("getDependenciesResult")
+      // logger.info(getDependenciesResult)
       if (!getDependenciesResult) {
         return {
           success: false,
@@ -151,7 +151,7 @@ export async function preparePackageJson(
       }
       // re-writing package.json with dependency-graphs
       logger.info('re-writing package.json with dependency-graphs');
-      logger.info(dependencyGraph)
+      // logger.info(dependencyGraph)
       prodModules = await resolver.normalizeExternalDependencies(
         packageJson,
         workspacePackageJsonPath,
@@ -160,7 +160,7 @@ export async function preparePackageJson(
         dependencyGraph,
         options.root,
         tsconfig
-      ).toPromise();
+      );
       createPackageJson(prodModules, packageJsonPath, workspacePackageJsonPath);
       // run packager to  install node_modules
       logger.info('run packager to  install node_modules');
@@ -263,7 +263,7 @@ function addModulesToPackageJson(
     packageJson.dependencies = packageJson.dependencies || {};
     packageJson.dependencies[_.first(splitModule)] = moduleVersion;
   });
-  logger.info(packageJson)
+  // logger.info(packageJson)
 }
 
 function rebaseFileReferences(pathToPackageRoot, moduleVersion) {
@@ -277,7 +277,6 @@ function rebaseFileReferences(pathToPackageRoot, moduleVersion) {
       '/'
     );
   }
-  logger.info(`moduleVersion --------------- ${moduleVersion}`)
   if (!moduleVersion || moduleVersion == '') {
     logger.info('setting moduleVersion to *')
     moduleVersion = '*';

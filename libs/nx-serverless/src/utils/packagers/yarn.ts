@@ -48,7 +48,6 @@ export class Yarn {
     const result = await execAsync(`${command} ${args}`, {
       cwd: cwd,
     });
-    console.log(result)
     if(result.stderr) {
       logger.error(result.stderr.trim())
       return null;

@@ -2,8 +2,8 @@
   "name": "@flowaccount/nx-aws-cdk",
   "version": "99.99.99",
   "main": "src/index.js",
-  "generators": "./generators.json",
   "builders": "./executors.json",
+  "schematics": "./generators.json",
   "license": "MIT",
   "private": false,
   "description": "aws-cdk executors and generators for nx workspace",
@@ -17,7 +17,7 @@
     "Monorepo"
   ],
   "peerDependencies": {
-    "@nrwl/workspace": "13.2.4"
+    "@nrwl/workspace": "9.2.2"
   },
   "dependencies": {
     "ts-node": "~7.0.0",

@@ -1,10 +1,10 @@
-import { BaseNormalizedSchema } from './base-normalized-schema';
 import { Rule } from '@angular-devkit/schematics';
+import { NormalizedSchema } from './normalized-schema';
 
 export interface AwsCdkSchematicsAdapter {
-  getCdkConfiguration(options: BaseNormalizedSchema);
-  getOfflineConfiguration?(options: BaseNormalizedSchema);
-  getDeployConfiguration?(options: BaseNormalizedSchema);
-  getDestroyConfiguration?(options: BaseNormalizedSchema);
-  moveTemplateFiles(options: BaseNormalizedSchema): Rule;
+  getCdkConfiguration(options: NormalizedSchema);
+  getOfflineConfiguration?(options: NormalizedSchema);
+  getDeployConfiguration?(options: NormalizedSchema);
+  getDestroyConfiguration?(options: NormalizedSchema);
+  moveTemplateFiles(options: NormalizedSchema): Rule;
 }

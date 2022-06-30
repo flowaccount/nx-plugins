@@ -44,7 +44,8 @@
   "private": true,
   "dependencies": {
     "@nguniversal/express-engine": "12.0.0",
-    "express": "4.17.2"
+    "express": "4.17.2",
+    "npm-run-all": "^4.1.5"
   },
   "devDependencies": {
     "@angular-devkit/build-webpack": "0.1200.0",
@@ -57,6 +58,8 @@
     "@aws-cdk/aws-sns": "~1.121.0",
     "@aws-cdk/aws-sqs": "~1.121.0",
     "@aws-cdk/core": "~1.121.0",
+    "@aws-cdk/aws-ecs": "~1.121.0",
+    "@aws-cdk/aws-autoscaling": "~1.121.0",
     "@babel/code-frame": "^7.8.3",
     "@nrwl/cli": "14.1.5",
     "@nrwl/devkit": "14.1.5",

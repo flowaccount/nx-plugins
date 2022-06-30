@@ -1,0 +1,15 @@
+import * as  cdk from '@aws-cdk/core';
+import { VpcStack, ECSAutoScalingGroup, ECSCluster, ECSService } from '@flowaccount/aws-cdk-stack';
+
+import { environment } from './environments/environment';
+
+const _app = new cdk.App();
+
+
+const _vpc = new VpcStack(_app, `<%= name %>-vpc-${environment.stage}`, { vpcRef: environment.vpc, env: environment.awsCredentials })
+const _ecs = new ECSCluster(_app, `<%= name %>-cluster-${environment.stage}`, { ecs: environment.ecs, vpc: _vpc.vpc, taglist: environment.tag, env: environment.awsCredentials })
+new ECSAutoScalingGroup(_app, `<%= name %>-asg-${environment.stage}`, { s3MountConfig: environment.s3MountConfig , ecs: environment.ecs, vpc: _vpc.vpc, cluster: _ecs.cluster, taglist: environment.tag, env: environment.awsCredentials })
+
+environment.service.forEach(service => {
+    new ECSService(_app, `${service.name}`, { ecsServiceList: [ service ], vpc: _vpc.vpc, cluster: _ecs.cluster, taglist: environment.tag, executionRole: _ecs.executionRole, env: environment.awsCredentials });
+})

@@ -1,0 +1,130 @@
+import { ServicePrincipal } from '@aws-cdk/aws-iam';
+import { Runtime } from '@aws-cdk/aws-lambda';
+import { Duration } from '@aws-cdk/core';
+import { IApplicationStackEnvironmentConfig } from '@flowaccount/aws-cdk-stack';
+
+const _region = `<%= region %>`
+const _stage = `<%= stage %>`
+const _stackName = `<%= name %>`
+const _isProduction = `<%= isProduction %>`
+
+export const environment: IApplicationStackEnvironmentConfig = {
+  stackName: `${_stage}-${_stackName}`,
+  isProduction: _isProduction,
+  awsCredentials: { account: '<%= accountid %>', region: '<%= region %>'},  
+  envName: _stage,
+  vpc: {
+    vpcAttributes: {
+        vpcId:  '<%= vpcId %>',
+        availabilityZones: [ `${_region}a`, `${_region}b` ],
+        privateSubnetIds: [ <% for(let index in vpcPrivateSubnetIds){ %> `<%= vpcPrivateSubnetIds[index] %>`, <% } %> ]
+    },
+    subnets: [ <% for(let index in subnets){ %> { subnetId: '<%= subnets[index].id %>', availabilityZone: '<%= subnets[index].availabilityZone %>' }, <% } %> ],
+  },
+  <% if(rds) { %>
+  aurora: {
+    securityGroupIds: [ <% for(let index in rdsSecurityGroupIds){ %> `<%= rdsSecurityGroupIds[index] %>`, <% } %> ],
+    isProduction: _isProduction,
+    username: '<%= rds.username %>', 
+    password: '<%= rds.password %>!' 
+  },
+  <% } %>
+  <% if(sqs) { %>
+  sqs: [
+    <% count=0;for(index in sqs) { %>
+      {
+        queueName: `<%= sqs[index].name %>`
+      },
+    <% } %>
+  ],
+  <% } %>
+    serverless: {
+      executionRole: {
+        name: `${_stage}-${_stackName}-lambda-execution-role`,
+        assumedBy: new ServicePrincipal(`lambda.amazonaws.com`),
+        policies: [
+            {
+              name: `${_stage}-${_stackName}-lambda-policy`,
+              statements: [
+                 {
+                    actions: [
+                      "logs:CreateLogGroup",
+                      "logs:CreateLogStream",
+                      "logs:PutLogEvents",
+                    ],
+                    resources: [ "*" ], // change this to be more secure
+                  },
+                  {
+                    actions: [
+                      "ec2:DescribeInstances",
+                      "ec2:CreateNetworkInterface",
+                      "ec2:AttachNetworkInterface",
+                      "ec2:DescribeNetworkInterfaces",
+                      "ec2:DeleteNetworkInterface",
+                      "autoscaling:CompleteLifecycleAction"
+                    ],
+                    resources: [ "*" ],  // change this to be more secure
+                  },
+                  <% if(sqs) { %>
+                  {
+                    forceResource: true,
+                    actions: [
+                      "sqs:DeleteMessage",
+                      "sqs:GetQueueUrl",
+                      "sqs:ChangeMessageVisibility",
+                      "sqs:ListDeadLetterSourceQueues",
+                      "sqs:SendMessageBatch",
+                      "sqs:ReceiveMessage",
+                      "sqs:SendMessage",
+                      "sqs:GetQueueAttributes",
+                      "sqs:ListQueueTags",
+                      "sqs:ChangeMessageVisibilityBatch"
+                    ], 
+                    resources: [ ],  // change this to be more secure
+                  }
+                  // you will have to add // "sqs:PurgeQueue",  "sqs:SetQueueAttributes", "sqs:SetQueueAttributes" by yourself (not recommended to use on production)
+                  <% } %>
+                ]
+              }
+            ]
+      },
+      <% if(lambdaFunctions) { %>
+      lambda: [
+        <% for(let index in lambdaFunctions){ %>
+            {
+              runtime: Runtime.NODEJS_14_X,
+              srcRootPath: '<%= root %>/src/app',
+              timeout: Duration.seconds(<%= lambdaFunctions[index].timeout %>),
+              memorySize: <%= lambdaFunctions[index].memorySize %>,
+              handler: "<%= lambdaFunctions[index].handler %>",
+              <% if(lambdaFunctions[index].securityGroupIds) { %>
+              securityGroupIds: [ <% for(let sgId in lambdaFunctions[index].securityGroupIds){ %> `<%= lambdaFunctions[index].securityGroupIds[sgId] %>`, <% } %> ],
+              <% } %>
+              environment: {
+                ENV_NAME: `${_stage}-${_stackName}`,
+              },
+              functionName: `${_stackName}-<%= dasherize(lambdaFunctions[index].name) %>`,
+              <% if(lambdaFunctions[index].eventProperties && (lambdaFunctions[index].eventProperties.kinesisEventSource || lambdaFunctions[index].eventProperties.sqsEventSource)) { %>
+              eventProperties: {
+                <% if(lambdaFunctions[index].eventProperties.kinesisEventSource) { %>
+                kinesisEventSource: {
+                  dataStreamArn: <%= lambdaFunctions[index].eventProperties.kinesisEventSource.dataStreamArn %>,
+                }
+                <% } %>
+                <% if(lambdaFunctions[index].eventProperties.sqsEventSource) { %>
+                  sqsEventSource: {
+                    properties: {
+                      batchSize: 10,
+                      maxBatchingWindow: 2,
+                      enabled: true
+                    }
+                  }
+                <% } %>
+              }
+              <% } %>
+            },
+        <% } %>
+        ]
+      <% } %>
+    }
+};

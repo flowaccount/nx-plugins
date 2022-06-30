@@ -1,5 +1,4 @@
-/* eslint-disable */
-export default {
+module.exports = {
   preset: '../../jest.preset.js',
   transform: {
     '^.+\\.[tj]sx?$': 'ts-jest',

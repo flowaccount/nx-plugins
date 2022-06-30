@@ -82,7 +82,7 @@ type normalizeExternalDependencies = (
   dependencyGraph?: any,
   sourceRoot?: string,
   tsconfig?: string
-) => Observable<Array<string>>;
+) => Promise<Array<string>>;
 
 export interface DependencyResolver {
   normalizeExternalDependencies: normalizeExternalDependencies;

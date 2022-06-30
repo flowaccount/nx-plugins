@@ -1,0 +1,122 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "title": "Stack Options",
+  "description": "Synth an app via the `cdk` cli command.",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Use the indicated name for as the cdk stack project name",
+      "$default": {
+        "$source": "argv",
+        "index": 0
+      },
+      "x-prompt": "What name would you like to use for the cdk project name?"
+    },
+    "profile": {
+      "type": "string",
+      "description": "Use the indicated AWS profile as the default environment",
+      "default": "dev_console",
+      "x-prompt": "What profile would you want to assume (profile from ~/.aws/config) ([profile <profile_name>) ?"
+    },
+    "accountid": {
+      "type": "string",
+      "description": "Use the indicated AWS profile as the default environment",
+      "default": "xxxxxxxxxxx777",
+      "x-prompt": "What accountid would you want to deploy to ?"
+    },
+    "region": {
+      "type": "string",
+      "description": "Use the indicated AWS profile as the default environment",
+      "default": "ap-southeast-1",
+      "x-prompt": "What region would you want to deploy to ?"
+    },
+    "directory": {
+      "type": "string",
+      "description": "Use the indicated directory under apps/<directory> for as the cdk stack project directory"
+    },
+    "tags": {
+      "type": "string",
+      "description": "Add tags to the project"
+    },
+    "vpcId": {
+      "type": "string",
+      "description": "The vpc-id for this serverless application to live on",
+      "default": "vpc-"
+    },
+    "vpcPrivateSubnetIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of vpc private subnet ids"
+    },
+    "subnetIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of lambda subnet ids"
+    },
+    "availabilityZones": {
+      "type": "array",
+      "description": "Array for availability zones",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "handlers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array for lambda handler names"
+    },
+    "functionNames": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array for lambda function names"
+    },
+    "securityGroupIds": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array for lambda security groups 'a','b','c'"
+    },
+    "memmorySizes": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Array for lambda memorrysizes"
+    },
+    "timeouts": {
+      "type": "array",
+      "items": {
+        "type": "number"
+      },
+      "description": "Array for lambda timeout"
+    },
+
+    "eventSources": {
+      "type": "array",
+      "description": "Array for event source",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "eventsArn": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array for event ARNS"
+    }
+  },
+  "required": ["name"]
+}

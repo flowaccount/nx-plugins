@@ -1,17 +1,18 @@
 {
   "$schema": "../../node_modules/@angular-devkit/schematics/collection-schema.json",
-  "name": "nx-aws-cdk",
+  "name": "@flowaccount/nx-aws-cdk",
+  "generators": "./generators.json",
   "version": "0.0.1",
   "schematics": {
-    "ec2-instance": {
-      "factory": "./src/schematics/ec2-instance/schematics",
-      "schema": "./src/schematics/ec2-instance/schema.json",
-      "description": "nx aws-cdk ec2-instance schematic, to start ec2-instance on aws"
+    "app-serverless": {
+      "factory": "./src/schematics/application/app#appSchematic",
+      "schema": "./src/schematics/application/schema.json",
+      "description": "Serverless application schematics, to create a serverless cdk stack on AWS"
     },
     "init": {
       "factory": "./src/schematics/init/init",
       "schema": "./src/schematics/init/schema.json",
-      "description": "nx aws-cdk initiation schematic",
+      "description": "nx aws-cdk initiation schematics. Installs aws-cdk to your repository",
       "aliases": ["init-aws-cdk"],
       "hidden": true
     }

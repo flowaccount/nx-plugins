@@ -9,7 +9,7 @@ import { StatsCompilation } from 'webpack';
 export class WebpackDependencyResolver implements DependencyResolver {
   constructor(private context: ExecutorContext) {}
 
-  normalizeExternalDependencies(
+  async normalizeExternalDependencies(
     packageJson: any,
     originPackageJsonPath: string,
     verbose: boolean,
@@ -23,7 +23,7 @@ export class WebpackDependencyResolver implements DependencyResolver {
       dependencyGraph = {};
     }
     // TODO: issue #48
-    const prodModules = of(
+    const prodModules =
       getProdModules(
         externals,
         packageJson,
@@ -32,7 +32,6 @@ export class WebpackDependencyResolver implements DependencyResolver {
         dependencyGraph,
         verbose
       )
-    );
     return prodModules;
   }
 

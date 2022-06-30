@@ -10,6 +10,17 @@
     "@aws-cdk/aws-lambda": "~1.121.0",
     "@aws-cdk/aws-rds": "~1.121.0",
     "@aws-cdk/aws-elasticsearch": "~1.121.0",
-    "@aws-cdk/aws-lambda-event-sources": "~1.121.0"
-  }
+    "@aws-cdk/aws-lambda-event-sources": "~1.121.0",
+    "@aws-cdk/aws-iam": "~1.121.0",
+    "@aws-cdk/aws-ecs": "~1.121.0",
+    "@aws-cdk/aws-autoscaling": "~1.121.0",
+    "@aws-cdk/aws-logs": "~1.121.0",
+    "@aws-cdk/aws-servicediscovery": "~1.121.0",
+    "@aws-cdk/aws-secretsmanager": "~1.121.0",
+    "@aws-cdk/aws-applicationautoscaling": "~1.121.0",
+    "@aws-cdk/aws-elasticloadbalancingv2": "~1.121.0",
+    "@angular-devkit/schematics": "11.2.13",
+    "@angular-devkit/core": "12.2.11"
+  },
+  "devDependencies": {}
 }

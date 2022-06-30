@@ -1,4 +1,4 @@
-import { cdkDeployFlags } from '@flowaccount/aws-cdk-core';
+import { cdkDeployFlags, cdkFlags } from '@flowaccount/aws-cdk-core';
 import { CdkArguments } from '../../models/cdk-arguments';
 export type DeployExecutorSchema = { [key in cdkFlags]?: string } & {
   [key in cdkDeployFlags]?: string;

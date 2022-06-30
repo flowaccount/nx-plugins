@@ -283,7 +283,10 @@ export function getProdModules(
     '@nrwl/eslint-plugin-nx',
     '@typescript-eslint/parser',
     'eslint-config-prettier',
-    '@types/compression'
+    '@types/compression',
+    '@angular-eslint/eslint-plugin-template',
+    'eslint',
+    'typescript'
   ];
   // Get versions of all transient modules
 
@@ -342,20 +345,25 @@ export function getProdModules(
             `WARNING: Could not determine version of module ${module.external}`
           );
         }
-        prodModules.push(
-          moduleVersion
-            ? `${module.external}@${moduleVersion}`
-            : module.external
-        );
+        const existing = prodModules.map(p => {
+          return p.startsWith(module.external)
+        })
+        if(!existing) {
+          prodModules.push(
+            moduleVersion
+              ? `${module.external}@${moduleVersion}`
+              : module.external
+          );
+        }
       }
     } else if (
+
       packageJson.devDependencies &&
       packageJson.devDependencies[module.external] &&
       !_.includes(forceExcludes, module.external)
     ) {
       // To minimize the chance of breaking setups we whitelist packages available on AWS here. These are due to the previously missing check
       // most likely set in devDependencies and should not lead to an error now.
-
       if (!_.includes(ignoredDevDependencies, module.external)) {
         // Runtime dependency found in devDependencies but not forcefully excluded
         ServerlessWrapper.serverless.cli.log(
@@ -371,11 +379,6 @@ export function getProdModules(
         );
     }
   });
-
-  logger.info('Get versions of all transient modules')
-  logger.info("--------------------------------------------")
-  logger.info(prodModules)
-  logger.info("--------------------------------------------")
 
   return prodModules;
 }

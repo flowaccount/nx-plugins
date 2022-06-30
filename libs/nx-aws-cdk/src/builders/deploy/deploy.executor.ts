@@ -43,14 +43,7 @@ export default async function runSynthExecutor(
   cdkOptionFlag.app = `node ${buildOutput.outfile}`;
   const deployOption = getDeployOptions(deployOptionFlag);
   const cdkOption = getCdkOptions(cdkOptionFlag);
-  const stackPrefix = context.configurationName
-    ? context.configurationName
-    : 'dev';
-  awscdkClient.deploy(
-    `${stackPrefix}-${options.stackName}`,
-    cdkOption,
-    deployOption
-  );
+  awscdkClient.deploy(`${options.stackName}`, cdkOption, deployOption);
   return {
     success: true,
   };
@@ -77,7 +70,7 @@ async function* startBuild(
   yield* await runExecutor<NodeBuildEvent>(
     buildTarget,
     {
-      watch: options.watch,
+      // watch: options.watch,
     },
     context
   );

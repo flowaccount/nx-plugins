@@ -1,7 +1,5 @@
 export interface BaseSchema {
-  name: string;
-  project: string;
+  appProjectRoot: string;
+  endpointType: string;
   skipFormat: boolean;
-  directory: string;
-  tags: string;
 }
