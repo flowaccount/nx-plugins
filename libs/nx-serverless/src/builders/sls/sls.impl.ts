@@ -15,7 +15,6 @@ gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 // review: Have to spin off options and clarify schema.json for deploy,build,serve
 
-
 export async function slsExecutor(
   options: ServerlessSlsBuilderOptions,
   context: ExecutorContext
@@ -42,7 +41,7 @@ export async function slsExecutor(
     builderOutput.webpackStats,
     builderOutput.resolverName,
     builderOutput.tsconfig
-  ).toPromise();
+  );
   if (!prepResult.success) {
     throw new Error(`There was an error with the build. ${prepResult.error}`);
   }

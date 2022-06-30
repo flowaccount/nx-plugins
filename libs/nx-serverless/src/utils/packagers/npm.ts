@@ -107,26 +107,26 @@ export class NPM {
     return lockfile;
   }
 
-  static install(cwd) {
+  static async install(cwd) {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     const args = ['install'];
 
-    return spawnSync(command, args, { cwd });
+    return await spawn(command, args, { cwd });
   }
 
-  static prune(cwd) {
+  static async prune(cwd) {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     const args = ['prune'];
 
-    return spawn(command, args, { cwd });
+    return await spawn(command, args, { cwd });
   }
 
-  static runScripts(cwd, scriptNames) {
+  static async runScripts(cwd, scriptNames) {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
-    return map(scriptNames, scriptName => {
+    return map(scriptNames, async (scriptName) => {
       const args = ['run', scriptName];
 
-      return spawn(command, args, { cwd });
+      return await spawn(command, args, { cwd });
     });
   }
 }

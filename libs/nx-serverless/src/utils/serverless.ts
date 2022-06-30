@@ -34,8 +34,8 @@ export class ServerlessWrapper {
   }
 
   static async init(
-    options: ServerlessBaseOptions | ServerlessDeployBuilderOptions,
-    context: ExecutorContext
+    options: ServerlessBaseOptions,
+    // context: ExecutorContext
   ): Promise<void> {
     if (this.serverless$ === null) {
       logger.debug('Starting to Initiate Serverless Instance')
@@ -50,33 +50,11 @@ export class ServerlessWrapper {
       // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
       const commands = []
       const extraArgs = {}
+      buildOptions.servicePath = options.servicePath
+      buildOptions.processEnvironmentFile = options.processEnvironmentFile
+      buildOptions.serverlessConfig = options.serverlessConfig
+      buildOptions.outputPath = options.outputPath
 
-      if (ServerlessWrapper.isServerlessDeployBuilderOptions(options)) {
-        deployOptions = options
-        commands.push('deploy')
-        if (deployOptions.function && deployOptions.function != '') {
-          commands.push('function')
-          extraArgs['function'] = `${deployOptions.function}`
-        }
-        if (deployOptions.list) {
-          commands.push('list')
-        }
-        const buildTarget = parseTargetString(deployOptions.buildTarget)
-        const targetObj = readTargetOptions<{ outputPath:string, buildTarget: string, servicePath: string, processEnvironmentFile: string, serverlessConfig: string }>(
-          buildTarget,
-          context
-        )
-        buildOptions.buildTarget = targetObj.buildTarget
-        buildOptions.servicePath = targetObj.servicePath
-        buildOptions.processEnvironmentFile = targetObj.processEnvironmentFile
-        buildOptions.serverlessConfig = targetObj.serverlessConfig
-        buildOptions.outputPath = targetObj.outputPath
-      } else {
-        buildOptions.servicePath = options.servicePath
-        buildOptions.processEnvironmentFile = options.processEnvironmentFile
-        buildOptions.serverlessConfig = options.serverlessConfig
-        buildOptions.outputPath = options.outputPath
-      }
       try {
         if (
           fs.existsSync(
@@ -262,6 +240,6 @@ export async function makeDistFileReadyForPackaging(
     )
   }
 }
-function resolveLocalServerlessPath() {
-  throw new Error('Function not implemented.')
-}
+// function resolveLocalServerlessPath() {
+//   throw new Error('Function not implemented.')
+// }

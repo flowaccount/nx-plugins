@@ -6,9 +6,14 @@
  *   ignoreScripts (false) - Do not execute scripts during install
  */
 
+import { logger } from '@nrwl/devkit';
+import { exec } from 'child_process';
 import * as _ from 'lodash';
-import { spawn, spawnSync } from 'child_process';
 import { map } from 'rxjs/operators';
+import { promisify } from 'util';
+
+
+const execAsync = promisify(exec);
 
 export class Yarn {
   static get lockfileName() {
@@ -25,53 +30,56 @@ export class Yarn {
     return false;
   }
 
-  static generateLockFile(cwd) {
+  static async generateLockFile(cwd) {
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
-    const args = ['install', '--non-interactive'];
-    return spawnSync(command, args, {
+    const args = 'install';
+    return await execAsync(`${command} ${args}`, {
       cwd: cwd,
     });
   }
 
-  static getProdDependencies(cwd, depth) {
+  static async getProdDependencies(cwd, depth) {
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
-    const args = ['list', `--depth=${depth || 1}`, '--json', '--production'];
+    const args = `list --depth=${depth || 1} --json --production`;
 
     // If we need to ignore some errors add them here
-    const ignoredYarnErrors = [];
-
-    var result = spawnSync(command, args, {
+    // const ignoredYarnErrors = [];
+    // const result =
+    const result = await execAsync(`${command} ${args}`, {
       cwd: cwd,
     });
-    if (result.error) {
-      const err = result.error;
-      if (err instanceof Error) {
-        // Only exit with an error if we have critical npm errors for 2nd level inside
-        const errors = _.split(err.name, '\n');
-        const failed = _.reduce(
-          errors,
-          (failed, error) => {
-            if (failed) {
-              return true;
-            }
-            return (
-              !_.isEmpty(error) &&
-              !_.some(ignoredYarnErrors, (ignoredError) =>
-                _.startsWith(error, `npm ERR! ${ignoredError.npmError}`)
-              )
-            );
-          },
-          false
-        );
-
-        if (!failed && !_.isEmpty(err.stack)) {
-          return Promise.resolve({ stdout: err.message });
-        }
-      }
-      return result;
-    } else {
-      return result;
+    console.log(result)
+    if(result.stderr) {
+      logger.error(result.stderr.trim())
+      return null;
     }
+    return result.stdout.trim()
+  //  result.on("error", (err:Error)=> {
+  //       // Only exit with an error if we have critical npm errors for 2nd level inside
+  //       const errors = _.split(err.name, '\n');
+  //       const failed = _.reduce(
+  //         errors,
+  //         (failed, error) => {
+  //           if (failed) {
+  //             return true;
+  //           }
+  //           return (
+  //             !_.isEmpty(error) &&
+  //             !_.some(ignoredYarnErrors, (ignoredError) =>
+  //               _.startsWith(error, `npm ERR! ${ignoredError.npmError}`)
+  //             )
+  //           );
+  //         },
+  //         false
+  //       );
+
+  //       if (!failed && !_.isEmpty(err.stack)) {
+  //         return Promise.resolve({ stdout: err.message });
+  //       }
+  //     return result;
+  //   })
+
+  //   return result.stdout.read();
   }
 
   static rebaseLockfile(pathToPackageRoot, lockfile) {
@@ -97,16 +105,16 @@ export class Yarn {
     );
   }
 
-  static install(cwd, packagerOptions) {
+  static async install(cwd, packagerOptions) {
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
-    const args = ['install', '--no-lockfile', '--non-interactive'];
+    let args = `install --no-lockfile --non-interactive`;
 
     // Convert supported packagerOptions
     if (packagerOptions.ignoreScripts) {
-      args.push('--ignore-scripts');
+      args = `${args} --ignore-scripts`;
     }
 
-    return spawnSync(command, args, { cwd });
+    return await execAsync(`${command} ${args}`, { cwd });
   }
 
   // "Yarn install" prunes automatically
@@ -114,12 +122,13 @@ export class Yarn {
     return Yarn.install(cwd, packagerOptions);
   }
 
-  static runScripts(cwd, scriptNames) {
+  static async runScripts(cwd, scriptNames) {
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
-    return map(scriptNames, (scriptName) => {
-      const args = ['run', scriptName];
-
-      return spawn(command, args, { cwd });
+    return map(scriptNames, async (scriptName) => {
+      const args = `run ${scriptName}`;
+      await execAsync(`${command} ${args}`, { cwd });
     });
   }
 }
+
+

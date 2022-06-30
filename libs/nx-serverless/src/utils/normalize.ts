@@ -286,7 +286,9 @@ export function getProdModules(
     '@types/compression'
   ];
   // Get versions of all transient modules
+
   _.forEach(externalModules, (module) => {
+
     let moduleVersion = packageJson.dependencies[module.external];
     if (moduleVersion) {
       prodModules.push(`${module.external}@${moduleVersion}`);
@@ -369,5 +371,11 @@ export function getProdModules(
         );
     }
   });
+
+  logger.info('Get versions of all transient modules')
+  logger.info("--------------------------------------------")
+  logger.info(prodModules)
+  logger.info("--------------------------------------------")
+
   return prodModules;
 }

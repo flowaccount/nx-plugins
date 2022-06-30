@@ -3,7 +3,6 @@ import {
   getPackagePath,
   makeDistFileReadyForPackaging,
   runServerlessCommand,
-  ServerlessWrapper,
 } from '../../utils/serverless';
 /* Fix for EMFILE: too many open files on serverless deploy */
 import * as fs from 'fs';
@@ -21,8 +20,6 @@ export async function deployExecutor(
   context: ExecutorContext
 ) {
   // build into output path before running serverless offline.
-  // const packagePath = options.location;
-  await ServerlessWrapper.init(options, context);
   if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
     const results = await runWaitUntilTargets(
       options.waitUntilTargets,
@@ -40,22 +37,20 @@ export async function deployExecutor(
   const iterator = await buildTarget(options, context);
   const buildOutput = <SimpleBuildEvent>(await iterator.next()).value;
   await makeDistFileReadyForPackaging(options);
+
   options.package = getPackagePath(options)
   logger.info(`options.package: ${options.package}`)
-  logger.info(`build output ------->`)
-  logger.info(buildOutput)
   const prepResult = await preparePackageJson(
     options,
     context,
     buildOutput.webpackStats,
     buildOutput.resolverName,
     buildOutput.tsconfig
-  ).toPromise();
+  );
 
   if (!prepResult.success) {
     throw new Error(`There was an error with the build. ${prepResult.error}`);
   }
-
 
   const extraArgs = [];
   const commands = [];
@@ -67,6 +62,8 @@ export async function deployExecutor(
   if (options.list) {
     commands.push('list');
   }
+
+
   await runServerlessCommand(options, commands, extraArgs);
   return { success: true };
 }

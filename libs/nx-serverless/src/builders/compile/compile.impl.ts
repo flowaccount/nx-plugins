@@ -20,7 +20,7 @@ export async function compileExecutor(
   logger.info(`executing typescript compilation with tsConfig:${resolve(context.root, options.tsConfig)}`);
   const root = getSourceRoot(context);
   options = normalizeBuildOptions(options, context.root, root);
-  await ServerlessWrapper.init(options, context);
+  await ServerlessWrapper.init(options);
   options = assignEntriesToFunctionsFromServerless(options, context.root);
 
   logger.info('start compiling typescript');
