@@ -56,6 +56,14 @@ export class ServerlessWrapper {
       buildOptions.outputPath = options.outputPath
 
       try {
+        console.log(buildOptions.servicePath)
+        console.log(buildOptions.processEnvironmentFile)
+        console.log(fs.existsSync(
+          path.join(
+            buildOptions.servicePath,
+            buildOptions.processEnvironmentFile
+          )
+        ))
         if (
           fs.existsSync(
             path.join(
@@ -71,6 +79,7 @@ export class ServerlessWrapper {
               buildOptions.processEnvironmentFile
             ),
           })
+          console.log(process.env)
           logger.info(
             `Environment variables set according to ${buildOptions.processEnvironmentFile}`
           )

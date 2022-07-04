@@ -49,12 +49,15 @@ export class ECSService extends Stack {
     let _tgn: INetworkTargetGroup;
     logger.info('fetching cluster from attributes');
 
-    const defaultServiceDiscoveryNamespace =
-      PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(
-        this,
-        `${stackProps.ecs.clusterName}-default-service-discovery`,
-        stackProps.ecs.defaultServiceDiscoveryNamespace
-      );
+    let defaultServiceDiscoveryNamespace = null
+    if(stackProps.ecs.defaultServiceDiscoveryNamespace) {
+      defaultServiceDiscoveryNamespace =
+        PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(
+          this,
+          `${stackProps.ecs.clusterName}-default-service-discovery`,
+          stackProps.ecs.defaultServiceDiscoveryNamespace
+        );
+    }
     const _cluster = Cluster.fromClusterAttributes(
       this,
       `${stackProps.ecs.clusterName}-ecs-cluster`,

@@ -21,6 +21,7 @@ export class DependencyCheckResolver implements DependencyResolver {
     ],
     parsers: {
       // '**/*.ts': depcheck.parser.typescript,
+
     },
     detectors: [
       // the target detectors
@@ -86,15 +87,18 @@ export class DependencyCheckResolver implements DependencyResolver {
         parsers[fileName] = depcheck.parser.typescript;
       });
     }
-
     if (tsconfigJson.include) {
       tsconfigJson.include.forEach((includePattern) => {
         parsers[includePattern] = depcheck.parser.typescript;
       });
     }
-    this.options.parsers = parsers;
-    this.options.package = packageJson;
 
+    this.options.parsers = parsers;
+    // this.options.parsers = {
+    //   '**/handler.ts': depcheck.parser.typescript,
+    //   '**/server-prerender.ts': depcheck.parser.typescript
+    // };
+    this.options.package = packageJson;
     const res = await depcheck(sourceRoot, this.options);
     return res;
   }
