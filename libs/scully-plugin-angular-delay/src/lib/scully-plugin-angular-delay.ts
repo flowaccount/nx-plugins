@@ -1,9 +1,10 @@
-import { registerPlugin, scullyConfig } from '@scullyio/scully';
+import { registerPlugin, scullyConfig } from 'D:/projects/flowaccount/flowaccount.workspace/node_modules/@scullyio/scully/src/';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { JSDOM } from 'jsdom';
 
 const DelayAngular = 'delayAngular';
+// const validator = async (conf) => [];
 registerPlugin('render', DelayAngular, delayAngularPlugin);
 
 interface DelayAngularPluginOptions {
@@ -65,21 +66,21 @@ async function delayAngularPlugin(html, routeObj) {
     console.error(notsconfigError);
     throw new Error(notsconfigError);
   }
-  const tsConfig = JSON.parse(
-    readFileSync(tsConfigPath, { encoding: 'utf8' }).toString()
-  );
+  // const tsConfig = JSON.parse(
+  //   readFileSync(tsConfigPath, { encoding: 'utf8' }).toString()
+  // );
 
   const distFolder = (DistFolder) ? DistFolder : scullyConfig.distFolder;
-  let isEs5Config = false;
-  let statsJsonPath = join(distFolder, 'stats-es2015.json');
-  if (tsConfig.compilerOptions.target === 'es5') {
-    isEs5Config = true;
-    statsJsonPath = join(distFolder, 'stats.json');
-  }
+  // let isEs5Config = false;
+  // let statsJsonPath = join(distFolder, 'stats-es2015.json');
+  // if (tsConfig.compilerOptions.target === 'es5') {
+  //   isEs5Config = true;
+    const statsJsonPath = join(distFolder, 'stats.json');
+  //}
 
   if (!existsSync(statsJsonPath)) {
     const noStatsJsonError = `A ${
-      isEs5Config ? 'stats' : 'stats-es2015'
+      'stats'
       }.json is required for the 'delayAngular' plugin.
 Please run 'ng build' with the '--stats-json' flag`;
     console.error(noStatsJsonError);
@@ -114,23 +115,21 @@ Please run 'ng build' with the '--stats-json' flag`;
       }).toString()
     );
   }
-
   let assetsList = scullyDelayAngularStatsJson
     .filter(entry => {
       return (
-        entry['name'].includes('.js') &&
-        (entry['name'].includes('-es5') || entry['name'].includes('-es2015'))
+        entry['name'].includes('.js')
       );
     })
     .map(entry => entry['name']);
-  assetsList = [
-    ...assetsList,
-    ...assetsList.map(asset => {
-      return asset.includes('-es5')
-        ? asset.replace('-es5', '-es2015')
-        : asset.replace('-es2015', '-es5');
-    })
-  ];
+  // assetsList = [
+  //   ...assetsList,
+  //   ...assetsList.map(asset => {
+  //     return asset.includes('-es5')
+  //       ? asset.replace('-es5', '-es2015')
+  //       : asset.replace('-es2015', '-es5');
+  //   })
+  // ];
   if (blacklistRoute && blacklistRoute.removeAngular) {
     assetsList.forEach(entry => {
       const regex = new RegExp(
@@ -146,12 +145,7 @@ Please run 'ng build' with the '--stats-json' flag`;
     let appendScript = `
     function appendScript(entry) {
       var s = document.createElement("script");
-      if(pattes2015.test(entry)) {
-        s.setAttribute("type", "module");
-      } else if(pattes5.test(entry)) {
-        s.setAttribute("nomodule", "");
-        s.setAttribute("defer", "");
-      }
+      s.setAttribute("type", "module");
       s.src = entry;
       // s.onload = function () {
       //   console.log('script is loaded!')
@@ -159,8 +153,6 @@ Please run 'ng build' with the '--stats-json' flag`;
       document.body.appendChild(s);
     }
     var scriptsToLoad = [];
-    var pattes2015 = new RegExp("-es2015");
-    var pattes5 = new RegExp("-es5");
     window.addEventListener('load', function(event) {
         setTimeout( function() {
           scriptsToLoad.forEach(entry => {
@@ -183,6 +175,7 @@ Please run 'ng build' with the '--stats-json' flag`;
       );
       const match = html.match(regex);
       if (match && match.length > 0) {
+        // console.log(`matched script, putting it in, ${entry}`)
         scriptsArray.push(entry);
       }
       html = html.replace(regex, '');
@@ -208,6 +201,7 @@ Please run 'ng build' with the '--stats-json' flag`;
       }
     });
     appendScript += `scriptsToLoad = ${JSON.stringify(sorted)}`;
+
     const dom = new JSDOM(html);
     const doc = dom.window.document;
     const s = doc.createElement('script');
