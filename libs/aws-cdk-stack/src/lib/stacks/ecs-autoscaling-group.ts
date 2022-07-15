@@ -6,7 +6,7 @@ import {
   SubnetType,
 } from '@aws-cdk/aws-ec2';
 import { CfnInstanceProfile, IRole } from '@aws-cdk/aws-iam';
-import { Cluster, EcsOptimizedImage } from '@aws-cdk/aws-ecs';
+import { Cluster, EcsOptimizedImage, WindowsOptimizedVersion } from '@aws-cdk/aws-ecs';
 import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { ECSModel, S3MountConfig, TagModel } from '../types';
 
@@ -26,24 +26,35 @@ export class ECSAutoScalingGroup extends Stack {
     stackProps: ECSAutoScalingGroupProps
   ) {
     super(scope, id, stackProps);
-
-    let _linuxUserData = `
+    let _userData = `
         #!/bin/bash
         echo ECS_CLUSTER=${stackProps.cluster.clusterName} >> /etc/ecs/ecs.config
         echo ECS_ENABLE_CONTAINER_METADATA=true >> /etc/ecs/ecs.config
         docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
         `;
-    if (stackProps.s3MountConfig) {
-      _linuxUserData +=
-        _linuxUserData +
+      if(stackProps.s3MountConfig) {
+          _userData +=
+          _userData +
+          `
+            sudo yum update -y
+            sudo yum -y install python-pip
+            sudo pip install s3cmd
+            mkdir ${stackProps.s3MountConfig.localPath}
+            sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}
+            { sudo crontab -l; sudo echo "* * * * * sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}"; } | sudo crontab -
+            `;
+    }
+
+    if(stackProps.ecs.isWindows) {
+      _userData = `
+        <powershell>
+        [Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", $TRUE, "Machine")
+        [Environment]::SetEnvironmentVariable("ECS_ENABLE_CONTAINER_METADATA", $TRUE, "Machine")
+        [Environment]::SetEnvironmentVariable("ECS_ENABLE_MEMORY_UNBOUNDED_WINDOWS_WORKAROUND", $TRUE, "Machine")
+        Import-Module ECSTools
+        Initialize-ECSAgent -Cluster '${stackProps.cluster.clusterName}' -EnableTaskIAMRole
+        </powershell>
         `
-          sudo yum update -y
-          sudo yum -y install python-pip
-          sudo pip install s3cmd
-          mkdir ${stackProps.s3MountConfig.localPath}
-          sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}
-          { sudo crontab -l; sudo echo "* * * * * sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}"; } | sudo crontab -
-          `;
     }
     const _securityGroup = new SecurityGroup(
       this,
@@ -71,12 +82,12 @@ export class ECSAutoScalingGroup extends Stack {
       _launchTemplate = new CfnLaunchTemplate(this, asg.launchTemplate.name, {
         launchTemplateName: asg.launchTemplate.name,
         launchTemplateData: {
-          imageId: EcsOptimizedImage.amazonLinux2().getImage(this).imageId,
+          imageId: stackProps.ecs.isWindows ?  EcsOptimizedImage.windows(WindowsOptimizedVersion.SERVER_2019).getImage(this).imageId: EcsOptimizedImage.amazonLinux2().getImage(this).imageId,
           instanceType: asg.launchTemplate.instanceType,
           keyName: asg.launchTemplate.keyName,
           securityGroupIds: [_securityGroup.securityGroupId],
           iamInstanceProfile: { arn: _instanceProfile.attrArn },
-          userData: Fn.base64(_linuxUserData),
+          userData: Fn.base64(_userData),
         },
       });
       _autoScalingGroup = new CfnAutoScalingGroup(this, asg.asg.name, {

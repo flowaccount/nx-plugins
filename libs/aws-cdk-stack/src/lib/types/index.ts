@@ -349,6 +349,7 @@ export class ECSModel {
   clusterName: string;
   defaultServiceDiscoveryNamespace?: PrivateDnsNamespaceAttributes;
   defaultCloudMapNamespace?: CloudMapNamespaceOptions;
+  isWindows?: boolean
 }
 
 export class ECSServiceModel {
