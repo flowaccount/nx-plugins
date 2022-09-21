@@ -14,3 +14,6 @@ export * from './builders';
 export * from './ecs-autoscaling-group';
 export * from './ecs-cluster';
 export * from './ecs-service';
+export * from './application-load-balancer';
+export * from './application-target-group';
+export * from './aws-ecs-cluster';

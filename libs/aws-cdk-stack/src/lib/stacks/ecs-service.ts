@@ -25,8 +25,11 @@ import {
   ApplicationTargetGroup,
   IApplicationTargetGroup,
   INetworkTargetGroup,
+  ITargetGroup,
   NetworkTargetGroup,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
+import {v4 as uuidv4} from 'uuid';
+
 interface ECSServiceProps extends StackProps {
   readonly vpc: IVpc;
   readonly cluster: Cluster;
@@ -38,15 +41,14 @@ interface ECSServiceProps extends StackProps {
 }
 
 export class ECSService extends Stack {
+  public service: Ec2Service;
+  public tg: ITargetGroup;
   constructor(scope: Construct, id: string, stackProps: ECSServiceProps) {
     super(scope, id, stackProps);
     logger.info('start creating the ecs service');
     let _taskDefinition: TaskDefinition;
     let _container: ContainerDefinition;
-    let _service: Ec2Service;
-    let _tg: IApplicationTargetGroup;
     let _scalableTaskCount: ScalableTaskCount;
-    let _tgn: INetworkTargetGroup;
     logger.info('fetching cluster from attributes');
 
     let defaultServiceDiscoveryNamespace = null
@@ -159,7 +161,7 @@ export class ECSService extends Stack {
       });
 
       logger.info('creating the sergvice itself');
-      _service = new Ec2Service(this, s.name, {
+      this.service = new Ec2Service(this, s.name, {
         serviceName: s.name,
         cluster: _cluster,
         taskDefinition: _taskDefinition,
@@ -169,6 +171,7 @@ export class ECSService extends Stack {
         daemon: s.daemon,
         // cloudMapOptions: cloudMapOptions
       });
+
       if (s.serviceDiscoveryNamespace) {
         let cloudMapOptions: AssociateCloudMapServiceOptions = null;
         const service = Service.fromServiceAttributes(
@@ -182,12 +185,12 @@ export class ECSService extends Stack {
         cloudMapOptions = {
           service: service,
         };
-        _service.associateCloudMapService(cloudMapOptions);
+        this.service.associateCloudMapService(cloudMapOptions);
       }
 
       if (s.scaleProps) {
         logger.info('add scale task');
-        _scalableTaskCount = _service.autoScaleTaskCount(s.scaleProps);
+        _scalableTaskCount = this.service.autoScaleTaskCount(s.scaleProps);
       }
       if (s.cpuScalingProps) {
         logger.info('add cpu scaling');
@@ -212,39 +215,18 @@ export class ECSService extends Stack {
       if (s.placementStrategy) {
         logger.info('add the placement strategies');
         s.placementStrategy.forEach((_ps) => {
-          _service.addPlacementStrategies(_ps);
+          this.service.addPlacementStrategies(_ps);
         });
       }
       logger.info('add the placement constraints');
       s.placementConstraint.forEach((_pc) => {
-        _service.addPlacementConstraints(_pc);
+        this.service.addPlacementConstraints(_pc);
       });
-      if (s.targetGroupArn) {
-        _tg = ApplicationTargetGroup.fromTargetGroupAttributes(
-          this,
-          `${s.name}-tg`,
-          {
-            targetGroupArn: s.targetGroupArn,
-          }
-        );
-
-        logger.info('attaching the target group');
-        _service.attachToApplicationTargetGroup(_tg);
-      }
-      if (s.targetGroupNetworkArn) {
-        _tgn = NetworkTargetGroup.fromTargetGroupAttributes(
-          this,
-          `${s.name}-network-tg`,
-          {
-            targetGroupArn: s.targetGroupNetworkArn,
-          }
-        );
-        logger.info('attaching the target group');
-        _service.attachToNetworkTargetGroup(_tgn);
-      }
     });
     stackProps.taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
     });
   }
 }
+
+

@@ -37,12 +37,42 @@ import {
   RoutingPolicy,
 } from '@aws-cdk/aws-servicediscovery';
 import { ScalingSchedule } from '@aws-cdk/aws-applicationautoscaling';
+import { ApplicationLoadBalancerProps, ApplicationLoadBalancerRedirectConfig, ApplicationTargetGroupProps, IpAddressType, TargetType } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { registry } from 'tsyringe';
 
 export interface VpcStackProperties extends StackProps {
   vpcAttributes: VpcAttributes;
   awsCredentials?: AWSCredentialsModel;
   subnets: SubnetAttributes[];
 }
+export interface ALBStackConfiguration {
+  applicationLoadbalancerProperties:  {
+    loadBalancerName: string;
+    ipAddressType: IpAddressType;
+    internetFacing: boolean;
+    publicSubnet1: string;
+    publicSubnet2: string;
+  };
+  certificateArns: string[];
+  redirectConfigs: ApplicationLoadBalancerRedirectConfig[]
+}
+export interface ALBStackProperties extends StackProps {
+  applicationLoadbalancerProps: ApplicationLoadBalancerProps;
+  certificateArns: string[];
+  redirectConfigs: ApplicationLoadBalancerRedirectConfig[]
+}
+export interface ApplicationTargetGroupConfiguration {
+    targetGroupName: string;
+    targetType: TargetType,
+    port: number,
+    healthCheck: {
+      path: string
+    }
+}
+export interface ApplicationTargetGroupStackProperties extends StackProps {
+  applicationtargetGroupProps: ApplicationTargetGroupProps;
+}
+
 
 interface PolicyStatementStackProperties {
   actions: string[];
@@ -284,7 +314,10 @@ export interface ServerlessConfigurationBuilderOption
 //* For building up evnironment.ts files
 
 /* Start of ECS Models */
-export interface IECSStackEnvironmentConfig {
+export interface IECSStackEnvironmentConfig extends StackProps {
+  route53Domain: string;
+  applicationLoadBalancer?: ALBStackConfiguration;
+  applicationLoadBalancerArn?: string;
   apiprefix: string;
   app: string;
   stage: string;
@@ -295,6 +328,11 @@ export interface IECSStackEnvironmentConfig {
   tag: TagModel[];
   s3MountConfig?: S3MountConfig;
 }
+
+export abstract class ECSStackEnvironmentConfig {
+  static readonly token = Symbol("IECSStackEnvironmentConfig");
+}
+
 export class RoleModel {
   name: string;
   assumedBy: ServicePrincipal[];
@@ -353,6 +391,7 @@ export class ECSModel {
 }
 
 export class ECSServiceModel {
+  apiDomain?: string;
   cpu?: number;
   memory?: number;
   networkMode?: NetworkMode;
@@ -364,12 +403,14 @@ export class ECSServiceModel {
   placementConstraint: PlacementConstraint[];
   targetGroupArn?: string;
   targetGroupNetworkArn?: string;
+  applicationtargetGroup?: ApplicationTargetGroupConfiguration;
   serviceDiscoveryNamespace?: ServiceAttributesProps;
   scaleProps?: EnableScalingProps;
   cpuScalingProps?: CpuUtilizationScalingProps;
   memScalingProps?: MemoryUtilizationScalingProps;
   scaleOnScheduleList?: ScalingSchduleModel[];
   daemon?: boolean;
+
 }
 
 class ScalingSchduleModel {
