@@ -63,12 +63,12 @@ export class AwsECSCluster extends Stack {
     }
 
     // Loadbalancer vpc and route53
-    this._zone = HostedZone.fromLookup(this, `${configuration.apiprefix}-zone-${configuration.stage}`, { domainName: configuration.route53Domain });
-    this._vpc = new VpcStack(this, `${configuration.apiprefix}-vpc-${configuration.stage}`, configuration.vpc)
+    this._zone = HostedZone.fromLookup(this, `zone-${configuration.stage}`, { domainName: configuration.route53Domain });
+    this._vpc = new VpcStack(this, `vpc-${configuration.stage}`, configuration.vpc)
     if(configuration.applicationLoadBalancer) {
       const publicSubnet1 = Subnet.fromSubnetId(this, 'stagingPublicSubnetVpc1' , configuration.applicationLoadBalancer.applicationLoadbalancerProperties.publicSubnet1)
       const publicSubnet2 = Subnet.fromSubnetId(this, 'stagingPblicSubnetVpc2' , configuration.applicationLoadBalancer.applicationLoadbalancerProperties.publicSubnet2)
-      this._alb = new ApplicationLoadBalancerStack(this, `${configuration.apiprefix}-alb-${configuration.stage}`
+      this._alb = new ApplicationLoadBalancerStack(this, `alb-${configuration.stage}`
       , { applicationLoadbalancerProps: {
         ...configuration.applicationLoadBalancer.applicationLoadbalancerProperties,
         vpc: this._vpc.vpc,
@@ -78,15 +78,15 @@ export class AwsECSCluster extends Stack {
       ,certificateArns: configuration.applicationLoadBalancer.certificateArns, env: configuration.awsCredentials }).lb
     }
     else {
-      this._alb = ApplicationLoadBalancer.fromLookup(this, `${configuration.apiprefix}-alb-${configuration.stage}`, {
+      this._alb = ApplicationLoadBalancer.fromLookup(this, `alb-${configuration.stage}`, {
         loadBalancerArn: configuration.applicationLoadBalancerArn
       });
     }
     // Loadbalancer vpc and route53
 
     // instance role and policy
-    logger.info(`Initiating instance role ${configuration.apiprefix}-instance-role-${configuration.stage}`)
-    this._instanceRole = new RoleStack(this, `${configuration.apiprefix}-instance-role-${configuration.stage}`, {
+    logger.info(`Initiating instance role instance-role-${configuration.stage}`)
+    this._instanceRole = new RoleStack(this, `instance-role-${configuration.stage}`, {
       name: configuration.ecs.instanceRole.name,
       assumedBy: configuration.ecs.instanceRole.assumedBy,
       env: configuration.awsCredentials
@@ -98,7 +98,7 @@ export class AwsECSCluster extends Stack {
     // instance role and policy
 
     // task execution role and policy
-    this._taskExecutionRole = new RoleStack(this, `${configuration.apiprefix}-task-execution-role-${configuration.stage}`, {
+    this._taskExecutionRole = new RoleStack(this, `task-execution-role-${configuration.stage}`, {
       name: configuration.ecs.taskExecutionRole.name,
       assumedBy: configuration.ecs.taskExecutionRole.assumedBy,
       env: configuration.awsCredentials
@@ -110,7 +110,7 @@ export class AwsECSCluster extends Stack {
     // task execution role and policy
 
     // task role and policy
-    this._taskRole = new RoleStack(this, `${configuration.apiprefix}-task-role-${configuration.stage}`, {
+    this._taskRole = new RoleStack(this, `task-role-${configuration.stage}`, {
       name: configuration.ecs.taskRole.name,
       assumedBy: configuration.ecs.taskRole.assumedBy,
       env: configuration.awsCredentials
@@ -122,13 +122,13 @@ export class AwsECSCluster extends Stack {
     // task role and policy
 
     // ECS Cluster and Auto Scaling Group
-    this._ecs = new ECSCluster(this, `${configuration.apiprefix}-cluster-${configuration.stage}`, {
+    this._ecs = new ECSCluster(this, `cluster-${configuration.stage}`, {
       ecs: configuration.ecs,
       vpc: this._vpc.vpc,
       taglist: configuration.tag,
       env: configuration.awsCredentials })
 
-      this._autoScalingGroup = new ECSAutoScalingGroup(this, `${configuration.apiprefix}-asg-${configuration.stage}`, {
+      this._autoScalingGroup = new ECSAutoScalingGroup(this, `asg-${configuration.stage}`, {
           ecs: configuration.ecs,
           instanceRole: this._instanceRole,
           vpc: this._vpc.vpc,
@@ -212,9 +212,9 @@ export class AwsECSCluster extends Stack {
               targetGroups: [<IApplicationTargetGroup>tg],
           });
         }
-        new CnameRecord(this, `${configuration.apiprefix}-${apiService.name}-record`, {
+        new CnameRecord(this, `${apiService.name}-record`, {
             zone: this._zone,
-            recordName: configuration.apiprefix,
+            recordName: `${configuration.apiprefix}-${apiService.name}`,
             domainName: this._alb.loadBalancerDnsName,
             ttl: Duration.seconds(300)
         });
