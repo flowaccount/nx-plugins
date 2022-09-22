@@ -24,11 +24,14 @@ import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
  * In this class it creates the Roles and policy provided in the configurations.
  * The configuration must be provided in the registry of the interface IECSStackEnvironmentConfig
  * Please register it like this
- * import { ECSStackEnvironmentConfig } from '@flowaccount/aws-cdk-stack'
- * {
- *  token: ECSStackEnvironmentConfig.token;
- *  useValue: <your defined configurations --> example>;
- * }
+ * import { AwsECSCluster } from '@flowaccount/aws-cdk-stack'
+ * import { environment } from './environments/environment'
+ * import { App } from '@aws-cdk/core'
+ * const app = new App()
+ * const awsEcsCluster = new AwsECSCluster(app, `${environment.app}-ecs-cluster`, { ...environment, env: environment.awsCredentials } )
+ *
+ * P.S. please mind that within the stacks, `env: configuration.awsCredentials` has to be passed into the sub-stacks properties
+ * this is to make sure they can use each other and also not fail.
  */
 @injectable()
 export class AwsECSCluster extends Stack {
@@ -53,17 +56,13 @@ export class AwsECSCluster extends Stack {
 
   constructor(scope: Construct, id: string, configuration: IECSStackEnvironmentConfig) {
     super(scope,id ,configuration)
-    // this  = new App();
     logger.info(`Initiating AwsECSCluster for ${configuration.app}`)
-    // const vpc = Vpc.fromLookup(this, 'xxx' , { vpcId: "xxx"})
-    // const subnet1 = Subnet.fromSubnetId(this, 'xxx' , "xxx")
-    // const subnet2 = Subnet.fromSubnetId(this, 'xxx' , "xxx")
-    // const publicSubnet1 = Subnet.fromSubnetId(this, 'xxx' , xxx")
-    // const publicSubnet2 = Subnet.fromSubnetId(this, 'xxx' , "xxx")
     if(!configuration.applicationLoadBalancer && !configuration.applicationLoadBalancerArn)
     {
       throw Error("you must specify at least a loadbalancer config or an existing ARN");
     }
+
+    // Loadbalancer vpc and route53
     this._zone = HostedZone.fromLookup(this, `${configuration.apiprefix}-zone-${configuration.stage}`, { domainName: configuration.route53Domain });
     this._vpc = new VpcStack(this, `${configuration.apiprefix}-vpc-${configuration.stage}`, configuration.vpc)
     if(configuration.applicationLoadBalancer) {
@@ -83,7 +82,9 @@ export class AwsECSCluster extends Stack {
         loadBalancerArn: configuration.applicationLoadBalancerArn
       });
     }
-    // instance role
+    // Loadbalancer vpc and route53
+
+    // instance role and policy
     logger.info(`Initiating instance role ${configuration.apiprefix}-instance-role-${configuration.stage}`)
     this._instanceRole = new RoleStack(this, `${configuration.apiprefix}-instance-role-${configuration.stage}`, {
       name: configuration.ecs.instanceRole.name,
@@ -94,9 +95,9 @@ export class AwsECSCluster extends Stack {
       ...configuration.ecs.instancePolicy,
       roles: [ this._instanceRole ],
       env: configuration.awsCredentials  })).output.policy
-    // instance role
+    // instance role and policy
 
-    // task execution role
+    // task execution role and policy
     this._taskExecutionRole = new RoleStack(this, `${configuration.apiprefix}-task-execution-role-${configuration.stage}`, {
       name: configuration.ecs.taskExecutionRole.name,
       assumedBy: configuration.ecs.taskExecutionRole.assumedBy,
@@ -106,34 +107,38 @@ export class AwsECSCluster extends Stack {
       ...configuration.ecs.taskExecutionRolePolicy,
       roles: [ this._taskExecutionRole ],
       env: configuration.awsCredentials  })).output.policy
-    // task execution role
+    // task execution role and policy
 
-    // task role
+    // task role and policy
     this._taskRole = new RoleStack(this, `${configuration.apiprefix}-task-role-${configuration.stage}`, {
       name: configuration.ecs.taskRole.name,
-      assumedBy: configuration.ecs.taskRole.assumedBy
+      assumedBy: configuration.ecs.taskRole.assumedBy,
+      env: configuration.awsCredentials
     }).output.role
     this._taskPolicy = (new ManagedPolicyStack(this, `${configuration.ecs.taskRolePolicy.name}`, {
       ...configuration.ecs.taskRolePolicy,
       roles: [ this._taskRole ],
       env: configuration.awsCredentials  })).output.policy
-    // task role
+    // task role and policy
 
+    // ECS Cluster and Auto Scaling Group
     this._ecs = new ECSCluster(this, `${configuration.apiprefix}-cluster-${configuration.stage}`, {
       ecs: configuration.ecs,
       vpc: this._vpc.vpc,
       taglist: configuration.tag,
       env: configuration.awsCredentials })
 
-   this._autoScalingGroup = new ECSAutoScalingGroup(this, `${configuration.apiprefix}-asg-${configuration.stage}`, {
-      ecs: configuration.ecs,
-      instanceRole: this._instanceRole,
-      vpc: this._vpc.vpc,
-      cluster: this._ecs.cluster,
-      taglist: configuration.tag,
-      env: configuration.awsCredentials,
-      s3MountConfig: configuration.s3MountConfig })
+      this._autoScalingGroup = new ECSAutoScalingGroup(this, `${configuration.apiprefix}-asg-${configuration.stage}`, {
+          ecs: configuration.ecs,
+          instanceRole: this._instanceRole,
+          vpc: this._vpc.vpc,
+          cluster: this._ecs.cluster,
+          taglist: configuration.tag,
+          env: configuration.awsCredentials,
+          s3MountConfig: configuration.s3MountConfig })
+    // ECS Cluster and Auto Scaling Group
 
+    // Creating the ecs services itself
     configuration.service.forEach((apiService, index) => {
       const service = new ECSService(this, `${apiService.name}`, {
         ecsServiceList: [ apiService ],
@@ -144,7 +149,7 @@ export class AwsECSCluster extends Stack {
         cluster: this._ecs.cluster,
         taglist: configuration.tag,env: configuration.awsCredentials }) //
 
-
+        // Tying up services, Target group + cname record to the ecs service. should do capacity provider here.
         if(apiService.apiDomain
           && !apiService.targetGroupArn
           && !apiService.targetGroupNetworkArn
@@ -213,9 +218,11 @@ export class AwsECSCluster extends Stack {
             domainName: this._alb.loadBalancerDnsName,
             ttl: Duration.seconds(300)
         });
+        // Tying up services, Target group + cname record to the ecs service. should do capacity provider here.
       }
       this._services.push(service);
     });
+    // Creating the ecs services itself
   }
 
 }
