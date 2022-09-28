@@ -2,10 +2,10 @@ import { Construct, Stack } from '@aws-cdk/core';
 import { ALBStackProperties } from '../types';
 import { logger } from '@nrwl/devkit';
 import { ApplicationLoadBalancer, ListenerAction } from '@aws-cdk/aws-elasticloadbalancingv2';
-import {v4 as uuidv4} from 'uuid';
+import { v4 } from 'uuid';
 import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 
-
+const short = require('short-uuid');
 export class ApplicationLoadBalancerStack extends Stack {
   public readonly lb: ApplicationLoadBalancer;
   constructor(scope: Construct, id: string, _props: ALBStackProperties) {
@@ -13,7 +13,7 @@ export class ApplicationLoadBalancerStack extends Stack {
     logger.info('setting up application load balancer');
     if(!_props.applicationLoadbalancerProps.loadBalancerName)
       logger.warn('loadbalancer name is not set!');
-      _props.applicationLoadbalancerProps = { ..._props.applicationLoadbalancerProps , loadBalancerName: uuidv4() }
+      _props.applicationLoadbalancerProps = { ..._props.applicationLoadbalancerProps , loadBalancerName: short.generate() }
 
     this.lb = new ApplicationLoadBalancer(this, `alb-${_props.applicationLoadbalancerProps.loadBalancerName}`, _props.applicationLoadbalancerProps);
     const httpsListener = this.lb.addListener('listener-default', { port: 443 });

@@ -18,6 +18,8 @@ import { ApplicationLoadBalancerStack } from './application-load-balancer';
 import { Subnet } from '@aws-cdk/aws-ec2';
 import { ApplicationTargetGroupStack } from './application-target-group';
 import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
+import { AsgCapacityProvider, CfnCapacityProvider } from '@aws-cdk/aws-ecs';
+import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 
 /**
  * This class is used to create an ECS cluster stack by specifying the VPC and Subnets
@@ -128,42 +130,41 @@ export class AwsECSCluster extends Stack {
       taglist: configuration.tag,
       env: configuration.awsCredentials })
 
-      this._autoScalingGroup = new ECSAutoScalingGroup(this, `asg-${configuration.stage}`, {
-          ecs: configuration.ecs,
-          instanceRole: this._instanceRole,
-          vpc: this._vpc.vpc,
-          cluster: this._ecs.cluster,
-          taglist: configuration.tag,
-          env: configuration.awsCredentials,
-          s3MountConfig: configuration.s3MountConfig })
-    // ECS Cluster and Auto Scaling Group
+    this._autoScalingGroup = new ECSAutoScalingGroup(this, `asg-${configuration.stage}`, {
+      ecs: configuration.ecs,
+      instanceRole: this._instanceRole,
+      vpc: this._vpc.vpc,
+      cluster: this._ecs.cluster,
+      taglist: configuration.tag,
+      env: configuration.awsCredentials,
+      s3MountConfig: configuration.s3MountConfig })
 
-    // https://docs.aws.amazon.com/cdk/api/v1/docs/aws-servicediscovery-readme.html
-    // const namespace = new servicediscovery.HttpNamespace(stack, 'MyNamespace', {
-    //   name: 'covfefe',
-    // });
-
-    // const service1 = namespace.createService('NonIpService', {
-    //   description: 'service registering non-ip instances',
-    // });
-
-    // service1.registerNonIpInstance('NonIpInstance', {
-    //   customAttributes: { arn: 'arn:aws:s3:::mybucket' },
-    // });
-
-    // const service2 = namespace.createService('IpService', {
-    //   description: 'service registering ip instances',
-    //   healthCheck: {
-    //     type: servicediscovery.HealthCheckType.HTTP,
-    //     resourcePath: '/check',
-    //   },
-    // });
-
-    // service2.registerIpInstance('IpInstance', {
-    //   ipv4: '54.239.25.192',
-    // });
-
-
+      const capacityProviderList : CfnCapacityProvider[] = [];
+    this._autoScalingGroup._autoScalingGroupList.forEach( asg => {
+      // ECS Cluster and Auto Scaling Group
+    const cfnCapacityProvider = new CfnCapacityProvider(this, `cp-${asg.autoScalingGroupName}`, {
+      autoScalingGroupProvider: {
+        autoScalingGroupArn: asg.autoScalingGroupName,
+        // the properties below are optional
+        managedScaling: {
+        //   instanceWarmupPeriod: 123,
+        //   maximumScalingStepSize: 123,
+        //   minimumScalingStepSize: 123,
+        //   status: 'status',
+          targetCapacity: 90,
+        },
+        managedTerminationProtection: 'ENABLED',
+      },
+      // the properties below are optional
+      name: `${asg.autoScalingGroupName}-cp`,
+      // tags: [{
+      //   key: 'key',
+      //   value: 'value',
+      // }],
+    });
+    capacityProviderList.push(cfnCapacityProvider)
+  });
+    
     // Creating the ecs services itself
     configuration.service.forEach((apiService, index) => {
       const service = new ECSService(this, `${apiService.name}`, {

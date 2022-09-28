@@ -410,7 +410,7 @@ export class ECSServiceModel {
   memScalingProps?: MemoryUtilizationScalingProps;
   scaleOnScheduleList?: ScalingSchduleModel[];
   daemon?: boolean;
-
+  autoScalingGroupName: string; // should automatically populate the placement constraints. /Bank
 }
 
 class ScalingSchduleModel {

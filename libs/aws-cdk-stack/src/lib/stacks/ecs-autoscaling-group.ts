@@ -20,6 +20,7 @@ interface ECSAutoScalingGroupProps extends StackProps {
 }
 
 export class ECSAutoScalingGroup extends Stack {
+  public _autoScalingGroupList : CfnAutoScalingGroup[] = []
   constructor(
     scope: Construct,
     id: string,
@@ -77,7 +78,7 @@ export class ECSAutoScalingGroup extends Stack {
       }
     );
     let _launchTemplate: CfnLaunchTemplate;
-    let _autoScalingGroup: CfnAutoScalingGroup;
+    // let this._autoScalingGroup: CfnAutoScalingGroup;
     stackProps.ecs.asgList.forEach((asg) => {
       _launchTemplate = new CfnLaunchTemplate(this, asg.launchTemplate.name, {
         launchTemplateName: asg.launchTemplate.name,
@@ -90,7 +91,7 @@ export class ECSAutoScalingGroup extends Stack {
           userData: Fn.base64(_userData),
         },
       });
-      _autoScalingGroup = new CfnAutoScalingGroup(this, asg.asg.name, {
+      const asgGroup = new CfnAutoScalingGroup(this, asg.asg.name, {
         minSize: asg.asg.min,
         maxSize: asg.asg.max,
         desiredCapacity: asg.asg.desired,
@@ -99,15 +100,15 @@ export class ECSAutoScalingGroup extends Stack {
           subnetType: SubnetType.PRIVATE,
         }).subnetIds,
       });
-      _autoScalingGroup.addPropertyOverride(
+      asgGroup.addPropertyOverride(
         'NewInstancesProtectedFromScaleIn',
         asg.asg.protectionFromScaleIn
       );
-      _autoScalingGroup.addPropertyOverride(
+      asgGroup.addPropertyOverride(
         'LaunchConfigurationName',
         undefined
       );
-      _autoScalingGroup.addPropertyOverride(`MixedInstancesPolicy`, {
+      asgGroup.addPropertyOverride(`MixedInstancesPolicy`, {
         LaunchTemplate: {
           LaunchTemplateSpecification: {
             LaunchTemplateName: _launchTemplate.launchTemplateName,
@@ -122,7 +123,8 @@ export class ECSAutoScalingGroup extends Stack {
           SpotAllocationStrategy: 'capacity-optimized',
         },
       });
-      _autoScalingGroup.addDependsOn(_launchTemplate);
+      asgGroup.addDependsOn(_launchTemplate);
+      this._autoScalingGroupList.push(asgGroup);
     });
 
     stackProps.taglist.forEach((tag) => {
