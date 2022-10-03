@@ -14,14 +14,15 @@ export class ApplicationLoadBalancerStack extends Stack {
       _props.applicationLoadbalancerProps = { ..._props.applicationLoadbalancerProps , loadBalancerName: Math.random().toString(36).substring(2, 5) }
 
     this.lb = new ApplicationLoadBalancer(this, `alb-${_props.applicationLoadbalancerProps.loadBalancerName}`, _props.applicationLoadbalancerProps);
-    const httpsListener = this.lb.addListener('listener-default', { port: 443 });
+    // const httpListener = this.lb.addListener('listener-default', { port: 80 });
+    const httpsListener = this.lb.addListener('listener-ssl-default', { port: 443 });
     const certs: ICertificate[] = [];
     _props.certificateArns.forEach((certificateArn, index) => {
       certs.push(Certificate.fromCertificateArn(this,`domainCert-${index}`, certificateArn));
     })
     httpsListener.addCertificates('cert', certs);
-
-    httpsListener.addAction('defaultAction', {action: ListenerAction.fixedResponse(404)})
+    // httpListener.addAction('defaultAction', {action: ListenerAction.fixedResponse(404)})
+    httpsListener.addAction('defaultSSLAction', {action: ListenerAction.fixedResponse(404)})
     _props.redirectConfigs.forEach(conf => {
       this.lb.addRedirect(conf)
     })

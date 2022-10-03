@@ -53,7 +53,7 @@ export class AwsECSCluster extends Stack {
   protected readonly _alb: IApplicationLoadBalancer;
   protected readonly _tg: ApplicationTargetGroup;
   protected readonly _applicationListenerRule: ApplicationListenerRule;
-  protected readonly _autoScalingGroup: ECSAutoScalingGroup;
+  protected readonly _autoScalingGroupList: ECSAutoScalingGroup[] = [];
   protected readonly _services: ECSService[] = [];
 
   constructor(scope: Construct, id: string, configuration: IECSStackEnvironmentConfig) {
@@ -65,7 +65,7 @@ export class AwsECSCluster extends Stack {
     }
 
     // Loadbalancer vpc and route53
-    this._zone = HostedZone.fromLookup(this, `zone-${configuration.stage}`, { domainName: configuration.route53Domain });
+    // this._zone = HostedZone.fromLookup(this, `zone-${configuration.stage}`, { domainName: configuration.route53Domain });
     this._vpc = new VpcStack(this, `vpc-${configuration.stage}`, configuration.vpc)
     if(configuration.applicationLoadBalancer) {
       const publicSubnet1 = Subnet.fromSubnetId(this, 'stagingPublicSubnetVpc1' , configuration.applicationLoadBalancer.applicationLoadbalancerProperties.publicSubnet1)
@@ -130,21 +130,24 @@ export class AwsECSCluster extends Stack {
       taglist: configuration.tag,
       env: configuration.awsCredentials })
 
-    this._autoScalingGroup = new ECSAutoScalingGroup(this, `asg-${configuration.stage}`, {
-      ecs: configuration.ecs,
-      instanceRole: this._instanceRole,
-      vpc: this._vpc.vpc,
-      cluster: this._ecs.cluster,
-      taglist: configuration.tag,
-      env: configuration.awsCredentials,
-      s3MountConfig: configuration.s3MountConfig })
+    configuration.ecs.asgList.forEach((asg) => {
+      this._autoScalingGroupList.push(new ECSAutoScalingGroup(this, `stack-${asg.asg.name}`, {
+        ecsModel: configuration.ecs,
+        asgModel: asg,
+        instanceRole: this._instanceRole,
+        vpc: this._vpc.vpc,
+        cluster: this._ecs.cluster,
+        taglist: configuration.tag,
+        env: configuration.awsCredentials,
+        s3MountConfig: configuration.s3MountConfig }))
+    })
 
       const capacityProviderList : CfnCapacityProvider[] = [];
-    this._autoScalingGroup._autoScalingGroupList.forEach( asg => {
+    this._autoScalingGroupList.forEach( asgModel => {
       // ECS Cluster and Auto Scaling Group
-    const cfnCapacityProvider = new CfnCapacityProvider(this, `cp-${asg.autoScalingGroupName}`, {
+    const cfnCapacityProvider = new CfnCapacityProvider(this, `${asgModel._autoScalingGroup.autoScalingGroupName}`, {
       autoScalingGroupProvider: {
-        autoScalingGroupArn: asg.autoScalingGroupName,
+        autoScalingGroupArn: asgModel._autoScalingGroup.autoScalingGroupName,
         // the properties below are optional
         managedScaling: {
         //   instanceWarmupPeriod: 123,
@@ -156,7 +159,7 @@ export class AwsECSCluster extends Stack {
         managedTerminationProtection: 'ENABLED',
       },
       // the properties below are optional
-      name: `${asg.autoScalingGroupName}-cp`,
+      name: `${asgModel._autoScalingGroup.autoScalingGroupName}-cp`,
       // tags: [{
       //   key: 'key',
       //   value: 'value',
@@ -224,27 +227,30 @@ export class AwsECSCluster extends Stack {
           throw new Error("Not Implemented");
         }
         else {
-          const certs: ICertificate[] = [];
-          configuration.applicationLoadBalancer.certificateArns.forEach((certificateArn, index) => {
-            certs.push(Certificate.fromCertificateArn(this,`domainCert-${index}`, certificateArn));
-          })
-          const listenerName = `${apiService.name}-listener`;
-          const httpsListener = this._alb.addListener(listenerName, { port: 443 });
-          httpsListener.addCertificates('cert', certs);
-          httpsListener.addAction('defaultAction', {action: ListenerAction.fixedResponse(404)})
+          
+          this._alb.listeners[0].addTargetGroups(`${apiService.name}-tgs-${configuration.stage}`, { targetGroups: [<IApplicationTargetGroup>tg] });
+          
+          // const certs: ICertificate[] = [];
+          // configuration.applicationLoadBalancer.certificateArns.forEach((certificateArn, index) => {
+          //   certs.push(Certificate.fromCertificateArn(this,`domainCert-${index}`, certificateArn));
+          // })
+          // const listenerName = `${apiService.name}-listener`;
+          // const httpsListener = this._alb.addListener(listenerName, { port: 443 });
+          // httpsListener.addCertificates('cert', certs);
+          // httpsListener.addAction('defaultAction', {action: ListenerAction.fixedResponse(404)})
           const applicationListenerRule = new ApplicationListenerRule(this, `${apiService.name}-listener-rule`, {
-              listener: httpsListener,
+              listener: this._alb.listeners[0], //.find( l => l.connections.defaultPort == ),
               priority: index + 1,
               conditions: [ListenerCondition.hostHeaders([apiService.apiDomain])],
               targetGroups: [<IApplicationTargetGroup>tg],
           });
         }
-        new CnameRecord(this, `${apiService.name}-record`, {
-            zone: this._zone,
-            recordName: `${configuration.apiprefix}-${apiService.name}`,
-            domainName: this._alb.loadBalancerDnsName,
-            ttl: Duration.seconds(300)
-        });
+        // new CnameRecord(this, `${apiService.name}-record`, {
+        //     zone: this._zone,
+        //     recordName: `${configuration.apiprefix}-${apiService.name}`,
+        //     domainName: this._alb.loadBalancerDnsName,
+        //     ttl: Duration.seconds(300)
+        // });
         // Tying up services, Target group + cname record to the ecs service. should do capacity provider here.
       }
       this._services.push(service);

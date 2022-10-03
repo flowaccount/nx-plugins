@@ -8,19 +8,20 @@ import {
 import { CfnInstanceProfile, IRole } from '@aws-cdk/aws-iam';
 import { Cluster, EcsOptimizedImage, WindowsOptimizedVersion } from '@aws-cdk/aws-ecs';
 import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
-import { ECSModel, S3MountConfig, TagModel } from '../types';
+import { ECSModel, S3MountConfig, TagModel, AutoScalingGroupModel } from '../types';
 
 interface ECSAutoScalingGroupProps extends StackProps {
   readonly vpc: IVpc;
   readonly cluster: Cluster;
-  readonly ecs: ECSModel;
+  readonly ecsModel: ECSModel;
+  readonly asgModel: AutoScalingGroupModel;
   readonly taglist: TagModel[];
   readonly s3MountConfig: S3MountConfig;
   readonly instanceRole: IRole;
 }
 
 export class ECSAutoScalingGroup extends Stack {
-  public _autoScalingGroupList : CfnAutoScalingGroup[] = []
+  public readonly _autoScalingGroup : CfnAutoScalingGroup
   constructor(
     scope: Construct,
     id: string,
@@ -46,7 +47,7 @@ export class ECSAutoScalingGroup extends Stack {
             `;
     }
 
-    if(stackProps.ecs.isWindows) {
+    if(stackProps.ecsModel.isWindows) {
       _userData = `
         <powershell>
         [Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", $TRUE, "Machine")
@@ -59,50 +60,51 @@ export class ECSAutoScalingGroup extends Stack {
     }
     const _securityGroup = new SecurityGroup(
       this,
-      stackProps.ecs.instanceSecurityGroup.name,
+      stackProps.ecsModel.instanceSecurityGroup.name,
       {
         vpc: stackProps.vpc,
         allowAllOutbound: true,
-        securityGroupName: stackProps.ecs.instanceSecurityGroup.name,
+        securityGroupName: stackProps.ecsModel.instanceSecurityGroup.name,
       }
     );
-    stackProps.ecs.instanceSecurityGroup.inboudRule.forEach((_rule) => {
+    stackProps.ecsModel.instanceSecurityGroup.inboudRule.forEach((_rule) => {
       _securityGroup.addIngressRule(_rule.peer, _rule.connection);
     });
     const _instanceProfile = new CfnInstanceProfile(
       this,
-      stackProps.ecs.instanceProfile.name,
+      stackProps.ecsModel.instanceProfile.name,
       {
         roles: [stackProps.instanceRole.roleName],
-        instanceProfileName: stackProps.ecs.instanceProfile.name,
+        instanceProfileName: stackProps.ecsModel.instanceProfile.name,
       }
     );
     let _launchTemplate: CfnLaunchTemplate;
     // let this._autoScalingGroup: CfnAutoScalingGroup;
-    stackProps.ecs.asgList.forEach((asg) => {
-      _launchTemplate = new CfnLaunchTemplate(this, asg.launchTemplate.name, {
-        launchTemplateName: asg.launchTemplate.name,
+    // stackProps.ecs.asgList.forEach((asg) => {
+      _launchTemplate = new CfnLaunchTemplate(this, stackProps.asgModel.launchTemplate.name, {
+        launchTemplateName: stackProps.asgModel.launchTemplate.name,
         launchTemplateData: {
-          imageId: stackProps.ecs.isWindows ?  EcsOptimizedImage.windows(WindowsOptimizedVersion.SERVER_2019).getImage(this).imageId: EcsOptimizedImage.amazonLinux2().getImage(this).imageId,
-          instanceType: asg.launchTemplate.instanceType,
-          keyName: asg.launchTemplate.keyName,
+          imageId: stackProps.ecsModel.isWindows ?  EcsOptimizedImage.windows(WindowsOptimizedVersion.SERVER_2019).getImage(this).imageId: EcsOptimizedImage.amazonLinux2().getImage(this).imageId,
+          instanceType: stackProps.asgModel.launchTemplate.instanceType,
+          keyName: stackProps.asgModel.launchTemplate.keyName,
           securityGroupIds: [_securityGroup.securityGroupId],
           iamInstanceProfile: { arn: _instanceProfile.attrArn },
           userData: Fn.base64(_userData),
         },
       });
-      const asgGroup = new CfnAutoScalingGroup(this, asg.asg.name, {
-        minSize: asg.asg.min,
-        maxSize: asg.asg.max,
-        desiredCapacity: asg.asg.desired,
-        autoScalingGroupName: asg.asg.name,
+      const asgGroup = new CfnAutoScalingGroup(this, `cfn-${stackProps.asgModel.asg.name}`, {
+        minSize: stackProps.asgModel.asg.min,
+        maxSize: stackProps.asgModel.asg.max,
+        desiredCapacity: stackProps.asgModel.asg.desired,
+        autoScalingGroupName: stackProps.asgModel.asg.name,
         vpcZoneIdentifier: stackProps.vpc.selectSubnets({
           subnetType: SubnetType.PRIVATE,
         }).subnetIds,
       });
+      console.log('--------------------------------', asgGroup)
       asgGroup.addPropertyOverride(
         'NewInstancesProtectedFromScaleIn',
-        asg.asg.protectionFromScaleIn
+        stackProps.asgModel.asg.protectionFromScaleIn
       );
       asgGroup.addPropertyOverride(
         'LaunchConfigurationName',
@@ -112,20 +114,20 @@ export class ECSAutoScalingGroup extends Stack {
         LaunchTemplate: {
           LaunchTemplateSpecification: {
             LaunchTemplateName: _launchTemplate.launchTemplateName,
-            Version: asg.launchTemplate.version,
+            Version: stackProps.asgModel.launchTemplate.version,
           },
-          Overrides: asg.asg.overrides,
+          Overrides: stackProps.asgModel.asg.overrides,
         },
         InstancesDistribution: {
           OnDemandAllocationStrategy: 'prioritized',
-          OnDemandBaseCapacity: asg.asg.onDemandBaseCapacity,
-          OnDemandPercentageAboveBaseCapacity: asg.asg.onDemandPercentage,
+          OnDemandBaseCapacity: stackProps.asgModel.asg.onDemandBaseCapacity,
+          OnDemandPercentageAboveBaseCapacity: stackProps.asgModel.asg.onDemandPercentage,
           SpotAllocationStrategy: 'capacity-optimized',
         },
       });
       asgGroup.addDependsOn(_launchTemplate);
-      this._autoScalingGroupList.push(asgGroup);
-    });
+      this._autoScalingGroup = asgGroup;
+    // });
 
     stackProps.taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
