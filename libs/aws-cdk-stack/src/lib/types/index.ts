@@ -45,21 +45,23 @@ export interface VpcStackProperties extends StackProps {
   awsCredentials?: AWSCredentialsModel;
   subnets: SubnetAttributes[];
 }
+export interface ALBLoadBalancerProperties {
+  loadBalancerName: string;
+  ipAddressType: IpAddressType;
+  internetFacing: boolean;
+  publicSubnet1: string;
+  publicSubnet2: string;
+};
 export interface ALBStackConfiguration {
-  applicationLoadbalancerProperties:  {
-    loadBalancerName: string;
-    ipAddressType: IpAddressType;
-    internetFacing: boolean;
-    publicSubnet1: string;
-    publicSubnet2: string;
-  };
+  applicationLoadbalancerProperties:  ALBLoadBalancerProperties;
   certificateArns: string[];
   redirectConfigs: ApplicationLoadBalancerRedirectConfig[]
 }
 export interface ALBStackProperties extends StackProps {
-  applicationLoadbalancerProps: ApplicationLoadBalancerProps;
+  applicationLoadbalancerProps: ALBLoadBalancerProperties;
   certificateArns: string[];
-  redirectConfigs: ApplicationLoadBalancerRedirectConfig[]
+  redirectConfigs: ApplicationLoadBalancerRedirectConfig[],
+  vpc: IVpc
 }
 export interface ApplicationTargetGroupConfiguration {
     targetGroupName: string;

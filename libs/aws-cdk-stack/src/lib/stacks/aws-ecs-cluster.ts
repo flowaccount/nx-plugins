@@ -35,52 +35,50 @@ import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
  * P.S. please mind that within the stacks, `env: configuration.awsCredentials` has to be passed into the sub-stacks properties
  * this is to make sure they can use each other and also not fail.
  */
-@injectable()
-export class AwsECSCluster extends Stack {
-  // public readonly _app: App;
-  protected readonly _applicationLoadbalancer: ApplicationLoadBalancer;
-  protected readonly _targetGroup: ApplicationTargetGroup;
-  public readonly _ecs : ECSCluster;
+// @injectable()
+// export class AwsECSCluster { //  extends Stack
 
-  protected readonly _instancePolicy: ManagedPolicy;
-  protected readonly _taskPolicy : ManagedPolicy;
-  protected readonly _taskExecutionRole: IRole;
-  protected readonly _instanceRole: IRole;
-  protected readonly _taskRole: IRole;
-  protected readonly _zone: IHostedZone;
-  protected readonly _taskExecutionPolicy: ManagedPolicy;
-  protected readonly _vpc: VpcStack;
-  protected readonly _alb: IApplicationLoadBalancer;
-  protected readonly _tg: ApplicationTargetGroup;
-  protected readonly _applicationListenerRule: ApplicationListenerRule;
-  protected readonly _autoScalingGroupList: ECSAutoScalingGroup[] = [];
-  protected readonly _services: ECSService[] = [];
 
-  constructor(scope: Construct, id: string, configuration: IECSStackEnvironmentConfig) {
-    super(scope,id ,configuration)
+  export const createStack = (scope: App, configuration: IECSStackEnvironmentConfig) => {
+    
+    let _app: App = new App();
+    let _applicationLoadbalancer: ApplicationLoadBalancer;
+    let _ta
+    rgetGroup: ApplicationTargetGroup;
+    let _ecs : ECSCluster;
+
+    let _instancePolicy: ManagedPolicy;
+    let _taskPolicy : ManagedPolicy;
+    let _taskExecutionRole: IRole;
+    let _instanceRole: IRole;
+    let _taskRole: IRole;
+    let _zone: IHostedZone;
+    let _taskExecutionPolicy: ManagedPolicy;
+    let _vpc: VpcStack;
+    let _alb: IApplicationLoadBalancer;
+    let  _tg: ApplicationTargetGroup;
+    let _applicationListenerRule: ApplicationListenerRule;
+    let _autoScalingGroupList: ECSAutoScalingGroup[] = [];
+    let _services: ECSService[] = [];
     logger.info(`Initiating AwsECSCluster for ${configuration.app}`)
     if(!configuration.applicationLoadBalancer && !configuration.applicationLoadBalancerArn)
     {
       throw Error("you must specify at least a loadbalancer config or an existing ARN");
     }
-
     // Loadbalancer vpc and route53
-    // this._zone = HostedZone.fromLookup(this, `zone-${configuration.stage}`, { domainName: configuration.route53Domain });
-    this._vpc = new VpcStack(this, `vpc-${configuration.stage}`, configuration.vpc)
+    // _zone = HostedZone.fromLookup(this, `zone-${configuration.stage}`, { domainName: configuration.route53Domain });
+    _vpc = new VpcStack(_app, `vpc-${configuration.stage}`, configuration.vpc)
     if(configuration.applicationLoadBalancer) {
-      const publicSubnet1 = Subnet.fromSubnetId(this, 'stagingPublicSubnetVpc1' , configuration.applicationLoadBalancer.applicationLoadbalancerProperties.publicSubnet1)
-      const publicSubnet2 = Subnet.fromSubnetId(this, 'stagingPblicSubnetVpc2' , configuration.applicationLoadBalancer.applicationLoadbalancerProperties.publicSubnet2)
-      this._alb = new ApplicationLoadBalancerStack(this, `alb-${configuration.stage}`
-      , { applicationLoadbalancerProps: {
-        ...configuration.applicationLoadBalancer.applicationLoadbalancerProperties,
-        vpc: this._vpc.vpc,
-        vpcSubnets: {subnets:[publicSubnet1, publicSubnet2]}
-      }
-      ,redirectConfigs: configuration.applicationLoadBalancer.redirectConfigs
-      ,certificateArns: configuration.applicationLoadBalancer.certificateArns, env: configuration.awsCredentials }).lb
+      _alb = new ApplicationLoadBalancerStack(_app, `alb-${configuration.stage}`, 
+      { 
+        applicationLoadbalancerProps: configuration.applicationLoadBalancer.applicationLoadbalancerProperties,
+        redirectConfigs: configuration.applicationLoadBalancer.redirectConfigs,
+        certificateArns: configuration.applicationLoadBalancer.certificateArns,
+        vpc: _vpc.vpc
+      }).lb
     }
     else {
-      this._alb = ApplicationLoadBalancer.fromLookup(this, `alb-${configuration.stage}`, {
+      _alb = ApplicationLoadBalancer.fromLookup(_app, `alb-${configuration.stage}`, {
         loadBalancerArn: configuration.applicationLoadBalancerArn
       });
     }
@@ -88,64 +86,64 @@ export class AwsECSCluster extends Stack {
 
     // instance role and policy
     logger.info(`Initiating instance role instance-role-${configuration.stage}`)
-    this._instanceRole = new RoleStack(this, `instance-role-${configuration.stage}`, {
+    _instanceRole = new RoleStack(_app, `instance-role-${configuration.stage}`, {
       name: configuration.ecs.instanceRole.name,
       assumedBy: configuration.ecs.instanceRole.assumedBy,
       env: configuration.awsCredentials
     }).output.role
-    this._instancePolicy = (new ManagedPolicyStack(this, `${configuration.ecs.instancePolicy.name}`, {
+    _instancePolicy = (new ManagedPolicyStack(_app, `${configuration.ecs.instancePolicy.name}`, {
       ...configuration.ecs.instancePolicy,
-      roles: [ this._instanceRole ],
+      roles: [ _instanceRole ],
       env: configuration.awsCredentials  })).output.policy
     // instance role and policy
 
     // task execution role and policy
-    this._taskExecutionRole = new RoleStack(this, `task-execution-role-${configuration.stage}`, {
+    _taskExecutionRole = new RoleStack(_app, `task-execution-role-${configuration.stage}`, {
       name: configuration.ecs.taskExecutionRole.name,
       assumedBy: configuration.ecs.taskExecutionRole.assumedBy,
       env: configuration.awsCredentials
     }).output.role
-    this._taskExecutionPolicy = (new ManagedPolicyStack(this, `${configuration.ecs.taskExecutionRolePolicy.name}`, {
+    _taskExecutionPolicy = (new ManagedPolicyStack(_app, `${configuration.ecs.taskExecutionRolePolicy.name}`, {
       ...configuration.ecs.taskExecutionRolePolicy,
-      roles: [ this._taskExecutionRole ],
+      roles: [ _taskExecutionRole ],
       env: configuration.awsCredentials  })).output.policy
     // task execution role and policy
 
     // task role and policy
-    this._taskRole = new RoleStack(this, `task-role-${configuration.stage}`, {
+    _taskRole = new RoleStack(_app, `task-role-${configuration.stage}`, {
       name: configuration.ecs.taskRole.name,
       assumedBy: configuration.ecs.taskRole.assumedBy,
       env: configuration.awsCredentials
     }).output.role
-    this._taskPolicy = (new ManagedPolicyStack(this, `${configuration.ecs.taskRolePolicy.name}`, {
+    _taskPolicy = (new ManagedPolicyStack(_app, `${configuration.ecs.taskRolePolicy.name}`, {
       ...configuration.ecs.taskRolePolicy,
-      roles: [ this._taskRole ],
+      roles: [ _taskRole ],
       env: configuration.awsCredentials  })).output.policy
     // task role and policy
 
     // ECS Cluster and Auto Scaling Group
-    this._ecs = new ECSCluster(this, `cluster-${configuration.stage}`, {
+    _ecs = new ECSCluster(_app, `cluster-${configuration.stage}`, {
       ecs: configuration.ecs,
-      vpc: this._vpc.vpc,
+      vpc: _vpc.vpc,
       taglist: configuration.tag,
       env: configuration.awsCredentials })
 
     configuration.ecs.asgList.forEach((asg) => {
-      this._autoScalingGroupList.push(new ECSAutoScalingGroup(this, `stack-${asg.asg.name}`, {
+      _autoScalingGroupList.push(new ECSAutoScalingGroup(_app, `stack-${asg.asg.name}`, {
         ecsModel: configuration.ecs,
         asgModel: asg,
-        instanceRole: this._instanceRole,
-        vpc: this._vpc.vpc,
-        cluster: this._ecs.cluster,
+        instanceRole: _instanceRole,
+        vpc: _vpc.vpc,
+        cluster: _ecs.cluster,
         taglist: configuration.tag,
         env: configuration.awsCredentials,
         s3MountConfig: configuration.s3MountConfig }))
     })
 
       const capacityProviderList : CfnCapacityProvider[] = [];
-    this._autoScalingGroupList.forEach( asgModel => {
+    _autoScalingGroupList.forEach( asgModel => {
       // ECS Cluster and Auto Scaling Group
-    const cfnCapacityProvider = new CfnCapacityProvider(this, `${asgModel._autoScalingGroup.autoScalingGroupName}`, {
+    const cfnCapacityProvider = new CfnCapacityProvider(_app, `${asgModel._autoScalingGroup.autoScalingGroupName}`, {
       autoScalingGroupProvider: {
         autoScalingGroupArn: asgModel._autoScalingGroup.autoScalingGroupName,
         // the properties below are optional
@@ -170,13 +168,13 @@ export class AwsECSCluster extends Stack {
     
     // Creating the ecs services itself
     configuration.service.forEach((apiService, index) => {
-      const service = new ECSService(this, `${apiService.name}`, {
+      const service = new ECSService(_app, `${apiService.name}`, {
         ecsServiceList: [ apiService ],
         ecs: configuration.ecs,
-        taskRole: this._taskRole,
-        executionRole: this._taskExecutionRole,
-        vpc: this._vpc.vpc,
-        cluster: this._ecs.cluster,
+        taskRole: _taskRole,
+        executionRole: _taskExecutionRole,
+        vpc: _vpc.vpc,
+        cluster: _ecs.cluster,
         taglist: configuration.tag,env: configuration.awsCredentials }) //
 
         // Tying up services, Target group + cname record to the ecs service. should do capacity provider here.
@@ -189,7 +187,7 @@ export class AwsECSCluster extends Stack {
         if(apiService.targetGroupArn || apiService.targetGroupNetworkArn || apiService.applicationtargetGroup) {
             if (apiService.targetGroupArn) {
               tg = ApplicationTargetGroup.fromTargetGroupAttributes(
-                this,
+                _app,
                 `${apiService.name}-tg`,
                 {
                   targetGroupArn: apiService.targetGroupArn,
@@ -201,7 +199,7 @@ export class AwsECSCluster extends Stack {
           }
           else if (apiService.targetGroupNetworkArn) {
             tg = NetworkTargetGroup.fromTargetGroupAttributes(
-              this,
+              _app,
               `${apiService.name}-network-tg`,
               {
                 targetGroupArn: apiService.targetGroupNetworkArn,
@@ -212,9 +210,9 @@ export class AwsECSCluster extends Stack {
           }
           else {
             tg = new ApplicationTargetGroupStack(
-              this
+              _app
               , `${apiService.name}-tg-${configuration.stage}`
-              , { applicationtargetGroupProps : { ...apiService.applicationtargetGroup, vpc: this._vpc.vpc  }
+              , { applicationtargetGroupProps : { ...apiService.applicationtargetGroup, vpc: _vpc.vpc  }
               , env: configuration.awsCredentials }).tg;
             service.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
           }
@@ -228,36 +226,36 @@ export class AwsECSCluster extends Stack {
         }
         else {
           
-          this._alb.listeners[0].addTargetGroups(`${apiService.name}-tgs-${configuration.stage}`, { targetGroups: [<IApplicationTargetGroup>tg] });
+          _alb.listeners[0].addTargetGroups(`${apiService.name}-tgs-${configuration.stage}`, { targetGroups: [<IApplicationTargetGroup>tg] });
           
           // const certs: ICertificate[] = [];
           // configuration.applicationLoadBalancer.certificateArns.forEach((certificateArn, index) => {
           //   certs.push(Certificate.fromCertificateArn(this,`domainCert-${index}`, certificateArn));
           // })
           // const listenerName = `${apiService.name}-listener`;
-          // const httpsListener = this._alb.addListener(listenerName, { port: 443 });
+          // const httpsListener = _alb.addListener(listenerName, { port: 443 });
           // httpsListener.addCertificates('cert', certs);
           // httpsListener.addAction('defaultAction', {action: ListenerAction.fixedResponse(404)})
-          const applicationListenerRule = new ApplicationListenerRule(this, `${apiService.name}-listener-rule`, {
-              listener: this._alb.listeners[0], //.find( l => l.connections.defaultPort == ),
+          logger.info(`apiDomain:${apiService.apiDomain}`)
+          const applicationListenerRule = new ApplicationListenerRule(_app, `${apiService.name}-listener-rule`, {
+              listener: _alb.listeners[0], //.find( l => l.connections.defaultPort == ),
               priority: index + 1,
               conditions: [ListenerCondition.hostHeaders([apiService.apiDomain])],
               targetGroups: [<IApplicationTargetGroup>tg],
           });
         }
-        // new CnameRecord(this, `${apiService.name}-record`, {
-        //     zone: this._zone,
-        //     recordName: `${configuration.apiprefix}-${apiService.name}`,
-        //     domainName: this._alb.loadBalancerDnsName,
-        //     ttl: Duration.seconds(300)
-        // });
+        new CnameRecord(_app, `${apiService.name}-record`, {
+            zone: _zone,
+            recordName: `${configuration.apiprefix}-${apiService.name}`,
+            domainName: _alb.loadBalancerDnsName,
+            ttl: Duration.seconds(300)
+        });
         // Tying up services, Target group + cname record to the ecs service. should do capacity provider here.
       }
-      this._services.push(service);
+      _services.push(service);
     });
-    // Creating the ecs services itself
   }
 
-}
+// }
 
 
