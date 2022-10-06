@@ -14,8 +14,8 @@ export class ApplicationLoadBalancerStack extends Stack {
       logger.warn('loadbalancer name is not set!');
       _props.applicationLoadbalancerProps = { ..._props.applicationLoadbalancerProps , loadBalancerName: Math.random().toString(36).substring(2, 5) }
       
-    const publicSubnet1 = Subnet.fromSubnetId(scope, 'stagingPublicSubnetVpc1' , _props.applicationLoadbalancerProps.publicSubnet1)
-    const publicSubnet2 = Subnet.fromSubnetId(scope, 'stagingPblicSubnetVpc2' , _props.applicationLoadbalancerProps.publicSubnet2 )
+    const publicSubnet1 = Subnet.fromSubnetId(this, 'stagingPublicSubnetVpc1' , _props.applicationLoadbalancerProps.publicSubnet1)
+    const publicSubnet2 = Subnet.fromSubnetId(this, 'stagingPblicSubnetVpc2' , _props.applicationLoadbalancerProps.publicSubnet2 )
     this.lb = new ApplicationLoadBalancer(this, `alb-${_props.applicationLoadbalancerProps.loadBalancerName}`, { 
       ..._props.applicationLoadbalancerProps,
       vpc: _props.vpc,

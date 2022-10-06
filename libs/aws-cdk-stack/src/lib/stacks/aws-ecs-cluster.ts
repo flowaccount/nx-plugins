@@ -66,7 +66,6 @@ import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
       throw Error("you must specify at least a loadbalancer config or an existing ARN");
     }
     // Loadbalancer vpc and route53
-    // _zone = HostedZone.fromLookup(this, `zone-${configuration.stage}`, { domainName: configuration.route53Domain });
     _vpc = new VpcStack(_app, `vpc-${configuration.stage}`, configuration.vpc)
     if(configuration.applicationLoadBalancer) {
       _alb = new ApplicationLoadBalancerStack(_app, `alb-${configuration.stage}`, 
@@ -137,122 +136,42 @@ import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
         cluster: _ecs.cluster,
         taglist: configuration.tag,
         env: configuration.awsCredentials,
-        s3MountConfig: configuration.s3MountConfig }))
+        s3MountConfig: configuration.s3MountConfig,
+        
+      }))
     })
 
-      const capacityProviderList : CfnCapacityProvider[] = [];
-    _autoScalingGroupList.forEach( asgModel => {
-      // ECS Cluster and Auto Scaling Group
-    const cfnCapacityProvider = new CfnCapacityProvider(_app, `${asgModel._autoScalingGroup.autoScalingGroupName}`, {
-      autoScalingGroupProvider: {
-        autoScalingGroupArn: asgModel._autoScalingGroup.autoScalingGroupName,
-        // the properties below are optional
-        managedScaling: {
-        //   instanceWarmupPeriod: 123,
-        //   maximumScalingStepSize: 123,
-        //   minimumScalingStepSize: 123,
-        //   status: 'status',
-          targetCapacity: 90,
-        },
-        managedTerminationProtection: 'ENABLED',
-      },
-      // the properties below are optional
-      name: `${asgModel._autoScalingGroup.autoScalingGroupName}-cp`,
-      // tags: [{
-      //   key: 'key',
-      //   value: 'value',
-      // }],
-    });
-    capacityProviderList.push(cfnCapacityProvider)
-  });
-    
     // Creating the ecs services itself
     configuration.service.forEach((apiService, index) => {
       const service = new ECSService(_app, `${apiService.name}`, {
-        ecsServiceList: [ apiService ],
+        ecsService: apiService,
         ecs: configuration.ecs,
         taskRole: _taskRole,
         executionRole: _taskExecutionRole,
         vpc: _vpc.vpc,
         cluster: _ecs.cluster,
-        taglist: configuration.tag,env: configuration.awsCredentials }) //
-
-        // Tying up services, Target group + cname record to the ecs service. should do capacity provider here.
-        if(apiService.apiDomain
-          && !apiService.targetGroupArn
-          && !apiService.targetGroupNetworkArn
-          && !apiService.applicationtargetGroup)
-          throw new Error("At least targetGroupArn or targetGroupNetworkArn or applicationtargetGroup must be set")
-        let tg: ITargetGroup = null;
-        if(apiService.targetGroupArn || apiService.targetGroupNetworkArn || apiService.applicationtargetGroup) {
-            if (apiService.targetGroupArn) {
-              tg = ApplicationTargetGroup.fromTargetGroupAttributes(
-                _app,
-                `${apiService.name}-tg`,
-                {
-                  targetGroupArn: apiService.targetGroupArn,
-                }
-              );
-
-            logger.info('attaching the target group');
-            service.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
-          }
-          else if (apiService.targetGroupNetworkArn) {
-            tg = NetworkTargetGroup.fromTargetGroupAttributes(
-              _app,
-              `${apiService.name}-network-tg`,
-              {
-                targetGroupArn: apiService.targetGroupNetworkArn,
-              }
-            );
-            logger.info('attaching the target group');
-            service.service.attachToNetworkTargetGroup(<INetworkTargetGroup>tg);
-          }
-          else {
-            tg = new ApplicationTargetGroupStack(
-              _app
-              , `${apiService.name}-tg-${configuration.stage}`
-              , { applicationtargetGroupProps : { ...apiService.applicationtargetGroup, vpc: _vpc.vpc  }
-              , env: configuration.awsCredentials }).tg;
-            service.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
-          }
-      }
-      if(tg) {
-
-        // httpsListener.addCertificates('cert', [cert, certDev]);
-        if(apiService.targetGroupNetworkArn)
-        {
-          throw new Error("Not Implemented");
-        }
-        else {
-          
-          _alb.listeners[0].addTargetGroups(`${apiService.name}-tgs-${configuration.stage}`, { targetGroups: [<IApplicationTargetGroup>tg] });
-          
-          // const certs: ICertificate[] = [];
-          // configuration.applicationLoadBalancer.certificateArns.forEach((certificateArn, index) => {
-          //   certs.push(Certificate.fromCertificateArn(this,`domainCert-${index}`, certificateArn));
-          // })
-          // const listenerName = `${apiService.name}-listener`;
-          // const httpsListener = _alb.addListener(listenerName, { port: 443 });
-          // httpsListener.addCertificates('cert', certs);
-          // httpsListener.addAction('defaultAction', {action: ListenerAction.fixedResponse(404)})
-          logger.info(`apiDomain:${apiService.apiDomain}`)
-          const applicationListenerRule = new ApplicationListenerRule(_app, `${apiService.name}-listener-rule`, {
-              listener: _alb.listeners[0], //.find( l => l.connections.defaultPort == ),
-              priority: index + 1,
-              conditions: [ListenerCondition.hostHeaders([apiService.apiDomain])],
-              targetGroups: [<IApplicationTargetGroup>tg],
-          });
-        }
-        new CnameRecord(_app, `${apiService.name}-record`, {
-            zone: _zone,
-            recordName: `${configuration.apiprefix}-${apiService.name}`,
-            domainName: _alb.loadBalancerDnsName,
-            ttl: Duration.seconds(300)
-        });
-        // Tying up services, Target group + cname record to the ecs service. should do capacity provider here.
-      }
+        priority: index + 1,
+        route53Domain: configuration.route53Domain,
+        albListener: _alb.listeners[0],
+        stage: configuration.stage,
+        loadBalancerDnsName: _alb.loadBalancerDnsName,
+        taglist: configuration.tag,
+        env: configuration.awsCredentials 
+      }) //
       _services.push(service);
+
+      // Call our new stack to tie things up together.
+      // Before code was here, now it goes in here.
+
+      // WHY new stack? Because some resource like Listeners cannot exists outside stack/scope
+      // BUT When exists in the same scope/stack as Service it dies because of cross reference.
+      // That is why new stack
+
+      // const serviceALBadapter = new ServiceALBAdapter(_app, `adapter-${apiService.name}`, {
+      //  alb: _alb,
+      //  service: service,
+      //  route53Domain: configuration.route53Domain,
+      // })
     });
   }
 

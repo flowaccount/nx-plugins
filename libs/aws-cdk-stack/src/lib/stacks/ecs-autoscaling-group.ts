@@ -6,7 +6,7 @@ import {
   SubnetType,
 } from '@aws-cdk/aws-ec2';
 import { CfnInstanceProfile, IRole } from '@aws-cdk/aws-iam';
-import { Cluster, EcsOptimizedImage, WindowsOptimizedVersion } from '@aws-cdk/aws-ecs';
+import { CfnCapacityProvider, Cluster, EcsOptimizedImage, WindowsOptimizedVersion } from '@aws-cdk/aws-ecs';
 import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { ECSModel, S3MountConfig, TagModel, AutoScalingGroupModel } from '../types';
 
@@ -22,6 +22,7 @@ interface ECSAutoScalingGroupProps extends StackProps {
 
 export class ECSAutoScalingGroup extends Stack {
   public readonly _autoScalingGroup : CfnAutoScalingGroup
+  public readonly capacityProvider : CfnCapacityProvider;
   constructor(
     scope: Construct,
     id: string,
@@ -131,6 +132,28 @@ export class ECSAutoScalingGroup extends Stack {
 
     stackProps.taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
+    });
+
+      // ECS Cluster and Auto Scaling Group
+    this.capacityProvider = new CfnCapacityProvider(this, `${asgGroup.autoScalingGroupName}`, {
+      autoScalingGroupProvider: {
+        autoScalingGroupArn: asgGroup.autoScalingGroupName,
+        // the properties below are optional
+        managedScaling: {
+        //   instanceWarmupPeriod: 123,
+        //   maximumScalingStepSize: 123,
+        //   minimumScalingStepSize: 123,
+        //   status: 'status',
+          targetCapacity: 90,
+        },
+        managedTerminationProtection: 'ENABLED',
+      },
+      // the properties below are optional
+      name: `${asgGroup.autoScalingGroupName}-cp`,
+      // tags: [{
+      //   key: 'key',
+      //   value: 'value',
+      // }],
     });
   }
 }

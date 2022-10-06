@@ -1,4 +1,4 @@
-import { Stack, StackProps, Construct, Tags } from '@aws-cdk/core';
+import { Stack, StackProps, Construct, Tags, Duration } from '@aws-cdk/core';
 import {
   Cluster,
   TaskDefinition,
@@ -22,13 +22,18 @@ import { LogGroup } from '@aws-cdk/aws-logs';
 import { PrivateDnsNamespace, Service } from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-secretsmanager';
 import {
+  ApplicationListener,
+  ApplicationListenerRule,
   ApplicationTargetGroup,
   IApplicationTargetGroup,
   INetworkTargetGroup,
   ITargetGroup,
+  ListenerCondition,
   NetworkTargetGroup,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 import {v4 as uuidv4} from 'uuid';
+import { CnameRecord, HostedZone } from '@aws-cdk/aws-route53';
+import { ApplicationTargetGroupStack } from './application-target-group';
 
 interface ECSServiceProps extends StackProps {
   readonly vpc: IVpc;
@@ -36,8 +41,16 @@ interface ECSServiceProps extends StackProps {
   readonly executionRole: IRole;
   readonly taskRole: IRole;
   readonly ecs?: ECSModel;
-  readonly ecsServiceList: ECSServiceModel[];
+  readonly ecsService: ECSServiceModel;
   readonly taglist: TagModel[];
+  readonly albListener: ApplicationListener;
+  readonly targetGroup?: ITargetGroup;
+  readonly priority: number
+  readonly route53Domain?: string
+  readonly stage?: string
+  readonly apiprefix?: string
+  readonly loadBalancerDnsName?: string
+
 }
 
 export class ECSService extends Stack {
@@ -70,7 +83,7 @@ export class ECSService extends Stack {
         defaultCloudMapNamespace: defaultServiceDiscoveryNamespace,
       }
     );
-    stackProps.ecsServiceList.forEach((s) => {
+    const s = stackProps.ecsService
       logger.info('instantiaing task defenitions');
       _taskDefinition = new TaskDefinition(this, s.taskDefinition.name, {
         compatibility: Compatibility.EC2,
@@ -222,11 +235,9 @@ export class ECSService extends Stack {
       s.placementConstraint.forEach((_pc) => {
         this.service.addPlacementConstraints(_pc);
       });
-    });
+    
     stackProps.taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
     });
   }
 }
-
-
