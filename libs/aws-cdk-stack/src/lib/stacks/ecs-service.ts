@@ -23,19 +23,10 @@ import { PrivateDnsNamespace, Service } from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-secretsmanager';
 import {
   ApplicationListener,
-  ApplicationListenerRule,
-  ApplicationTargetGroup,
-  IApplicationTargetGroup,
-  INetworkTargetGroup,
   ITargetGroup,
-  ListenerCondition,
-  NetworkTargetGroup,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
-import {v4 as uuidv4} from 'uuid';
-import { CnameRecord, HostedZone } from '@aws-cdk/aws-route53';
-import { ApplicationTargetGroupStack } from './application-target-group';
 
-interface ECSServiceProps extends StackProps {
+export interface ECSServiceProps extends StackProps {
   readonly vpc: IVpc;
   readonly cluster: Cluster;
   readonly executionRole: IRole;
@@ -235,7 +226,7 @@ export class ECSService extends Stack {
       s.placementConstraint.forEach((_pc) => {
         this.service.addPlacementConstraints(_pc);
       });
-    
+
     stackProps.taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
     });

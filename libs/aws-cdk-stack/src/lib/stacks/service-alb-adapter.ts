@@ -1,35 +1,27 @@
 import { Construct, Duration, Stack, StackProps } from '@aws-cdk/core';
-import { ApplicationTargetGroupStackProperties } from '../types';
-import { ApplicationListener, ApplicationListenerRule, ApplicationTargetGroup, IApplicationLoadBalancer, IApplicationTargetGroup, INetworkTargetGroup, ITargetGroup, ListenerCondition, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
+import {  ApplicationListenerRule, ApplicationTargetGroup, IApplicationLoadBalancer, IApplicationTargetGroup, INetworkTargetGroup, ITargetGroup, ListenerCondition, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { logger } from '@nrwl/devkit';
 import { CnameRecord, HostedZone } from '@aws-cdk/aws-route53';
 import { Ec2Service } from '@aws-cdk/aws-ecs';
+import { ApplicationTargetGroupConfiguration, ECSServiceModel } from '../types';
 import { IVpc } from '@aws-cdk/aws-ec2';
 
 export interface ServiceALBAdapterProperties extends StackProps {
     alb: IApplicationLoadBalancer,
-    readonly apiDomain: string,
-    readonly targetGroupName: string,
-    readonly targetGroupArn: string,
-    readonly targetGroupNetworkArn: string,
-    applicationtargetGroup: ApplicationTargetGroup,
-    readonly  name: string,
-    readonly vpc: IVpc;        
-    readonly albListener: ApplicationListener;
-    readonly targetGroup?: ITargetGroup;
-    readonly priority: number
-    readonly route53Domain?: string
-    readonly stage?: string
-    readonly apiprefix?: string
-    readonly loadBalancerDnsName?: string
+    service: ECSServiceModel,
+    applicationtargetGroup: ApplicationTargetGroupConfiguration,
+    stage: string,
+    route53Domain: string,
+    vpc: IVpc
   }
 
 export class ServiceALBAdapter extends Stack {
     public service: Ec2Service;
     public tg: ITargetGroup;
-  constructor(scope: Construct, id: string, s: ServiceALBAdapterProperties) {
-    super(scope, id, s);
+  constructor(scope: Construct, id: string, stackProps: ServiceALBAdapterProperties) {
+    super(scope, id, stackProps);
       // start moving code from here
+      const s = stackProps.service;
       if(s.apiDomain
         && !s.targetGroupArn
         && !s.targetGroupNetworkArn
@@ -62,7 +54,7 @@ export class ServiceALBAdapter extends Stack {
         else {
           if(!s.applicationtargetGroup.targetGroupName)
             s.applicationtargetGroup = { ...s.applicationtargetGroup , targetGroupName: Math.random().toString(36).substring(2, 5) }
-          tg = new ApplicationTargetGroup(this, `tg-${s.applicationtargetGroup.targetGroupName}`, { ...s.applicationtargetGroup, vpc: s.vpc  });
+          tg = new ApplicationTargetGroup(this, `tg-${s.applicationtargetGroup.targetGroupName}`, { ...s.applicationtargetGroup, vpc: stackProps.vpc  });
           // tg = new ApplicationTargetGroupStack(
           //   this
           //   , `${s.name}-tg-${stackProps.stage}`
@@ -71,12 +63,12 @@ export class ServiceALBAdapter extends Stack {
           //  }).tg;
         }
       }
-    s.applicationtargetGroup = tg
+    // s.applicationtargetGroup = tg
     if(tg) {
       logger.info(`apiDomain:${s.apiDomain}`)
         const applicationListenerRule = new ApplicationListenerRule(this, `${s.name}-listener-rule`, {
-          listener: s.albListener, //.find( l => l.connections.defaultPort == ),
-          priority: s.priority,
+          listener: stackProps.alb.listeners[0], //.find( l => l.connections.defaultPort == ),
+          priority: 1,
           conditions: [ListenerCondition.hostHeaders([s.apiDomain])],
           targetGroups: [<IApplicationTargetGroup>this.tg]
       });
@@ -87,14 +79,14 @@ export class ServiceALBAdapter extends Stack {
       else {
         // stackProps.albListener.addTargetGroups(`${s.name}-tgs-${stackProps.stage}`, { targetGroups: [<IApplicationTargetGroup>this.tg] });
       }
-      var _zone = HostedZone.fromLookup(this, `zone-${s.stage}`, { domainName: s.route53Domain });
+      const _zone = HostedZone.fromLookup(this, `zone-${stackProps.stage}`, { domainName: stackProps.route53Domain });
       new CnameRecord(this, `${s.name}-record`, {
           zone: _zone,
-          recordName: `${s.apiprefix}-${s.name}`,
-          domainName: s.loadBalancerDnsName,
-          ttl: Duration.seconds(300) 
+          recordName: `${s.apiDomain}`,
+          domainName: stackProps.alb.loadBalancerDnsName,
+          ttl: Duration.seconds(300)
       });
-    } 
+    }
     // to here
   }
 }

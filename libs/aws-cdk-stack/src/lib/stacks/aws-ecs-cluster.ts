@@ -20,6 +20,7 @@ import { ApplicationTargetGroupStack } from './application-target-group';
 import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
 import { AsgCapacityProvider, CfnCapacityProvider } from '@aws-cdk/aws-ecs';
 import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
+import { ServiceALBAdapter } from './service-alb-adapter';
 
 /**
  * This class is used to create an ECS cluster stack by specifying the VPC and Subnets
@@ -40,7 +41,7 @@ import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 
 
   export const createStack = (scope: App, configuration: IECSStackEnvironmentConfig) => {
-    
+
     let _app: App = new App();
     let _applicationLoadbalancer: ApplicationLoadBalancer;
     let _ta
@@ -68,8 +69,8 @@ import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
     // Loadbalancer vpc and route53
     _vpc = new VpcStack(_app, `vpc-${configuration.stage}`, configuration.vpc)
     if(configuration.applicationLoadBalancer) {
-      _alb = new ApplicationLoadBalancerStack(_app, `alb-${configuration.stage}`, 
-      { 
+      _alb = new ApplicationLoadBalancerStack(_app, `alb-${configuration.stage}`,
+      {
         applicationLoadbalancerProps: configuration.applicationLoadBalancer.applicationLoadbalancerProperties,
         redirectConfigs: configuration.applicationLoadBalancer.redirectConfigs,
         certificateArns: configuration.applicationLoadBalancer.certificateArns,
@@ -137,7 +138,7 @@ import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
         taglist: configuration.tag,
         env: configuration.awsCredentials,
         s3MountConfig: configuration.s3MountConfig,
-        
+
       }))
     })
 
@@ -156,7 +157,7 @@ import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
         stage: configuration.stage,
         loadBalancerDnsName: _alb.loadBalancerDnsName,
         taglist: configuration.tag,
-        env: configuration.awsCredentials 
+        env: configuration.awsCredentials
       }) //
       _services.push(service);
 
@@ -167,11 +168,14 @@ import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
       // BUT When exists in the same scope/stack as Service it dies because of cross reference.
       // That is why new stack
 
-      // const serviceALBadapter = new ServiceALBAdapter(_app, `adapter-${apiService.name}`, {
-      //  alb: _alb,
-      //  service: service,
-      //  route53Domain: configuration.route53Domain,
-      // })
+      const serviceALBadapter = new ServiceALBAdapter(_app, `adapter-${apiService.name}`, {
+       alb: _alb,
+       service: apiService,
+       applicationtargetGroup: apiService.applicationtargetGroup,
+       stage: configuration.stage,
+       route53Domain: configuration.route53Domain,
+       vpc: _vpc.vpc
+      })
     });
   }
 
