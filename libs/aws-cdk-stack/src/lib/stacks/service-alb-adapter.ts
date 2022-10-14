@@ -70,7 +70,7 @@ export class ServiceALBAdapter extends Stack {
           listener: stackProps.alb.listeners[0], //.find( l => l.connections.defaultPort == ),
           priority: 1,
           conditions: [ListenerCondition.hostHeaders([s.apiDomain])],
-          targetGroups: [<IApplicationTargetGroup>this.tg]
+          targetGroups: [<IApplicationTargetGroup>tg]
       });
       if(s.targetGroupNetworkArn)
       {
@@ -79,6 +79,7 @@ export class ServiceALBAdapter extends Stack {
       else {
         // stackProps.albListener.addTargetGroups(`${s.name}-tgs-${stackProps.stage}`, { targetGroups: [<IApplicationTargetGroup>this.tg] });
       }
+      logger.info(`route53Domain:${stackProps.route53Domain}`)
       const _zone = HostedZone.fromLookup(this, `zone-${stackProps.stage}`, { domainName: stackProps.route53Domain });
       new CnameRecord(this, `${s.name}-record`, {
           zone: _zone,

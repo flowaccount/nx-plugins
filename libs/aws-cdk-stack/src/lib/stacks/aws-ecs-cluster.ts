@@ -74,7 +74,8 @@ import { ServiceALBAdapter } from './service-alb-adapter';
         applicationLoadbalancerProps: configuration.applicationLoadBalancer.applicationLoadbalancerProperties,
         redirectConfigs: configuration.applicationLoadBalancer.redirectConfigs,
         certificateArns: configuration.applicationLoadBalancer.certificateArns,
-        vpc: _vpc.vpc
+        vpc: _vpc.vpc,
+        env: configuration.awsCredentials
       }).lb
     }
     else {
@@ -89,36 +90,33 @@ import { ServiceALBAdapter } from './service-alb-adapter';
     _instanceRole = new RoleStack(_app, `instance-role-${configuration.stage}`, {
       name: configuration.ecs.instanceRole.name,
       assumedBy: configuration.ecs.instanceRole.assumedBy,
-      env: configuration.awsCredentials
     }).output.role
     _instancePolicy = (new ManagedPolicyStack(_app, `${configuration.ecs.instancePolicy.name}`, {
       ...configuration.ecs.instancePolicy,
       roles: [ _instanceRole ],
-      env: configuration.awsCredentials  })).output.policy
+        })).output.policy
     // instance role and policy
 
     // task execution role and policy
     _taskExecutionRole = new RoleStack(_app, `task-execution-role-${configuration.stage}`, {
       name: configuration.ecs.taskExecutionRole.name,
       assumedBy: configuration.ecs.taskExecutionRole.assumedBy,
-      env: configuration.awsCredentials
     }).output.role
     _taskExecutionPolicy = (new ManagedPolicyStack(_app, `${configuration.ecs.taskExecutionRolePolicy.name}`, {
       ...configuration.ecs.taskExecutionRolePolicy,
       roles: [ _taskExecutionRole ],
-      env: configuration.awsCredentials  })).output.policy
+        })).output.policy
     // task execution role and policy
 
     // task role and policy
     _taskRole = new RoleStack(_app, `task-role-${configuration.stage}`, {
       name: configuration.ecs.taskRole.name,
       assumedBy: configuration.ecs.taskRole.assumedBy,
-      env: configuration.awsCredentials
     }).output.role
     _taskPolicy = (new ManagedPolicyStack(_app, `${configuration.ecs.taskRolePolicy.name}`, {
       ...configuration.ecs.taskRolePolicy,
       roles: [ _taskRole ],
-      env: configuration.awsCredentials  })).output.policy
+        })).output.policy
     // task role and policy
 
     // ECS Cluster and Auto Scaling Group
@@ -138,7 +136,6 @@ import { ServiceALBAdapter } from './service-alb-adapter';
         taglist: configuration.tag,
         env: configuration.awsCredentials,
         s3MountConfig: configuration.s3MountConfig,
-
       }))
     })
 
@@ -174,7 +171,8 @@ import { ServiceALBAdapter } from './service-alb-adapter';
        applicationtargetGroup: apiService.applicationtargetGroup,
        stage: configuration.stage,
        route53Domain: configuration.route53Domain,
-       vpc: _vpc.vpc
+       vpc: _vpc.vpc,
+       env: configuration.awsCredentials
       })
     });
   }
