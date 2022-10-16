@@ -357,6 +357,8 @@ export class AutoScalingGroupModel {
     onDemandBaseCapacity: number;
     onDemandPercentage: number;
     protectionFromScaleIn: boolean;
+    instanceProfileName: string;
+    instanceSecurityGroup: SecurityGroupsModel;
   };
 }
 class SecurityGroupsInboudRuleModel {
@@ -378,14 +380,12 @@ export class PolicyModel {
   name: string;
 }
 export class ECSModel {
-  instanceSecurityGroup: SecurityGroupsModel;
   instancePolicy: PolicyModel;
   instanceRole: RoleModel;
   taskExecutionRolePolicy: PolicyModel;
   taskExecutionRole: RoleModel;
   taskRolePolicy: PolicyModel;
   taskRole: RoleModel;
-  instanceProfile: InstanceProfileModel;
   asgList: AutoScalingGroupModel[];
   clusterName: string;
   defaultServiceDiscoveryNamespace?: PrivateDnsNamespaceAttributes;

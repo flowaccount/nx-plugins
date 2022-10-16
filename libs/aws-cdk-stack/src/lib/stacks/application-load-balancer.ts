@@ -19,7 +19,10 @@ export class ApplicationLoadBalancerStack extends Stack {
     this.lb = new ApplicationLoadBalancer(this, `alb-${_props.applicationLoadbalancerProps.loadBalancerName}`, { 
       ..._props.applicationLoadbalancerProps,
       vpc: _props.vpc,
-      vpcSubnets: { subnets:[publicSubnet1, publicSubnet2] }
+      ipAddressType: _props.applicationLoadbalancerProps.ipAddressType,
+      loadBalancerName: _props.applicationLoadbalancerProps.loadBalancerName,
+      vpcSubnets: { subnets:[publicSubnet1, publicSubnet2] },
+      internetFacing : _props.applicationLoadbalancerProps.internetFacing,
     });
     // const httpListener = this.lb.addListener('listener-default', { port: 80 });
     const httpsListener = this.lb.addListener('listener-ssl-default', { port: 443 });

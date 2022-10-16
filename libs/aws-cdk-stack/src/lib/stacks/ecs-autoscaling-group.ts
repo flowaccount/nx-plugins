@@ -61,22 +61,22 @@ export class ECSAutoScalingGroup extends Stack {
     }
     const _securityGroup = new SecurityGroup(
       this,
-      stackProps.ecsModel.instanceSecurityGroup.name,
+      stackProps.asgModel.asg.instanceSecurityGroup.name,
       {
         vpc: stackProps.vpc,
         allowAllOutbound: true,
-        securityGroupName: stackProps.ecsModel.instanceSecurityGroup.name,
+        securityGroupName: stackProps.asgModel.asg.instanceSecurityGroup.name,
       }
     );
-    stackProps.ecsModel.instanceSecurityGroup.inboudRule.forEach((_rule) => {
+    stackProps.asgModel.asg.instanceSecurityGroup.inboudRule.forEach((_rule) => {
       _securityGroup.addIngressRule(_rule.peer, _rule.connection);
     });
     const _instanceProfile = new CfnInstanceProfile(
       this,
-      stackProps.ecsModel.instanceProfile.name,
+      stackProps.asgModel.asg.instanceProfileName,
       {
         roles: [stackProps.instanceRole.roleName],
-        instanceProfileName: stackProps.ecsModel.instanceProfile.name,
+        instanceProfileName: stackProps.asgModel.asg.instanceProfileName,
       }
     );
     let _launchTemplate: CfnLaunchTemplate;
