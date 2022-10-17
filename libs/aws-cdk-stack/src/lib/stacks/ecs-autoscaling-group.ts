@@ -135,6 +135,7 @@ export class ECSAutoScalingGroup extends Stack {
     });
 
       // ECS Cluster and Auto Scaling Group
+      console.log(asgGroup.autoScalingGroupName);
     this.capacityProvider = new CfnCapacityProvider(this, `${asgGroup.autoScalingGroupName}`, {
       autoScalingGroupProvider: {
         autoScalingGroupArn: asgGroup.autoScalingGroupName,
@@ -155,5 +156,6 @@ export class ECSAutoScalingGroup extends Stack {
       //   value: 'value',
       // }],
     });
+    this.capacityProvider.addDependsOn(asgGroup);
   }
 }
