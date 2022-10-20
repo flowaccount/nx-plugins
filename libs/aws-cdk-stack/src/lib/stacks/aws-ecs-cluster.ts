@@ -56,7 +56,6 @@ import { ServiceALBAdapter } from './service-alb-adapter';
     let _zone: IHostedZone;
     let _taskExecutionPolicy: ManagedPolicy;
     let _vpc: VpcStack;
-    let _alb: IApplicationLoadBalancer;
     let  _tg: ApplicationTargetGroup;
     let _applicationListenerRule: ApplicationListenerRule;
     let _autoScalingGroupList: ECSAutoScalingGroup[] = [];
@@ -68,23 +67,8 @@ import { ServiceALBAdapter } from './service-alb-adapter';
     }
     // Loadbalancer vpc and route53
     _vpc = new VpcStack(_app, `vpc-${configuration.stage}`, configuration.vpc)
-    if(configuration.applicationLoadBalancer) {
-      _alb = new ApplicationLoadBalancerStack(_app, `alb-${configuration.stage}`,
-      {
-        applicationLoadbalancerProps: configuration.applicationLoadBalancer.applicationLoadbalancerProperties,
-        redirectConfigs: configuration.applicationLoadBalancer.redirectConfigs,
-        certificateArns: configuration.applicationLoadBalancer.certificateArns,
-        vpc: _vpc.vpc,
-        env: configuration.awsCredentials
-      }).lb
-    }
-    else {
-      _alb = ApplicationLoadBalancer.fromLookup(_app, `alb-${configuration.stage}`, {
-        loadBalancerArn: configuration.applicationLoadBalancerArn
-      });
-    }
+    
     // Loadbalancer vpc and route53
-
     // instance role and policy
     logger.info(`Initiating instance role instance-role-${configuration.stage}`)
     _instanceRole = new RoleStack(_app, `instance-role-${configuration.stage}`, {
@@ -144,14 +128,12 @@ import { ServiceALBAdapter } from './service-alb-adapter';
       const service = new ECSService(_app, `${apiService.name}`, {
         ecsService: apiService,
         ecs: configuration.ecs,
-        alb: _alb,
         taskRole: _taskRole,
         executionRole: _taskExecutionRole,
         vpc: _vpc.vpc,
         cluster: _ecs.cluster,
         priority: index + 1,
         route53Domain: configuration.route53Domain,
-        albListener: _alb.listeners[0],
         stage: configuration.stage,
         taglist: configuration.tag,
         env: configuration.awsCredentials
@@ -165,19 +147,18 @@ import { ServiceALBAdapter } from './service-alb-adapter';
       // BUT When exists in the same scope/stack as Service it dies because of cross reference.
       // That is why new stack
 
-      const serviceALBadapter = new ServiceALBAdapter(_app, `adapter-${apiService.name}`, {
-       alb: _alb,
-       tg: service.tg,
-       serviceConfiguration: apiService,
-       applicationtargetGroup: apiService.applicationtargetGroup,
-       stage: configuration.stage,
-       route53Domain: configuration.route53Domain,
-       vpc: _vpc.vpc,
-       env: configuration.awsCredentials
-      })
-    });
-  }
+    //   const serviceALBadapter = new ServiceALBAdapter(_app, `adapter-${apiService.name}`, {
+    //    alb: _alb,
+    //    tg: service.tg,
+    //    serviceConfiguration: apiService,
+    //    applicationtargetGroup: apiService.applicationtargetGroup,
+    //    stage: configuration.stage,
+    //    route53Domain: configuration.route53Domain,
+    //    vpc: _vpc.vpc,
+    //    env: configuration.awsCredentials
+    //   })
+  });
+}
 
-// }
 
 

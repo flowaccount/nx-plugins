@@ -25,6 +25,7 @@ import * as ssm from '@aws-cdk/aws-secretsmanager';
 import {
   ApplicationListener,
   ApplicationListenerRule,
+  ApplicationLoadBalancer,
   ApplicationTargetGroup,
   IApplicationLoadBalancer,
   IApplicationTargetGroup,
@@ -36,20 +37,18 @@ import {
 
 export interface ECSServiceProps extends StackProps {
   readonly vpc: IVpc;
-  readonly alb: IApplicationLoadBalancer;
   readonly cluster: Cluster;
   readonly executionRole: IRole;
   readonly taskRole: IRole;
   readonly ecs?: ECSModel;
   readonly ecsService: ECSServiceModel;
   readonly taglist: TagModel[];
-  readonly albListener: ApplicationListener;
-  readonly targetGroup?: ITargetGroup;
   readonly priority: number
   readonly route53Domain?: string
   readonly stage?: string
   readonly apiprefix?: string
   readonly capacityProvider?: CfnCapacityProvider
+  readonly applicationLoadBalancerArn?: string
 
 }
 
@@ -275,24 +274,14 @@ export class ECSService extends Stack {
             if(!s.applicationtargetGroup.targetGroupName)
               s.applicationtargetGroup = { ...s.applicationtargetGroup , targetGroupName: Math.random().toString(36).substring(2, 5) }
             tg = new ApplicationTargetGroup(this, `tg-${s.applicationtargetGroup.targetGroupName}`, { ...s.applicationtargetGroup, vpc: stackProps.vpc  });
+            const alb = ApplicationLoadBalancer.fromLookup(this, `alb-${stackProps.stage}-${s.name}`, {
+              loadBalancerArn: stackProps.applicationLoadBalancerArn
+            });
+            alb.listeners[0].addTargetGroups(`${s.name}-listener-tg`, {
+              targetGroups: [<ApplicationTargetGroup>tg]
+            })
             this.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
           }
-      }
-      if(tg) {
-        logger.info(`apiDomain:${s.apiDomain}`)
-          const applicationListenerRule = new ApplicationListenerRule(this, `${s.name}-listener-rule`, {
-            listener: stackProps.alb.listeners[0], //.find( l => l.connections.defaultPort == ),
-            priority: 1,
-            conditions: [ListenerCondition.hostHeaders([s.apiDomain])],
-            targetGroups: [<IApplicationTargetGroup>tg]
-        });
-        if(s.targetGroupNetworkArn)
-        {
-          throw new Error("Not Implemented");
-        }
-        else {
-          // stackProps.albListener.addTargetGroups(`${s.name}-tgs-${stackProps.stage}`, { targetGroups: [<IApplicationTargetGroup>this.tg] });
-        }
       }
 
     this.tg = tg;
