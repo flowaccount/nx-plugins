@@ -61,6 +61,7 @@ export class ServiceALBAdapter extends Stack {
           //   , { applicationtargetGroupProps : { ...s.applicationtargetGroup, vpc: stackProps.vpc  },
           //   env: stackProps.env
           //  }).tg;
+          stackProps.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
         }
       }
     // s.applicationtargetGroup = tg
