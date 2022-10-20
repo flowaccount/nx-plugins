@@ -13,6 +13,7 @@ import {
   AssociateCloudMapServiceOptions,
   ScalableTaskCount,
   ContainerDefinitionOptions,
+  CfnCapacityProvider,
 } from '@aws-cdk/aws-ecs';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { IRole } from '@aws-cdk/aws-iam';
@@ -41,6 +42,7 @@ export interface ECSServiceProps extends StackProps {
   readonly stage?: string
   readonly apiprefix?: string
   readonly loadBalancerDnsName?: string
+  readonly capacityProvider?: CfnCapacityProvider
 
 }
 
@@ -173,6 +175,12 @@ export class ECSService extends Stack {
         desiredCount: s.desired,
         minHealthyPercent: s.minHealthyPercent,
         daemon: s.daemon,
+        capacityProviderStrategies: [
+          {
+            capacityProvider: s.autoScalingGroupName,
+            weight: 1,
+          },
+        ],
         // cloudMapOptions: cloudMapOptions
       });
 

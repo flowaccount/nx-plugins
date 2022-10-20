@@ -167,7 +167,8 @@ import { ServiceALBAdapter } from './service-alb-adapter';
 
       const serviceALBadapter = new ServiceALBAdapter(_app, `adapter-${apiService.name}`, {
        alb: _alb,
-       service: apiService,
+       service: service.service,
+       serviceConfiguration: apiService,
        applicationtargetGroup: apiService.applicationtargetGroup,
        stage: configuration.stage,
        route53Domain: configuration.route53Domain,

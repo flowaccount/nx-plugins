@@ -8,7 +8,8 @@ import { IVpc } from '@aws-cdk/aws-ec2';
 
 export interface ServiceALBAdapterProperties extends StackProps {
     alb: IApplicationLoadBalancer,
-    service: ECSServiceModel,
+    service: Ec2Service,
+    serviceConfiguration : ECSServiceModel,
     applicationtargetGroup: ApplicationTargetGroupConfiguration,
     stage: string,
     route53Domain: string,
@@ -16,12 +17,11 @@ export interface ServiceALBAdapterProperties extends StackProps {
   }
 
 export class ServiceALBAdapter extends Stack {
-    public service: Ec2Service;
     public tg: ITargetGroup;
   constructor(scope: Construct, id: string, stackProps: ServiceALBAdapterProperties) {
     super(scope, id, stackProps);
       // start moving code from here
-      const s = stackProps.service;
+      const s = stackProps.serviceConfiguration;
       if(s.apiDomain
         && !s.targetGroupArn
         && !s.targetGroupNetworkArn
@@ -38,7 +38,7 @@ export class ServiceALBAdapter extends Stack {
               }
             );
           logger.info('attaching the target group');
-          this.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
+          stackProps.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
         }
         else if (s.targetGroupNetworkArn) {
           tg = NetworkTargetGroup.fromTargetGroupAttributes(
@@ -49,7 +49,7 @@ export class ServiceALBAdapter extends Stack {
             }
           );
           logger.info('attaching the target group');
-          this.service.attachToNetworkTargetGroup(<INetworkTargetGroup>tg);
+          stackProps.service.attachToNetworkTargetGroup(<INetworkTargetGroup>tg);
         }
         else {
           if(!s.applicationtargetGroup.targetGroupName)

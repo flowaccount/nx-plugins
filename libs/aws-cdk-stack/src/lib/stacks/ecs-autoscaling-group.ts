@@ -21,7 +21,7 @@ interface ECSAutoScalingGroupProps extends StackProps {
 }
 
 export class ECSAutoScalingGroup extends Stack {
-  public readonly _autoScalingGroup : CfnAutoScalingGroup
+  public readonly _autoScalingGroup : CfnAutoScalingGroup;
   public readonly capacityProvider : CfnCapacityProvider;
   constructor(
     scope: Construct,
