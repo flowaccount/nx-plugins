@@ -24,11 +24,19 @@ import { PrivateDnsNamespace, Service } from '@aws-cdk/aws-servicediscovery';
 import * as ssm from '@aws-cdk/aws-secretsmanager';
 import {
   ApplicationListener,
+  ApplicationListenerRule,
+  ApplicationTargetGroup,
+  IApplicationLoadBalancer,
+  IApplicationTargetGroup,
+  INetworkTargetGroup,
   ITargetGroup,
+  ListenerCondition,
+  NetworkTargetGroup,
 } from '@aws-cdk/aws-elasticloadbalancingv2';
 
 export interface ECSServiceProps extends StackProps {
   readonly vpc: IVpc;
+  readonly alb: IApplicationLoadBalancer;
   readonly cluster: Cluster;
   readonly executionRole: IRole;
   readonly taskRole: IRole;
@@ -41,7 +49,6 @@ export interface ECSServiceProps extends StackProps {
   readonly route53Domain?: string
   readonly stage?: string
   readonly apiprefix?: string
-  readonly loadBalancerDnsName?: string
   readonly capacityProvider?: CfnCapacityProvider
 
 }
@@ -235,6 +242,60 @@ export class ECSService extends Stack {
         this.service.addPlacementConstraints(_pc);
       });
 
+      if(s.apiDomain
+        && !s.targetGroupArn
+        && !s.targetGroupNetworkArn
+        && !s.applicationtargetGroup)
+        throw new Error("At least targetGroupArn or targetGroupNetworkArn or applicationtargetGroup must be set")
+      let tg: ITargetGroup = null;
+      if(s.targetGroupArn || s.targetGroupNetworkArn || s.applicationtargetGroup) {
+          if (s.targetGroupArn) {
+            tg = ApplicationTargetGroup.fromTargetGroupAttributes(
+              this,
+              `${s.name}-tg`,
+              {
+                targetGroupArn: s.targetGroupArn,
+              }
+            );
+          logger.info('attaching the target group');
+          this.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
+          }
+          else if (s.targetGroupNetworkArn) {
+            tg = NetworkTargetGroup.fromTargetGroupAttributes(
+              this,
+              `${s.name}-network-tg`,
+              {
+                targetGroupArn: s.targetGroupNetworkArn,
+              }
+            );
+            logger.info('attaching the target group');
+            this.service.attachToNetworkTargetGroup(<INetworkTargetGroup>tg);
+          }
+          else {
+            if(!s.applicationtargetGroup.targetGroupName)
+              s.applicationtargetGroup = { ...s.applicationtargetGroup , targetGroupName: Math.random().toString(36).substring(2, 5) }
+            tg = new ApplicationTargetGroup(this, `tg-${s.applicationtargetGroup.targetGroupName}`, { ...s.applicationtargetGroup, vpc: stackProps.vpc  });
+            this.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
+          }
+      }
+      if(tg) {
+        logger.info(`apiDomain:${s.apiDomain}`)
+          const applicationListenerRule = new ApplicationListenerRule(this, `${s.name}-listener-rule`, {
+            listener: stackProps.alb.listeners[0], //.find( l => l.connections.defaultPort == ),
+            priority: 1,
+            conditions: [ListenerCondition.hostHeaders([s.apiDomain])],
+            targetGroups: [<IApplicationTargetGroup>tg]
+        });
+        if(s.targetGroupNetworkArn)
+        {
+          throw new Error("Not Implemented");
+        }
+        else {
+          // stackProps.albListener.addTargetGroups(`${s.name}-tgs-${stackProps.stage}`, { targetGroups: [<IApplicationTargetGroup>this.tg] });
+        }
+      }
+
+    this.tg = tg;
     stackProps.taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
     });

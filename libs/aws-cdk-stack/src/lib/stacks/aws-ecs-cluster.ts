@@ -144,6 +144,7 @@ import { ServiceALBAdapter } from './service-alb-adapter';
       const service = new ECSService(_app, `${apiService.name}`, {
         ecsService: apiService,
         ecs: configuration.ecs,
+        alb: _alb,
         taskRole: _taskRole,
         executionRole: _taskExecutionRole,
         vpc: _vpc.vpc,
@@ -152,7 +153,6 @@ import { ServiceALBAdapter } from './service-alb-adapter';
         route53Domain: configuration.route53Domain,
         albListener: _alb.listeners[0],
         stage: configuration.stage,
-        loadBalancerDnsName: _alb.loadBalancerDnsName,
         taglist: configuration.tag,
         env: configuration.awsCredentials
       }) //
@@ -167,7 +167,7 @@ import { ServiceALBAdapter } from './service-alb-adapter';
 
       const serviceALBadapter = new ServiceALBAdapter(_app, `adapter-${apiService.name}`, {
        alb: _alb,
-       service: service.service,
+       tg: service.tg,
        serviceConfiguration: apiService,
        applicationtargetGroup: apiService.applicationtargetGroup,
        stage: configuration.stage,
