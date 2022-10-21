@@ -43,13 +43,9 @@ export interface ECSServiceProps extends StackProps {
   readonly ecs?: ECSModel;
   readonly ecsService: ECSServiceModel;
   readonly taglist: TagModel[];
-  readonly priority: number
-  readonly route53Domain?: string
   readonly stage?: string
   readonly apiprefix?: string
   readonly capacityProvider?: CfnCapacityProvider
-  readonly applicationLoadBalancerArn?: string
-
 }
 
 export class ECSService extends Stack {
@@ -156,9 +152,9 @@ export class ECSService extends Stack {
           containerOption
         );
         logger.info('add Port Mappings');
-        containerOption.portMappings.forEach((_pm) => {
-          _container.addPortMappings(_pm);
-        });
+        // containerOption.portMappings.forEach((_pm) => {
+        //   _container.addPortMappings(_pm);
+        // });
         logger.info('creating mountPoints');
         if (
           s.taskDefinition.mountPoints &&
@@ -181,12 +177,12 @@ export class ECSService extends Stack {
         desiredCount: s.desired,
         minHealthyPercent: s.minHealthyPercent,
         daemon: s.daemon,
-        capacityProviderStrategies: [
-          {
-            capacityProvider: s.autoScalingGroupName,
-            weight: 1,
-          },
-        ],
+        // capacityProviderStrategies: [
+        //   {
+        //     capacityProvider: s.autoScalingGroupName,
+        //     weight: 1,
+        //   },
+        // ],
         // cloudMapOptions: cloudMapOptions
       });
 
@@ -241,50 +237,29 @@ export class ECSService extends Stack {
         this.service.addPlacementConstraints(_pc);
       });
 
-      if(s.apiDomain
-        && !s.targetGroupArn
-        && !s.targetGroupNetworkArn
-        && !s.applicationtargetGroup)
-        throw new Error("At least targetGroupArn or targetGroupNetworkArn or applicationtargetGroup must be set")
-      let tg: ITargetGroup = null;
-      if(s.targetGroupArn || s.targetGroupNetworkArn || s.applicationtargetGroup) {
-          if (s.targetGroupArn) {
-            tg = ApplicationTargetGroup.fromTargetGroupAttributes(
-              this,
-              `${s.name}-tg`,
-              {
-                targetGroupArn: s.targetGroupArn,
-              }
-            );
-          logger.info('attaching the target group');
-          this.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
+    if (s.targetGroupArn) {
+    this.tg = ApplicationTargetGroup.fromTargetGroupAttributes(
+          this,
+          `${s.name}-tg`,
+          {
+            targetGroupArn: s.targetGroupArn,
           }
-          else if (s.targetGroupNetworkArn) {
-            tg = NetworkTargetGroup.fromTargetGroupAttributes(
-              this,
-              `${s.name}-network-tg`,
-              {
-                targetGroupArn: s.targetGroupNetworkArn,
-              }
-            );
-            logger.info('attaching the target group');
-            this.service.attachToNetworkTargetGroup(<INetworkTargetGroup>tg);
-          }
-          else {
-            if(!s.applicationtargetGroup.targetGroupName)
-              s.applicationtargetGroup = { ...s.applicationtargetGroup , targetGroupName: Math.random().toString(36).substring(2, 5) }
-            tg = new ApplicationTargetGroup(this, `tg-${s.applicationtargetGroup.targetGroupName}`, { ...s.applicationtargetGroup, vpc: stackProps.vpc  });
-            const alb = ApplicationLoadBalancer.fromLookup(this, `alb-${stackProps.stage}-${s.name}`, {
-              loadBalancerArn: stackProps.applicationLoadBalancerArn
-            });
-            alb.listeners[0].addTargetGroups(`${s.name}-listener-tg`, {
-              targetGroups: [<ApplicationTargetGroup>tg]
-            })
-            this.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>tg);
-          }
-      }
+      );
+        logger.info('attaching the target group');
+        this.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>this.tg);
+    }
+    else if (s.targetGroupNetworkArn) {
+     this.tg = NetworkTargetGroup.fromTargetGroupAttributes(
+        this,
+        `${s.name}-network-tg`,
+        {
+          targetGroupArn: s.targetGroupNetworkArn,
+        }
+      );
+      logger.info('attaching the target group');
+      this.service.attachToNetworkTargetGroup(<INetworkTargetGroup>this.tg);
+    }
 
-    this.tg = tg;
     stackProps.taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
     });

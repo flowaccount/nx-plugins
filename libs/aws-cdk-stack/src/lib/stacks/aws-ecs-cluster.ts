@@ -40,7 +40,7 @@ import { ServiceALBAdapter } from './service-alb-adapter';
 // export class AwsECSCluster { //  extends Stack
 
 
-  export const createStack = (scope: App, configuration: IECSStackEnvironmentConfig) => {
+  export const createStack = (configuration: IECSStackEnvironmentConfig) => {
 
     let _app: App = new App();
     let _applicationLoadbalancer: ApplicationLoadBalancer;
@@ -132,8 +132,6 @@ import { ServiceALBAdapter } from './service-alb-adapter';
         executionRole: _taskExecutionRole,
         vpc: _vpc.vpc,
         cluster: _ecs.cluster,
-        priority: index + 1,
-        route53Domain: configuration.route53Domain,
         stage: configuration.stage,
         taglist: configuration.tag,
         env: configuration.awsCredentials

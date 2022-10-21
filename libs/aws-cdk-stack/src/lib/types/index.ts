@@ -37,7 +37,7 @@ import {
   RoutingPolicy,
 } from '@aws-cdk/aws-servicediscovery';
 import { ScalingSchedule } from '@aws-cdk/aws-applicationautoscaling';
-import { ApplicationLoadBalancerProps, ApplicationLoadBalancerRedirectConfig, ApplicationTargetGroupProps, IpAddressType, TargetType } from '@aws-cdk/aws-elasticloadbalancingv2';
+import { ApplicationLoadBalancerProps, ApplicationLoadBalancerRedirectConfig, ApplicationTargetGroupProps, IApplicationListener, IApplicationLoadBalancer, IpAddressType, TargetType } from '@aws-cdk/aws-elasticloadbalancingv2';
 import { registry } from 'tsyringe';
 
 export interface VpcStackProperties extends StackProps {
@@ -61,6 +61,7 @@ export interface ALBStackProperties extends StackProps {
   applicationLoadbalancerProps: ALBLoadBalancerProperties;
   certificateArns: string[];
   redirectConfigs: ApplicationLoadBalancerRedirectConfig[],
+  targetGroups: ApplicationTargetGroupConfiguration[],
   vpc: IVpc
 }
 export interface ApplicationTargetGroupConfiguration {
@@ -70,9 +71,12 @@ export interface ApplicationTargetGroupConfiguration {
     healthCheck: {
       path: string
     }
+    apiDomain: string
 }
 export interface ApplicationTargetGroupStackProperties extends StackProps {
   applicationtargetGroupProps: ApplicationTargetGroupProps;
+  albListener: IApplicationListener,
+  apiDomain: string;
 }
 
 
@@ -394,7 +398,6 @@ export class ECSModel {
 }
 
 export class ECSServiceModel {
-  apiDomain?: string;
   cpu?: number;
   memory?: number;
   networkMode?: NetworkMode;
