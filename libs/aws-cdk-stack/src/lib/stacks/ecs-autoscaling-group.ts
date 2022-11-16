@@ -6,7 +6,7 @@ import {
   SubnetType,
 } from '@aws-cdk/aws-ec2';
 import { CfnInstanceProfile, IRole } from '@aws-cdk/aws-iam';
-import { CfnCapacityProvider, Cluster, EcsOptimizedImage, WindowsOptimizedVersion } from '@aws-cdk/aws-ecs';
+import { CfnCapacityProvider, CfnClusterCapacityProviderAssociations, Cluster, EcsOptimizedImage, WindowsOptimizedVersion } from '@aws-cdk/aws-ecs';
 import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { ECSModel, S3MountConfig, TagModel, AutoScalingGroupModel } from '../types';
 
@@ -157,5 +157,12 @@ export class ECSAutoScalingGroup extends Stack {
       // }],
     });
     this.capacityProvider.addDependsOn(asgGroup);
+    const cfnClusterCapacityProviderAssociations = new CfnClusterCapacityProviderAssociations(this, asgGroup.autoScalingGroupName, {
+      capacityProviders: [this.capacityProvider.name],
+      cluster: stackProps.ecsModel.clusterName,
+      defaultCapacityProviderStrategy: [{
+        capacityProvider: this.capacityProvider.name,
+      }],
+    });
   }
 }
