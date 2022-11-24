@@ -18,7 +18,7 @@ import { ApplicationLoadBalancerStack } from './application-load-balancer';
 import { Subnet } from '@aws-cdk/aws-ec2';
 import { ApplicationTargetGroupStack } from './application-target-group';
 import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { AsgCapacityProvider, CfnCapacityProvider } from '@aws-cdk/aws-ecs';
+import { AsgCapacityProvider, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from '@aws-cdk/aws-ecs';
 import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { ServiceALBAdapter } from './service-alb-adapter';
 
@@ -120,9 +120,14 @@ import { ServiceALBAdapter } from './service-alb-adapter';
         taglist: configuration.tag,
         env: configuration.awsCredentials,
         s3MountConfig: configuration.s3MountConfig,
-      }))
-    })
+        myClusterCapacityProviderAssociations: _ecs.myClusterCapacityProviderAssociations
 
+    }));
+   });
+
+    // _autoScalingGroupList.forEach(asgGroup => {
+    // })
+    //thisClusterCapacityProviderAssociations.addDependsOn()
     // Creating the ecs services itself
     configuration.service.forEach((apiService, index) => {
       const service = new ECSService(_app, `${apiService.name}`, {

@@ -1,3 +1,4 @@
+//backup ecs-autoscaling-group.ts
 import { Stack, StackProps, Construct, Fn, Tags } from '@aws-cdk/core';
 import {
   IVpc,
@@ -18,11 +19,13 @@ interface ECSAutoScalingGroupProps extends StackProps {
   readonly taglist: TagModel[];
   readonly s3MountConfig: S3MountConfig;
   readonly instanceRole: IRole;
+  readonly myClusterCapacityProviderAssociations: CfnClusterCapacityProviderAssociations
 }
 
 export class ECSAutoScalingGroup extends Stack {
   public readonly _autoScalingGroup : CfnAutoScalingGroup;
-  public readonly capacityProvider : CfnCapacityProvider;
+  public readonly capacityProvider : CfnCapacityProvider
+  // public readonly ClusterCapacityProviderAssociations : CfnClusterCapacityProviderAssociations;
   constructor(
     scope: Construct,
     id: string,
@@ -133,10 +136,9 @@ export class ECSAutoScalingGroup extends Stack {
     stackProps.taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
     });
-
       // ECS Cluster and Auto Scaling Group
       console.log(asgGroup.autoScalingGroupName);
-    this.capacityProvider = new CfnCapacityProvider(this, `${asgGroup.autoScalingGroupName}`, {
+    const myCapacityProvider = new CfnCapacityProvider(this, `${asgGroup.autoScalingGroupName}`, {
       autoScalingGroupProvider: {
         autoScalingGroupArn: asgGroup.autoScalingGroupName,
         // the properties below are optional
@@ -156,13 +158,19 @@ export class ECSAutoScalingGroup extends Stack {
       //   value: 'value',
       // }],
     });
-    this.capacityProvider.addDependsOn(asgGroup);
-    const cfnClusterCapacityProviderAssociations = new CfnClusterCapacityProviderAssociations(this, asgGroup.autoScalingGroupName, {
-      capacityProviders: [this.capacityProvider.name],
-      cluster: stackProps.ecsModel.clusterName,
-      defaultCapacityProviderStrategy: [{
-        capacityProvider: this.capacityProvider.name,
-      }],
-    });
+    myCapacityProvider.addDependsOn(asgGroup);
+    this.capacityProvider = myCapacityProvider;
+    console.log(`------------------provider---------${myCapacityProvider.name}--`)
+    console.log(`------------------asg.name---------${asgGroup.autoScalingGroupName}--`)
+
+    stackProps.myClusterCapacityProviderAssociations.capacityProviders.push(myCapacityProvider.name);
+    // const thisClusterCapacityProviderAssociations = new CfnClusterCapacityProviderAssociations(this, `${myCapacityProvider.name}`, {
+    //   capacityProviders: [myCapacityProvider.name],
+    //   cluster: stackProps.ecsModel.clusterName,
+    //   defaultCapacityProviderStrategy: [{
+    //     capacityProvider: `${stackProps.ecsModel.clusterName}-asg-cp`,
+    //   }],
+    // });
+    // thisClusterCapacityProviderAssociations.addDependsOn(myCapacityProvider)
   }
 }
