@@ -177,12 +177,12 @@ export class ECSService extends Stack {
         desiredCount: s.desired,
         minHealthyPercent: s.minHealthyPercent,
         daemon: s.daemon,
-        // capacityProviderStrategies: [
-        //   {
-        //     capacityProvider: s.autoScalingGroupName,
-        //     weight: 1,
-        //   },
-        // ],
+        capacityProviderStrategies: [
+          {
+            capacityProvider: s.capacityProviderName,
+            weight: 1,
+          },
+        ],
         // cloudMapOptions: cloudMapOptions
       });
 

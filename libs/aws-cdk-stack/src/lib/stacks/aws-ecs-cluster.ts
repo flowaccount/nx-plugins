@@ -6,6 +6,7 @@ import { inject, injectable, registry } from 'tsyringe';
 import { ECSAutoScalingGroup } from './ecs-autoscaling-group';
 import { ECSCluster } from './ecs-cluster';
 import { ECSService } from './ecs-service';
+import { ECSCapacityProvider } from './ecs-capacity-provider';
 import { ManagedPolicyStack } from './managed-policy-stack';
 import { RoleStack } from './role-stack';
 import { VpcStack } from './vpc';
@@ -47,6 +48,7 @@ import { ServiceALBAdapter } from './service-alb-adapter';
     let _ta
     rgetGroup: ApplicationTargetGroup;
     let _ecs : ECSCluster;
+    let _cp : ECSCapacityProvider;
 
     let _instancePolicy: ManagedPolicy;
     let _taskPolicy : ManagedPolicy;
@@ -108,10 +110,11 @@ import { ServiceALBAdapter } from './service-alb-adapter';
       ecs: configuration.ecs,
       vpc: _vpc.vpc,
       taglist: configuration.tag,
-      env: configuration.awsCredentials })
+      env: configuration.awsCredentials,
+    })
 
     configuration.ecs.asgList.forEach((asg) => {
-      _autoScalingGroupList.push(new ECSAutoScalingGroup(_app, `stack-${asg.asg.name}`, {
+      const tempasg = new ECSAutoScalingGroup(_app, `stack-${asg.asg.name}`, {
         ecsModel: configuration.ecs,
         asgModel: asg,
         instanceRole: _instanceRole,
@@ -120,10 +123,18 @@ import { ServiceALBAdapter } from './service-alb-adapter';
         taglist: configuration.tag,
         env: configuration.awsCredentials,
         s3MountConfig: configuration.s3MountConfig,
-        myClusterCapacityProviderAssociations: _ecs.myClusterCapacityProviderAssociations
+        // myClusterCapacityProviderAssociations: _ecs.myClusterCapacityProviderAssociations
+    });
+      _autoScalingGroupList.push(tempasg)
 
-    }));
    });
+   _cp = new ECSCapacityProvider(_app, `${configuration.ecs.clusterName}-provider`, {
+    // vpc: _vpc.vpc,
+    ecs: configuration.ecs,
+    // cluster: _ecs.cluster,
+    taglist: configuration.tag,
+    // _autoScalingGroup: tempasg._autoScalingGroup
+  })
 
     // _autoScalingGroupList.forEach(asgGroup => {
     // })

@@ -19,12 +19,12 @@ interface ECSAutoScalingGroupProps extends StackProps {
   readonly taglist: TagModel[];
   readonly s3MountConfig: S3MountConfig;
   readonly instanceRole: IRole;
-  readonly myClusterCapacityProviderAssociations: CfnClusterCapacityProviderAssociations
+  // readonly myClusterCapacityProviderAssociations: CfnClusterCapacityProviderAssociations
 }
 
 export class ECSAutoScalingGroup extends Stack {
   public readonly _autoScalingGroup : CfnAutoScalingGroup;
-  public readonly capacityProvider : CfnCapacityProvider
+  // public readonly capacityProvider : CfnCapacityProvider;
   // public readonly ClusterCapacityProviderAssociations : CfnClusterCapacityProviderAssociations;
   constructor(
     scope: Construct,
@@ -152,25 +152,14 @@ export class ECSAutoScalingGroup extends Stack {
         managedTerminationProtection: 'ENABLED',
       },
       // the properties below are optional
-      name: `${asgGroup.autoScalingGroupName}-cp`,
+      name: `${asgGroup.autoScalingGroupName}`,
       // tags: [{
       //   key: 'key',
       //   value: 'value',
       // }],
     });
     myCapacityProvider.addDependsOn(asgGroup);
-    this.capacityProvider = myCapacityProvider;
-    console.log(`------------------provider---------${myCapacityProvider.name}--`)
-    console.log(`------------------asg.name---------${asgGroup.autoScalingGroupName}--`)
-
-    stackProps.myClusterCapacityProviderAssociations.capacityProviders.push(myCapacityProvider.name);
-    // const thisClusterCapacityProviderAssociations = new CfnClusterCapacityProviderAssociations(this, `${myCapacityProvider.name}`, {
-    //   capacityProviders: [myCapacityProvider.name],
-    //   cluster: stackProps.ecsModel.clusterName,
-    //   defaultCapacityProviderStrategy: [{
-    //     capacityProvider: `${stackProps.ecsModel.clusterName}-asg-cp`,
-    //   }],
-    // });
-    // thisClusterCapacityProviderAssociations.addDependsOn(myCapacityProvider)
+    // console.log(`------------------provider---------${myCapacityProvider.name}--`)
+    // console.log(`------------------asg.name---------${asgGroup.autoScalingGroupName}--`)
   }
 }

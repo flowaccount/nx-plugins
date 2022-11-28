@@ -394,7 +394,8 @@ export class ECSModel {
   clusterName: string;
   defaultServiceDiscoveryNamespace?: PrivateDnsNamespaceAttributes;
   defaultCloudMapNamespace?: CloudMapNamespaceOptions;
-  isWindows?: boolean
+  isWindows?: boolean;
+  providerList: string[];
 }
 
 export class ECSServiceModel {
@@ -416,7 +417,7 @@ export class ECSServiceModel {
   memScalingProps?: MemoryUtilizationScalingProps;
   scaleOnScheduleList?: ScalingSchduleModel[];
   daemon?: boolean;
-  autoScalingGroupName: string; // should automatically populate the placement constraints. /Bank
+  capacityProviderName: string; // should automatically populate the placement constraints. /Bank
 }
 
 class ScalingSchduleModel {
