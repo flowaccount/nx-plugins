@@ -147,6 +147,7 @@ export class ECSAutoScalingGroup extends Stack {
         autoScalingGroupArn: asgGroup.autoScalingGroupName,
         managedScaling: {
           targetCapacity: 90,
+          status: 'ENABLED'
         },
         managedTerminationProtection: protection,
       },
