@@ -133,13 +133,22 @@ export class ECSAutoScalingGroup extends Stack {
     });
       // ECS Cluster and Auto Scaling Group
       console.log(asgGroup.autoScalingGroupName);
+      // let protection: string = stackProps.asgModel.asg.protectionFromScaleIn==true? 'ENABLED': 'DISABLED'
+      let protection: string;
+      console.log(stackProps.asgModel.asg.protectionFromScaleIn);
+      if(stackProps.asgModel.asg.protectionFromScaleIn){
+        protection = 'ENABLED'
+      } else{
+        protection = 'DISABLED'
+      }
+      console.log(protection)
     const myCapacityProvider = new CfnCapacityProvider(this, `${asgGroup.autoScalingGroupName}`, {
       autoScalingGroupProvider: {
         autoScalingGroupArn: asgGroup.autoScalingGroupName,
         managedScaling: {
           targetCapacity: 90,
         },
-        managedTerminationProtection: 'ENABLED',
+        managedTerminationProtection: protection,
       },
       name: `${asgGroup.autoScalingGroupName}`,
     });
