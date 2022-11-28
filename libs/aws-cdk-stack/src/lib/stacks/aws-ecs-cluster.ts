@@ -12,16 +12,7 @@ import { RoleStack } from './role-stack';
 import { VpcStack } from './vpc';
 import { IECSStackEnvironmentConfig } from '../types'
 import { ApplicationListenerRule, ApplicationLoadBalancer, ApplicationTargetGroup, IApplicationLoadBalancer, IApplicationTargetGroup, INetworkTargetGroup, ITargetGroup, ListenerAction, ListenerCondition, NetworkTargetGroup } from '@aws-cdk/aws-elasticloadbalancingv2';
-// import { Subnet, Vpc } from '@aws-cdk/aws-ec2';
-// import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { CnameRecord, HostedZone, IHostedZone } from '@aws-cdk/aws-route53';
-import { ApplicationLoadBalancerStack } from './application-load-balancer';
-import { Subnet } from '@aws-cdk/aws-ec2';
-import { ApplicationTargetGroupStack } from './application-target-group';
-import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { AsgCapacityProvider, CfnCapacityProvider, CfnClusterCapacityProviderAssociations } from '@aws-cdk/aws-ecs';
-import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
-import { ServiceALBAdapter } from './service-alb-adapter';
+import { IHostedZone } from '@aws-cdk/aws-route53';
 
 /**
  * This class is used to create an ECS cluster stack by specifying the VPC and Subnets
@@ -123,23 +114,13 @@ import { ServiceALBAdapter } from './service-alb-adapter';
         taglist: configuration.tag,
         env: configuration.awsCredentials,
         s3MountConfig: configuration.s3MountConfig,
-        // myClusterCapacityProviderAssociations: _ecs.myClusterCapacityProviderAssociations
     });
       _autoScalingGroupList.push(tempasg)
-
    });
    _cp = new ECSCapacityProvider(_app, `${configuration.ecs.clusterName}-provider`, {
-    // vpc: _vpc.vpc,
     ecs: configuration.ecs,
-    // cluster: _ecs.cluster,
     taglist: configuration.tag,
-    // _autoScalingGroup: tempasg._autoScalingGroup
   })
-
-    // _autoScalingGroupList.forEach(asgGroup => {
-    // })
-    //thisClusterCapacityProviderAssociations.addDependsOn()
-    // Creating the ecs services itself
     configuration.service.forEach((apiService, index) => {
       const service = new ECSService(_app, `${apiService.name}`, {
         ecsService: apiService,

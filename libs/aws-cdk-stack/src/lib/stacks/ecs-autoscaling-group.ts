@@ -19,13 +19,10 @@ interface ECSAutoScalingGroupProps extends StackProps {
   readonly taglist: TagModel[];
   readonly s3MountConfig: S3MountConfig;
   readonly instanceRole: IRole;
-  // readonly myClusterCapacityProviderAssociations: CfnClusterCapacityProviderAssociations
 }
 
 export class ECSAutoScalingGroup extends Stack {
   public readonly _autoScalingGroup : CfnAutoScalingGroup;
-  // public readonly capacityProvider : CfnCapacityProvider;
-  // public readonly ClusterCapacityProviderAssociations : CfnClusterCapacityProviderAssociations;
   constructor(
     scope: Construct,
     id: string,
@@ -83,8 +80,6 @@ export class ECSAutoScalingGroup extends Stack {
       }
     );
     let _launchTemplate: CfnLaunchTemplate;
-    // let this._autoScalingGroup: CfnAutoScalingGroup;
-    // stackProps.ecs.asgList.forEach((asg) => {
       _launchTemplate = new CfnLaunchTemplate(this, stackProps.asgModel.launchTemplate.name, {
         launchTemplateName: stackProps.asgModel.launchTemplate.name,
         launchTemplateData: {
@@ -141,25 +136,13 @@ export class ECSAutoScalingGroup extends Stack {
     const myCapacityProvider = new CfnCapacityProvider(this, `${asgGroup.autoScalingGroupName}`, {
       autoScalingGroupProvider: {
         autoScalingGroupArn: asgGroup.autoScalingGroupName,
-        // the properties below are optional
         managedScaling: {
-        //   instanceWarmupPeriod: 123,
-        //   maximumScalingStepSize: 123,
-        //   minimumScalingStepSize: 123,
-        //   status: 'status',
           targetCapacity: 90,
         },
         managedTerminationProtection: 'ENABLED',
       },
-      // the properties below are optional
       name: `${asgGroup.autoScalingGroupName}`,
-      // tags: [{
-      //   key: 'key',
-      //   value: 'value',
-      // }],
     });
     myCapacityProvider.addDependsOn(asgGroup);
-    // console.log(`------------------provider---------${myCapacityProvider.name}--`)
-    // console.log(`------------------asg.name---------${asgGroup.autoScalingGroupName}--`)
   }
 }
