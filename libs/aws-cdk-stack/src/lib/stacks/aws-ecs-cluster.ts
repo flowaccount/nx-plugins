@@ -59,12 +59,12 @@ import { IHostedZone } from '@aws-cdk/aws-route53';
       throw Error("you must specify at least a loadbalancer config or an existing ARN");
     }
     // Loadbalancer vpc and route53
-    _vpc = new VpcStack(_app, `vpc-${configuration.stage}`, configuration.vpc)
+    _vpc = new VpcStack(_app, `vpc-${configuration.app}-${configuration.stage}`, configuration.vpc)
     
     // Loadbalancer vpc and route53
     // instance role and policy
-    logger.info(`Initiating instance role instance-role-${configuration.stage}`)
-    _instanceRole = new RoleStack(_app, `instance-role-${configuration.stage}`, {
+    logger.info(`Initiating instance role instance-role-${configuration.app}-${configuration.stage}`)
+    _instanceRole = new RoleStack(_app, `instance-role-${configuration.app}-${configuration.stage}`, {
       name: configuration.ecs.instanceRole.name,
       assumedBy: configuration.ecs.instanceRole.assumedBy,
     }).output.role
@@ -75,7 +75,7 @@ import { IHostedZone } from '@aws-cdk/aws-route53';
     // instance role and policy
 
     // task execution role and policy
-    _taskExecutionRole = new RoleStack(_app, `task-execution-role-${configuration.stage}`, {
+    _taskExecutionRole = new RoleStack(_app, `task-execution-role-${configuration.app}-${configuration.stage}`, {
       name: configuration.ecs.taskExecutionRole.name,
       assumedBy: configuration.ecs.taskExecutionRole.assumedBy,
     }).output.role
@@ -86,7 +86,7 @@ import { IHostedZone } from '@aws-cdk/aws-route53';
     // task execution role and policy
 
     // task role and policy
-    _taskRole = new RoleStack(_app, `task-role-${configuration.stage}`, {
+    _taskRole = new RoleStack(_app, `task-role-${configuration.app}-${configuration.stage}`, {
       name: configuration.ecs.taskRole.name,
       assumedBy: configuration.ecs.taskRole.assumedBy,
     }).output.role
@@ -97,7 +97,7 @@ import { IHostedZone } from '@aws-cdk/aws-route53';
     // task role and policy
 
     // ECS Cluster and Auto Scaling Group
-    _ecs = new ECSCluster(_app, `cluster-${configuration.stage}`, {
+    _ecs = new ECSCluster(_app, `cluster-${configuration.app}-${configuration.stage}`, {
       ecs: configuration.ecs,
       vpc: _vpc.vpc,
       taglist: configuration.tag,

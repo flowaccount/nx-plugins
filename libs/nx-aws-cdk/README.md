@@ -242,3 +242,9 @@ export const environment: AppEnvModel = {
     ]
 }
 ```
+
+## argument setup
+add to libs\nx-aws-cdk\src\builders\deploy\deploy.executor.ts
+
+nx: yarn publish-local
+workspace: yarn upgrade nx-aws-cdk

@@ -51,6 +51,10 @@ const cdkFlagsArray = [
   'toolkit-stack-name',
   'output',
   'no-color',
+  'targetGroupArn',
+  'secretArn',
+  'asgName',
+  'serviceName'
 ] as const;
 
 export type cdkFlags = typeof cdkFlagsArray[number];

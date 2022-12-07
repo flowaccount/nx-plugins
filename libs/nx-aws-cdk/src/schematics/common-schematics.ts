@@ -5,11 +5,11 @@ import {
   joinPathFragments,
   names,
   offsetFromRoot,
-  Tree,
+  Tree
 } from '@nrwl/devkit';
 import { Schema } from './schema';
 import { ProjectType } from '@nrwl/workspace';
-import { toFileName } from '@nrwl/workspace';
+// import { toFileName } from '@nrwl/devkit';
 
 import { normalize } from 'path';
 import { NormalizedSchema } from './normalized-schema';
@@ -119,8 +119,8 @@ export function updateWorkspaceJson(
 
 export function normalizeOptions(options: Schema): NormalizedSchema {
   const appDirectory = options.directory
-    ? `${toFileName(options.directory)}/${toFileName(options.name)}`
-    : toFileName(options.name);
+    ? `${names(options.directory).fileName}/${names(options.name).fileName}`
+    : names(options.name).fileName;
 
   const appProjectName = appDirectory.replace(new RegExp('/', 'g'), '-');
   const appProjectRoot = joinPathFragments(normalize('apps'), appDirectory);
@@ -131,7 +131,7 @@ export function normalizeOptions(options: Schema): NormalizedSchema {
 
   return {
     ...options,
-    name: toFileName(appProjectName),
+    name: names(appProjectName).fileName,
     // frontendProject: options.frontendProject
     //   ? toFileName(options.frontendProject)
     //   : undefined,

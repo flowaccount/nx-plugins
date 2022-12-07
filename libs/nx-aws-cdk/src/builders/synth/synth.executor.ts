@@ -16,7 +16,7 @@ import {
   parseTargetString,
   runExecutor,
 } from '@nrwl/devkit';
-import { NodeBuildEvent } from '@nrwl/node/src/executors/build/build.impl';
+import { ExecutorEvent } from '@nrwl/node/src/executors/node/node.impl';
 
 export default async function runSynthExecutor(
   options: SynthExecutorSchema,
@@ -25,7 +25,7 @@ export default async function runSynthExecutor(
 ) {
   logger.info(`Building the cdk application`);
   const iterator = await buildTarget(options, context);
-  const buildOutput = <NodeBuildEvent>(await iterator.next()).value;
+  const buildOutput = <ExecutorEvent>(await iterator.next()).value;
   if (!buildOutput.success) {
     return {
       success: false,
@@ -75,7 +75,7 @@ async function* startBuild(
   context: ExecutorContext
 ) {
   const buildTarget = parseTargetString(options.buildTarget);
-  yield* await runExecutor<NodeBuildEvent>(
+  yield* await runExecutor<ExecutorEvent>(
     buildTarget,
     {
       watch: options.watch,

@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "projects": {
     "aws-cdk-core": {
       "root": "libs/aws-cdk-core",
@@ -7,14 +7,14 @@
       "projectType": "library",
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["libs/aws-cdk-core/**/*.ts"]
           },
           "outputs": ["{options.outputFile}"]
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/libs/aws-cdk-core"],
           "options": {
             "jestConfig": "libs/aws-cdk-core/jest.config.ts",
@@ -22,7 +22,7 @@
           }
         },
         "build": {
-          "builder": "@nrwl/js:tsc",
+          "executor": "@nrwl/js:tsc",
           "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/libs/aws-cdk-core",
@@ -41,14 +41,14 @@
       "projectType": "library",
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": ["libs/aws-cdk-stack/**/*.ts"]
           },
           "outputs": ["{options.outputFile}"]
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "outputs": ["coverage/libs/aws-cdk-stack"],
           "options": {
             "jestConfig": "libs/aws-cdk-stack/jest.config.ts",
@@ -56,7 +56,7 @@
           }
         },
         "build": {
-          "builder": "@nrwl/js:tsc",
+          "executor": "@nrwl/js:tsc",
           "outputs": ["{options.outputPath}"],
           "options": {
             "outputPath": "dist/libs/aws-cdk-stack",
@@ -76,7 +76,7 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
               "libs/nx-aws-cdk/**/*.ts",
@@ -90,7 +90,7 @@
           "outputs": ["{options.outputFile}"]
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/nx-aws-cdk/jest.config.ts",
             "passWithNoTests": true
@@ -98,7 +98,7 @@
           "outputs": ["coverage/libs/nx-aws-cdk"]
         },
         "build": {
-          "builder": "@nrwl/js:tsc",
+          "executor": "@nrwl/js:tsc",
           "options": {
             "outputPath": "dist/libs/nx-aws-cdk",
             "tsConfig": "libs/nx-aws-cdk/tsconfig.lib.json",
@@ -140,7 +140,7 @@
       "sourceRoot": "apps/nx-aws-cdk-e2e/src",
       "architect": {
         "e2e": {
-          "builder": "@nrwl/nx-plugin:e2e",
+          "executor": "@nrwl/nx-plugin:e2e",
           "options": {
             "target": "nx-aws-cdk:build",
             "npmPackageName": "@flowaccount/nx-aws-cdk",
@@ -159,7 +159,7 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
               "libs/nx-serverless/**/*.ts",
@@ -173,7 +173,7 @@
           "outputs": ["{options.outputFile}"]
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/nx-serverless/jest.config.ts",
             "passWithNoTests": true
@@ -181,7 +181,7 @@
           "outputs": ["coverage/libs/nx-serverless"]
         },
         "build": {
-          "builder": "@nrwl/js:tsc",
+          "executor": "@nrwl/js:tsc",
           "options": {
             "outputPath": "dist/libs/nx-serverless",
             "tsConfig": "libs/nx-serverless/tsconfig.lib.json",
@@ -219,7 +219,7 @@
       "sourceRoot": "apps/nx-serverless-e2e/src",
       "architect": {
         "e2e": {
-          "builder": "@nrwl/nx-plugin:e2e",
+          "executor": "@nrwl/nx-plugin:e2e",
           "options": {
             "target": "nx-serverless:build",
             "npmPackageName": "@flowaccount/nx-serverless",
@@ -238,7 +238,7 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
               "libs/scully-plugin-angular-delay/**/*.ts",
@@ -253,7 +253,7 @@
           "outputs": ["{options.outputFile}"]
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/scully-plugin-angular-delay/jest.config.ts",
             "passWithNoTests": true
@@ -261,7 +261,7 @@
           "outputs": ["coverage/libs/scully-plugin-angular-delay"]
         },
         "build": {
-          "builder": "@nrwl/js:tsc",
+          "executor": "@nrwl/js:tsc",
           "options": {
             "outputPath": "dist/libs/scully-plugin-angular-delay",
             "tsConfig": "libs/scully-plugin-angular-delay/tsconfig.lib.json",
@@ -282,7 +282,7 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
               "libs/scully-plugin-google-analytics/**/*.ts",
@@ -296,7 +296,7 @@
           "outputs": ["{options.outputFile}"]
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/scully-plugin-google-analytics/jest.config.ts",
             "passWithNoTests": true
@@ -304,7 +304,7 @@
           "outputs": ["coverage/libs/scully-plugin-google-analytics"]
         },
         "build": {
-          "builder": "@nrwl/js:tsc",
+          "executor": "@nrwl/js:tsc",
           "options": {
             "outputPath": "dist/libs/scully-plugin-google-analytics",
             "tsConfig": "libs/scully-plugin-google-analytics/tsconfig.lib.json",
@@ -325,7 +325,7 @@
       "schematics": {},
       "architect": {
         "lint": {
-          "builder": "@nrwl/linter:eslint",
+          "executor": "@nrwl/linter:eslint",
           "options": {
             "lintFilePatterns": [
               "libs/scully-plugin-lazy-load-picture-tag/**/*.ts",
@@ -339,7 +339,7 @@
           "outputs": ["{options.outputFile}"]
         },
         "test": {
-          "builder": "@nrwl/jest:jest",
+          "executor": "@nrwl/jest:jest",
           "options": {
             "jestConfig": "libs/scully-plugin-lazy-load-picture-tag/jest.config.ts",
             "passWithNoTests": true
@@ -347,7 +347,7 @@
           "outputs": ["coverage/libs/scully-plugin-lazy-load-picture-tag"]
         },
         "build": {
-          "builder": "@nrwl/js:tsc",
+          "executor": "@nrwl/js:tsc",
           "options": {
             "outputPath": "dist/libs/scully-plugin-lazy-load-picture-tag",
             "tsConfig": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.lib.json",

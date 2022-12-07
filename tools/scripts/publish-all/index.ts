@@ -16,10 +16,17 @@ export function PublishAll(version: string, tag = 'latest') {
   //   stdio: 'inherit',
   // });
 
-  execSync('npx nx build nx-serverless', {
+  execSync('npx nx build aws-cdk-core', {
     stdio: 'inherit',
   });
 
+  execSync('npx nx build aws-cdk-stack', {
+    stdio: 'inherit',
+  });
+
+  execSync('npx nx build nx-aws-cdk', {
+    stdio: 'inherit',
+  });
 
 
   const projects = Object.values(workspace.projects);
@@ -28,7 +35,17 @@ export function PublishAll(version: string, tag = 'latest') {
     NPM_CONFIG_REGISTRY: undefined,
   };
 
-  execSync(`npm publish dist/libs/nx-serverless --tag=nx-serverless --access=public`, {
+  execSync(`npm publish dist/libs/aws-cdk-core --tag=aws-cdk-core --access=public`, {
+    stdio: 'inherit',
+    env: environment,
+  });
+
+  execSync(`npm publish dist/libs/aws-cdk-stack --tag=aws-cdk-stack --access=public`, {
+    stdio: 'inherit',
+    env: environment,
+  });
+
+  execSync(`npm publish dist/libs/nx-aws-cdk --tag=nx-aws-cdk --access=public`, {
     stdio: 'inherit',
     env: environment,
   });
