@@ -11,6 +11,7 @@ import {
   Conditions,
   IPrincipal,
   IRole,
+  PrincipalBase,
   ServicePrincipal,
 } from '@aws-cdk/aws-iam';
 import { Runtime } from '@aws-cdk/aws-lambda';
@@ -97,13 +98,13 @@ export interface PolicyStackProperties extends StackProps {
 
 export interface InlineRoleStackProperties extends StackProps {
   name: string;
-  assumedBy: IPrincipal;
+  assumedBy: PrincipalBase;
   policies: PolicyStackProperties[];
 }
 
 export interface RoleStackProperties extends StackProps {
   name: string;
-  assumedBy: ServicePrincipal[];
+  assumedBy: PrincipalBase[];
   // policies: Policy[]
 }
 
@@ -342,7 +343,7 @@ export abstract class ECSStackEnvironmentConfig {
 
 export class RoleModel {
   name: string;
-  assumedBy: ServicePrincipal[];
+  assumedBy: PrincipalBase[];
 }
 export class AutoScalingGroupModel {
   launchTemplate: {
