@@ -352,6 +352,8 @@ export class AutoScalingGroupModel {
     instanceType: string;
     keyName: string;
     version: number | string;
+    volumeType: string
+    volumeSize: number
   };
   asg: {
     name: string;

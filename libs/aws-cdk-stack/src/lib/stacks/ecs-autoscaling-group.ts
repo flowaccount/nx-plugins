@@ -89,8 +89,17 @@ export class ECSAutoScalingGroup extends Stack {
           securityGroupIds: [_securityGroup.securityGroupId],
           iamInstanceProfile: { arn: _instanceProfile.attrArn },
           userData: Fn.base64(_userData),
+          blockDeviceMappings:[{
+            ebs:{
+              volumeType: stackProps.asgModel.launchTemplate.volumeType,
+              volumeSize: stackProps.asgModel.launchTemplate.volumeSize,
+              deleteOnTermination: true
+            },
+            deviceName: "/dev/xvda"
+          }],
         },
       });
+      
       const asgGroup = new CfnAutoScalingGroup(this, `cfn-${stackProps.asgModel.asg.name}`, {
         minSize: stackProps.asgModel.asg.min,
         maxSize: stackProps.asgModel.asg.max,
