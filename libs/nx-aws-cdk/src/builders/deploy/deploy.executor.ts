@@ -46,13 +46,14 @@ export default async function runSynthExecutor(
   
   // argument
   var argsss = parseArgs();
-  console.log(argsss);
-  process.env.serviceName = argsss["serviceName"];
-  process.env.targetGroupArn = argsss["targetGroupArn"];
-  process.env.secretArn = argsss["secretArn"];
-  process.env.asgName = argsss["asgName"];
-  process.env.portMap = argsss["portMap"];
-  process.env.site = argsss["site"];
+  if(argsss){
+    process.env.serviceName = argsss["serviceName"];
+    process.env.targetGroupArn = argsss["targetGroupArn"];
+    process.env.secretArn = argsss["secretArn"];
+    process.env.asgName = argsss["asgName"];
+    process.env.portMap = argsss["portMap"];
+    process.env.site = argsss["site"];
+  }
   
   // require('dotenv-json')(argsss)
 
