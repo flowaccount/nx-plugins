@@ -31,8 +31,14 @@ export class ECSAutoScalingGroup extends Stack {
     super(scope, id, stackProps);
     let _userData = `
         #!/bin/bash
-        echo ECS_CLUSTER=${stackProps.cluster.clusterName} >> /etc/ecs/ecs.config
-        echo ECS_ENABLE_CONTAINER_METADATA=true >> /etc/ecs/ecs.config
+        echo "Creating ECS Configuration File"
+        mkdir /etc/ecs || echo "ECS Directory Already Exists"
+        cat << EOF >> /etc/ecs/ecs.config
+        ECS_CLUSTER=${stackProps.cluster.clusterName}
+        ECS_ENABLE_CONTAINER_METADATA=true
+        EOF
+        
+        amazon-linux-extras disable docker && amazon-linux-extras install -y ecs && systemctl enable --now --no-block ecs
         docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
         `;
       if(stackProps.s3MountConfig) {
