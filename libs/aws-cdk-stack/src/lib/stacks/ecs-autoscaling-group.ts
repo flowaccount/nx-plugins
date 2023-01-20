@@ -5,9 +5,12 @@ import {
   CfnLaunchTemplate,
   SecurityGroup,
   SubnetType,
+  LookupMachineImage,
+  MachineImage,
+  AmazonLinuxImage
 } from '@aws-cdk/aws-ec2';
 import { CfnInstanceProfile, IRole } from '@aws-cdk/aws-iam';
-import { CfnCapacityProvider, CfnClusterCapacityProviderAssociations, Cluster, EcsOptimizedImage, WindowsOptimizedVersion } from '@aws-cdk/aws-ecs';
+import { CfnCapacityProvider, CfnClusterCapacityProviderAssociations, Cluster, Ec2Service, EcsOptimizedImage, WindowsOptimizedVersion } from '@aws-cdk/aws-ecs';
 import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
 import { ECSModel, S3MountConfig, TagModel, AutoScalingGroupModel } from '../types';
 
@@ -86,10 +89,13 @@ export class ECSAutoScalingGroup extends Stack {
       }
     );
     let _launchTemplate: CfnLaunchTemplate;
+    const amazonLinux = new AmazonLinuxImage({
+
+    })
       _launchTemplate = new CfnLaunchTemplate(this, stackProps.asgModel.launchTemplate.name, {
         launchTemplateName: stackProps.asgModel.launchTemplate.name,
         launchTemplateData: {
-          imageId: stackProps.ecsModel.isWindows ?  EcsOptimizedImage.windows(WindowsOptimizedVersion.SERVER_2019).getImage(this).imageId: EcsOptimizedImage.amazonLinux2().getImage(this).imageId,
+          imageId: stackProps.ecsModel.isWindows ?  EcsOptimizedImage.windows(WindowsOptimizedVersion.SERVER_2019).getImage(this).imageId:  stackProps.asgModel.launchTemplate.imageId,
           instanceType: stackProps.asgModel.launchTemplate.instanceType,
           keyName: stackProps.asgModel.launchTemplate.keyName,
           securityGroupIds: [_securityGroup.securityGroupId],
