@@ -419,6 +419,7 @@ export class ECSServiceModel {
   cpuScalingProps?: CpuUtilizationScalingProps;
   memScalingProps?: MemoryUtilizationScalingProps;
   scaleOnScheduleList?: ScalingSchduleModel[];
+  stepScaling?: string;
   daemon?: boolean;
   capacityProviderName: string; // should automatically populate the placement constraints. /Bank
 }

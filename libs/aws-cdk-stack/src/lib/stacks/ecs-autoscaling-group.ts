@@ -33,28 +33,36 @@ export class ECSAutoScalingGroup extends Stack {
   ) {
     super(scope, id, stackProps);
     let _userData = `
-        #!/bin/bash
-        echo "Creating ECS Configuration File"
-        mkdir /etc/ecs || echo "ECS Directory Already Exists"
-        cat << EOF >> /etc/ecs/ecs.config
-        ECS_CLUSTER=${stackProps.cluster.clusterName}
-        ECS_ENABLE_CONTAINER_METADATA=true
-        EOF
-        
-        amazon-linux-extras disable docker && amazon-linux-extras install -y ecs && systemctl enable --now --no-block ecs
-        docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
+#!/bin/bash
+echo "Creating ECS Configuration File"
+mkdir /etc/ecs || echo "ECS Directory Already Exists"
+cat << EOF >> /etc/ecs/ecs.config
+ECS_CLUSTER=${stackProps.cluster.clusterName}
+ECS_ENABLE_CONTAINER_METADATA=true
+EOF
+
+amazon-linux-extras disable docker && amazon-linux-extras install -y ecs && systemctl enable --now --no-block ecs
+docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
         `;
       if(stackProps.s3MountConfig) {
-          _userData +=
-          _userData +
-          `
-            sudo yum update -y
-            sudo yum -y install python-pip
-            sudo pip install s3cmd
-            mkdir ${stackProps.s3MountConfig.localPath}
-            sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}
-            { sudo crontab -l; sudo echo "* * * * * sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}"; } | sudo crontab -
-            `;
+          _userData = `
+#!/bin/bash
+echo "Creating ECS Configuration File"
+mkdir /etc/ecs || echo "ECS Directory Already Exists"
+cat << EOF >> /etc/ecs/ecs.config
+ECS_CLUSTER=${stackProps.cluster.clusterName}
+ECS_ENABLE_CONTAINER_METADATA=true
+EOF
+
+amazon-linux-extras disable docker && amazon-linux-extras install -y ecs && systemctl enable --now --no-block ecs
+docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
+sudo yum update -y
+sudo yum -y install python-pip
+sudo pip install s3cmd
+mkdir ${stackProps.s3MountConfig.localPath}
+sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}
+{ sudo crontab -l; sudo echo "* * * * * sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}"; } | sudo crontab -
+          `;
     }
 
     if(stackProps.ecsModel.isWindows) {
@@ -167,7 +175,7 @@ export class ECSAutoScalingGroup extends Stack {
       autoScalingGroupProvider: {
         autoScalingGroupArn: asgGroup.autoScalingGroupName,
         managedScaling: {
-          targetCapacity: 90,
+          targetCapacity: 100,
           status: 'ENABLED'
         },
         managedTerminationProtection: protection,
