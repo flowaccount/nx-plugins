@@ -46,6 +46,12 @@ Deploy your infrastructure
 yarn nx run my-cdk:deploy [--configuration=<stack-suffix>]
 ```
 
+## Steps to deploy an ECS service
+
+- First we need to create policies
+- Then we spin up the load-balancer and target-group together
+- Then we spin up the autoscaling group and cluster together
+- Then at last we spin up the service onto cluster supplying the target-group ARN for serving to internet through ALB
 
 ## ECS environment file example
 
