@@ -1,5 +1,6 @@
 import * as webpack from 'webpack';
 import { Observable } from 'rxjs';
+import { logger } from '@nrwl/devkit';
 
 export function runWebpack(config: webpack.Configuration): Observable<any> {
   return new Observable((subscriber) => {
@@ -22,6 +23,11 @@ export function runWebpack(config: webpack.Configuration): Observable<any> {
       return () => watching.close(() => subscriber.complete());
     } else {
       webpackCompiler.run((err, stats) => {
+        if(err) {
+          logger.error("there is an error!");
+          logger.error(err);
+        }
+        console.error(stats);
         callback(err, stats);
         webpackCompiler.close((closeErr) => {
           if (closeErr) subscriber.error(closeErr);

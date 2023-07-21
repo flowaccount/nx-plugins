@@ -3,6 +3,7 @@ import * as readConfiguration from 'serverless/lib/configuration/read'
 import { ServerlessBaseOptions, ServerlessDeployBuilderOptions, ServerlessSlsBuilderOptions, SimpleBuildEvent } from './types'
 import * as path from 'path'
 import * as fs from 'fs'
+import * as dotEnvJson from 'dotenv-json';
 import { copyBuildOutputToBePackaged, parseArgs } from './copy-asset-files'
 // import * as componentsV2  from '@serverless/components';
 import {
@@ -25,6 +26,11 @@ export class ServerlessWrapper {
       )
     }
     return this.serverless$
+  }
+
+  static dispose()
+  {
+    this.serverless$ = null;
   }
 
   static isServerlessDeployBuilderOptions(
@@ -73,13 +79,12 @@ export class ServerlessWrapper {
           )
         ) {
           logger.debug('Loading Environment Variables', buildOptions.servicePath, buildOptions.processEnvironmentFile)
-          require('dotenv-json')({
+          dotEnvJson({
             path: path.join(
               buildOptions.servicePath,
               buildOptions.processEnvironmentFile
             ),
           })
-          console.log(process.env)
           logger.info(
             `Environment variables set according to ${buildOptions.processEnvironmentFile}`
           )
@@ -105,6 +110,7 @@ export class ServerlessWrapper {
       const serverlessConfig: any = {
         commands: [
           'deploy',
+          'package',
           'offline',
           'deploy list',
           'destroy',
@@ -193,6 +199,7 @@ export function getExecArgv(
     serverlessOptions.push(`--${a} ${extraArgs[a]}`)
   )
   console.log(serverlessOptions)
+  
   return serverlessOptions
 }
 
@@ -208,10 +215,19 @@ export async function runServerlessCommand(
   let args = getExecArgv(options)
   const serviceDir = ServerlessWrapper.serverless.serviceDir
   const servicePath = ServerlessWrapper.serverless.config.servicePath
-  if (extraArgs) {
-    args = args.concat(extraArgs)
+
+  console.log('extraArgs..................', extraArgs)
+
+  
+  if (extraArgs != null) {
+    logger.info('concatinating function argument!')
+    args = extraArgs.concat(args)
   }
+
   logger.info('running serverless commands')
+  console.log('commands.........', commands);
+  console.log('args.................', args);
+
   ServerlessWrapper.serverless.processedInput = {
     commands: commands,
     options: args,

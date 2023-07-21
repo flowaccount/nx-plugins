@@ -138,6 +138,7 @@ export interface ServerlessDeployBuilderOptions {
   packager?: Packager;
   serverlessPackagePath?: string;
   args?: string;
+  skipBuild?: boolean;
 }
 
 export interface ServerlessSlsBuilderOptions {

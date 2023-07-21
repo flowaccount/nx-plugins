@@ -34,7 +34,7 @@
     },
     "function": {
       "type": "string",
-      "description": "The src file location"
+      "description": "The funtion to deploy"
     },
     "list": {
       "type": "boolean",
@@ -50,6 +50,16 @@
       "type": "boolean",
       "default": true,
       "description": "Updates ignoreScripts false to use own package with dev environment"
+    },
+    "verbose": {
+      "type": "boolean",
+      "default": false,
+      "description": "Verbose mode"
+    },
+    "skipBuild": {
+      "type": "boolean",
+      "default": false,
+      "description": "Skip Build Mode"
     },
     "packager": {
       "type": "string",

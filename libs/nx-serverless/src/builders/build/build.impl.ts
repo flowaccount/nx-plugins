@@ -3,7 +3,7 @@ import {
   NormalizedBuildServerlessBuilderOptions,
   ServerlessEventResult,
 } from '../../utils/types';
-import { tap, map } from 'rxjs/operators';
+import { tap, map, catchError } from 'rxjs/operators';
 
 import { getNodeWebpackConfig } from '../../utils/node.config';
 import {
@@ -59,13 +59,12 @@ export async function buildExecutor(
       `Error building serverless application ${resultCopy.error}`
     );
   }
-
+  logger.info('finished copying assets');
   logger.info('start compiling webpack');
   const iterator = eachValueFrom(
     runWebpack(config).pipe(
       tap((stats) => {
-        console.info(stats.toString(config.stats));
-
+        // console.info(stats.toString(config.stats));
         if (options.statsJson) {
           const statsJsonFile = resolve(
             context.root,
@@ -83,6 +82,11 @@ export async function buildExecutor(
           resolverName: 'WebpackDependencyResolver',
           tsconfig: options.tsConfig,
         } as ServerlessBuildEvent;
+      }),
+      catchError((e, caught) => { 
+        logger.error(e)
+        logger.error(caught)
+        return of({success: false } as ServerlessBuildEvent)
       })
     )
   );
@@ -91,3 +95,7 @@ export async function buildExecutor(
 }
 export default buildExecutor;
 export const serverlessBuilder = convertNxExecutor(buildExecutor);
+function of(arg0: ServerlessBuildEvent): any {
+  throw new Error('Function not implemented.');
+}
+

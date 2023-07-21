@@ -210,7 +210,7 @@ function normalizeAssets(
   root: string,
   sourceRoot: string
 ): any[] {
-  return assets.map((asset) => {
+  return assets?.map((asset) => {
     if (typeof asset === 'string') {
       const assetPath = normalize(asset);
       const resolvedAssetPath = resolve(root, assetPath);
@@ -256,7 +256,7 @@ function normalizeFileReplacements(
   root: string,
   fileReplacements: FileReplacement[]
 ): FileReplacement[] {
-  return fileReplacements.map((fileReplacement) => ({
+  return fileReplacements?.map((fileReplacement) => ({
     replace: resolve(root, fileReplacement.replace),
     with: resolve(root, fileReplacement.with),
   }));
