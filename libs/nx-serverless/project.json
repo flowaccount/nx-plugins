@@ -1,0 +1,62 @@
+{
+  "name": "nx-serverless",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/nx-serverless/src",
+  "projectType": "library",
+  "generators": {},
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/nx-serverless/**/*.ts",
+          "libs/nx-serverless/**/*.spec.ts",
+          "libs/nx-serverless/**/*.spec.tsx",
+          "libs/nx-serverless/**/*.spec.js",
+          "libs/nx-serverless/**/*.spec.jsx",
+          "libs/nx-serverless/**/*.d.ts"
+        ]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "options": {
+        "jestConfig": "libs/nx-serverless/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "outputs": ["coverage/libs/nx-serverless"]
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "options": {
+        "outputPath": "dist/libs/nx-serverless",
+        "tsConfig": "libs/nx-serverless/tsconfig.lib.json",
+        "packageJson": "libs/nx-serverless/package.json",
+        "main": "libs/nx-serverless/src/index.ts",
+        "assets": [
+          "libs/nx-serverless/*.md",
+          "libs/nx-serverless/.npmignore",
+          {
+            "input": "./libs/nx-serverless/src",
+            "glob": "**/*.!(ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/nx-serverless",
+            "glob": "collection.json",
+            "output": "."
+          },
+          {
+            "input": "./libs/nx-serverless",
+            "glob": "builders.json",
+            "output": "."
+          }
+        ],
+        "srcRootForCompilationRoot": "libs\\nx-serverless"
+      },
+      "outputs": ["{options.outputPath}"]
+    }
+  },
+  "tags": []
+}

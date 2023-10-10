@@ -19,13 +19,19 @@ export class ECSCluster extends Stack {
     super(scope, id, stackProps);
 
     logger.info('creating the ecs cluster');
-
-    this.cluster = new Cluster(this, stackProps.ecs.clusterName, {
-      vpc: stackProps.vpc,
-      clusterName: stackProps.ecs.clusterName,
-      containerInsights: false,
-    });
-
+    if(stackProps.ecs.existingCluster) {
+      Cluster.fromClusterAttributes(this, stackProps.ecs.clusterName, {
+        vpc: stackProps.vpc,
+        clusterName: stackProps.ecs.clusterName,
+        securityGroups: [],
+      })
+    } else {
+      this.cluster = new Cluster(this, stackProps.ecs.clusterName, {
+        vpc: stackProps.vpc,
+        clusterName: stackProps.ecs.clusterName,
+        containerInsights: false,
+      });
+    }
     stackProps.taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
     });

@@ -1,0 +1,44 @@
+{
+  "name": "scully-plugin-google-analytics",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/scully-plugin-google-analytics/src",
+  "projectType": "library",
+  "generators": {},
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/scully-plugin-google-analytics/**/*.ts",
+          "libs/scully-plugin-google-analytics/**/*.spec.ts",
+          "libs/scully-plugin-google-analytics/**/*.spec.tsx",
+          "libs/scully-plugin-google-analytics/**/*.spec.js",
+          "libs/scully-plugin-google-analytics/**/*.spec.jsx",
+          "libs/scully-plugin-google-analytics/**/*.d.ts"
+        ]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "options": {
+        "jestConfig": "libs/scully-plugin-google-analytics/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "outputs": ["coverage/libs/scully-plugin-google-analytics"]
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "options": {
+        "outputPath": "dist/libs/scully-plugin-google-analytics",
+        "tsConfig": "libs/scully-plugin-google-analytics/tsconfig.lib.json",
+        "packageJson": "libs/scully-plugin-google-analytics/package.json",
+        "main": "libs/scully-plugin-google-analytics/src/index.ts",
+        "assets": ["libs/scully-plugin-google-analytics/*.md"],
+        "srcRootForCompilationRoot": "libs\\scully-plugin-google-analytics\\src"
+      },
+      "outputs": ["{options.outputPath}"]
+    }
+  },
+  "tags": []
+}

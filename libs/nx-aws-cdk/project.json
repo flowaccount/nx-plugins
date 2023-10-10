@@ -1,0 +1,66 @@
+{
+  "name": "nx-aws-cdk",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/nx-aws-cdk/src",
+  "projectType": "library",
+  "generators": {},
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": [
+          "libs/nx-aws-cdk/**/*.ts",
+          "libs/nx-aws-cdk/**/*.spec.ts",
+          "libs/nx-aws-cdk/**/*.spec.tsx",
+          "libs/nx-aws-cdk/**/*.spec.js",
+          "libs/nx-aws-cdk/**/*.spec.jsx",
+          "libs/nx-aws-cdk/**/*.d.ts"
+        ]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "options": {
+        "jestConfig": "libs/nx-aws-cdk/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "outputs": ["coverage/libs/nx-aws-cdk"]
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "options": {
+        "outputPath": "dist/libs/nx-aws-cdk",
+        "tsConfig": "libs/nx-aws-cdk/tsconfig.lib.json",
+        "packageJson": "libs/nx-aws-cdk/package.json",
+        "main": "libs/nx-aws-cdk/src/index.ts",
+        "assets": [
+          "libs/nx-aws-cdk/*.md",
+          {
+            "input": "./libs/nx-aws-cdk/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/nx-aws-cdk/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/nx-aws-cdk",
+            "glob": "executors.json",
+            "output": "."
+          },
+          {
+            "input": "./libs/nx-aws-cdk",
+            "glob": "generators.json",
+            "output": "."
+          }
+        ],
+        "srcRootForCompilationRoot": "libs\\nx-aws-cdk"
+      },
+      "outputs": ["{options.outputPath}"]
+    }
+  },
+  "tags": []
+}

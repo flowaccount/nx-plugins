@@ -335,6 +335,7 @@ export interface IECSStackEnvironmentConfig extends StackProps {
   service: ECSServiceModel[];
   tag: TagModel[];
   s3MountConfig?: S3MountConfig;
+ 
 }
 
 export abstract class ECSStackEnvironmentConfig {
@@ -399,6 +400,7 @@ export class ECSModel {
   defaultCloudMapNamespace?: CloudMapNamespaceOptions;
   isWindows?: boolean;
   providerList: string[];
+  existingCluster?: boolean;
 }
 
 export class ECSServiceModel {

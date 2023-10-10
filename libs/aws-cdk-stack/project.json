@@ -1,0 +1,35 @@
+{
+  "name": "aws-cdk-stack",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/aws-cdk-stack/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "options": {
+        "lintFilePatterns": ["libs/aws-cdk-stack/**/*.ts"]
+      },
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/libs/aws-cdk-stack"],
+      "options": {
+        "jestConfig": "libs/aws-cdk-stack/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/aws-cdk-stack",
+        "tsConfig": "libs/aws-cdk-stack/tsconfig.lib.json",
+        "packageJson": "libs/aws-cdk-stack/package.json",
+        "main": "libs/aws-cdk-stack/src/index.ts",
+        "assets": ["libs/aws-cdk-stack/*.md"]
+      }
+    }
+  },
+  "tags": []
+}

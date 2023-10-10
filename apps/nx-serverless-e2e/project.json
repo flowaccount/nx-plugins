@@ -1,0 +1,19 @@
+{
+  "name": "nx-serverless-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "projectType": "application",
+  "sourceRoot": "apps/nx-serverless-e2e/src",
+  "targets": {
+    "e2e": {
+      "executor": "@nrwl/nx-plugin:e2e",
+      "options": {
+        "target": "nx-serverless:build",
+        "npmPackageName": "@flowaccount/nx-serverless",
+        "pluginOutputPath": "dist/libs/nx-serverless",
+        "jestConfig": "apps/nx-serverless-e2e/jest.config.js"
+      }
+    }
+  },
+  "tags": [],
+  "implicitDependencies": ["nx-serverless"]
+}

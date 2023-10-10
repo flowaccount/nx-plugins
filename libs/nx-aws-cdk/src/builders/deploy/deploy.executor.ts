@@ -63,6 +63,7 @@ export default async function runSynthExecutor(
     process.env.useServiceDiscovery = argsss["useServiceDiscovery"];
     process.env.existingCluster = argsss["existingCluster"];
     process.env.keyPairName = argsss["keyPairName"];
+    process.env.existingCluster = argsss["existingCluster"];
   }
 
   // require('dotenv-json')(argsss)
