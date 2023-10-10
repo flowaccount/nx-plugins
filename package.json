@@ -62,7 +62,6 @@
     "@aws-cdk/aws-sqs": "~1.121.0",
     "@aws-cdk/core": "~1.121.0",
     "@babel/code-frame": "^7.8.3",
-    "@nrwl/cli": "14.1.5",
     "@nrwl/devkit": "16.10.0",
     "@nrwl/eslint-plugin-nx": "16.10.0",
     "@nrwl/express": "16.10.0",
