@@ -22,7 +22,6 @@
       }
     ]
   },
-
   "cli": {
     "defaultCollection": "@nrwl/workspace"
   },
@@ -78,5 +77,6 @@
         "linter": "eslint"
       }
     }
-  }
+  },
+  "$schema": "./node_modules/nx/schemas/nx-schema.json"
 }
