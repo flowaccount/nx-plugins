@@ -25,7 +25,9 @@
         "jestConfig": "libs/scully-plugin-lazy-load-picture-tag/jest.config.ts",
         "passWithNoTests": true
       },
-      "outputs": ["coverage/libs/scully-plugin-lazy-load-picture-tag"]
+      "outputs": [
+        "{workspaceRoot}/coverage/libs/scully-plugin-lazy-load-picture-tag"
+      ]
     },
     "build": {
       "executor": "@nrwl/js:tsc",

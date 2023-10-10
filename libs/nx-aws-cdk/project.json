@@ -25,7 +25,7 @@
         "jestConfig": "libs/nx-aws-cdk/jest.config.ts",
         "passWithNoTests": true
       },
-      "outputs": ["coverage/libs/nx-aws-cdk"]
+      "outputs": ["{workspaceRoot}/coverage/libs/nx-aws-cdk"]
     },
     "build": {
       "executor": "@nrwl/js:tsc",

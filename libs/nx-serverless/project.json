@@ -25,7 +25,7 @@
         "jestConfig": "libs/nx-serverless/jest.config.ts",
         "passWithNoTests": true
       },
-      "outputs": ["coverage/libs/nx-serverless"]
+      "outputs": ["{workspaceRoot}/coverage/libs/nx-serverless"]
     },
     "build": {
       "executor": "@nrwl/js:tsc",

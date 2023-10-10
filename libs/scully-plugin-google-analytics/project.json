@@ -25,7 +25,9 @@
         "jestConfig": "libs/scully-plugin-google-analytics/jest.config.ts",
         "passWithNoTests": true
       },
-      "outputs": ["coverage/libs/scully-plugin-google-analytics"]
+      "outputs": [
+        "{workspaceRoot}/coverage/libs/scully-plugin-google-analytics"
+      ]
     },
     "build": {
       "executor": "@nrwl/js:tsc",

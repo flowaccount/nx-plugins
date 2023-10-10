@@ -26,7 +26,7 @@
         "jestConfig": "libs/scully-plugin-angular-delay/jest.config.ts",
         "passWithNoTests": true
       },
-      "outputs": ["coverage/libs/scully-plugin-angular-delay"]
+      "outputs": ["{workspaceRoot}/coverage/libs/scully-plugin-angular-delay"]
     },
     "build": {
       "executor": "@nrwl/js:tsc",

@@ -13,7 +13,7 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/libs/aws-cdk-core"],
+      "outputs": ["{workspaceRoot}/coverage/libs/aws-cdk-core"],
       "options": {
         "jestConfig": "libs/aws-cdk-core/jest.config.ts",
         "passWithNoTests": true
