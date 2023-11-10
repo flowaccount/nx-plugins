@@ -21,12 +21,22 @@ import * as _ from 'lodash';
 import { NPM } from './npm';
 import { Yarn } from './yarn';
 import { getProjectRoot } from '../normalize';
-import { DependencyResolver, ServerlessDeployBuilderOptions, ServerlessSlsBuilderOptions, SimpleBuildEvent } from '../types';
+import {
+  DependencyResolver,
+  ServerlessDeployBuilderOptions,
+  ServerlessSlsBuilderOptions,
+  SimpleBuildEvent,
+} from '../types';
 import { WebpackDependencyResolver } from '../webpack.stats';
 import { DependencyCheckResolver } from '../depcheck';
 import { ServerlessWrapper } from '../serverless';
 import { join, dirname } from 'path';
-import { ExecutorContext, logger,  writeJsonFile, readJsonFile } from '@nrwl/devkit';
+import {
+  ExecutorContext,
+  logger,
+  writeJsonFile,
+  readJsonFile,
+} from '@nx/devkit';
 import { StatsCompilation } from 'webpack';
 
 const registeredPackagers = {
@@ -58,9 +68,11 @@ export async function preparePackageJson(
   const workspacePackageJsonPath = join(context.root, 'package.json');
   const packageJsonPath = join(options.package, 'package.json');
   const packageJson = readJsonFile(workspacePackageJsonPath);
-  logger.info(`getting external modules and compilingh into ${packageJsonPath}`);
+  logger.info(
+    `getting external modules and compilingh into ${packageJsonPath}`
+  );
   logger.info('create a package.json with first level dependencies'); //First create a package.json with first level dependencies
-  logger.info(tsconfig)
+  logger.info(tsconfig);
   // Get the packager for the current process.
   let packagerInstance = null;
   if (options.packager && options.packager.toString().toLowerCase() == 'npm') {
@@ -83,100 +95,98 @@ export async function preparePackageJson(
   logger.info(`packager instance is -- ${options.packager}`);
   let dependencyGraph = null;
   // Get the packager for the current process.
-  const root = await getProjectRoot(context)
+  const root = await getProjectRoot(context);
   options.root = join(context.root, root);
   let prodModules: string[] = await resolver.normalizeExternalDependencies(
-        packageJson,
-        workspacePackageJsonPath,
-        options.verbose,
-        stats,
-        {},
-        options.root,
-        tsconfig
-      );
-      createPackageJson(prodModules, packageJsonPath, workspacePackageJsonPath);
-      //got to generate lock entry for yarn for dependency graph to work.
-      if (packagerInstance === Yarn) {
-        logger.info(
-          'generate lock entry for yarn for dependency graph to work.'
-        );
-        const result = await packagerInstance.generateLockFile(dirname(packageJsonPath));
-        if (result.error) {
-          logger.error('ERROR: generating lock file!');
-          return { success: false, error: result.error.toString() };
-        }
-        // writeJsonFile(
-        //   join(options.package, packagerInstance.lockfileName),
-        //   result.stdout.toString()
-        // );
-      } else if (packagerInstance === NPM) {
-        // need to install deps for dep-graph to work
-        const result = await packagerInstance.install(dirname(packageJsonPath));
-        if (result.error) {
-          logger.error('ERROR: generating lock file!');
-          return { success: false, error: result.error.toString() };
-        }
-      }
-      // Get the packagelist with dependency graph and depth=2 level
-      // review: Change depth to options?
-      // review: Should I change everything to spawnsync for the pacakagers?
-      logger.info(
-        'get the packagelist with dependency graph and depth=2 level'
-      );
-      const getDependenciesResult = await packagerInstance.getProdDependencies(
-        dirname(packageJsonPath),
-        1,
-        4
-      );
-      logger.info("getDependenciesResult")
-      // logger.info(getDependenciesResult)
-      if (!getDependenciesResult) {
-        return {
-          success: false,
-          error: 'ERROR: getDependenciesResult!',
-        };
-      }
-      const data = getDependenciesResult;
-      if (packagerInstance === Yarn) {
-        dependencyGraph = convertDependencyTrees(data)
-      } else if (packagerInstance === NPM) {
-        dependencyGraph = JSON.parse(data.toString());
-      }
-      const problems = _.get(dependencyGraph, 'problems', []);
-      if (options.verbose && !_.isEmpty(problems)) {
-        logger.info(`Ignoring ${_.size(problems)} NPM errors:`);
-        _.forEach(problems, (problem) => {
-          logger.info(`=> ${problem}`);
-        });
-      }
-      // re-writing package.json with dependency-graphs
-      logger.info('re-writing package.json with dependency-graphs');
-      // logger.info(dependencyGraph)
-      prodModules = await resolver.normalizeExternalDependencies(
-        packageJson,
-        workspacePackageJsonPath,
-        options.verbose,
-        stats,
-        dependencyGraph,
-        options.root,
-        tsconfig
-      );
-      createPackageJson(prodModules, packageJsonPath, workspacePackageJsonPath);
-      // run packager to  install node_modules
-      logger.info('run packager to  install node_modules');
-      const packageInstallResult = await packagerInstance.install(
-        dirname(packageJsonPath),
-        { ignoreScripts: options.ignoreScripts }
-      );
-      if (packageInstallResult.error) {
-        logger.error('ERROR: install package error!');
-        return {
-          success: false,
-          error: packageInstallResult.error.toString(),
-        };
-      }
-      logger.info(packageInstallResult.stdout.toString());
-      return { success: true };
+    packageJson,
+    workspacePackageJsonPath,
+    options.verbose,
+    stats,
+    {},
+    options.root,
+    tsconfig
+  );
+  createPackageJson(prodModules, packageJsonPath, workspacePackageJsonPath);
+  //got to generate lock entry for yarn for dependency graph to work.
+  if (packagerInstance === Yarn) {
+    logger.info('generate lock entry for yarn for dependency graph to work.');
+    const result = await packagerInstance.generateLockFile(
+      dirname(packageJsonPath)
+    );
+    if (result.error) {
+      logger.error('ERROR: generating lock file!');
+      return { success: false, error: result.error.toString() };
+    }
+    // writeJsonFile(
+    //   join(options.package, packagerInstance.lockfileName),
+    //   result.stdout.toString()
+    // );
+  } else if (packagerInstance === NPM) {
+    // need to install deps for dep-graph to work
+    const result = await packagerInstance.install(dirname(packageJsonPath));
+    if (result.error) {
+      logger.error('ERROR: generating lock file!');
+      return { success: false, error: result.error.toString() };
+    }
+  }
+  // Get the packagelist with dependency graph and depth=2 level
+  // review: Change depth to options?
+  // review: Should I change everything to spawnsync for the pacakagers?
+  logger.info('get the packagelist with dependency graph and depth=2 level');
+  const getDependenciesResult = await packagerInstance.getProdDependencies(
+    dirname(packageJsonPath),
+    1,
+    4
+  );
+  logger.info('getDependenciesResult');
+  // logger.info(getDependenciesResult)
+  if (!getDependenciesResult) {
+    return {
+      success: false,
+      error: 'ERROR: getDependenciesResult!',
+    };
+  }
+  const data = getDependenciesResult;
+  if (packagerInstance === Yarn) {
+    dependencyGraph = convertDependencyTrees(data);
+  } else if (packagerInstance === NPM) {
+    dependencyGraph = JSON.parse(data.toString());
+  }
+  const problems = _.get(dependencyGraph, 'problems', []);
+  if (options.verbose && !_.isEmpty(problems)) {
+    logger.info(`Ignoring ${_.size(problems)} NPM errors:`);
+    _.forEach(problems, (problem) => {
+      logger.info(`=> ${problem}`);
+    });
+  }
+  // re-writing package.json with dependency-graphs
+  logger.info('re-writing package.json with dependency-graphs');
+  // logger.info(dependencyGraph)
+  prodModules = await resolver.normalizeExternalDependencies(
+    packageJson,
+    workspacePackageJsonPath,
+    options.verbose,
+    stats,
+    dependencyGraph,
+    options.root,
+    tsconfig
+  );
+  createPackageJson(prodModules, packageJsonPath, workspacePackageJsonPath);
+  // run packager to  install node_modules
+  logger.info('run packager to  install node_modules');
+  const packageInstallResult = await packagerInstance.install(
+    dirname(packageJsonPath),
+    { ignoreScripts: options.ignoreScripts }
+  );
+  if (packageInstallResult.error) {
+    logger.error('ERROR: install package error!');
+    return {
+      success: false,
+      error: packageInstallResult.error.toString(),
+    };
+  }
+  logger.info(packageInstallResult.stdout.toString());
+  return { success: true };
 }
 
 function resolverFactory(
@@ -250,7 +260,6 @@ function addModulesToPackageJson(
 ) {
   // , pathToPackageRoot
   _.forEach(externalModules, (externalModule) => {
-
     const splitModule = _.split(externalModule, '@');
     // If we have a scoped module we have to re-add the @
     if (_.startsWith(externalModule, '@')) {
@@ -278,7 +287,7 @@ function rebaseFileReferences(pathToPackageRoot, moduleVersion) {
     );
   }
   if (!moduleVersion || moduleVersion == '') {
-    logger.info('setting moduleVersion to *')
+    logger.info('setting moduleVersion to *');
     moduleVersion = '*';
   }
   return moduleVersion;

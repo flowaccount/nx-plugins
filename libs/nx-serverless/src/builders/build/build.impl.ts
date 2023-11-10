@@ -16,21 +16,18 @@ import { ServerlessWrapper } from '../../utils/serverless';
 import { resolve } from 'path';
 import { writeFileSync } from 'fs';
 import { consolidateExcludes } from '../../utils/serverless.config';
-import {
-  copyAssetFilesSync,
-} from '../../utils/copy-asset-files';
+import { copyAssetFilesSync } from '../../utils/copy-asset-files';
 import normalizeAssetOptions from '../../utils/normalize-options';
-import { convertNxExecutor, ExecutorContext, logger } from '@nrwl/devkit';
+import { convertNxExecutor, ExecutorContext, logger } from '@nx/devkit';
 
 import { eachValueFrom } from 'rxjs-for-await';
 import { runWebpack } from '../../utils/run-webpack';
 // import { runWebpack } from '@nrwl/node/src/utils/
 
-export type ServerlessBuildEvent =
-  ServerlessEventResult & {
-    outfile: string;
-    success: boolean;
-  };
+export type ServerlessBuildEvent = ServerlessEventResult & {
+  outfile: string;
+  success: boolean;
+};
 
 export async function buildExecutor(
   options: BuildBuilderOptions,
@@ -83,10 +80,10 @@ export async function buildExecutor(
           tsconfig: options.tsConfig,
         } as ServerlessBuildEvent;
       }),
-      catchError((e, caught) => { 
-        logger.error(e)
-        logger.error(caught)
-        return of({success: false } as ServerlessBuildEvent)
+      catchError((e, caught) => {
+        logger.error(e);
+        logger.error(caught);
+        return of({ success: false } as ServerlessBuildEvent);
       })
     )
   );
@@ -98,4 +95,3 @@ export const serverlessBuilder = convertNxExecutor(buildExecutor);
 function of(arg0: ServerlessBuildEvent): any {
   throw new Error('Function not implemented.');
 }
-

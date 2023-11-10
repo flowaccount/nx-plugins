@@ -7,7 +7,7 @@
 // import { ServerlessWrapper } from '../../utils/serverless';
 // import { serverlessExecutionHandler } from './destroy.impl';
 // import { ServerlessDeployBuilderOptions } from '../deploy/deploy.impl';
-// import { MockBuilderContext } from '@nrwl/workspace/testing';
+// import { MockBuilderContext } from '@nx/workspace/testing';
 // import * as targetSchedulers from '../../utils/target.schedulers';
 
 // describe('Serverless Destroy Builder', () => {

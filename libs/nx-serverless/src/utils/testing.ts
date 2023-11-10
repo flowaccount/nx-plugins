@@ -1,7 +1,7 @@
 // import { join } from 'path';
 // import {
 //   createEmptyWorkspace,
-// } from '@nrwl/workspace/testing';
+// } from '@nx/workspace/testing';
 // import { externalSchematic, Rule, Tree } from '@angular-devkit/schematics';
 // import { SchematicTestRunner } from '@angular-devkit/schematics/testing';
 

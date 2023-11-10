@@ -1,9 +1,13 @@
 import { ChildProcess, fork } from 'child_process';
 import * as treeKill from 'tree-kill';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
-import { ExecutorContext, logger } from '@nrwl/devkit';
+import { ExecutorContext, logger } from '@nx/devkit';
 import { promisify } from 'util';
-import { InspectType, ServerlessExecuteBuilderOptions, SimpleBuildEvent } from '../../utils/types';
+import {
+  InspectType,
+  ServerlessExecuteBuilderOptions,
+  SimpleBuildEvent,
+} from '../../utils/types';
 
 try {
   require('dotenv').config();
@@ -79,21 +83,20 @@ async function killProcess() {
   if (!subProcess) {
     return;
   }
-
-  const promisifiedTreeKill: (pid: number, signal: string) => Promise<void> =
-    promisify(treeKill);
-  try {
-    await promisifiedTreeKill(subProcess.pid, 'SIGTERM');
-  } catch (err) {
-    if (Array.isArray(err) && err[0] && err[2]) {
-      const errorMessage = err[2];
-      logger.error(errorMessage);
-    } else if (err.message) {
-      logger.error(err.message);
-    }
-  } finally {
-    subProcess = null;
-  }
+  // const promisifiedTreeKill: (pid: number, signal: string) => Promise<void> =
+  //   promisify(treeKill);
+  // try {
+  //   await promisifiedTreeKill(subProcess.pid, 'SIGTERM');
+  // } catch (err) {
+  //   if (Array.isArray(err) && err[0] && err[2]) {
+  //     const errorMessage = err[2];
+  //     logger.error(errorMessage);
+  //   } else if (err.message) {
+  //     logger.error(err.message);
+  //   }
+  // } finally {
+  //   subProcess = null;
+  // }
 }
 
 function getServerlessArg(options: ServerlessExecuteBuilderOptions) {

@@ -1,6 +1,6 @@
 import { AuroraServerlessDbStackProperties } from '../types';
 import { SecurityGroup } from '@aws-cdk/aws-ec2';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 import { Construct, SecretValue, Stack } from '@aws-cdk/core';
 import {
   AuroraPostgresEngineVersion,

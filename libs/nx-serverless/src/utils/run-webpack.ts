@@ -1,13 +1,13 @@
 import * as webpack from 'webpack';
 import { Observable } from 'rxjs';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 
 export function runWebpack(config: webpack.Configuration): Observable<any> {
   return new Observable((subscriber) => {
     // Passing `watch` option here will result in a warning due to missing callback.
     // We manually call `.watch` or `.run` later so this option isn't needed here.
     const { watch, ...normalizedConfig } = config;
-    const webpackCompiler = webpack(normalizedConfig);
+    const webpackCompiler = webpack.default(normalizedConfig);
 
     const callback = (err: Error, stats: webpack.Stats) => {
       if (err) {
@@ -23,8 +23,8 @@ export function runWebpack(config: webpack.Configuration): Observable<any> {
       return () => watching.close(() => subscriber.complete());
     } else {
       webpackCompiler.run((err, stats) => {
-        if(err) {
-          logger.error("there is an error!");
+        if (err) {
+          logger.error('there is an error!');
           logger.error(err);
         }
         console.error(stats);

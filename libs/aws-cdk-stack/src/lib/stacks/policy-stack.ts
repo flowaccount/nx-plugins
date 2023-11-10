@@ -1,6 +1,6 @@
 import { Policy, PolicyStatement } from '@aws-cdk/aws-iam';
 import { Construct, Stack } from '@aws-cdk/core';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 import { PolicyStackProperties } from '../types';
 
 export class PolicyStack extends Stack {

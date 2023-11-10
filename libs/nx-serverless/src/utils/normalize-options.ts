@@ -1,4 +1,4 @@
-import { ExecutorContext } from '@nrwl/devkit';
+import { ExecutorContext } from '@nx/devkit';
 import * as glob from 'glob';
 import { basename, join } from 'path';
 import { BuildBuilderOptions, FileInputOutput } from './types';

@@ -5,7 +5,7 @@ import {
 } from '@aws-cdk/aws-rds';
 import { Construct, Stack } from '@aws-cdk/core';
 import { DatabaseReadonlyReplicaProps } from '../types';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 import { SecurityGroup } from '@aws-cdk/aws-ec2';
 
 export class RdsReadReplicaStack extends Stack {

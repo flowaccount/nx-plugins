@@ -1,9 +1,8 @@
-import * as isBuiltinModule from 'is-builtin-module';
+import isBuiltinModule = require('is-builtin-module');
 import * as _ from 'lodash';
 import { DependencyResolver } from './types';
 import { getProdModules } from './normalize';
-import { of } from 'rxjs';
-import { ExecutorContext } from '@nrwl/devkit';
+import { ExecutorContext } from '@nx/devkit';
 import { StatsCompilation } from 'webpack';
 
 export class WebpackDependencyResolver implements DependencyResolver {
@@ -23,15 +22,14 @@ export class WebpackDependencyResolver implements DependencyResolver {
       dependencyGraph = {};
     }
     // TODO: issue #48
-    const prodModules =
-      getProdModules(
-        externals,
-        packageJson,
-        originPackageJsonPath,
-        [],
-        dependencyGraph,
-        verbose
-      )
+    const prodModules = getProdModules(
+      externals,
+      packageJson,
+      originPackageJsonPath,
+      [],
+      dependencyGraph,
+      verbose
+    );
     return prodModules;
   }
 
@@ -48,7 +46,7 @@ export class WebpackDependencyResolver implements DependencyResolver {
     // console.log('----------------------------------------------------------------')
     // console.log(/"(.*)"$/.exec(module.identifier))
     // console.log('----------------------------------------------------------------')
-    const path = /"(.*)"$/.exec(module.identifier)[1]
+    const path = /"(.*)"$/.exec(module.identifier)[1];
     // console.log('----------------------------------------------------------------')
     // console.log(path)
     // console.log('----------------------------------------------------------------')

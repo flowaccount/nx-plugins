@@ -1,16 +1,11 @@
 import { resolve, dirname, relative, basename, normalize } from 'path';
-import {
-  ServerlessBaseOptions,
-} from './types';
+import { ServerlessBaseOptions } from './types';
 import { statSync } from 'fs';
 import * as glob from 'glob';
 import { extname, join } from 'path';
 import * as _ from 'lodash';
 import { ServerlessWrapper } from './serverless';
-import {
-  ExecutorContext,
-  logger,
-} from '@nrwl/devkit';
+import { ExecutorContext, logger } from '@nx/devkit';
 
 export interface FileReplacement {
   replace: string;
@@ -280,18 +275,17 @@ export function getProdModules(
     '@types/aws-serverless-express',
     '@types/aws-lambda',
     '@types/node',
-    '@nrwl/eslint-plugin-nx',
+    '@nx/eslint-plugin',
     '@typescript-eslint/parser',
     'eslint-config-prettier',
     '@types/compression',
     '@angular-eslint/eslint-plugin-template',
     'eslint',
-    'typescript'
+    'typescript',
   ];
   // Get versions of all transient modules
 
   _.forEach(externalModules, (module) => {
-
     let moduleVersion = packageJson.dependencies[module.external];
     if (moduleVersion) {
       prodModules.push(`${module.external}@${moduleVersion}`);
@@ -345,10 +339,10 @@ export function getProdModules(
             `WARNING: Could not determine version of module ${module.external}`
           );
         }
-        const existing = prodModules.map(p => {
-          return p.startsWith(module.external)
-        })
-        if(!existing) {
+        const existing = prodModules.map((p) => {
+          return p.startsWith(module.external);
+        });
+        if (!existing) {
           prodModules.push(
             moduleVersion
               ? `${module.external}@${moduleVersion}`
@@ -357,7 +351,6 @@ export function getProdModules(
         }
       }
     } else if (
-
       packageJson.devDependencies &&
       packageJson.devDependencies[module.external] &&
       !_.includes(forceExcludes, module.external)

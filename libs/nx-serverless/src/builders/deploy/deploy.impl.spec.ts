@@ -3,15 +3,15 @@ import { JsonObject } from '@angular-devkit/core';
 jest.mock('tsconfig-paths-webpack-plugin');
 const fsExtra = require('fs-extra');
 jest.mock('fs-extra');
-jest.mock('@nrwl/devkit');
-const devkit = require('@nrwl/devkit');
+jest.mock('@nx/devkit');
+const devkit = require('@nx/devkit');
 import { of } from 'rxjs';
 const serverless = require('../../utils/serverless');
 import { getExecArgv, ServerlessWrapper } from '../../utils/serverless';
 import { deployExecutor } from './deploy.impl';
 import { ServerlessDeployBuilderOptions } from './deploy.impl';
 import * as packagers from '../../utils/packagers';
-import { ExecutorContext } from '@nrwl/devkit';
+import { ExecutorContext } from '@nx/devkit';
 
 describe('Serverless Deploy Builder', () => {
   let testOptions: JsonObject & ServerlessDeployBuilderOptions;
@@ -69,7 +69,7 @@ describe('Serverless Deploy Builder', () => {
     (devkit.readTargetOptions as any).mockImplementation(() => buildOptions);
 
     (devkit.parseTargetString as any).mockImplementation(
-      jest.requireActual('@nrwl/devkit').parseTargetString
+      jest.requireActual('@nx/devkit').parseTargetString
     );
     jest.spyOn(ServerlessWrapper, 'init').mockReturnValue(of(null));
     jest.spyOn(ServerlessWrapper, 'serverless', 'get').mockReturnValue({
@@ -98,7 +98,7 @@ describe('Serverless Deploy Builder', () => {
   describe('run', () => {
     it('should build the application and start the built file', async () => {
       await deployExecutor(testOptions, context);
-      expect(require('@nrwl/devkit').runExecutor).toHaveBeenCalled();
+      expect(require('@nx/devkit').runExecutor).toHaveBeenCalled();
     });
     it('should call runWaitUntilTargets', async () => {
       await deployExecutor(testOptions, context);

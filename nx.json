@@ -3,12 +3,15 @@
   "affected": {
     "defaultBase": "master"
   },
-  "generators": {
-    "@nrwl/workspace": {
-      "library": {
-        "linter": "eslint"
+  "tasksRunnerOptions": {
+    "default": {
+      "runner": "nx/tasks-runners/default",
+      "options": {
+        "cacheableOperations": ["build", "lint", "test", "e2e"]
       }
-    },
+    }
+  },
+  "generators": {
     "@nrwl/cypress": {
       "cypress-project": {
         "linter": "eslint"
@@ -52,6 +55,11 @@
     },
     "@nrwl/express": {
       "application": {
+        "linter": "eslint"
+      }
+    },
+    "@nx/workspace": {
+      "library": {
         "linter": "eslint"
       }
     }

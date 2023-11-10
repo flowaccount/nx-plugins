@@ -5,11 +5,11 @@ import {
   joinPathFragments,
   names,
   offsetFromRoot,
-  Tree
-} from '@nrwl/devkit';
+  Tree,
+} from '@nx/devkit';
 import { Schema } from './schema';
-import { ProjectType } from '@nrwl/workspace';
-// import { toFileName } from '@nrwl/devkit';
+import { ProjectType } from '@nx/workspace';
+// import { toFileName } from '@nx/devkit';
 
 import { normalize } from 'path';
 import { NormalizedSchema } from './normalized-schema';

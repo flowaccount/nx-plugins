@@ -1,17 +1,17 @@
-import { Configuration, ProgressPlugin, Stats } from 'webpack'
+import { Configuration, ProgressPlugin, Stats } from 'webpack';
 
-import * as ts from 'typescript'
+import * as ts from 'typescript';
 
-import { LicenseWebpackPlugin } from 'license-webpack-plugin'
-import CircularDependencyPlugin = require('circular-dependency-plugin')
-import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin')
-import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
-import { readTsConfig } from '@nrwl/workspace'
-import { BuildBuilderOptions } from './types'
-import CopyPlugin = require('copy-webpack-plugin')
+import { LicenseWebpackPlugin } from 'license-webpack-plugin';
+import CircularDependencyPlugin = require('circular-dependency-plugin');
+import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+// import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import { readTsConfig } from '@nx/workspace';
+import { BuildBuilderOptions } from './types';
+import CopyPlugin = require('copy-webpack-plugin');
 
-export const OUT_FILENAME = '[name].js'
-export const OUT_CHUNK_FILENAME = '[name]-[id].js'
+export const OUT_FILENAME = '[name].js';
+export const OUT_CHUNK_FILENAME = '[name]-[id].js';
 
 function getAliases(options: BuildBuilderOptions): { [key: string]: string } {
   return options.fileReplacements.reduce(
@@ -20,7 +20,7 @@ function getAliases(options: BuildBuilderOptions): { [key: string]: string } {
       [replacement.replace]: replacement.with,
     }),
     {}
-  )
+  );
 }
 
 function getStatsConfig(options: BuildBuilderOptions) {
@@ -43,18 +43,18 @@ function getStatsConfig(options: BuildBuilderOptions) {
     errorDetails: !!options.verbose,
     moduleTrace: !!options.verbose,
     usedExports: !!options.verbose,
-  }
+  };
 }
 
 export function getBaseWebpackPartial(
   options: BuildBuilderOptions
 ): Configuration {
-  const { options: compilerOptions } = readTsConfig(options.tsConfig)
+  const { options: compilerOptions } = readTsConfig(options.tsConfig);
   const supportsEs2015 =
     compilerOptions.target !== ts.ScriptTarget.ES3 &&
-    compilerOptions.target !== ts.ScriptTarget.ES5
-  const mainFields = [...(supportsEs2015 ? ['es2015'] : []), 'module', 'main']
-  const extensions = ['.ts', '.tsx', '.mjs', '.js', '.jsx']
+    compilerOptions.target !== ts.ScriptTarget.ES5;
+  const mainFields = [...(supportsEs2015 ? ['es2015'] : []), 'module', 'main'];
+  const extensions = ['.ts', '.tsx', '.mjs', '.js', '.jsx'];
   const webpackConfig: Configuration = {
     entry: options.entry,
     profile: true,
@@ -83,11 +83,11 @@ export function getBaseWebpackPartial(
       extensions,
       alias: getAliases(options),
       plugins: [
-        new TsConfigPathsPlugin({
-          configFile: options.tsConfig,
-          extensions,
-          mainFields,
-        }),
+        // new TsConfigPathsPlugin({
+        //   configFile: options.tsConfig,
+        //   extensions,
+        //   mainFields,
+        // }),
       ],
       mainFields,
     },
@@ -106,12 +106,12 @@ export function getBaseWebpackPartial(
       poll: options.poll,
     },
     stats: getStatsConfig(options),
-  }
+  };
 
-  const extraPlugins: any[] = []
+  const extraPlugins: any[] = [];
 
   if (options.progress) {
-    extraPlugins.push(new ProgressPlugin())
+    extraPlugins.push(new ProgressPlugin());
   }
 
   if (options.extractLicenses) {
@@ -123,12 +123,11 @@ export function getBaseWebpackPartial(
         perChunkOutput: false,
         outputFilename: '3rdpartylicenses.txt',
       })
-    )
+    );
   }
 
   // process asset entries
   if (options.assets && options.assets.length) {
-
     const copyWebpackPluginPatterns = options.assets.map((asset: any) => {
       return {
         from: asset.input,
@@ -137,15 +136,15 @@ export function getBaseWebpackPartial(
           dot: true,
           gitignore: true,
           ignore: ['.gitkeep', '**/.DS_Store', '**/Thumbs.db'],
-        }
-      }
-    })
+        },
+      };
+    });
 
     const copyWebpackPluginInstance = new CopyPlugin({
       patterns: copyWebpackPluginPatterns,
-    })
+    });
 
-    extraPlugins.push(copyWebpackPluginInstance)
+    extraPlugins.push(copyWebpackPluginInstance);
   }
 
   if (options.showCircularDependencies) {
@@ -153,10 +152,10 @@ export function getBaseWebpackPartial(
       new CircularDependencyPlugin({
         exclude: /[\\\/]node_modules[\\\/]/,
       })
-    )
+    );
   }
 
-  webpackConfig.plugins = [...webpackConfig.plugins, ...extraPlugins]
+  webpackConfig.plugins = [...webpackConfig.plugins, ...extraPlugins];
 
-  return webpackConfig
+  return webpackConfig;
 }

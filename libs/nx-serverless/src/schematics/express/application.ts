@@ -12,9 +12,9 @@ import {
   convertNxGenerator,
   joinPathFragments,
   offsetFromRoot,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import { applicationGenerator } from '@nrwl/express';
-import { initGenerator as initGeneratorExpress } from '@nrwl/express/src/generators/init/init';
+// import { initGenerator as initGeneratorExpress } from '@nrwl/express/src/generators/init/init';
 interface NormalizedSchema extends Schema {
   parsedTags: string[];
   provider: string;
@@ -231,23 +231,23 @@ export async function expressApiGenerator(host: Tree, schema: Schema) {
     unitTestRunner: options.unitTestRunner,
   });
 
-  if (options.initExpress) {
-    await initGeneratorExpress(host, {
-      unitTestRunner: options.unitTestRunner,
-    });
-    await applicationGenerator(host, {
-      name: schema.name,
-      skipFormat: schema.skipFormat,
-      skipPackageJson: schema.skipPackageJson,
-      directory: schema.directory,
-      unitTestRunner: schema.unitTestRunner,
-      tags: schema.tags,
-      linter: schema.linter,
-      frontendProject: schema.frontendProject,
-      js: false,
-      pascalCaseFiles: false,
-    });
-  }
+  // if (options.initExpress) {
+  //   await initGeneratorExpress(host, {
+  //     unitTestRunner: options.unitTestRunner,
+  //   });
+  //   await applicationGenerator(host, {
+  //     name: schema.name,
+  //     skipFormat: schema.skipFormat,
+  //     skipPackageJson: schema.skipPackageJson,
+  //     directory: schema.directory,
+  //     unitTestRunner: schema.unitTestRunner,
+  //     tags: schema.tags,
+  //     linter: schema.linter,
+  //     frontendProject: schema.frontendProject,
+  //     js: false,
+  //     pascalCaseFiles: false,
+  //   });
+  // }
   addAppFiles(host, options);
   // addServerlessYMLFile(options),
   // updateServerTsFile(options),

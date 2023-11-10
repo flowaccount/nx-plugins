@@ -5,13 +5,14 @@
   "sourceRoot": "apps/nx-serverless-e2e/src",
   "targets": {
     "e2e": {
-      "executor": "@nrwl/nx-plugin:e2e",
+      "executor": "@nx/jest:jest",
       "options": {
-        "target": "nx-serverless:build",
         "npmPackageName": "@flowaccount/nx-serverless",
         "pluginOutputPath": "dist/libs/nx-serverless",
-        "jestConfig": "apps/nx-serverless-e2e/jest.config.js"
-      }
+        "jestConfig": "apps/nx-serverless-e2e/jest.config.js",
+        "runInBand": true
+      },
+      "dependsOn": ["nx-serverless:build"]
     }
   },
   "tags": [],

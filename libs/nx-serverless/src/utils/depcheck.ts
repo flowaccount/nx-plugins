@@ -1,7 +1,7 @@
 import * as depcheck from 'depcheck';
 import { DependencyResolver } from './types';
 import { getProdModules } from './normalize';
-import { ExecutorContext, logger, readJsonFile } from '@nrwl/devkit';
+import { ExecutorContext, logger, readJsonFile } from '@nx/devkit';
 import { StatsCompilation } from 'webpack';
 // import { Stats } from 'webpack';
 export class DependencyCheckResolver implements DependencyResolver {
@@ -17,11 +17,10 @@ export class DependencyCheckResolver implements DependencyResolver {
     ignoreMatches: [
       // ignore dependencies that matches these globs
       'grunt-*',
-      'eslint*'
+      'eslint*',
     ],
     parsers: {
       // '**/*.ts': depcheck.parser.typescript,
-
     },
     detectors: [
       // the target detectors
@@ -46,7 +45,11 @@ export class DependencyCheckResolver implements DependencyResolver {
     sourceRoot?: string,
     tsconfig?: string
   ) {
-    const result: depcheck.Results = await this.dependencyCheck(packageJson, sourceRoot, tsconfig)
+    const result: depcheck.Results = await this.dependencyCheck(
+      packageJson,
+      sourceRoot,
+      tsconfig
+    );
     if (!dependencyGraph || dependencyGraph === null) {
       dependencyGraph = {};
     }
@@ -63,7 +66,7 @@ export class DependencyCheckResolver implements DependencyResolver {
         external: key,
       });
     });
-    logger.info("getting prod modules from externals")
+    logger.info('getting prod modules from externals');
     return getProdModules(
       externals,
       packageJson,
@@ -78,7 +81,7 @@ export class DependencyCheckResolver implements DependencyResolver {
     sourceRoot: string,
     tsconfig: string
   ): Promise<depcheck.Results> {
-    logger.info(`checking depedencies in depcheck.dependencyCheck ${tsconfig}`)
+    logger.info(`checking depedencies in depcheck.dependencyCheck ${tsconfig}`);
     const tsconfigJson = readJsonFile(tsconfig);
     const parsers = {};
 
@@ -99,7 +102,7 @@ export class DependencyCheckResolver implements DependencyResolver {
     //   '**/server-prerender.ts': depcheck.parser.typescript
     // };
     this.options.package = packageJson;
-    const res = await depcheck(sourceRoot, this.options);
+    const res = await depcheck.default(sourceRoot, this.options);
     return res;
   }
 }

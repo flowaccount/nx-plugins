@@ -1,11 +1,7 @@
 import { Tree, SchematicContext } from '@angular-devkit/schematics';
-import { createEmptyWorkspace } from '@nrwl/workspace/testing';
-import {
-  readJsonInTree,
-  serializeJson,
-  getWorkspacePath,
-} from '@nrwl/workspace';
-import * as workspace from '@nrwl/workspace';
+import { createEmptyWorkspace } from '@nx/workspace/testing';
+import { readJsonInTree, serializeJson, getWorkspacePath } from '@nx/workspace';
+import * as workspace from '@nx/workspace';
 import { runSchematic } from '../../utils/testing';
 
 describe('scully app', () => {
@@ -20,7 +16,7 @@ describe('scully app', () => {
         "name": "test-name",
         "dependencies": {},
         "devDependencies": {
-          "@nrwl/workspace": "0.0.0"
+          "@nx/workspace": "0.0.0"
         }
       }
     `

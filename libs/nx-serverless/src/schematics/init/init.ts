@@ -7,8 +7,8 @@ import {
   formatFiles,
   convertNxGenerator,
   logger,
-} from '@nrwl/devkit';
-import { runTasksInSerial } from '@nrwl/workspace/src/utilities/run-tasks-in-serial';
+} from '@nx/devkit';
+import { runTasksInSerial } from '@nx/workspace/src/utilities/run-tasks-in-serial';
 import { jestInitGenerator } from '@nrwl/jest';
 import { Schema } from './schema';
 import {
@@ -97,7 +97,5 @@ export async function initGenerator<T extends Schema>(tree: Tree, options: T) {
   }
   return runTasksInSerial(...tasks);
 }
-
-
 
 export const initSchematic = convertNxGenerator(initGenerator);

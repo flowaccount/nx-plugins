@@ -10,8 +10,8 @@ import {
   readProjectConfiguration,
   Tree,
   updateProjectConfiguration,
-  offsetFromRoot
-} from '@nrwl/devkit';
+  offsetFromRoot,
+} from '@nx/devkit';
 
 interface NormalizedSchema extends Schema {}
 

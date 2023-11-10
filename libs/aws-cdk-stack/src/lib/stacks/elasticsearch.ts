@@ -3,7 +3,7 @@ import * as iam from '@aws-cdk/aws-iam';
 import * as es from '@aws-cdk/aws-elasticsearch';
 import { SecurityGroup } from '@aws-cdk/aws-ec2';
 import { ElasticsearchStackProperties, EsInstanceType } from '../types';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 
 export class ElasticsearchStack extends cdk.Stack {
   public readonly output: {

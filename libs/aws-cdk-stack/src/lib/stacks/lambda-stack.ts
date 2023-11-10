@@ -8,7 +8,7 @@ import { LambdaStackProperties } from '../types';
 import { Stack } from '@aws-cdk/core';
 import { Stream } from '@aws-cdk/aws-kinesis';
 import { SecurityGroup } from '@aws-cdk/aws-ec2';
-import { logger, readProjectConfiguration } from '@nrwl/devkit';
+import { logger, readProjectConfiguration } from '@nx/devkit';
 
 export class TypescriptLambdaStack extends Stack {
   public readonly output: { lambdaFunctions?: lambda.Function[] };

@@ -1,5 +1,5 @@
 import { StackProps } from '@aws-cdk/core';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 import { IApplicationStackEnvironmentConfig } from '../../types';
 
 export abstract class BaseApplicationStackBuilder {

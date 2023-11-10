@@ -7,7 +7,7 @@ import { ChildProcess, fork } from 'child_process';
 import { join } from 'path';
 import { removeSync } from 'fs-extra';
 import { ServerlessCompileOptions, SimpleBuildEvent } from './types';
-import { ExecutorContext, logger, ProjectGraphNode } from '@nrwl/devkit';
+import { ExecutorContext, logger, ProjectGraphNode } from '@nx/devkit';
 let tscProcess: ChildProcess;
 
 /**

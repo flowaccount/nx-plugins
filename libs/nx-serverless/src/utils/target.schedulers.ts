@@ -3,7 +3,7 @@ import {
   parseTargetString,
   readTargetOptions,
   runExecutor,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import { SimpleBuildEvent } from './types';
 
 // export function runWaitUntilTargets(
@@ -53,10 +53,10 @@ export async function* startBuild(
   context: ExecutorContext
 ) {
   const buildTarget = parseTargetString(options.buildTarget);
-  const buildOptions = readTargetOptions<{ buildTarget: string, optimization: boolean }>(
-    buildTarget,
-    context
-  );
+  const buildOptions = readTargetOptions<{
+    buildTarget: string;
+    optimization: boolean;
+  }>(buildTarget, context);
   if (buildOptions.optimization) {
     // logger.warn(stripIndents`
     //         ************************************************

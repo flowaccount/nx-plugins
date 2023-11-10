@@ -3,8 +3,8 @@ import {
   GeneratorCallback,
   Tree,
   addDependenciesToPackageJson,
-} from '@nrwl/devkit';
-import { runTasksInSerial } from '@nrwl/workspace/src/utilities/run-tasks-in-serial';
+} from '@nx/devkit';
+import { runTasksInSerial } from '@nx/devkit';
 import { hasNxPackage, readNxVersion } from './util';
 
 export function addJestPlugin(tree: Tree): GeneratorCallback {
@@ -23,7 +23,7 @@ export function addJestPlugin(tree: Tree): GeneratorCallback {
   }
 
   const jestTask = jestInitGenerator(tree, {});
-  tasks.push(jestTask);
+  // tasks.push(jestTask);
 
   return runTasksInSerial(...tasks);
 }

@@ -1,6 +1,6 @@
 // import { EventEmitter } from 'events';
 // import { getMockContext } from './testing';
-// import { MockBuilderContext } from '@nrwl/workspace/testing';
+// import { MockBuilderContext } from '@nx/workspace/testing';
 // import { removeSync } from 'fs-extra';
 // jest.mock('fs-extra');
 // import { consolidateExcludes } from './serverless.config';
@@ -9,8 +9,8 @@
 // import { of } from 'rxjs';
 // import { join } from 'path';
 // jest.mock('glob');
-// jest.mock('@nrwl/workspace/src/utils/fileutils');
-// const fsUtility = require('@nrwl/workspace/src/utils/fileutils');
+// jest.mock('@nx/workspace/src/utils/fileutils');
+// const fsUtility = require('@nx/workspace/src/utils/fileutils');
 // jest.mock('child_process');
 // const { fork } = require('child_process');
 // import { workspaces, Path } from '@angular-devkit/core';

@@ -2,7 +2,7 @@ import * as cdk from '@aws-cdk/core';
 import * as sqs from '@aws-cdk/aws-sqs';
 import { SQSConfiguration } from '../types';
 import { IQueue } from '@aws-cdk/aws-sqs';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 // import { PrincipalWithConditions } from "@aws-cdk/aws-iam";
 //import firehose = require("@aws-cdk/aws-kinesisfirehose");
 // const indexName = 'log-stamp-index';

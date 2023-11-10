@@ -28,7 +28,7 @@
       "outputs": ["{workspaceRoot}/coverage/libs/nx-serverless"]
     },
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "options": {
         "outputPath": "dist/libs/nx-serverless",
         "tsConfig": "libs/nx-serverless/tsconfig.lib.json",

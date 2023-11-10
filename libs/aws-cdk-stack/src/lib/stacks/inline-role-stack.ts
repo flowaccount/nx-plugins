@@ -1,6 +1,6 @@
 import { IRole, Policy, PolicyStatement, Role } from '@aws-cdk/aws-iam';
 import { Construct, Stack } from '@aws-cdk/core';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 import { InlineRoleStackProperties } from '../types';
 
 export class InlineRoleStack extends Stack {

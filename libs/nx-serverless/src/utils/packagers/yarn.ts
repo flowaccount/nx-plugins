@@ -6,12 +6,11 @@
  *   ignoreScripts (false) - Do not execute scripts during install
  */
 
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 import { exec } from 'child_process';
 import * as _ from 'lodash';
 import { map } from 'rxjs/operators';
 import { promisify } from 'util';
-
 
 const execAsync = promisify(exec);
 
@@ -48,37 +47,37 @@ export class Yarn {
     const result = await execAsync(`${command} ${args}`, {
       cwd: cwd,
     });
-    if(result.stderr) {
-      logger.error(result.stderr.trim())
+    if (result.stderr) {
+      logger.error(result.stderr.trim());
       return null;
     }
-    return result.stdout.trim()
-  //  result.on("error", (err:Error)=> {
-  //       // Only exit with an error if we have critical npm errors for 2nd level inside
-  //       const errors = _.split(err.name, '\n');
-  //       const failed = _.reduce(
-  //         errors,
-  //         (failed, error) => {
-  //           if (failed) {
-  //             return true;
-  //           }
-  //           return (
-  //             !_.isEmpty(error) &&
-  //             !_.some(ignoredYarnErrors, (ignoredError) =>
-  //               _.startsWith(error, `npm ERR! ${ignoredError.npmError}`)
-  //             )
-  //           );
-  //         },
-  //         false
-  //       );
+    return result.stdout.trim();
+    //  result.on("error", (err:Error)=> {
+    //       // Only exit with an error if we have critical npm errors for 2nd level inside
+    //       const errors = _.split(err.name, '\n');
+    //       const failed = _.reduce(
+    //         errors,
+    //         (failed, error) => {
+    //           if (failed) {
+    //             return true;
+    //           }
+    //           return (
+    //             !_.isEmpty(error) &&
+    //             !_.some(ignoredYarnErrors, (ignoredError) =>
+    //               _.startsWith(error, `npm ERR! ${ignoredError.npmError}`)
+    //             )
+    //           );
+    //         },
+    //         false
+    //       );
 
-  //       if (!failed && !_.isEmpty(err.stack)) {
-  //         return Promise.resolve({ stdout: err.message });
-  //       }
-  //     return result;
-  //   })
+    //       if (!failed && !_.isEmpty(err.stack)) {
+    //         return Promise.resolve({ stdout: err.message });
+    //       }
+    //     return result;
+    //   })
 
-  //   return result.stdout.read();
+    //   return result.stdout.read();
   }
 
   static rebaseLockfile(pathToPackageRoot, lockfile) {
@@ -129,5 +128,3 @@ export class Yarn {
     });
   }
 }
-
-

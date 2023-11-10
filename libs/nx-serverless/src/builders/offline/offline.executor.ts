@@ -1,10 +1,13 @@
 import { exec, execSync, fork, spawn } from 'child_process';
-import { ExecutorContext, joinPathFragments } from '@nrwl/devkit';
+import { ExecutorContext, joinPathFragments } from '@nx/devkit';
 import ignore from 'ignore';
 import { readFileSync } from 'fs';
 import { watch } from 'chokidar';
-import { workspaceLayout } from '@nrwl/workspace/src/core/file-utils';
-import { InspectType, ServerlessExecuteBuilderOptions } from '../../utils/types';
+import { workspaceLayout } from '@nx/workspace/src/core/file-utils';
+import {
+  InspectType,
+  ServerlessExecuteBuilderOptions,
+} from '../../utils/types';
 
 // function getHttpServerArgs(options: ServerlessExecuteBuilderOptions) {
 //   const args = [] as any[];
@@ -185,9 +188,7 @@ export async function* serverlessOfflineExecutor(
 
   yield {
     success: true,
-    baseUrl: `'http'}://${options.host}:${
-      options.port
-    }`,
+    baseUrl: `'http'}://${options.host}:${options.port}`,
   };
 
   return new Promise<{ success: boolean }>(() => {

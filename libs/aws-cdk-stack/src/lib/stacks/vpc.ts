@@ -8,7 +8,7 @@ import {
 } from '@aws-cdk/aws-ec2';
 import { Construct, Stack } from '@aws-cdk/core';
 import { VpcStackProperties } from '../types';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 
 export class VpcStack extends Stack {
   public readonly vpc: IVpc;

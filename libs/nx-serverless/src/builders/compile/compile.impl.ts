@@ -7,7 +7,7 @@ import {
 } from '../../utils/normalize';
 import { ServerlessWrapper } from '../../utils/serverless';
 import { resolve } from 'path';
-import { ExecutorContext, logger } from '@nrwl/devkit';
+import { ExecutorContext, logger } from '@nx/devkit';
 
 export type ServerlesCompiledEvent = {
   outfile: string;
@@ -17,7 +17,12 @@ export async function compileExecutor(
   options: ServerlessCompileOptions,
   context: ExecutorContext
 ) {
-  logger.info(`executing typescript compilation with tsConfig:${resolve(context.root, options.tsConfig)}`);
+  logger.info(
+    `executing typescript compilation with tsConfig:${resolve(
+      context.root,
+      options.tsConfig
+    )}`
+  );
   const root = getSourceRoot(context);
   options = normalizeBuildOptions(options, context.root, root);
   await ServerlessWrapper.init(options);
@@ -35,7 +40,7 @@ export async function compileExecutor(
     resolverName: 'DependencyCheckResolver',
     tsconfig: resolve(context.root, options.tsConfig),
   };
-  logger.info(toReturn)
+  logger.info(toReturn);
   return toReturn;
 }
 export default compileExecutor;

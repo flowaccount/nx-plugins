@@ -8,9 +8,9 @@ import {
   names,
   offsetFromRoot,
   Tree,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import { Schema } from './schema';
-import { ProjectType } from '@nrwl/workspace';
+import { ProjectType } from '@nx/workspace';
 
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';

@@ -9,7 +9,7 @@
 // import { serverlessExecutionHandler } from './sls.impl';
 // import { ServerlesSlsBuilderOptions } from './sls.impl';
 // const serverless = require('../../utils/serverless');
-// import { MockBuilderContext } from '@nrwl/workspace/testing';
+// import { MockBuilderContext } from '@nx/workspace/testing';
 // import * as targetSchedulers from '../../utils/target.schedulers';
 // import * as packagers from '../../utils/packagers';
 
