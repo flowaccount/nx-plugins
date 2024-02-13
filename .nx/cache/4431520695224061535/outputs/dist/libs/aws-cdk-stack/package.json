@@ -1,0 +1,15 @@
+{
+  "name": "@flowaccount/aws-cdk-stack",
+  "version": "99.99.99",
+  "dependencies": {
+    "aws-cdk-lib": "2.15.0",
+    "@angular-devkit/schematics": "11.2.13",
+    "@angular-devkit/core": "12.2.11",
+    "uuid": "9.0.0",
+    "tsyringe": "4.7.0",
+    "reflect-metadata": "^0.1.13"
+  },
+  "devDependencies": {},
+  "main": "./src/index.js",
+  "type": "commonjs"
+}

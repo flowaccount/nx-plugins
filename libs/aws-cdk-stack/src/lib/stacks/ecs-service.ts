@@ -115,7 +115,7 @@ export class ECSService extends Stack {
             ssm.Secret.fromSecretAttributes(
               this,
               `${containerOption.hostname}-secret-${k}`,
-              { secretArn: `${s.taskDefinition.secrets[ccount][k]}` }
+              { secretCompleteArn: `${s.taskDefinition.secrets[ccount][k]}` }
             )
           );
         });
