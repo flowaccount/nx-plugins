@@ -17,7 +17,7 @@ import {
 } from '@aws-cdk/aws-ecs';
 import { IVpc } from '@aws-cdk/aws-ec2';
 import { IRole } from '@aws-cdk/aws-iam';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 import { ECSModel, ECSServiceModel, TagModel } from '../types';
 import { LogGroup } from '@aws-cdk/aws-logs';
 import { PrivateDnsNamespace, Service } from '@aws-cdk/aws-servicediscovery';
@@ -43,9 +43,9 @@ export interface ECSServiceProps extends StackProps {
   readonly ecs?: ECSModel;
   readonly ecsService: ECSServiceModel;
   readonly taglist: TagModel[];
-  readonly stage?: string
-  readonly apiprefix?: string
-  readonly capacityProvider?: CfnCapacityProvider
+  readonly stage?: string;
+  readonly apiprefix?: string;
+  readonly capacityProvider?: CfnCapacityProvider;
 }
 
 export class ECSService extends Stack {
@@ -59,8 +59,8 @@ export class ECSService extends Stack {
     let _scalableTaskCount: ScalableTaskCount;
     logger.info('fetching cluster from attributes');
 
-    let defaultServiceDiscoveryNamespace = null
-    if(stackProps.ecs.defaultServiceDiscoveryNamespace) {
+    let defaultServiceDiscoveryNamespace = null;
+    if (stackProps.ecs.defaultServiceDiscoveryNamespace) {
       defaultServiceDiscoveryNamespace =
         PrivateDnsNamespace.fromPrivateDnsNamespaceAttributes(
           this,
@@ -78,178 +78,179 @@ export class ECSService extends Stack {
         defaultCloudMapNamespace: defaultServiceDiscoveryNamespace,
       }
     );
-    const s = stackProps.ecsService
-      logger.info('instantiaing task defenitions');
-      _taskDefinition = new TaskDefinition(this, s.taskDefinition.name, {
-        compatibility: Compatibility.EC2,
-        executionRole: stackProps.executionRole,
-        taskRole: stackProps.taskRole,
-        networkMode: s.networkMode ? s.networkMode : NetworkMode.NAT,
-        cpu: s.taskDefinition.cpu,
-        memoryMiB: s.taskDefinition.memory,
-        volumes: s.taskDefinition.volume,
-      });
+    const s = stackProps.ecsService;
+    logger.info('instantiaing task defenitions');
+    _taskDefinition = new TaskDefinition(this, s.taskDefinition.name, {
+      compatibility: Compatibility.EC2,
+      executionRole: stackProps.executionRole,
+      taskRole: stackProps.taskRole,
+      networkMode: s.networkMode ? s.networkMode : NetworkMode.NAT,
+      cpu: s.taskDefinition.cpu,
+      memoryMiB: s.taskDefinition.memory,
+      volumes: s.taskDefinition.volume,
+    });
 
-      const containerDefinitionOptions: ContainerDefinitionOptions[] =
-        s.taskDefinition.containerDefinitionOptions.constructor.name == 'Array'
-          ? (s.taskDefinition
-              .containerDefinitionOptions as ContainerDefinitionOptions[])
-          : [
-              s.taskDefinition
-                .containerDefinitionOptions as ContainerDefinitionOptions,
-            ];
+    const containerDefinitionOptions: ContainerDefinitionOptions[] =
+      s.taskDefinition.containerDefinitionOptions.constructor.name == 'Array'
+        ? (s.taskDefinition
+            .containerDefinitionOptions as ContainerDefinitionOptions[])
+        : [
+            s.taskDefinition
+              .containerDefinitionOptions as ContainerDefinitionOptions,
+          ];
 
-      let ccount = 0;
-      containerDefinitionOptions.forEach((containerOption) => {
-        const environment = {};
-        if (containerOption.environment) {
-          Object.keys(containerOption.environment).forEach((k, v) => {
-            environment[k] = containerOption.environment[k].toString();
-          });
-        }
-        const secrets = {};
-        if (s.taskDefinition.secrets && s.taskDefinition.secrets[ccount]) {
-          Object.keys(s.taskDefinition.secrets[ccount]).forEach((k) => {
-            secrets[k] = Secret.fromSecretsManager(
-              ssm.Secret.fromSecretAttributes(
-                this,
-                `${containerOption.hostname}-secret-${k}`,
-                { secretArn: `${s.taskDefinition.secrets[ccount][k]}` }
-              )
-            );
-          });
-        }
-
-        if (s.taskDefinition.isLogs) {
-          const loggingObj = LogDrivers.awsLogs({
-            logGroup: s.taskDefinition.logGroupName
-              ? LogGroup.fromLogGroupName(
-                  this,
-                  containerOption.hostname,
-                  s.taskDefinition.logGroupName
-                )
-              : new LogGroup(this, containerOption.hostname, {
-                  logGroupName: containerOption.hostname,
-                  retention: s.taskDefinition.logsRetention
-                    ? s.taskDefinition.logsRetention
-                    : 1,
-                }),
-            streamPrefix: s.taskDefinition.logsPrefix
-              ? s.taskDefinition.logsPrefix
-              : containerOption.hostname,
-            mode: AwsLogDriverMode.NON_BLOCKING,
-          });
-          containerOption = {
-            ...containerOption,
-            environment: environment,
-            secrets: secrets,
-            logging: loggingObj,
-          };
-        }
-
-        _container = _taskDefinition.addContainer(
-          `${containerOption.hostname}-container`,
-          containerOption
-        );
-        logger.info('add Port Mappings');
-        // containerOption.portMappings.forEach((_pm) => {
-        //   _container.addPortMappings(_pm);
-        // });
-        logger.info('creating mountPoints');
-        if (
-          s.taskDefinition.mountPoints &&
-          s.taskDefinition.mountPoints[ccount] &&
-          s.taskDefinition.mountPoints[ccount].mounts.length > 0
-        ) {
-          _container.addMountPoints(
-            ...s.taskDefinition.mountPoints[ccount].mounts
+    let ccount = 0;
+    containerDefinitionOptions.forEach((containerOption) => {
+      const environment = {};
+      if (containerOption.environment) {
+        Object.keys(containerOption.environment).forEach((k, v) => {
+          environment[k] = containerOption.environment[k].toString();
+        });
+      }
+      const secrets = {};
+      if (s.taskDefinition.secrets && s.taskDefinition.secrets[ccount]) {
+        Object.keys(s.taskDefinition.secrets[ccount]).forEach((k) => {
+          secrets[k] = Secret.fromSecretsManager(
+            ssm.Secret.fromSecretAttributes(
+              this,
+              `${containerOption.hostname}-secret-${k}`,
+              { secretArn: `${s.taskDefinition.secrets[ccount][k]}` }
+            )
           );
-        }
-        ccount++;
-      });
+        });
+      }
 
-      logger.info('creating the sergvice itself');
-      this.service = new Ec2Service(this, s.name, {
-        serviceName: s.name,
-        cluster: _cluster,
-        taskDefinition: _taskDefinition,
-        assignPublicIp: false,
-        desiredCount: s.desired,
-        minHealthyPercent: s.minHealthyPercent,
-        daemon: s.daemon,
-        capacityProviderStrategies: [
-          {
-            capacityProvider: s.capacityProviderName,
-            weight: 1,
-          },
-        ],
-        // cloudMapOptions: cloudMapOptions
-      });
-
-      if (s.serviceDiscoveryNamespace) {
-        let cloudMapOptions: AssociateCloudMapServiceOptions = null;
-        const service = Service.fromServiceAttributes(
-          this,
-          `${s.name}-cloudmap-service`,
-          {
-            namespace: defaultServiceDiscoveryNamespace,
-            ...s.serviceDiscoveryNamespace,
-          }
-        );
-        cloudMapOptions = {
-          service: service,
+      if (s.taskDefinition.isLogs) {
+        const loggingObj = LogDrivers.awsLogs({
+          logGroup: s.taskDefinition.logGroupName
+            ? LogGroup.fromLogGroupName(
+                this,
+                containerOption.hostname,
+                s.taskDefinition.logGroupName
+              )
+            : new LogGroup(this, containerOption.hostname, {
+                logGroupName: containerOption.hostname,
+                retention: s.taskDefinition.logsRetention
+                  ? s.taskDefinition.logsRetention
+                  : 1,
+              }),
+          streamPrefix: s.taskDefinition.logsPrefix
+            ? s.taskDefinition.logsPrefix
+            : containerOption.hostname,
+          mode: AwsLogDriverMode.NON_BLOCKING,
+        });
+        containerOption = {
+          ...containerOption,
+          environment: environment,
+          secrets: secrets,
+          logging: loggingObj,
         };
-        this.service.associateCloudMapService(cloudMapOptions);
       }
 
-      if (s.scaleProps) {
-        logger.info('add scale task');
-        _scalableTaskCount = this.service.autoScaleTaskCount(s.scaleProps);
-      }
-      if (s.cpuScalingProps) {
-        logger.info('add cpu scaling');
-        _scalableTaskCount.scaleOnCpuUtilization(
-          `${s.name}-cpu-auto-scale`,
-          s.cpuScalingProps
+      _container = _taskDefinition.addContainer(
+        `${containerOption.hostname}-container`,
+        containerOption
+      );
+      logger.info('add Port Mappings');
+      // containerOption.portMappings.forEach((_pm) => {
+      //   _container.addPortMappings(_pm);
+      // });
+      logger.info('creating mountPoints');
+      if (
+        s.taskDefinition.mountPoints &&
+        s.taskDefinition.mountPoints[ccount] &&
+        s.taskDefinition.mountPoints[ccount].mounts.length > 0
+      ) {
+        _container.addMountPoints(
+          ...s.taskDefinition.mountPoints[ccount].mounts
         );
       }
-      if (s.memScalingProps) {
-        logger.info('add memory scaling');
-        _scalableTaskCount.scaleOnMemoryUtilization(
-          `${s.name}-mem-auto-scale`,
-          s.memScalingProps
-        );
-      }
-      if (s.scaleOnScheduleList) {
-        logger.info('add schedule scaling');
-        s.scaleOnScheduleList.forEach((sh) => {
-          _scalableTaskCount.scaleOnSchedule(sh.id, sh.props);
-        });
-      }
-      if (s.placementStrategy) {
-        logger.info('add the placement strategies');
-        s.placementStrategy.forEach((_ps) => {
-          this.service.addPlacementStrategies(_ps);
-        });
-      }
-      logger.info('add the placement constraints');
-      s.placementConstraint.forEach((_pc) => {
-        this.service.addPlacementConstraints(_pc);
+      ccount++;
+    });
+
+    logger.info('creating the sergvice itself');
+    this.service = new Ec2Service(this, s.name, {
+      serviceName: s.name,
+      cluster: _cluster,
+      taskDefinition: _taskDefinition,
+      assignPublicIp: false,
+      desiredCount: s.desired,
+      minHealthyPercent: s.minHealthyPercent,
+      daemon: s.daemon,
+      capacityProviderStrategies: [
+        {
+          capacityProvider: s.capacityProviderName,
+          weight: 1,
+        },
+      ],
+      // cloudMapOptions: cloudMapOptions
+    });
+
+    if (s.serviceDiscoveryNamespace) {
+      let cloudMapOptions: AssociateCloudMapServiceOptions = null;
+      const service = Service.fromServiceAttributes(
+        this,
+        `${s.name}-cloudmap-service`,
+        {
+          namespace: defaultServiceDiscoveryNamespace,
+          ...s.serviceDiscoveryNamespace,
+        }
+      );
+      cloudMapOptions = {
+        service: service,
+      };
+      this.service.associateCloudMapService(cloudMapOptions);
+    }
+
+    if (s.scaleProps) {
+      logger.info('add scale task');
+      _scalableTaskCount = this.service.autoScaleTaskCount(s.scaleProps);
+    }
+    if (s.cpuScalingProps) {
+      logger.info('add cpu scaling');
+      _scalableTaskCount.scaleOnCpuUtilization(
+        `${s.name}-cpu-auto-scale`,
+        s.cpuScalingProps
+      );
+    }
+    if (s.memScalingProps) {
+      logger.info('add memory scaling');
+      _scalableTaskCount.scaleOnMemoryUtilization(
+        `${s.name}-mem-auto-scale`,
+        s.memScalingProps
+      );
+    }
+    if (s.scaleOnScheduleList) {
+      logger.info('add schedule scaling');
+      s.scaleOnScheduleList.forEach((sh) => {
+        _scalableTaskCount.scaleOnSchedule(sh.id, sh.props);
       });
+    }
+    if (s.placementStrategy) {
+      logger.info('add the placement strategies');
+      s.placementStrategy.forEach((_ps) => {
+        this.service.addPlacementStrategies(_ps);
+      });
+    }
+    logger.info('add the placement constraints');
+    s.placementConstraint.forEach((_pc) => {
+      this.service.addPlacementConstraints(_pc);
+    });
 
     if (s.targetGroupArn) {
-    this.tg = ApplicationTargetGroup.fromTargetGroupAttributes(
-          this,
-          `${s.name}-tg`,
-          {
-            targetGroupArn: s.targetGroupArn,
-          }
+      this.tg = ApplicationTargetGroup.fromTargetGroupAttributes(
+        this,
+        `${s.name}-tg`,
+        {
+          targetGroupArn: s.targetGroupArn,
+        }
       );
-        logger.info('attaching the target group');
-        this.service.attachToApplicationTargetGroup(<IApplicationTargetGroup>this.tg);
-    }
-    else if (s.targetGroupNetworkArn) {
-     this.tg = NetworkTargetGroup.fromTargetGroupAttributes(
+      logger.info('attaching the target group');
+      this.service.attachToApplicationTargetGroup(
+        <IApplicationTargetGroup>this.tg
+      );
+    } else if (s.targetGroupNetworkArn) {
+      this.tg = NetworkTargetGroup.fromTargetGroupAttributes(
         this,
         `${s.name}-network-tg`,
         {

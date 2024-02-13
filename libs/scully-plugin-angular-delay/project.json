@@ -1,0 +1,33 @@
+{
+  "name": "scully-plugin-angular-delay",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/scully-plugin-angular-delay/src",
+  "projectType": "library",
+  "generators": {},
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "libs/scully-plugin-angular-delay/jest.config.ts"
+      },
+      "outputs": ["{workspaceRoot}/coverage/libs/scully-plugin-angular-delay"]
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "outputPath": "dist/libs/scully-plugin-angular-delay",
+        "tsConfig": "libs/scully-plugin-angular-delay/tsconfig.lib.json",
+        "packageJson": "libs/scully-plugin-angular-delay/package.json",
+        "main": "libs/scully-plugin-angular-delay/src/index.ts",
+        "assets": ["libs/scully-plugin-angular-delay/*.md"],
+        "srcRootForCompilationRoot": "libs\\scully-plugin-angular-delay\\src"
+      },
+      "outputs": ["{options.outputPath}"]
+    }
+  },
+  "tags": []
+}

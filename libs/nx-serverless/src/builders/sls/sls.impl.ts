@@ -9,8 +9,11 @@ import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets } from '../../utils/target.schedulers';
 import { buildTarget } from '../deploy/deploy.impl';
-import { ExecutorContext } from '@nrwl/devkit';
-import { ServerlessSlsBuilderOptions, SimpleBuildEvent } from '../../utils/types';
+import { ExecutorContext } from '@nx/devkit';
+import {
+  ServerlessSlsBuilderOptions,
+  SimpleBuildEvent,
+} from '../../utils/types';
 gracefulFs.gracefulify(fs);
 /* Fix for EMFILE: too many open files on serverless deploy */
 // review: Have to spin off options and clarify schema.json for deploy,build,serve

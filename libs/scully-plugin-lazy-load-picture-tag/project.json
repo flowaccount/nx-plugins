@@ -1,0 +1,35 @@
+{
+  "name": "scully-plugin-lazy-load-picture-tag",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/scully-plugin-lazy-load-picture-tag/src",
+  "projectType": "library",
+  "generators": {},
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "libs/scully-plugin-lazy-load-picture-tag/jest.config.ts"
+      },
+      "outputs": [
+        "{workspaceRoot}/coverage/libs/scully-plugin-lazy-load-picture-tag"
+      ]
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "outputPath": "dist/libs/scully-plugin-lazy-load-picture-tag",
+        "tsConfig": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.lib.json",
+        "packageJson": "libs/scully-plugin-lazy-load-picture-tag/package.json",
+        "main": "libs/scully-plugin-lazy-load-picture-tag/src/index.ts",
+        "assets": ["libs/scully-plugin-lazy-load-picture-tag/*.md"],
+        "srcRootForCompilationRoot": "libs\\scully-plugin-lazy-load-picture-tag\\src"
+      },
+      "outputs": ["{options.outputPath}"]
+    }
+  },
+  "tags": []
+}

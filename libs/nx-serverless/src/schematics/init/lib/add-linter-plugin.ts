@@ -2,11 +2,11 @@ import {
   addDependenciesToPackageJson,
   GeneratorCallback,
   Tree,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import { hasNxPackage, readNxVersion } from './util';
 
 export function addLinterPlugin(tree: Tree): GeneratorCallback {
-  const hasNrwlLinterDependency: boolean = hasNxPackage(tree, '@nrwl/linter');
+  const hasNrwlLinterDependency: boolean = hasNxPackage(tree, '@nx/eslint');
 
   if (!hasNrwlLinterDependency) {
     const nxVersion = readNxVersion(tree);
@@ -15,7 +15,7 @@ export function addLinterPlugin(tree: Tree): GeneratorCallback {
       tree,
       {},
       {
-        '@nrwl/linter': nxVersion,
+        '@nx/eslint': nxVersion,
       }
     );
   } else {

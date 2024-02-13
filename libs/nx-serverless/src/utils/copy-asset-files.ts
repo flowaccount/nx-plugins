@@ -1,6 +1,11 @@
 import { copy, remove } from 'fs-extra';
-import { BuildBuilderOptions, ServerlessDeployBuilderOptions, ServerlessSlsBuilderOptions, SimpleBuildEvent } from './types';
-import { logger } from '@nrwl/devkit';
+import {
+  BuildBuilderOptions,
+  ServerlessDeployBuilderOptions,
+  ServerlessSlsBuilderOptions,
+  SimpleBuildEvent,
+} from './types';
+import { logger } from '@nx/devkit';
 
 export default async function copyAssetFiles(
   options: BuildBuilderOptions

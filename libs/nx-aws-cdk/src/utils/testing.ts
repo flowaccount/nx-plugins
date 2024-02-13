@@ -4,7 +4,7 @@ import { Rule, Tree } from '@angular-devkit/schematics';
 // import { TestingArchitectHost } from '@angular-devkit/architect/testing';
 // import { schema } from '@angular-devkit/core';
 // import { Architect } from '@angular-devkit/architect';
-// import { MockBuilderContext } from '@nrwl/workspace/testing';
+// import { MockBuilderContext } from '@nx/workspace/testing';
 
 const testRunner = new SchematicTestRunner(
   '@flowaccount/nx-aws-cdk',

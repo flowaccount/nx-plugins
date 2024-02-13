@@ -13,8 +13,8 @@ import {
   logger,
   parseTargetString,
   runExecutor,
-} from '@nrwl/devkit';
-import { ExecutorEvent } from '@nrwl/node/src/executors/node/node.impl';
+} from '@nx/devkit';
+import { ExecutorEvent } from '@nx/node/src/executors/node/node.impl';
 
 export default async function runSynthExecutor(
   options: DeployExecutorSchema,
@@ -47,22 +47,22 @@ export default async function runSynthExecutor(
   // argument
   const argsss = parseArgs();
   if (argsss) {
-    process.env.serviceName = argsss["serviceName"];
-    process.env.targetGroupArn = argsss["targetGroupArn"];
-    process.env.secretArn = argsss["secretArn"];
-    process.env.asgName = argsss["asgName"];
-    process.env.portMap = argsss["portMap"];
-    process.env.site = argsss["site"];
-    process.env.stage = argsss["stage"];
-    process.env.imageName = argsss["imageName"];
-    process.env.cloudmapServiceName = argsss["cloudmapServiceName"]
-    process.env.cloudmapServiceArn = argsss["cloudmapServiceArn"]
-    process.env.cloudmapServiceId = argsss["cloudmapServiceId"]
-    process.env.cpu = argsss["cpu"];
-    process.env.memory = argsss["memory"];
-    process.env.useServiceDiscovery = argsss["useServiceDiscovery"];
-    process.env.existingCluster = argsss["existingCluster"];
-    process.env.keyPairName = argsss["keyPairName"];
+    process.env.serviceName = argsss['serviceName'];
+    process.env.targetGroupArn = argsss['targetGroupArn'];
+    process.env.secretArn = argsss['secretArn'];
+    process.env.asgName = argsss['asgName'];
+    process.env.portMap = argsss['portMap'];
+    process.env.site = argsss['site'];
+    process.env.stage = argsss['stage'];
+    process.env.imageName = argsss['imageName'];
+    process.env.cloudmapServiceName = argsss['cloudmapServiceName'];
+    process.env.cloudmapServiceArn = argsss['cloudmapServiceArn'];
+    process.env.cloudmapServiceId = argsss['cloudmapServiceId'];
+    process.env.cpu = argsss['cpu'];
+    process.env.memory = argsss['memory'];
+    process.env.useServiceDiscovery = argsss['useServiceDiscovery'];
+    process.env.existingCluster = argsss['existingCluster'];
+    process.env.keyPairName = argsss['keyPairName'];
   }
 
   // require('dotenv-json')(argsss)
@@ -121,8 +121,7 @@ function parseArgs() {
         if (!key || !value) {
           throw new Error(`Invalid args: ${args}`);
         }
-        if (!m)
-          m = {};
+        if (!m) m = {};
         m[key] = value;
         return m;
       }

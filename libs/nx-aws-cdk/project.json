@@ -1,0 +1,55 @@
+{
+  "name": "nx-aws-cdk",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/nx-aws-cdk/src",
+  "projectType": "library",
+  "generators": {},
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "libs/nx-aws-cdk/jest.config.ts"
+      },
+      "outputs": ["{workspaceRoot}/coverage/libs/nx-aws-cdk"]
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "outputPath": "dist/libs/nx-aws-cdk",
+        "tsConfig": "libs/nx-aws-cdk/tsconfig.lib.json",
+        "packageJson": "libs/nx-aws-cdk/package.json",
+        "main": "libs/nx-aws-cdk/src/index.ts",
+        "assets": [
+          "libs/nx-aws-cdk/*.md",
+          {
+            "input": "./libs/nx-aws-cdk/src",
+            "glob": "**/!(*.ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/nx-aws-cdk/src",
+            "glob": "**/*.d.ts",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/nx-aws-cdk",
+            "glob": "executors.json",
+            "output": "."
+          },
+          {
+            "input": "./libs/nx-aws-cdk",
+            "glob": "generators.json",
+            "output": "."
+          }
+        ],
+        "srcRootForCompilationRoot": "libs\\nx-aws-cdk"
+      },
+      "outputs": ["{options.outputPath}"]
+    }
+  },
+  "tags": []
+}

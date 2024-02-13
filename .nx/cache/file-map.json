@@ -1,0 +1,1942 @@
+{
+  "version": "6.0",
+  "nxVersion": "18.0.4",
+  "deps": {
+    "@nguniversal/express-engine": "12.0.0",
+    "express": "4.17.2",
+    "npm-run-all": "^4.1.5",
+    "@angular-devkit/build-webpack": "^0.1701.3",
+    "@aws-cdk/aws-autoscaling": "^1.204.0",
+    "@aws-cdk/aws-certificatemanager": "~1.121.0",
+    "@aws-cdk/aws-dynamodb": "~1.121.0",
+    "@aws-cdk/aws-ec2": "~1.121.0",
+    "@aws-cdk/aws-ecs": "~1.121.0",
+    "@aws-cdk/aws-elasticsearch": "~1.121.0",
+    "@aws-cdk/aws-lambda": "~1.121.0",
+    "@aws-cdk/aws-lambda-event-sources": "~1.121.0",
+    "@aws-cdk/aws-rds": "~1.121.0",
+    "@aws-cdk/aws-route53": "~1.121.0",
+    "@aws-cdk/aws-sns": "~1.121.0",
+    "@aws-cdk/aws-sqs": "~1.121.0",
+    "@aws-cdk/core": "~1.121.0",
+    "@babel/code-frame": "^7.8.3",
+    "@nrwl/express": "18.0.4",
+    "@nrwl/tao": "18.0.4",
+    "@nx-dotnet/utils": "^1.3.2",
+    "@scullyio/scully": "^1.1.1",
+    "@semantic-release/changelog": "^5.0.1",
+    "@semantic-release/commit-analyzer": "^8.0.1",
+    "@semantic-release/exec": "^5.0.0",
+    "@semantic-release/git": "^9.0.0",
+    "@semantic-release/release-notes-generator": "^9.0.3",
+    "@types/express": "4.17.13",
+    "@types/fs-extra": "^8.1.0",
+    "@types/jest": "29.4.4",
+    "@types/node": "18.16.9",
+    "@types/webpack": "^5.28.0",
+    "@types/webpack-bundle-analyzer": "^4.4.1",
+    "@types/webpack-dev-server": "^4.5.0",
+    "@typescript-eslint/eslint-plugin": "6.21.0",
+    "@typescript-eslint/parser": "6.21.0",
+    "circular-dependency-plugin": "^5.0.2",
+    "copy-webpack-plugin": "11.0.0",
+    "cypress": "^4.1.0",
+    "cz-conventional-changelog": "^3.0.2",
+    "cz-customizable": "^6.2.0",
+    "depcheck": "1.4.3",
+    "dotenv": "10.0.0",
+    "dotenv-json": "^1.0.0",
+    "eslint": "8.48.0",
+    "eslint-config-prettier": "9.1.0",
+    "fork-ts-checker-webpack-plugin": "^3.1.1",
+    "husky": "^3.0.3",
+    "ignore": "^5.0.4",
+    "is-builtin-module": "^3.0.0",
+    "jest": "29.4.3",
+    "license-webpack-plugin": "2.1.2",
+    "nx": "18.0.4",
+    "prettier": "2.5.1",
+    "reflect-metadata": "^0.1.13",
+    "rxjs-for-await": "0.0.2",
+    "semantic-release": "^17.4.7",
+    "serverless": "3.33.0",
+    "strip-json-comments": "^3.1.0",
+    "tree-kill": "^1.2.2",
+    "ts-jest": "29.1.2",
+    "ts-node": "9.1.1",
+    "tsconfig-paths-webpack-plugin": "^3.2.0",
+    "tslib": "^2.4.0",
+    "tsyringe": "^4.7.0",
+    "typescript": "4.3.5",
+    "upath": "^1.2.0",
+    "uuid": "^9.0.0",
+    "verdaccio": "^5.1.5",
+    "webpack": "^5.58.1",
+    "webpack-dev-server": "^4.3.1",
+    "webpack-merge": "^5.8.0",
+    "webpack-node-externals": "^3.0.0",
+    "jest-environment-jsdom": "28.1.3",
+    "nx-cloud": "18.0.0",
+    "@nx/devkit": "18.0.4",
+    "@nx/workspace": "18.0.4",
+    "@nx/eslint-plugin": "18.0.4",
+    "@nx/jest": "18.0.4",
+    "@nx/eslint": "18.0.4",
+    "@nx/node": "18.0.4",
+    "@nx/plugin": "18.0.4",
+    "@nx/js": "18.0.4"
+  },
+  "pathMappings": {
+    "@flowaccount/angular-paperclip-experiment": [
+      "libs/angular-paperclip-experiment/src/index.ts"
+    ],
+    "@flowaccount/aws-cdk": [
+      "libs/aws-cdk/src/index.ts"
+    ],
+    "@flowaccount/aws-cdk-core": [
+      "libs/aws-cdk-core/src/index.ts"
+    ],
+    "@flowaccount/aws-cdk-stack": [
+      "libs/aws-cdk-stack/src/index.ts"
+    ],
+    "@flowaccount/flowaccount/nx-serverless": [
+      "libs/nx-serverless/src/index.ts"
+    ],
+    "@flowaccount/nx-aws-cdk": [
+      "libs/nx-aws-cdk/src/index.ts"
+    ],
+    "@flowaccount/scully-plugin-angular-delay": [
+      "libs/scully-plugin-angular-delay/src/index.ts"
+    ],
+    "@flowaccount/scully-plugin-google-analytics": [
+      "libs/scully-plugin-google-analytics/src/index.ts"
+    ],
+    "@flowaccount/scully-plugin-lazy-load-picture-tag": [
+      "libs/scully-plugin-lazy-load-picture-tag/src/index.ts"
+    ]
+  },
+  "nxJsonPlugins": [],
+  "fileMap": {
+    "projectFileMap": {
+      "scully-plugin-lazy-load-picture-tag": [
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/.eslintrc.json",
+          "hash": "4462767949587060696"
+        },
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/README.md",
+          "hash": "17026963529044449809"
+        },
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/jest.config.ts",
+          "hash": "18270098638018449093"
+        },
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/package.json",
+          "hash": "15542500058436855351",
+          "deps": [
+            "npm:jsdom",
+            "npm:@scullyio/scully"
+          ]
+        },
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/project.json",
+          "hash": "4887997534353527962"
+        },
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/src/index.ts",
+          "hash": "11478822251656110814"
+        },
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/src/lib/scully-plugin-lazy-load-picture-tag.spec.ts",
+          "hash": "10766178617018082091"
+        },
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/src/lib/scully-plugin-lazy-load-picture-tag.ts",
+          "hash": "8746619618780473540",
+          "deps": [
+            "npm:@scullyio/scully",
+            "npm:jsdom"
+          ]
+        },
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.json",
+          "hash": "5282289400810784104"
+        },
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.lib.json",
+          "hash": "3660999668108761731"
+        },
+        {
+          "file": "libs/scully-plugin-lazy-load-picture-tag/tsconfig.spec.json",
+          "hash": "11467507841791326307"
+        }
+      ],
+      "scully-plugin-google-analytics": [
+        {
+          "file": "libs/scully-plugin-google-analytics/.eslintrc.json",
+          "hash": "4462767949587060696"
+        },
+        {
+          "file": "libs/scully-plugin-google-analytics/README.md",
+          "hash": "11304942951732786272"
+        },
+        {
+          "file": "libs/scully-plugin-google-analytics/jest.config.ts",
+          "hash": "9675023220523641273"
+        },
+        {
+          "file": "libs/scully-plugin-google-analytics/package.json",
+          "hash": "4469955674947821340",
+          "deps": [
+            "npm:jsdom",
+            "npm:@scullyio/scully"
+          ]
+        },
+        {
+          "file": "libs/scully-plugin-google-analytics/project.json",
+          "hash": "16710116501926244808"
+        },
+        {
+          "file": "libs/scully-plugin-google-analytics/src/index.ts",
+          "hash": "10181446096149339770"
+        },
+        {
+          "file": "libs/scully-plugin-google-analytics/src/lib/scully-plugin-google-analytics.spec.ts",
+          "hash": "6744234216924997365"
+        },
+        {
+          "file": "libs/scully-plugin-google-analytics/src/lib/scully-plugin-google-analytics.ts",
+          "hash": "6560724902451838261",
+          "deps": [
+            "npm:@scullyio/scully",
+            "npm:jsdom"
+          ]
+        },
+        {
+          "file": "libs/scully-plugin-google-analytics/tsconfig.json",
+          "hash": "5282289400810784104"
+        },
+        {
+          "file": "libs/scully-plugin-google-analytics/tsconfig.lib.json",
+          "hash": "3660999668108761731"
+        },
+        {
+          "file": "libs/scully-plugin-google-analytics/tsconfig.spec.json",
+          "hash": "11467507841791326307"
+        }
+      ],
+      "scully-plugin-angular-delay": [
+        {
+          "file": "libs/scully-plugin-angular-delay/.eslintrc.json",
+          "hash": "4462767949587060696"
+        },
+        {
+          "file": "libs/scully-plugin-angular-delay/README.md",
+          "hash": "4984463024802049239"
+        },
+        {
+          "file": "libs/scully-plugin-angular-delay/jest.config.ts",
+          "hash": "2623238686010308896"
+        },
+        {
+          "file": "libs/scully-plugin-angular-delay/package.json",
+          "hash": "805329203899879038",
+          "deps": [
+            "npm:jsdom",
+            "npm:@scullyio/scully"
+          ]
+        },
+        {
+          "file": "libs/scully-plugin-angular-delay/project.json",
+          "hash": "9858316402827982761"
+        },
+        {
+          "file": "libs/scully-plugin-angular-delay/src/index.ts",
+          "hash": "17869153803348479353"
+        },
+        {
+          "file": "libs/scully-plugin-angular-delay/src/lib/scully-plugin-angular-delay.spec.ts",
+          "hash": "4889493520157654334"
+        },
+        {
+          "file": "libs/scully-plugin-angular-delay/src/lib/scully-plugin-angular-delay.ts",
+          "hash": "5926046563192107198",
+          "deps": [
+            "npm:D:/projects/flowaccount/flowaccount.workspace/node_modules/@scullyio/scully/src/",
+            "npm:fs",
+            "npm:path",
+            "npm:jsdom"
+          ]
+        },
+        {
+          "file": "libs/scully-plugin-angular-delay/tsconfig.json",
+          "hash": "5282289400810784104"
+        },
+        {
+          "file": "libs/scully-plugin-angular-delay/tsconfig.lib.json",
+          "hash": "10408827143298268354"
+        },
+        {
+          "file": "libs/scully-plugin-angular-delay/tsconfig.spec.json",
+          "hash": "11467507841791326307"
+        }
+      ],
+      "nx-aws-cdk-e2e": [
+        {
+          "file": "apps/nx-aws-cdk-e2e/jest.config.js",
+          "hash": "6416172786193627739"
+        },
+        {
+          "file": "apps/nx-aws-cdk-e2e/project.json",
+          "hash": "15874996093275771462"
+        },
+        {
+          "file": "apps/nx-aws-cdk-e2e/tests/nx-aws-cdk.test.ts",
+          "hash": "6074425068965636369",
+          "deps": [
+            "npm:@nrwl/nx-plugin"
+          ]
+        },
+        {
+          "file": "apps/nx-aws-cdk-e2e/tsconfig.json",
+          "hash": "1048560165562629580"
+        },
+        {
+          "file": "apps/nx-aws-cdk-e2e/tsconfig.spec.json",
+          "hash": "14923180086576996015"
+        }
+      ],
+      "nx-serverless": [
+        {
+          "file": "libs/nx-serverless/.eslintrc.json",
+          "hash": "7131003022232935785"
+        },
+        {
+          "file": "libs/nx-serverless/.npmignore",
+          "hash": "10880717461105909338"
+        },
+        {
+          "file": "libs/nx-serverless/README.md",
+          "hash": "6275159933205587599"
+        },
+        {
+          "file": "libs/nx-serverless/builders.json",
+          "hash": "5590135877672839947"
+        },
+        {
+          "file": "libs/nx-serverless/collection.json",
+          "hash": "1128919566407739872"
+        },
+        {
+          "file": "libs/nx-serverless/jest.config.ts",
+          "hash": "14588197429398097146"
+        },
+        {
+          "file": "libs/nx-serverless/migrations.json",
+          "hash": "4226130397549263395"
+        },
+        {
+          "file": "libs/nx-serverless/package.json",
+          "hash": "12469843183213529904",
+          "deps": [
+            "npm:@angular-devkit/architect",
+            "npm:@angular-devkit/schematics",
+            "npm:ignore",
+            "npm:@nrwl/express",
+            "npm:@nrwl/node",
+            "npm:@nrwl/jest",
+            "npm:dotenv",
+            "npm:dotenv-json",
+            "npm:copy-webpack-plugin",
+            "npm:license-webpack-plugin",
+            "npm:circular-dependency-plugin",
+            "npm:fork-ts-checker-webpack-plugin",
+            "npm:tsconfig-paths-webpack-plugin",
+            "npm:webpack",
+            "npm:webpack-merge",
+            "npm:webpack-node-externals",
+            "npm:webpack-dev-server",
+            "npm:depcheck",
+            "npm:serverless",
+            "npm:serverless-offline",
+            "npm:serverless-apigw-binary",
+            "npm:is-builtin-module",
+            "npm:rxjs-for-await",
+            "npm:graceful-fs",
+            "npm:upath",
+            "npm:ts-loader",
+            "npm:@nx/devkit",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/project.json",
+          "hash": "8510042343636674136"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/build/build.impl.spec.ts",
+          "hash": "15713415768817038312",
+          "deps": [
+            "npm:@angular-devkit/core",
+            "npm:path",
+            "npm:tsconfig-paths-webpack-plugin",
+            "npm:rxjs",
+            "npm:@nx/workspace",
+            "npm:@nx/devkit",
+            "npm:@nrwl/node"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/build/build.impl.ts",
+          "hash": "9741662330343949337",
+          "deps": [
+            "npm:rxjs",
+            "npm:path",
+            "npm:fs",
+            "npm:@nx/devkit",
+            "npm:rxjs-for-await"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/build/compat.ts",
+          "hash": "2722824385452409916",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/build/schema.json",
+          "hash": "5789260923508297325"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/build/source-map-install.ts",
+          "hash": "13749938133660950870",
+          "deps": [
+            "npm:source-map-support"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/compile/compat.ts",
+          "hash": "16033074219823651007",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/compile/compile.impl.spec.ts",
+          "hash": "8643163618479642902",
+          "deps": [
+            "npm:@angular-devkit/core",
+            "npm:path",
+            "npm:tsconfig-paths-webpack-plugin",
+            "npm:rxjs",
+            "npm:@angular-devkit/architect"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/compile/compile.impl.ts",
+          "hash": "16951330862753262449",
+          "deps": [
+            "npm:path",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/compile/schema.json",
+          "hash": "917625546271660863"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/deploy/compat.ts",
+          "hash": "4751949098857099021",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/deploy/deploy.impl.spec.ts",
+          "hash": "8253220570780756150",
+          "deps": [
+            "npm:@angular-devkit/core",
+            "npm:fs-extra",
+            "npm:@nx/devkit",
+            "npm:rxjs",
+            [
+              "npm:@nx/devkit",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/deploy/deploy.impl.ts",
+          "hash": "5104485473754202663",
+          "deps": [
+            "npm:lodash",
+            "npm:fs",
+            "npm:graceful-fs",
+            "npm:@nx/devkit",
+            "npm:dotenv-json",
+            "npm:path",
+            "npm:child_process"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/deploy/schema.json",
+          "hash": "14801830716489837342"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/destroy/compat.ts",
+          "hash": "16842553037907664931",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/destroy/destroy.impl.spec.ts",
+          "hash": "7368895950601627547"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/destroy/destroy.impl.ts",
+          "hash": "10109818242952601573",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/destroy/schema.json",
+          "hash": "4386988477642403376"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/offline/compat.ts",
+          "hash": "11383266977845332942",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/offline/offline.executor.ts",
+          "hash": "11055057306732378512",
+          "deps": [
+            "npm:child_process",
+            "npm:@nx/devkit",
+            "npm:ignore",
+            "npm:fs",
+            "npm:chokidar",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/offline/offline.impl.spec.ts",
+          "hash": "12778411546495913708",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:child_process",
+            "npm:tree-kill",
+            [
+              "npm:@nx/devkit",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/offline/offline.impl.ts",
+          "hash": "15605601118689467490",
+          "deps": [
+            "npm:child_process",
+            "npm:tree-kill",
+            "npm:@nx/devkit",
+            "npm:util",
+            [
+              "npm:dotenv",
+              "dynamic"
+            ]
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/offline/schema.json",
+          "hash": "16739972187582935927"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/scully/compat.ts",
+          "hash": "5690282092706514388",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/scully/schema.json",
+          "hash": "15991734069287848906"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/scully/scully.impl.spec.ts",
+          "hash": "13159661825133123000"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/scully/scully.impl.ts",
+          "hash": "15494946193700548924",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/sls/compat.ts",
+          "hash": "9832960052836118048",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/sls/schema.json",
+          "hash": "557729628848464873"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/sls/sls.impl.spec.ts",
+          "hash": "3321315108180827535"
+        },
+        {
+          "file": "libs/nx-serverless/src/builders/sls/sls.impl.ts",
+          "hash": "17152072453489829577",
+          "deps": [
+            "npm:lodash",
+            "npm:fs",
+            "npm:graceful-fs",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/api.spec.ts",
+          "hash": "6326600169742694408",
+          "deps": [
+            "npm:@angular-devkit/schematics",
+            "npm:strip-json-comments",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/api.ts",
+          "hash": "714719743288460996",
+          "deps": [
+            "npm:path",
+            "npm:@nx/devkit",
+            "npm:@nx/workspace",
+            "npm:@nrwl/jest",
+            "npm:@nrwl/linter"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/files/env.json",
+          "hash": "13176820812041244535"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/files/environment.prod.ts.template",
+          "hash": "14319090500531079778"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/files/environment.ts.template",
+          "hash": "5376776311323998691"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/files/serverless.ts.template",
+          "hash": "12008468780253891965"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/files/serverless.yml.template",
+          "hash": "4084028355279690047"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/files/src/handler.ts.template",
+          "hash": "5790111864244831045"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/files/tsconfig.app.json",
+          "hash": "9137326844452304257"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/files/tsconfig.json",
+          "hash": "4549699263446589971"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/schema.d.ts",
+          "hash": "6432480105999314772",
+          "deps": [
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/api/schema.json",
+          "hash": "14124583222728567886"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/express/application.spec.ts",
+          "hash": "3175224636066675720",
+          "deps": [
+            "npm:@angular-devkit/schematics",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/express/application.ts",
+          "hash": "1373926069277183329",
+          "deps": [
+            "npm:path",
+            "npm:@nx/devkit",
+            "npm:@nrwl/express"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/express/files/env.json",
+          "hash": "13176820812041244535"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/express/files/handler.ts.template",
+          "hash": "17348235492869908480"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/express/files/serverless.yml.template",
+          "hash": "6325453150516321228"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/express/files/src/main.ts.template",
+          "hash": "1807308589455360840"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/express/files/tsconfig.serverless.json",
+          "hash": "14043221435748254496"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/express/schema.d.ts",
+          "hash": "7671181551407226291"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/express/schema.json",
+          "hash": "14745042560371873427"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/init/init.spec.ts",
+          "hash": "14466358434098432502",
+          "deps": [
+            "npm:@angular-devkit/schematics",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/init/init.ts",
+          "hash": "15805010929907654019",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:@nx/workspace",
+            "npm:@nrwl/jest"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/init/lib/add-jest-plugin.ts",
+          "hash": "15065244270253959660",
+          "deps": [
+            "npm:@nrwl/jest",
+            "npm:@nx/devkit",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/init/lib/add-linter-plugin.ts",
+          "hash": "4266849987263530892",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/init/lib/util.ts",
+          "hash": "5428514682426725451",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/init/schema.d.ts",
+          "hash": "4219239819315610067"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/init/schema.json",
+          "hash": "11107714078824123141"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/application.spec.ts",
+          "hash": "8412652862164571591",
+          "deps": [
+            "npm:@angular-devkit/schematics",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/application.ts",
+          "hash": "414475311517379430",
+          "deps": [
+            "npm:path",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/files/app/env.json",
+          "hash": "13176820812041244535"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/files/app/handler.ts__tmpl__",
+          "hash": "15417068630036644258"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/files/app/scully.config.js",
+          "hash": "13139300053756962418"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/files/app/serve-static.ts__tmpl__",
+          "hash": "2239181212818789637"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/files/app/server-prerender.ts__tmpl__",
+          "hash": "11892550564847799271"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/files/app/serverless.yml.__tmpl__",
+          "hash": "6325453150516321228"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/files/app/tsconfig.serverless.json",
+          "hash": "18143233612902686490"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/schema.d.ts",
+          "hash": "302524167611533455"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/scully/schema.json",
+          "hash": "16640008222661432806"
+        },
+        {
+          "file": "libs/nx-serverless/src/schematics/utils.ts",
+          "hash": "5796236530732125808",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:path"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/config.ts",
+          "hash": "7340438721027075659",
+          "deps": [
+            "npm:webpack",
+            "npm:typescript",
+            "npm:license-webpack-plugin",
+            "npm:circular-dependency-plugin",
+            "npm:fork-ts-checker-webpack-plugin",
+            "npm:tsconfig-paths-webpack-plugin",
+            "npm:@nx/workspace",
+            "npm:copy-webpack-plugin"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/copy-asset-files.ts",
+          "hash": "9190426203055838700",
+          "deps": [
+            "npm:fs-extra",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/depcheck.ts",
+          "hash": "5076861665899936711",
+          "deps": [
+            "npm:depcheck",
+            "npm:@nx/devkit",
+            "npm:webpack"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/enums.ts",
+          "hash": "13051307700884711589"
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/middleware.ts",
+          "hash": "9155455201143977900"
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/node.config.5.ts",
+          "hash": "17104004900437495548"
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/node.config.ts",
+          "hash": "14924878442986368832",
+          "deps": [
+            "npm:webpack",
+            "npm:webpack-merge",
+            "npm:webpack-node-externals"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/normalize-options.ts",
+          "hash": "15864311018345110095",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:glob",
+            "npm:path"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/normalize.ts",
+          "hash": "9987676972062673614",
+          "deps": [
+            "npm:path",
+            "npm:fs",
+            "npm:glob",
+            "npm:lodash",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/packagers/index.ts",
+          "hash": "3475322223306401414",
+          "deps": [
+            "npm:lodash",
+            "npm:path",
+            "npm:@nx/devkit",
+            "npm:webpack"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/packagers/npm.ts",
+          "hash": "15211014223843411542",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:rxjs",
+            "npm:child_process",
+            "npm:util",
+            "npm:lodash"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/packagers/yarn.ts",
+          "hash": "12913538073684441642",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:child_process",
+            "npm:lodash",
+            "npm:rxjs",
+            "npm:util"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/run-webpack.ts",
+          "hash": "16485439604763982709",
+          "deps": [
+            "npm:webpack",
+            "npm:rxjs",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/serverless.config.spec.ts",
+          "hash": "3417158782292660392"
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/serverless.config.ts",
+          "hash": "15563470108016525091",
+          "deps": [
+            "npm:lodash",
+            "npm:typescript",
+            "npm:upath",
+            "npm:path",
+            "npm:ignore",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/serverless.ts",
+          "hash": "6241735918182317216",
+          "deps": [
+            "npm:serverless",
+            "npm:path",
+            "npm:fs",
+            "npm:dotenv-json",
+            "npm:@nx/devkit",
+            "npm:graceful-fs"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/target.schedulers.ts",
+          "hash": "5255834076938280629",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/testing.ts",
+          "hash": "3179998784909582503"
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/types.ts",
+          "hash": "11967750193452269349",
+          "deps": [
+            "npm:webpack",
+            "npm:rxjs",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/typescript.spec.ts",
+          "hash": "9194170099723543929"
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/typescript.ts",
+          "hash": "3801340923706865685",
+          "deps": [
+            "npm:rxjs",
+            "npm:fs",
+            "npm:tree-kill",
+            "npm:child_process",
+            "npm:path",
+            "npm:fs-extra",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/versions.ts",
+          "hash": "5010735134673983822"
+        },
+        {
+          "file": "libs/nx-serverless/src/utils/webpack.stats.ts",
+          "hash": "7087287242463990088",
+          "deps": [
+            "npm:is-builtin-module",
+            "npm:lodash",
+            "npm:rxjs",
+            "npm:@nx/devkit",
+            "npm:webpack"
+          ]
+        },
+        {
+          "file": "libs/nx-serverless/tsconfig.json",
+          "hash": "5282289400810784104"
+        },
+        {
+          "file": "libs/nx-serverless/tsconfig.lib.json",
+          "hash": "8749351918161307680"
+        },
+        {
+          "file": "libs/nx-serverless/tsconfig.spec.json",
+          "hash": "15279471605917385400"
+        }
+      ],
+      "nx-serverless-e2e": [
+        {
+          "file": "apps/nx-serverless-e2e/jest.config.js",
+          "hash": "6228419756351060403"
+        },
+        {
+          "file": "apps/nx-serverless-e2e/project.json",
+          "hash": "4737774244233128987"
+        },
+        {
+          "file": "apps/nx-serverless-e2e/tests/nx-serverless.test.ts",
+          "hash": "310478426223991983",
+          "deps": [
+            "npm:@nrwl/nx-plugin"
+          ]
+        },
+        {
+          "file": "apps/nx-serverless-e2e/tsconfig.json",
+          "hash": "1048560165562629580"
+        },
+        {
+          "file": "apps/nx-serverless-e2e/tsconfig.spec.json",
+          "hash": "14923180086576996015"
+        }
+      ],
+      "aws-cdk-core": [
+        {
+          "file": "libs/aws-cdk-core/.babelrc",
+          "hash": "2685020516260856122"
+        },
+        {
+          "file": "libs/aws-cdk-core/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "libs/aws-cdk-core/README.md",
+          "hash": "11019792348472501203"
+        },
+        {
+          "file": "libs/aws-cdk-core/jest.config.js",
+          "hash": "8385248804609994077"
+        },
+        {
+          "file": "libs/aws-cdk-core/package.json",
+          "hash": "3012947091150258517"
+        },
+        {
+          "file": "libs/aws-cdk-core/project.json",
+          "hash": "11579197554814436071"
+        },
+        {
+          "file": "libs/aws-cdk-core/src/index.ts",
+          "hash": "7607231202779823112"
+        },
+        {
+          "file": "libs/aws-cdk-core/src/lib/aws-cdk-client.ts",
+          "hash": "11525822562564942572",
+          "deps": [
+            "npm:child_process"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-core/src/lib/aws-cdk-factory.ts",
+          "hash": "7153585790123460809",
+          "deps": [
+            "npm:child_process"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-core/src/lib/types/index.ts",
+          "hash": "15054129861865033672"
+        },
+        {
+          "file": "libs/aws-cdk-core/src/lib/utils.ts",
+          "hash": "16630317285200235788",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-core/tsconfig.json",
+          "hash": "12834038490315927699"
+        },
+        {
+          "file": "libs/aws-cdk-core/tsconfig.lib.json",
+          "hash": "15448591875537424246"
+        },
+        {
+          "file": "libs/aws-cdk-core/tsconfig.spec.json",
+          "hash": "13015927483173923663"
+        }
+      ],
+      "nx-aws-cdk": [
+        {
+          "file": "libs/nx-aws-cdk/.eslintrc.json",
+          "hash": "7131003022232935785"
+        },
+        {
+          "file": "libs/nx-aws-cdk/README.md",
+          "hash": "13412033655676299538"
+        },
+        {
+          "file": "libs/nx-aws-cdk/executors.json",
+          "hash": "3416290773339267331"
+        },
+        {
+          "file": "libs/nx-aws-cdk/generators.json",
+          "hash": "17312769894872690800"
+        },
+        {
+          "file": "libs/nx-aws-cdk/jest.config.js",
+          "hash": "13606703063492803685"
+        },
+        {
+          "file": "libs/nx-aws-cdk/package.json",
+          "hash": "8556155260162619876",
+          "deps": [
+            "npm:ts-node",
+            "npm:typescript",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/project.json",
+          "hash": "11181659424255531459"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/builders/deploy/deploy.executor.ts",
+          "hash": "4862853061809503253",
+          "deps": [
+            "aws-cdk-core",
+            "npm:path",
+            "npm:@nx/devkit",
+            "npm:@nrwl/node"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/builders/deploy/schema.d.ts",
+          "hash": "7336783200521867002",
+          "deps": [
+            "aws-cdk-core"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/builders/deploy/schema.json",
+          "hash": "6490729856054460970"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/builders/synth/compat.ts",
+          "hash": "16363091626830676847",
+          "deps": [
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/builders/synth/schema.d.ts",
+          "hash": "5959352508141251501",
+          "deps": [
+            "aws-cdk-core"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/builders/synth/schema.json",
+          "hash": "17033471858284646228"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/builders/synth/synth.executor.ts",
+          "hash": "3573779471642749061",
+          "deps": [
+            "aws-cdk-core",
+            "npm:path",
+            "npm:@nx/devkit",
+            "npm:@nrwl/node"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/models/cdk-arguments.ts",
+          "hash": "5498727845908904470"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/models/cdk-bootstrap-arguments.ts",
+          "hash": "4698470768491299147"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/application/app.ts",
+          "hash": "13287775810425969098",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:@nrwl/jest",
+            "npm:@nrwl/linter",
+            "npm:path",
+            "aws-cdk-stack",
+            "npm:@angular-devkit/core"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/application/files/.eslintrc.json",
+          "hash": "1752147367844813473"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/application/files/src/app/handler.ts.template",
+          "hash": "3321285490318843875"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/application/files/src/environments/environment.staging.ts.template",
+          "hash": "5208402412378022753"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/application/files/src/main.ts.template",
+          "hash": "3466498889617783862"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/application/files/tsconfig.app.json",
+          "hash": "2737346178227869634"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/application/files/tsconfig.json",
+          "hash": "9966163818154779183"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/application/schema.json",
+          "hash": "11669419991591906684"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/base-aws-cdk.ts",
+          "hash": "6056160196004185375",
+          "deps": [
+            "npm:@angular-devkit/schematics"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/base-schema.d.ts",
+          "hash": "631354575228123563"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/common-schematics.ts",
+          "hash": "12650700188369558454",
+          "deps": [
+            "npm:path",
+            "npm:@nx/devkit",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/ecs/files/.eslintrc.json",
+          "hash": "1752147367844813473"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/ecs/files/src/environments/environment.staging.ts.template",
+          "hash": "589219658956672593"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/ecs/files/src/main.ts.template",
+          "hash": "11099121952413121556"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/ecs/files/tsconfig.app.json",
+          "hash": "2737346178227869634"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/ecs/files/tsconfig.json",
+          "hash": "9966163818154779183"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/ecs/schema.d.ts",
+          "hash": "9786687472309409689"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/ecs/schema.json",
+          "hash": "10276204931801645817"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/index.ts",
+          "hash": "3244421341483603138"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/init/index.ts",
+          "hash": "107277379007996579",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/init/init.spec.ts",
+          "hash": "831109392262873669",
+          "deps": [
+            "npm:@angular-devkit/schematics",
+            "npm:@nx/workspace"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/init/schema.d.ts",
+          "hash": "15166616746775194539"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/init/schema.json",
+          "hash": "3406569080082825189"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/normalized-schema.d.ts",
+          "hash": "16376985877787321183"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/schema.d.ts",
+          "hash": "17473169480622874825"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/schematics/schema.json",
+          "hash": "14231204489156001810"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/utils/enum.ts",
+          "hash": "8510973923146211257"
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/utils/testing.ts",
+          "hash": "11386524040803904291",
+          "deps": [
+            "npm:path",
+            "npm:@angular-devkit/schematics"
+          ]
+        },
+        {
+          "file": "libs/nx-aws-cdk/src/utils/versions.ts",
+          "hash": "16733199325096295399"
+        },
+        {
+          "file": "libs/nx-aws-cdk/tsconfig.json",
+          "hash": "5282289400810784104"
+        },
+        {
+          "file": "libs/nx-aws-cdk/tsconfig.lib.json",
+          "hash": "15448591875537424246"
+        },
+        {
+          "file": "libs/nx-aws-cdk/tsconfig.spec.json",
+          "hash": "13015927483173923663"
+        }
+      ],
+      "aws-cdk-stack": [
+        {
+          "file": "libs/aws-cdk-stack/.babelrc",
+          "hash": "2685020516260856122"
+        },
+        {
+          "file": "libs/aws-cdk-stack/.eslintrc.json",
+          "hash": "13800677001662881425"
+        },
+        {
+          "file": "libs/aws-cdk-stack/README.md",
+          "hash": "10918658997907528101"
+        },
+        {
+          "file": "libs/aws-cdk-stack/jest.config.js",
+          "hash": "15012321685649208902"
+        },
+        {
+          "file": "libs/aws-cdk-stack/package.json",
+          "hash": "16039004549714430085",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@aws-cdk/aws-dynamodb",
+            "npm:@aws-cdk/aws-sqs",
+            "npm:@aws-cdk/aws-sns",
+            "npm:@aws-cdk/aws-lambda",
+            "npm:@aws-cdk/aws-rds",
+            "npm:@aws-cdk/aws-elasticsearch",
+            "npm:@aws-cdk/aws-lambda-event-sources",
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/aws-ecs",
+            "npm:@aws-cdk/aws-autoscaling",
+            "npm:@aws-cdk/aws-logs",
+            "npm:@aws-cdk/aws-servicediscovery",
+            "npm:@aws-cdk/aws-secretsmanager",
+            "npm:@aws-cdk/aws-applicationautoscaling",
+            "npm:@aws-cdk/aws-elasticloadbalancingv2",
+            "npm:@aws-cdk/aws-certificatemanager",
+            "npm:@aws-cdk/aws-route53",
+            "npm:@angular-devkit/schematics",
+            "npm:@angular-devkit/core",
+            "npm:uuid",
+            "npm:tsyringe",
+            "npm:reflect-metadata"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/project.json",
+          "hash": "5178623212284846103"
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/index.ts",
+          "hash": "12359629766222672379"
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/lambda-asset-code/typescript-code.ts",
+          "hash": "936942488253812844",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-lambda",
+            "npm:path",
+            "npm:child_process",
+            "npm:fs",
+            "npm:mkdirp",
+            "npm:@nx/devkit",
+            "npm:fs-extra"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/application-load-balancer.ts",
+          "hash": "8741842353621918415",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit",
+            "npm:@aws-cdk/aws-elasticloadbalancingv2",
+            "npm:@aws-cdk/aws-certificatemanager",
+            "npm:@aws-cdk/aws-ec2"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/application-target-group.ts",
+          "hash": "13001713956564978206",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-elasticloadbalancingv2",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/aurora-severless-db.ts",
+          "hash": "4935531042671257990",
+          "deps": [
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@nx/devkit",
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-rds"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/aws-ecs-cluster.ts",
+          "hash": "8889341072926160619",
+          "deps": [
+            "npm:reflect-metadata",
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit",
+            "npm:tsyringe",
+            "npm:@aws-cdk/aws-elasticloadbalancingv2",
+            "npm:@aws-cdk/aws-route53"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/builders/aurora-serverless-db-builder.ts",
+          "hash": "9662630095300057302",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:@aws-cdk/aws-sqs",
+            "npm:@aws-cdk/core"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/builders/base-application-stack-builder.ts",
+          "hash": "12843099012238892770",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/builders/index.ts",
+          "hash": "3175643439513628688"
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/builders/serverless-application-builder.ts",
+          "hash": "16884988613603951717"
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/builders/sqs-stack-builder.ts",
+          "hash": "14286389821555911593",
+          "deps": [
+            "npm:@nx/devkit",
+            "npm:@aws-cdk/aws-sqs",
+            "npm:@aws-cdk/core"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/dynamo-db-stack.ts",
+          "hash": "108504361012214934",
+          "deps": [
+            "npm:@aws-cdk/aws-dynamodb",
+            "npm:@aws-cdk/core"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/ecs-autoscaling-group.ts",
+          "hash": "3866240494446378009",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/aws-ecs",
+            "npm:@aws-cdk/aws-autoscaling"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/ecs-capacity-provider.ts",
+          "hash": "10024867457918034474",
+          "deps": [
+            "npm:@aws-cdk/aws-autoscaling",
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@aws-cdk/aws-ecs",
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/ecs-cluster.ts",
+          "hash": "12729926545537731568",
+          "deps": [
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@aws-cdk/aws-ecs",
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/ecs-network-stack.ts",
+          "hash": "1620930095177006691",
+          "deps": [
+            "npm:reflect-metadata",
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit",
+            "npm:tsyringe",
+            "npm:@aws-cdk/aws-elasticloadbalancingv2",
+            "npm:@aws-cdk/aws-route53",
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@aws-cdk/aws-certificatemanager",
+            "npm:@aws-cdk/aws-ecs",
+            "npm:@aws-cdk/aws-autoscaling",
+            "npm:process"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/ecs-service.ts",
+          "hash": "12611991150793735190",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-ecs",
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@aws-cdk/aws-iam",
+            "npm:@nx/devkit",
+            "npm:@aws-cdk/aws-logs",
+            "npm:@aws-cdk/aws-servicediscovery",
+            "npm:@aws-cdk/aws-secretsmanager",
+            "npm:@aws-cdk/aws-elasticloadbalancingv2"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/elasticsearch.ts",
+          "hash": "8298359057005416862",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/aws-elasticsearch",
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/index.ts",
+          "hash": "5965801473923674920"
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/inline-role-stack.ts",
+          "hash": "17712130938548229032",
+          "deps": [
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/lambda-stack.ts",
+          "hash": "6246854281851985080",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-lambda",
+            "npm:@aws-cdk/aws-lambda-event-sources",
+            "npm:path",
+            "npm:fs-extra",
+            "npm:@aws-cdk/aws-kinesis",
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/managed-policy-stack.ts",
+          "hash": "9112657028797900266",
+          "deps": [
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/policy-stack.ts",
+          "hash": "594385024445624233",
+          "deps": [
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/rds-read-replica.ts",
+          "hash": "7311760909984719789",
+          "deps": [
+            "npm:@aws-cdk/aws-rds",
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit",
+            "npm:@aws-cdk/aws-ec2"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/role-stack.ts",
+          "hash": "16206399012495815580",
+          "deps": [
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/serverless-application-stack.ts",
+          "hash": "2475908921658270609",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/service-alb-adapter.ts",
+          "hash": "13228942967164667546",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-elasticloadbalancingv2",
+            "npm:@nx/devkit",
+            "npm:@aws-cdk/aws-route53",
+            "npm:@aws-cdk/aws-ecs",
+            "npm:@aws-cdk/aws-ec2"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/sqs.ts",
+          "hash": "8809652669847442947",
+          "deps": [
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-sqs",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/stacks/vpc.ts",
+          "hash": "3606452131543411319",
+          "deps": [
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@aws-cdk/core",
+            "npm:@nx/devkit"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/types/index.ts",
+          "hash": "13636596345554993466",
+          "deps": [
+            "npm:@aws-cdk/aws-ec2",
+            "npm:@aws-cdk/aws-iam",
+            "npm:@aws-cdk/aws-lambda",
+            "npm:@aws-cdk/aws-sqs",
+            "npm:@aws-cdk/core",
+            "npm:@aws-cdk/aws-lambda-event-sources",
+            "npm:@aws-cdk/aws-dynamodb",
+            "npm:@aws-cdk/aws-ecs",
+            "npm:@aws-cdk/aws-servicediscovery",
+            "npm:@aws-cdk/aws-applicationautoscaling",
+            "npm:@aws-cdk/aws-elasticloadbalancingv2",
+            "npm:tsyringe"
+          ]
+        },
+        {
+          "file": "libs/aws-cdk-stack/src/lib/versions.ts",
+          "hash": "11107014677727863398"
+        },
+        {
+          "file": "libs/aws-cdk-stack/tsconfig.json",
+          "hash": "12834038490315927699"
+        },
+        {
+          "file": "libs/aws-cdk-stack/tsconfig.lib.json",
+          "hash": "15448591875537424246"
+        },
+        {
+          "file": "libs/aws-cdk-stack/tsconfig.spec.json",
+          "hash": "13015927483173923663"
+        }
+      ]
+    },
+    "nonProjectFiles": [
+      {
+        "file": ".circleci/config.yml",
+        "hash": "14372328463686775136"
+      },
+      {
+        "file": ".cz-config.js",
+        "hash": "18180760902131121862"
+      },
+      {
+        "file": ".editorconfig",
+        "hash": "5443105041930014821"
+      },
+      {
+        "file": ".eslintrc.json",
+        "hash": "13883500911776887147"
+      },
+      {
+        "file": ".github/ISSUE_TEMPLATE/bug_report.md",
+        "hash": "18059764423309584849"
+      },
+      {
+        "file": ".github/ISSUE_TEMPLATE/feature_request.md",
+        "hash": "15729665033775530623"
+      },
+      {
+        "file": ".github/pull_request_template.md",
+        "hash": "8957958496217443317"
+      },
+      {
+        "file": ".gitignore",
+        "hash": "3361666938870035096"
+      },
+      {
+        "file": ".npmrc.local",
+        "hash": "5068280090909839264"
+      },
+      {
+        "file": ".prettierignore",
+        "hash": "17733650430415207254"
+      },
+      {
+        "file": ".prettierrc",
+        "hash": "16267754514737964994"
+      },
+      {
+        "file": ".scully/settings.yml",
+        "hash": "9214222807896976810"
+      },
+      {
+        "file": ".vscode/extensions.json",
+        "hash": "16214534446767281707"
+      },
+      {
+        "file": ".vscode/launch.json",
+        "hash": "15947676891054002903"
+      },
+      {
+        "file": ".vscode/settings.json",
+        "hash": "7014724812380617135"
+      },
+      {
+        "file": "CONTRIBUTING.md",
+        "hash": "13247892640799274679"
+      },
+      {
+        "file": "README.md",
+        "hash": "4539338392730594656"
+      },
+      {
+        "file": "apps/.gitkeep",
+        "hash": "4055606894390288348"
+      },
+      {
+        "file": "apps/aws-cdk-stack-e2e/jest.config.js",
+        "hash": "9564372198423272434"
+      },
+      {
+        "file": "apps/aws-cdk-stack-e2e/tests/aws-cdk-stack.spec.ts",
+        "hash": "845458205753425726"
+      },
+      {
+        "file": "apps/aws-cdk-stack-e2e/tsconfig.json",
+        "hash": "14373713837864029197"
+      },
+      {
+        "file": "apps/aws-cdk-stack-e2e/tsconfig.spec.json",
+        "hash": "14923180086576996015"
+      },
+      {
+        "file": "apps/nx-aws-cdk-core-e2e/jest.config.js",
+        "hash": "12287070640211733026"
+      },
+      {
+        "file": "apps/nx-aws-cdk-core-e2e/tests/nx-aws-cdk-core.spec.ts",
+        "hash": "892364945045786094"
+      },
+      {
+        "file": "apps/nx-aws-cdk-core-e2e/tsconfig.json",
+        "hash": "14373713837864029197"
+      },
+      {
+        "file": "apps/nx-aws-cdk-core-e2e/tsconfig.spec.json",
+        "hash": "14923180086576996015"
+      },
+      {
+        "file": "jest.config.ts",
+        "hash": "10857084255064884297"
+      },
+      {
+        "file": "jest.preset.js",
+        "hash": "990100709004280898"
+      },
+      {
+        "file": "libs/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "migrations.json",
+        "hash": "17244892889703565966"
+      },
+      {
+        "file": "nx.json",
+        "hash": "21441157798142540"
+      },
+      {
+        "file": "output.txt",
+        "hash": "16927010644276424685"
+      },
+      {
+        "file": "package.json",
+        "hash": "13678402124507556437"
+      },
+      {
+        "file": "scripts/commit-lint.js",
+        "hash": "1813112043468441209"
+      },
+      {
+        "file": "scully.log",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "tools/generators/.gitkeep",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "tools/scripts/local-registry/config.yml",
+        "hash": "18214508197061543875"
+      },
+      {
+        "file": "tools/scripts/patch-package-versions/index.ts",
+        "hash": "9706736167313364773"
+      },
+      {
+        "file": "tools/scripts/publish-all/index.ts",
+        "hash": "6995330752316735782"
+      },
+      {
+        "file": "tools/scripts/publish-beta/index.ts",
+        "hash": "12987729662077674850"
+      },
+      {
+        "file": "tools/tsconfig.tools.json",
+        "hash": "5864009640613726360"
+      },
+      {
+        "file": "tools/utils/fs.ts",
+        "hash": "875833518344139689"
+      },
+      {
+        "file": "tools/utils/get-affected.ts",
+        "hash": "10689603330317785813"
+      },
+      {
+        "file": "tools/utils/index.ts",
+        "hash": "16663600424636859048"
+      },
+      {
+        "file": "tools/utils/nx.ts",
+        "hash": "5360531734790529787"
+      },
+      {
+        "file": "tsconfig.base.json",
+        "hash": "12203106676363295714"
+      },
+      {
+        "file": "tslint-to-eslint-config.log",
+        "hash": "3244421341483603138"
+      },
+      {
+        "file": "yarn.lock",
+        "hash": "13528169873928360046"
+      }
+    ]
+  }
+}

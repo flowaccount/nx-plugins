@@ -4,7 +4,7 @@ import {
   readJson,
   runNxCommandAsync,
   uniq,
-} from '@nrwl/nx-plugin/testing';
+} from '@nx/plugin/testing';
 describe('nx-aws-cdk-core e2e', () => {
   it('should create nx-aws-cdk-core', async (done) => {
     console.log('shits');

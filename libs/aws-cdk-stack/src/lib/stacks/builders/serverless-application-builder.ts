@@ -1,4 +1,4 @@
-// import { logger } from "@nrwl/devkit";
+// import { logger } from "@nx/devkit";
 // import { EventSourceProperties, IApplicationStackEnvironmentConfig, InlineRoleStackProperties, LambdaConfigurationBuilderOption, LambdaStackConfiguration } from '../../types';
 // import { BaseApplicationStackBuilder } from "./base-application-stack-builder";
 // import { ServicePrincipal } from '@aws-cdk/aws-iam';

@@ -1,9 +1,13 @@
 import { ChildProcess, fork } from 'child_process';
 import * as treeKill from 'tree-kill';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
-import { ExecutorContext, logger } from '@nrwl/devkit';
+import { ExecutorContext, logger } from '@nx/devkit';
 import { promisify } from 'util';
-import { InspectType, ServerlessExecuteBuilderOptions, SimpleBuildEvent } from '../../utils/types';
+import {
+  InspectType,
+  ServerlessExecuteBuilderOptions,
+  SimpleBuildEvent,
+} from '../../utils/types';
 
 try {
   require('dotenv').config();

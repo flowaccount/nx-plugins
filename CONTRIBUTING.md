@@ -4,7 +4,7 @@ We would love for you to contribute to the plugins! Read this document to see ho
 
 ## Project Structure
 
-Source code is written on top of nx workspace. We utilizes their `@nrwl/nx-plugin` to make it easier for us to develop these cool plugins and publish it with ease!
+Source code is written on top of nx workspace. We utilizes their `@nx/plugin` to make it easier for us to develop these cool plugins and publish it with ease!
 
 We try to keep updated and have some few more steps to get into like adding these items to the repository
 

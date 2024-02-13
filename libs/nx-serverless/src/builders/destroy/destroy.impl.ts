@@ -1,9 +1,10 @@
 import { runServerlessCommand } from '../../utils/serverless';
+import { buildTarget } from '../deploy/deploy.impl';
+import { ExecutorContext, logger } from '@nx/devkit';
 import {
-  buildTarget,
-} from '../deploy/deploy.impl';
-import { ExecutorContext, logger } from '@nrwl/devkit';
-import { ServerlessDeployBuilderOptions, SimpleBuildEvent } from '../../utils/types';
+  ServerlessDeployBuilderOptions,
+  SimpleBuildEvent,
+} from '../../utils/types';
 
 export type ServerlesCompiledEvent = {
   outfile: string;

@@ -1,6 +1,6 @@
 import { Tree } from '@angular-devkit/schematics';
-import { createEmptyWorkspace } from '@nrwl/workspace/testing';
-import { readJsonInTree, updateJsonInTree } from '@nrwl/workspace';
+import { createEmptyWorkspace } from '@nx/workspace/testing';
+import { readJsonInTree, updateJsonInTree } from '@nx/workspace';
 import { callRule, runSchematic } from '../../utils/testing';
 
 describe('init', () => {
@@ -16,7 +16,7 @@ describe('init', () => {
         "name": "test-name",
         "dependencies": {},
         "devDependencies": {
-          "@nrwl/workspace": "0.0.0"
+          "@nx/workspace": "0.0.0"
         }
       }
     `
@@ -65,11 +65,11 @@ describe('init', () => {
   //       expect(workspaceJson.cli.defaultCollection).toEqual('@flowaccount/nx-serverless');
   //     });
 
-  //     it('should be set if @nrwl/workspace was set before', async () => {
+  //     it('should be set if @nx/workspace was set before', async () => {
   //       tree = await callRule(
   //         updateJsonInTree('workspace.json', json => {
   //           json.cli = {
-  //             defaultCollection: '@nrwl/workspace'
+  //             defaultCollection: '@nx/workspace'
   //           };
 
   //           return json;

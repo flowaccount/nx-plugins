@@ -1,6 +1,6 @@
 import { StatsCompilation } from 'webpack';
 import { Observable } from 'rxjs';
-import { Target } from '@nrwl/devkit';
+import { Target } from '@nx/devkit';
 import { Packager } from './enums';
 
 export interface FileReplacement {
@@ -106,10 +106,10 @@ export interface SimpleBuildEvent {
   error?: string;
   success: boolean;
   target?: Target;
-  outfile?: string
-  webpackStats?: StatsCompilation
-  resolverName?: string
-  tsconfig?: string
+  outfile?: string;
+  webpackStats?: StatsCompilation;
+  resolverName?: string;
+  tsconfig?: string;
 }
 
 export const enum InspectType {
@@ -192,5 +192,5 @@ export interface ServerlessExecuteBuilderOptions {
   enforceSecureCookies?: boolean;
   exec?: string;
   readyWhen: string;
-  skipBuild?: boolean
+  skipBuild?: boolean;
 }

@@ -15,8 +15,8 @@ import {
   logger,
   parseTargetString,
   runExecutor,
-} from '@nrwl/devkit';
-import { ExecutorEvent } from '@nrwl/node/src/executors/node/node.impl';
+} from '@nx/devkit';
+import { ExecutorEvent } from '@nx/node/src/executors/node/node.impl';
 
 export default async function runSynthExecutor(
   options: SynthExecutorSchema,

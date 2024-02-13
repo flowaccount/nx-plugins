@@ -20,16 +20,12 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@nrwl/workspace": "^14.0.0"
+    "@nx/workspace": "^14.0.0"
   },
   "dependencies": {
     "@angular-devkit/architect": "0.1400.4",
     "@angular-devkit/schematics": "~11.2.0",
-    "@nrwl/devkit": "^14.1.5",
     "ignore": "^5.1.8",
-    "@nrwl/express": "14.1.5",
-    "@nrwl/node": "14.1.5",
-    "@nrwl/jest": "14.1.5",
     "dotenv": "6.2.0",
     "dotenv-json": "^1.0.0",
     "copy-webpack-plugin": "^9.0.1",
@@ -49,7 +45,11 @@
     "rxjs-for-await": "0.0.2",
     "graceful-fs": "4.2.1",
     "upath": "^2.0.1",
-    "ts-loader": "^9.2.8"
+    "ts-loader": "^9.2.8",
+    "@nx/devkit": "^14.1.5",
+    "@nx/jest": "14.1.5",
+    "@nx/node": "14.1.5",
+    "@nx/express": "14.1.5"
   },
   "devDependencies": {},
   "repository": {

@@ -6,7 +6,7 @@ import * as pathModule from 'path';
 import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 import { copy, ensureFileSync } from 'fs-extra';
 
 const typeScriptAlreadyBuilt: string[] = []; // list of source code paths already built in this session

@@ -1,8 +1,7 @@
-import { logger } from '@nrwl/devkit';
+import { logger } from '@nx/devkit';
 import { map } from 'rxjs/operators';
 import { exec } from 'child_process';
 import { promisify } from 'util';
-
 
 const execAsync = promisify(exec);
 /**
@@ -30,7 +29,6 @@ export class NPM {
     const command = /^win/.test(process.platform) ? 'npm.cmd' : 'npm';
     const args = `ls --omit=dev -json -depth=${depth || 1}`;
 
-
     // const ignoredNpmErrors = [
     //   { npmError: 'extraneous', log: false },
     //   { npmError: 'missing', log: false },
@@ -38,15 +36,15 @@ export class NPM {
     // ];
 
     const result = await execAsync(`${command} ${args}`, {
-      cwd: cwd
+      cwd: cwd,
     });
 
-    logger.info(result)
-    if(result.stderr) {
-      logger.error(result.stderr.trim())
+    logger.info(result);
+    if (result.stderr) {
+      logger.error(result.stderr.trim());
       return null;
     }
-    return result.stdout.trim()
+    return result.stdout.trim();
 
     // if (result.error) {
     //   const err = result.error;
@@ -104,7 +102,7 @@ export class NPM {
     }
 
     if (lockfile.dependencies) {
-      _.forIn(lockfile.dependencies, lockedDependency => {
+      _.forIn(lockfile.dependencies, (lockedDependency) => {
         NPM.rebaseLockfile(pathToPackageRoot, lockedDependency);
       });
     }

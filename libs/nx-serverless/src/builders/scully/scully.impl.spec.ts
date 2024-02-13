@@ -5,7 +5,7 @@
 // import { getMockContext } from '../../utils/testing';
 // import { scullyCmdRunner } from './scully.impl';
 // import { ScullyBuilderOptions } from './scully.impl';
-// import { MockBuilderContext } from '@nrwl/workspace/testing';
+// import { MockBuilderContext } from '@nx/workspace/testing';
 // import * as targetSchedulers from '../../utils/target.schedulers';
 // import * as architect from '';
 
@@ -51,11 +51,11 @@
 //       await scullyCmdRunner(testOptions, context).toPromise();
 //       expect(startBuild).toHaveBeenCalled();
 //     });
-//     it('should call scheduleBuilder @nrwl/workspace:run-commands with correct options', async () => {
+//     it('should call scheduleBuilder @nx/workspace:run-commands with correct options', async () => {
 //       await scullyCmdRunner(testOptions, context).toPromise();
 //       expect(scheduleBuilder).toHaveBeenCalled();
 //       expect(scheduleBuilder).toHaveBeenCalledWith(
-//         '@nrwl/workspace:run-commands',
+//         '@nx/workspace:run-commands',
 //         {
 //           commands: [
 //             {

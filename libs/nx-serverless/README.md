@@ -36,20 +36,20 @@ Simplify any workflow that can be abstracted into one command using the same con
 
 ### Frameworks Schematics
 
-| Framework Name                   | AWS                
-| -------------------------------- | ------------------
-| Node-Typescript (Webpack)        | :white_check_mark: 
-| :white_check_mark:               | :calendar:         
-| Express-js (Typescript-compiler) | :white_check_mark: 
+| Framework Name                   | AWS                |
+| -------------------------------- | ------------------ |
+| Node-Typescript (Webpack)        | :white_check_mark: |
+| :white_check_mark:               | :calendar:         |
+| Express-js (Typescript-compiler) | :white_check_mark: |
 
 ### Serverless Framework Commands
 
-| Command Names      | AWS                
-| ------------------ | ------------------ 
-| Deploy             | :white_check_mark: 
-| Destroy            | :white_check_mark:
-| Sls Command        | :white_check_mark:
-| Serverless-offline | :white_check_mark:
+| Command Names      | AWS                |
+| ------------------ | ------------------ |
+| Deploy             | :white_check_mark: |
+| Destroy            | :white_check_mark: |
+| Sls Command        | :white_check_mark: |
+| Serverless-offline | :white_check_mark: |
 
 ### Supported Serverless Framework Versions
 
@@ -264,7 +264,7 @@ you workspace.json will be added with these
   }
 },
 "test": {
-  "builder": "@nrwl/jest:jest",
+  "builder": "@nx/jest:jest",
   "options": {
     ...
   }

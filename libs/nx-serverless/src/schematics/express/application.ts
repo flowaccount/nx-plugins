@@ -12,9 +12,9 @@ import {
   convertNxGenerator,
   joinPathFragments,
   offsetFromRoot,
-} from '@nrwl/devkit';
-import { applicationGenerator } from '@nrwl/express';
-import { initGenerator as initGeneratorExpress } from '@nrwl/express/src/generators/init/init';
+} from '@nx/devkit';
+import { applicationGenerator } from '@nx/express';
+import { initGenerator as initGeneratorExpress } from '@nx/express/src/generators/init/init';
 interface NormalizedSchema extends Schema {
   parsedTags: string[];
   provider: string;

@@ -5,18 +5,18 @@ import {
   joinPathFragments,
   names,
   offsetFromRoot,
-  Tree
-} from '@nrwl/devkit';
+  Tree,
+} from '@nx/devkit';
 import { Schema } from './schema';
-import { ProjectType } from '@nrwl/workspace';
-// import { toFileName } from '@nrwl/devkit';
+import { ProjectType } from '@nx/workspace';
+// import { toFileName } from '@nx/devkit';
 
 import { normalize } from 'path';
 import { NormalizedSchema } from './normalized-schema';
 
 export function getBuildConfig(options: NormalizedSchema) {
   return {
-    executor: '@nrwl/node:build',
+    executor: '@nx/node:build',
     options: {
       outputPath: joinPathFragments(normalize('dist'), options.appProjectRoot),
       package: options.appProjectRoot,

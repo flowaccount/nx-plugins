@@ -1,4 +1,6 @@
 {
+  "version": 2,
+  "outputCapture": "direct-nodejs",
   "title": "Serverless Application Build Target",
   "description": "Serverless application build target options for Build Facade",
   "type": "object",
@@ -46,7 +48,10 @@
       "oneOf": [
         {
           "type": "string",
-          "enum": ["none", "all"]
+          "enum": [
+            "none",
+            "all"
+          ]
         },
         {
           "type": "array",
@@ -101,7 +106,10 @@
           }
         },
         "additionalProperties": false,
-        "required": ["replace", "with"]
+        "required": [
+          "replace",
+          "with"
+        ]
       },
       "default": []
     },
@@ -154,7 +162,11 @@
             }
           },
           "additionalProperties": false,
-          "required": ["glob", "input", "output"]
+          "required": [
+            "glob",
+            "input",
+            "output"
+          ]
         },
         {
           "type": "string"

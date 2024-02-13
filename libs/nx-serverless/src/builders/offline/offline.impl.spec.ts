@@ -1,8 +1,8 @@
 let buildOptions;
 
-jest.mock('@nrwl/devkit');
-const devkit = require('@nrwl/devkit');
-import { ExecutorContext, logger } from '@nrwl/devkit';
+jest.mock('@nx/devkit');
+const devkit = require('@nx/devkit');
+import { ExecutorContext, logger } from '@nx/devkit';
 jest.mock('child_process');
 let { fork } = require('child_process');
 jest.mock('tree-kill');
@@ -28,7 +28,7 @@ describe('NodeExecuteBuilder', () => {
     (devkit.readTargetOptions as any).mockImplementation(() => buildOptions);
 
     (devkit.parseTargetString as any).mockImplementation(
-      jest.requireActual('@nrwl/devkit').parseTargetString
+      jest.requireActual('@nx/devkit').parseTargetString
     );
 
     fork.mockImplementation(() => {
@@ -84,7 +84,7 @@ describe('NodeExecuteBuilder', () => {
     for await (const event of offlineExecutor(testOptions, context)) {
       expect(event.success).toEqual(true);
     }
-    expect(require('@nrwl/devkit').runExecutor).toHaveBeenCalledWith(
+    expect(require('@nx/devkit').runExecutor).toHaveBeenCalledWith(
       {
         project: 'nodeapp',
         target: 'build',
@@ -287,7 +287,7 @@ describe('NodeExecuteBuilder', () => {
 
   describe('waitUntilTasks', () => {
     it('should run the tasks before starting the build', async (done) => {
-      const runExecutor = require('@nrwl/devkit').runExecutor;
+      const runExecutor = require('@nx/devkit').runExecutor;
       for await (const event of offlineExecutor(
         {
           ...testOptions,

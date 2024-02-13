@@ -2,18 +2,18 @@ import { normalize, JsonObject } from '@angular-devkit/core';
 import { join } from 'path';
 import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import { of } from 'rxjs';
-import * as projectGraph from '@nrwl/workspace/src/core/project-graph';
-import type { ProjectGraph } from '@nrwl/workspace/src/core/project-graph';
+import * as projectGraph from '@nx/workspace/src/core/project-graph';
+import type { ProjectGraph } from '@nx/workspace/src/core/project-graph';
 import buildExecutor, { BuildServerlessBuilderOptions } from './build.impl';
 import * as normalizeModule from '../../utils/normalize';
 import { ServerlessWrapper } from '../../utils/serverless';
 import * as serverlessConfig from '../../utils/serverless.config';
-import { ExecutorContext } from '@nrwl/devkit';
+import { ExecutorContext } from '@nx/devkit';
 jest.mock('tsconfig-paths-webpack-plugin');
-jest.mock('@nrwl/workspace/src/utilities/run-webpack', () => ({
+jest.mock('@nx/workspace/src/utilities/run-webpack', () => ({
   runWebpack: jest.fn(),
 }));
-import { runWebpack } from '@nrwl/node/src/utils/run-webpack';
+import { runWebpack } from '@nx/node/src/utils/run-webpack';
 import { FileReplacement } from '../../utils/types';
 
 describe('Serverless Build Builder', () => {

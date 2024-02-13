@@ -1,0 +1,51 @@
+{
+  "name": "nx-serverless",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/nx-serverless/src",
+  "projectType": "library",
+  "generators": {},
+  "targets": {
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "options": {
+        "jestConfig": "libs/nx-serverless/jest.config.ts"
+      },
+      "outputs": ["{workspaceRoot}/coverage/libs/nx-serverless"]
+    },
+    "build": {
+      "executor": "@nx/js:tsc",
+      "options": {
+        "outputPath": "dist/libs/nx-serverless",
+        "tsConfig": "libs/nx-serverless/tsconfig.lib.json",
+        "packageJson": "libs/nx-serverless/package.json",
+        "main": "libs/nx-serverless/src/index.ts",
+        "assets": [
+          "libs/nx-serverless/*.md",
+          "libs/nx-serverless/.npmignore",
+          {
+            "input": "./libs/nx-serverless/src",
+            "glob": "**/*.!(ts)",
+            "output": "./src"
+          },
+          {
+            "input": "./libs/nx-serverless",
+            "glob": "collection.json",
+            "output": "."
+          },
+          {
+            "input": "./libs/nx-serverless",
+            "glob": "builders.json",
+            "output": "."
+          }
+        ],
+        "srcRootForCompilationRoot": "libs\\nx-serverless"
+      },
+      "outputs": ["{options.outputPath}"]
+    }
+  },
+  "tags": []
+}

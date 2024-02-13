@@ -4,7 +4,7 @@ import {
   readJson,
   runNxCommandAsync,
   uniq,
-} from '@nrwl/nx-plugin/testing';
+} from '@nx/plugin/testing';
 describe('aws-cdk-stack e2e', () => {
   it('should create aws-cdk-stack', async () => {
     const plugin = uniq('aws-cdk-stack');

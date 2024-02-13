@@ -17,7 +17,7 @@
     "Monorepo"
   ],
   "peerDependencies": {
-    "@nrwl/workspace": "14.1.5"
+    "@nx/workspace": "14.1.5"
   },
   "dependencies": {
     "ts-node": "~7.0.0",

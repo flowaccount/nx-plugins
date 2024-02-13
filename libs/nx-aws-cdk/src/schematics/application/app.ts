@@ -6,11 +6,11 @@ import {
   names,
   offsetFromRoot,
   Tree,
-} from '@nrwl/devkit';
+} from '@nx/devkit';
 import { normalizeOptions, updateWorkspaceJson } from '../common-schematics';
 import { Schema } from '../schema';
-import { jestProjectGenerator } from '@nrwl/jest';
-import { lintProjectGenerator } from '@nrwl/linter';
+import { jestProjectGenerator } from '@nx/jest';
+import { lintProjectGenerator } from '@nx/eslint';
 import * as path from 'path';
 import { NormalizedSchema } from '../normalized-schema';
 import {

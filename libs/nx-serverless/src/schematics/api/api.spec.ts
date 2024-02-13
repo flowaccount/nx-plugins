@@ -1,8 +1,8 @@
 import { Tree } from '@angular-devkit/schematics';
 const stripJsonComments = require('strip-json-comments');
-import { createEmptyWorkspace, getFileContent } from '@nrwl/workspace/testing';
+import { createEmptyWorkspace, getFileContent } from '@nx/workspace/testing';
 
-import { NxJson, readJsonInTree } from '@nrwl/workspace';
+import { NxJson, readJsonInTree } from '@nx/workspace';
 import { runSchematic } from '../../utils/testing';
 // import { createApp } from '../../../../angular/src/utils/testing';
 
@@ -19,7 +19,7 @@ describe('node api app', () => {
         "name": "test-name",
         "dependencies": {},
         "devDependencies": {
-          "@nrwl/workspace": "0.0.0"
+          "@nx/workspace": "0.0.0"
         }
       }
     `
@@ -129,7 +129,7 @@ describe('node api app', () => {
             },
           },
           test: {
-            builder: '@nrwl/jest:jest',
+            builder: '@nx/jest:jest',
             options: {
               jestConfig: 'apps/my-serveless-app/jest.config.js',
               passWithNoTests: true,

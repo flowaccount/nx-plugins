@@ -5,7 +5,7 @@ import * as ts from 'typescript';
 import * as upath from 'upath';
 import { join, relative } from 'path';
 import ignore from 'ignore';
-import { logger, writeJsonFile } from '@nrwl/devkit';
+import { logger, writeJsonFile } from '@nx/devkit';
 
 const defaultExcludes = ['.serverless_plugins/**'];
 
@@ -17,14 +17,15 @@ export function consolidateExcludes(options: BuildBuilderOptions) {
     ServerlessWrapper.serverless.pluginManager.parsePluginsObject(
       ServerlessWrapper.serverless.service.plugins
     ).localPath;
-  if(pluginsLocalPath) {
+  if (pluginsLocalPath) {
     pluginsLocalPath = /^win/.test(process.platform)
       ? upath.toUnix(pluginsLocalPath)
       : pluginsLocalPath;
   }
-  const localPathExcludes = pluginsLocalPath && pluginsLocalPath.localPath
-    ? [pluginsLocalPath.localPath]
-    : [];
+  const localPathExcludes =
+    pluginsLocalPath && pluginsLocalPath.localPath
+      ? [pluginsLocalPath.localPath]
+      : [];
   // add layer paths
   // const layerExcludes = excludeLayers
   //   ? ServerlessWrapper.serverless.service
@@ -39,8 +40,8 @@ export function consolidateExcludes(options: BuildBuilderOptions) {
     // layerExcludes,
     // functionExcludes
   );
-  console.log("Exclud lists ---------------------------> ")
-  console.log(excludeList)
+  console.log('Exclud lists ---------------------------> ');
+  console.log(excludeList);
   // const parsedTSConfig = readTsConfig(options.tsConfig);
   const parsedTSConfig = ts.readConfigFile(
     options.tsConfig,

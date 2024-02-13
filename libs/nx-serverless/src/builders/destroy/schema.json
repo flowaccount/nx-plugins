@@ -1,4 +1,6 @@
 {
+  "version": 2,
+  "outputCapture": "direct-nodejs",
   "title": "Serverless Application Compile Target",
   "description": "Serverless application build target options for Destroy Facade",
   "type": "object",
@@ -50,5 +52,10 @@
     }
   },
   "additionalProperties": false,
-  "required": ["buildTarget", "config", "location", "package"]
+  "required": [
+    "buildTarget",
+    "config",
+    "location",
+    "package"
+  ]
 }

@@ -1,16 +1,4 @@
 {
-  "npmScope": "flowaccount",
-  "implicitDependencies": {
-    "workspace.json": "*",
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
-    },
-    "tslint.json": "*",
-    "nx.json": "*",
-    "tsconfig.base.json": "*",
-    ".eslintrc.json": "*"
-  },
   "affected": {
     "defaultBase": "master"
   },
@@ -22,16 +10,7 @@
       }
     ]
   },
-
-  "cli": {
-    "defaultCollection": "@nrwl/workspace"
-  },
   "generators": {
-    "@nrwl/workspace": {
-      "library": {
-        "linter": "eslint"
-      }
-    },
     "@nrwl/cypress": {
       "cypress-project": {
         "linter": "eslint"
@@ -55,7 +34,17 @@
         "linter": "eslint"
       }
     },
-    "@nrwl/node": {
+    "@nrwl/nest": {
+      "application": {
+        "linter": "eslint"
+      }
+    },
+    "@nx/workspace": {
+      "library": {
+        "linter": "eslint"
+      }
+    },
+    "@nx/node": {
       "application": {
         "linter": "eslint"
       },
@@ -63,20 +52,54 @@
         "linter": "eslint"
       }
     },
-    "@nrwl/nx-plugin": {
+    "@nx/plugin": {
       "plugin": {
         "linter": "eslint"
       }
     },
-    "@nrwl/nest": {
+    "@nx/express": {
       "application": {
         "linter": "eslint"
+      }
+    }
+  },
+  "namedInputs": {
+    "default": ["{projectRoot}/**/*", "sharedGlobals"],
+    "sharedGlobals": [
+      "{workspaceRoot}/workspace.json",
+      "{workspaceRoot}/tslint.json",
+      "{workspaceRoot}/nx.json",
+      "{workspaceRoot}/tsconfig.base.json"
+    ],
+    "production": [
+      "default",
+      "!{projectRoot}/**/?(*.)+(spec|test).[jt]s?(x)?(.snap)",
+      "!{projectRoot}/tsconfig.spec.json",
+      "!{projectRoot}/jest.config.[jt]s",
+      "!{projectRoot}/src/test-setup.[jt]s",
+      "!{projectRoot}/.eslintrc.json"
+    ]
+  },
+  "targetDefaults": {
+    "build": {
+      "inputs": ["production", "^production"]
+    },
+    "@nx/jest:jest": {
+      "inputs": ["default", "^production", "{workspaceRoot}/jest.preset.js"],
+      "cache": true,
+      "options": {
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
       }
     },
-    "@nrwl/express": {
-      "application": {
-        "linter": "eslint"
-      }
+    "@nx/eslint:lint": {
+      "inputs": ["default", "{workspaceRoot}/.eslintrc.json"],
+      "cache": true
     }
   }
 }
