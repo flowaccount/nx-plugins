@@ -1,4 +1,4 @@
-import * as  cdk from '@aws-cdk/core';
+import * as  cdk from 'aws-cdk-lib/core';
 import { VpcStack, ECSAutoScalingGroup, ECSCluster, ECSService } from '@flowaccount/aws-cdk-stack';
 
 import { environment } from './environments/environment';

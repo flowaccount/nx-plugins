@@ -1,4 +1,4 @@
-import { StackProps } from '@aws-cdk/core';
+import { StackProps } from 'aws-cdk-lib/core';
 import { logger } from '@nx/devkit';
 import { IApplicationStackEnvironmentConfig } from '../../types';
 

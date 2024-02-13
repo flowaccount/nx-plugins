@@ -1,13 +1,14 @@
 import { AuroraServerlessDbStackProperties } from '../types';
-import { SecurityGroup } from '@aws-cdk/aws-ec2';
+import { SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { logger } from '@nx/devkit';
-import { Construct, SecretValue, Stack } from '@aws-cdk/core';
+import { SecretValue, Stack } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import {
   AuroraPostgresEngineVersion,
   Credentials,
   DatabaseClusterEngine,
   ServerlessCluster,
-} from '@aws-cdk/aws-rds';
+} from 'aws-cdk-lib/aws-rds';
 
 export class AuroraServerlessDbStack extends Stack {
   public readonly output: {

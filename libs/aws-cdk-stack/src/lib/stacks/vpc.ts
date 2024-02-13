@@ -5,8 +5,9 @@ import {
   Subnet,
   SubnetSelection,
   Vpc,
-} from '@aws-cdk/aws-ec2';
-import { Construct, Stack } from '@aws-cdk/core';
+} from 'aws-cdk-lib/aws-ec2';
+import { Stack } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import { VpcStackProperties } from '../types';
 import { logger } from '@nx/devkit';
 

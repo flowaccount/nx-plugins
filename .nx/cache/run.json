@@ -1,0 +1,21 @@
+{
+  "run": {
+    "command": "nx build aws-cdk-stack",
+    "startTime": "2024-02-13T10:02:40.124Z",
+    "endTime": "2024-02-13T10:02:43.595Z",
+    "inner": false
+  },
+  "tasks": [
+    {
+      "taskId": "aws-cdk-stack:build",
+      "target": "build",
+      "projectName": "aws-cdk-stack",
+      "hash": "5645450089715293089",
+      "startTime": "2024-02-13T10:02:40.139Z",
+      "endTime": "2024-02-13T10:02:43.594Z",
+      "params": "",
+      "cacheStatus": "cache-miss",
+      "status": 1
+    }
+  ]
+}

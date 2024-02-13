@@ -1,6 +1,7 @@
 import 'reflect-metadata';
-import { IRole, ManagedPolicy } from '@aws-cdk/aws-iam';
-import { App, Construct, Duration, Stack } from '@aws-cdk/core';
+import { IRole, ManagedPolicy } from 'aws-cdk-lib/aws-iam';
+import { App, Duration, Stack } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import { logger } from '@nx/devkit';
 import { inject, injectable, registry } from 'tsyringe';
 import { ECSAutoScalingGroup } from './ecs-autoscaling-group';
@@ -22,8 +23,8 @@ import {
   ListenerAction,
   ListenerCondition,
   NetworkTargetGroup,
-} from '@aws-cdk/aws-elasticloadbalancingv2';
-import { IHostedZone } from '@aws-cdk/aws-route53';
+} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 
 /**
  * This class is used to create an ECS cluster stack by specifying the VPC and Subnets
@@ -32,7 +33,7 @@ import { IHostedZone } from '@aws-cdk/aws-route53';
  * Please register it like this
  * import { AwsECSCluster } from '@flowaccount/aws-cdk-stack'
  * import { environment } from './environments/environment'
- * import { App } from '@aws-cdk/core'
+ * import { App } from 'aws-cdk-lib/core'
  * const app = new App()
  * const awsEcsCluster = new AwsECSCluster(app, `${environment.app}-ecs-cluster`, { ...environment, env: environment.awsCredentials } )
  *

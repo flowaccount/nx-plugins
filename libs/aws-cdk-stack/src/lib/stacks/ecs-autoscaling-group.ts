@@ -1,5 +1,6 @@
 //backup ecs-autoscaling-group.ts
-import { Stack, StackProps, Construct, Fn, Tags } from '@aws-cdk/core';
+import { Stack, StackProps, Fn, Tags } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import {
   IVpc,
   CfnLaunchTemplate,
@@ -8,10 +9,10 @@ import {
   LookupMachineImage,
   MachineImage,
   AmazonLinuxImage
-} from '@aws-cdk/aws-ec2';
-import { CfnInstanceProfile, IRole } from '@aws-cdk/aws-iam';
-import { CfnCapacityProvider, CfnClusterCapacityProviderAssociations, Cluster, Ec2Service, EcsOptimizedImage, WindowsOptimizedVersion } from '@aws-cdk/aws-ecs';
-import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
+} from 'aws-cdk-lib/aws-ec2';
+import { CfnInstanceProfile, IRole } from 'aws-cdk-lib/aws-iam';
+import { CfnCapacityProvider, CfnClusterCapacityProviderAssociations, Cluster, Ec2Service, EcsOptimizedImage, WindowsOptimizedVersion } from 'aws-cdk-lib/aws-ecs';
+import { CfnAutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { ECSModel, S3MountConfig, TagModel, AutoScalingGroupModel } from '../types';
 
 interface ECSAutoScalingGroupProps extends StackProps {

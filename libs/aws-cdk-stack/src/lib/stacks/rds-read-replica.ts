@@ -2,11 +2,12 @@ import {
   DatabaseInstance,
   DatabaseInstanceReadReplica,
   IDatabaseInstance,
-} from '@aws-cdk/aws-rds';
-import { Construct, Stack } from '@aws-cdk/core';
+} from 'aws-cdk-lib/aws-rds';
+import { Stack } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import { DatabaseReadonlyReplicaProps } from '../types';
 import { logger } from '@nx/devkit';
-import { SecurityGroup } from '@aws-cdk/aws-ec2';
+import { SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 
 export class RdsReadReplicaStack extends Stack {
   public readonly output: {

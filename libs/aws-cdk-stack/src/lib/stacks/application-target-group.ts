@@ -1,11 +1,12 @@
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import { ApplicationTargetGroupStackProperties } from '../types';
 import {
   ApplicationListenerRule,
   ApplicationTargetGroup,
   IApplicationTargetGroup,
   ListenerCondition,
-} from '@aws-cdk/aws-elasticloadbalancingv2';
+} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { logger } from '@nx/devkit';
 
 export class ApplicationTargetGroupStack extends Stack {

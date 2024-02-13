@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-use-before-define */
 //https://github.com/cloudeninc/clouden-cdk-aws-lambda-typescript
-import { Construct } from '@aws-cdk/core';
-import { Code, AssetCode } from '@aws-cdk/aws-lambda';
+import { Construct } from 'constructs';
+import { Code, AssetCode } from 'aws-cdk-lib/aws-lambda';
 import * as pathModule from 'path';
 import * as child_process from 'child_process';
 import * as fs from 'fs';

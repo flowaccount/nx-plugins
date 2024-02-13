@@ -1,19 +1,20 @@
-import * as cdk from '@aws-cdk/core';
-import * as lambda from '@aws-cdk/aws-lambda';
-import * as lambdaEvent from '@aws-cdk/aws-lambda-event-sources';
+import * as cdk from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import * as lambdaEvent from 'aws-cdk-lib/aws-lambda-event-sources';
 import { TypeScriptCode } from '../lambda-asset-code/typescript-code';
 import path = require('path');
 import { copy } from 'fs-extra';
 import { LambdaStackProperties } from '../types';
-import { Stack } from '@aws-cdk/core';
-import { Stream } from '@aws-cdk/aws-kinesis';
-import { SecurityGroup } from '@aws-cdk/aws-ec2';
+import { Stack } from 'aws-cdk-lib/core';
+import { Stream } from 'aws-cdk-lib/aws-kinesis';
+import { SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { logger, readProjectConfiguration } from '@nx/devkit';
 
 export class TypescriptLambdaStack extends Stack {
   public readonly output: { lambdaFunctions?: lambda.Function[] };
 
-  constructor(scope: cdk.Construct, id: string, _props: LambdaStackProperties) {
+  constructor(scope: Construct, id: string, _props: LambdaStackProperties) {
     super(scope, id, _props);
     this.templateOptions.description =
       'To produce aws resource to log data into elasticsearch and backup to s3';

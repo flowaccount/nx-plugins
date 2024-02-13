@@ -5,8 +5,8 @@ import {
   LambdaStackConfiguration,
 } from '../../types';
 import { BaseApplicationStackBuilder } from './base-application-stack-builder';
-import { QueueProps } from '@aws-cdk/aws-sqs';
-import { StackProps } from '@aws-cdk/core';
+import { QueueProps } from 'aws-cdk-lib/aws-sqs';
+import { StackProps } from 'aws-cdk-lib/core';
 
 export class ServerlessApplicationBuilder extends BaseApplicationStackBuilder {
   public executionRole: InlineRoleStackProperties;

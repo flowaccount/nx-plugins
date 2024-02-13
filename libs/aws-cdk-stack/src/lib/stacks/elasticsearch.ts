@@ -1,7 +1,8 @@
-import * as cdk from '@aws-cdk/core';
-import * as iam from '@aws-cdk/aws-iam';
-import * as es from '@aws-cdk/aws-elasticsearch';
-import { SecurityGroup } from '@aws-cdk/aws-ec2';
+import * as cdk from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
+import * as iam from 'aws-cdk-lib/aws-iam';
+import * as es from 'aws-cdk-lib/aws-elasticsearch';
+import { SecurityGroup } from 'aws-cdk-lib/aws-ec2';
 import { ElasticsearchStackProperties, EsInstanceType } from '../types';
 import { logger } from '@nx/devkit';
 
@@ -10,7 +11,7 @@ export class ElasticsearchStack extends cdk.Stack {
     domainArn?: string;
   };
   constructor(
-    scope: cdk.Construct,
+    scope: Construct,
     id: string,
     _props: ElasticsearchStackProperties
   ) {
