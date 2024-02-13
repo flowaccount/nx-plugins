@@ -6,10 +6,8 @@ import {
   readJson,
   formatFiles,
   convertNxGenerator,
-  logger,
+  logger, runTasksInSerial
 } from '@nx/devkit';
-import { runTasksInSerial } from '@nx/workspace/src/utilities/run-tasks-in-serial';
-import { jestInitGenerator } from '@nx/jest';
 import { Schema } from './schema';
 import {
   nxVersion,
@@ -84,7 +82,7 @@ export async function initGenerator<T extends Schema>(tree: Tree, options: T) {
   const tasks: GeneratorCallback[] = [];
 
   if (!options.unitTestRunner || options.unitTestRunner === 'jest') {
-    const jestTask = addJestPlugin(tree);
+    const jestTask = await addJestPlugin(tree);
     tasks.push(jestTask);
   }
   const linterTask = addLinterPlugin(tree);

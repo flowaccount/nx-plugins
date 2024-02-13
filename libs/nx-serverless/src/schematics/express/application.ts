@@ -14,7 +14,7 @@ import {
   offsetFromRoot,
 } from '@nx/devkit';
 import { applicationGenerator } from '@nx/express';
-import { initGenerator as initGeneratorExpress } from '@nx/express/src/generators/init/init';
+// import { initGenerator as initGeneratorExpress } from '@nx/express/src/generators/init/init';
 interface NormalizedSchema extends Schema {
   parsedTags: string[];
   provider: string;
@@ -232,9 +232,9 @@ export async function expressApiGenerator(host: Tree, schema: Schema) {
   });
 
   if (options.initExpress) {
-    await initGeneratorExpress(host, {
-      unitTestRunner: options.unitTestRunner,
-    });
+    // await initGeneratorExpress(host, {
+    //   unitTestRunner: options.unitTestRunner,
+    // });
     await applicationGenerator(host, {
       name: schema.name,
       skipFormat: schema.skipFormat,
