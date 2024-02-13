@@ -19688,3 +19688,61 @@ hint: Disable this message with "git config advice.useCoreFSMonitorConfig false"
 [NX Daemon Server] - 2024-02-13T10:01:28.969Z - Done responding to the client recordOutputsHash
 [NX Daemon Server] - 2024-02-13T10:01:28.969Z - Handled RECORD_OUTPUTS_HASH. Handling time: 1. Response time: 1.
 [NX Daemon Server] - 2024-02-13T10:01:28.980Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-02-13T10:01:51.902Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-02-13T10:01:51.904Z - [WATCHER]: libs/aws-cdk-stack/src/lib/stacks/ecs-service.ts was modified
+[NX Daemon Server] - 2024-02-13T10:01:52.016Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-02-13T10:01:52.016Z - [REQUEST]: libs/aws-cdk-stack/src/lib/stacks/ecs-service.ts
+[NX Daemon Server] - 2024-02-13T10:01:52.016Z - [REQUEST]: 
+[NX Daemon Server] - 2024-02-13T10:01:52.136Z - Time taken for 'hash changed files from watcher' 4.595800000010058ms
+[NX Daemon Server] - 2024-02-13T10:02:08.529Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-02-13T10:02:08.531Z - [WATCHER]: libs/aws-cdk-stack/src/lib/stacks/ecs-service.ts was modified
+[NX Daemon Server] - 2024-02-13T10:02:08.737Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-02-13T10:02:08.738Z - [REQUEST]: libs/aws-cdk-stack/src/lib/stacks/ecs-service.ts
+[NX Daemon Server] - 2024-02-13T10:02:08.738Z - [REQUEST]: 
+[NX Daemon Server] - 2024-02-13T10:02:08.857Z - Time taken for 'hash changed files from watcher' 3.839299999992363ms
+[NX Daemon Server] - 2024-02-13T10:02:10.949Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-13T10:02:10.949Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-02-13T10:02:10.950Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-13T10:02:10.953Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-02-13T10:02:10.954Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-02-13T10:02:10.955Z - Time taken for 'total for creating and serializing project graph' 0.24520000000484288ms
+[NX Daemon Server] - 2024-02-13T10:02:10.955Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-02-13T10:02:10.955Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 1. Response time: 1.
+[NX Daemon Server] - 2024-02-13T10:02:11.009Z - [REQUEST]: Responding to the client. handleHashTasks
+[NX Daemon Server] - 2024-02-13T10:02:11.009Z - Done responding to the client handleHashTasks
+[NX Daemon Server] - 2024-02-13T10:02:11.009Z - Handled HASH_TASKS. Handling time: 14. Response time: 0.
+[NX Daemon Server] - 2024-02-13T10:02:11.984Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-02-13T10:02:14.529Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-02-13T10:02:14.537Z - [REQUEST]: Responding to the client. recordOutputsHash
+[NX Daemon Server] - 2024-02-13T10:02:14.538Z - Done responding to the client recordOutputsHash
+[NX Daemon Server] - 2024-02-13T10:02:14.538Z - Handled RECORD_OUTPUTS_HASH. Handling time: 0. Response time: 1.
+[NX Daemon Server] - 2024-02-13T10:02:14.548Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-02-13T10:02:37.461Z - [WATCHER]: libs/aws-cdk-stack/src/lib/stacks/ecs-autoscaling-group.ts was modified
+[NX Daemon Server] - 2024-02-13T10:02:37.461Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-02-13T10:02:37.572Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-02-13T10:02:37.572Z - [REQUEST]: libs/aws-cdk-stack/src/lib/stacks/ecs-autoscaling-group.ts
+[NX Daemon Server] - 2024-02-13T10:02:37.572Z - [REQUEST]: 
+[NX Daemon Server] - 2024-02-13T10:02:37.699Z - Time taken for 'hash changed files from watcher' 4.173699999984819ms
+[NX Daemon Server] - 2024-02-13T10:02:40.055Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-13T10:02:40.056Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-02-13T10:02:40.057Z - Established a connection. Number of open connections: 1
+[NX Daemon Server] - 2024-02-13T10:02:40.061Z - [REQUEST]: Client Request for Project Graph Received
+[NX Daemon Server] - 2024-02-13T10:02:40.062Z - [REQUEST]: Responding to the client. project-graph
+[NX Daemon Server] - 2024-02-13T10:02:40.063Z - Time taken for 'total for creating and serializing project graph' 0.3555000000051223ms
+[NX Daemon Server] - 2024-02-13T10:02:40.064Z - Done responding to the client project-graph
+[NX Daemon Server] - 2024-02-13T10:02:40.064Z - Handled REQUEST_PROJECT_GRAPH. Handling time: 1. Response time: 2.
+[NX Daemon Server] - 2024-02-13T10:02:40.123Z - [REQUEST]: Responding to the client. handleHashTasks
+[NX Daemon Server] - 2024-02-13T10:02:40.124Z - Done responding to the client handleHashTasks
+[NX Daemon Server] - 2024-02-13T10:02:40.124Z - Handled HASH_TASKS. Handling time: 15. Response time: 1.
+[NX Daemon Server] - 2024-02-13T10:02:41.075Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-02-13T10:02:43.594Z - [REQUEST]: Responding to the client. recordOutputsHash
+[NX Daemon Server] - 2024-02-13T10:02:43.594Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-02-13T10:02:43.594Z - Done responding to the client recordOutputsHash
+[NX Daemon Server] - 2024-02-13T10:02:43.594Z - Handled RECORD_OUTPUTS_HASH. Handling time: 1. Response time: 0.
+[NX Daemon Server] - 2024-02-13T10:02:43.604Z - Closed a connection. Number of open connections: 0
+[NX Daemon Server] - 2024-02-13T10:04:17.664Z - [WATCHER]: Processing file changes in outputs
+[NX Daemon Server] - 2024-02-13T10:04:17.666Z - [WATCHER]: libs/aws-cdk-stack/src/lib/stacks/ecs-service.ts was modified
+[NX Daemon Server] - 2024-02-13T10:04:17.777Z - [REQUEST]: Updated workspace context based on watched changes, recomputing project graph...
+[NX Daemon Server] - 2024-02-13T10:04:17.777Z - [REQUEST]: libs/aws-cdk-stack/src/lib/stacks/ecs-service.ts
+[NX Daemon Server] - 2024-02-13T10:04:17.777Z - [REQUEST]: 
+[NX Daemon Server] - 2024-02-13T10:04:17.881Z - Time taken for 'hash changed files from watcher' 4.019899999955669ms
