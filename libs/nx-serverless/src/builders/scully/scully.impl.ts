@@ -1,9 +1,9 @@
 // npx scully --nw --configFile apps/frontend/flowaccount-landing/scully.config.js --removeStaticDist
 import { ExecutorContext, logger } from '@nx/devkit';
 import { buildTarget } from '../deploy/deploy.impl';
-import runCommand from '@nx/workspace/src/executors/run-commands/run-commands.impl';
 import { getSourceRoot } from '../../utils/normalize';
 import { SimpleBuildEvent } from '../../utils/types';
+import { execSync } from 'child_process';
 export interface ScullyBuilderOptions {
   buildTarget: string;
   skipBuild: boolean;
@@ -22,7 +22,6 @@ export async function scullyCmdRunner(
   options: ScullyBuilderOptions,
   context: ExecutorContext
 ) {
-  //
   if (options.skipBuild) {
     await runScully(options, context);
   } else {
@@ -44,31 +43,19 @@ async function runScully(
   options: ScullyBuilderOptions,
   context: ExecutorContext
 ) {
-  const commands: { command: string }[] = [];
   const args = getExecArgv(options);
-
-  options.configFiles.forEach((fileName) => {
-    commands.push({
-      command: `scully --configFile=${fileName} --disableProjectFolderCheck ${args.join(
-        ' '
-      )}`,
-    });
-    console.log(
-      `scully --configFile=${fileName} --disableProjectFolderCheck ${args.join(
-        ' '
-      )}`
-    );
-  });
   const root = getSourceRoot(context);
-  // await runCommand(
-  //   {
-  //     commands: commands,
-  //     cwd: root,
-  //     color: true,
-  //     parallel: false,
-  //   },
-  //   context
-  // );
+
+  for(const configFile of options.configFiles) {
+    const scullyCommand = [
+      'scully',
+      `--configFile=${configFile}`,
+      '--disableProjectFolderCheck',
+      ...args
+    ].join(' ')
+    console.log(scullyCommand)
+    execSync(scullyCommand, { cwd: root })
+  }
 }
 
 function getExecArgv(options: ScullyBuilderOptions) {
