@@ -5,22 +5,18 @@
   "projectType": "library",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": ["libs/aws-cdk-stack/**/*.ts"]
-      },
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/libs/aws-cdk-stack"],
       "options": {
-        "jestConfig": "libs/aws-cdk-stack/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/aws-cdk-stack/jest.config.ts"
       }
     },
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "outputPath": "dist/libs/aws-cdk-stack",

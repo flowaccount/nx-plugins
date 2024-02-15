@@ -1,4 +1,6 @@
 {
+  "version": 2,
+  "outputCapture": "direct-nodejs",
   "title": "Schema for Executing Serverless deploy apps",
   "description": "Serverless deployment execution options",
   "type": "object",
@@ -76,5 +78,11 @@
     }
   },
   "additionalProperties": false,
-  "required": ["buildTarget", "config", "location", "package", "stage"]
+  "required": [
+    "buildTarget",
+    "config",
+    "location",
+    "package",
+    "stage"
+  ]
 }

@@ -5,7 +5,7 @@ import * as ts from 'typescript';
 import { LicenseWebpackPlugin } from 'license-webpack-plugin';
 import CircularDependencyPlugin = require('circular-dependency-plugin');
 import ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-// import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
+import TsConfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import { readTsConfig } from '@nx/workspace';
 import { BuildBuilderOptions } from './types';
 import CopyPlugin = require('copy-webpack-plugin');

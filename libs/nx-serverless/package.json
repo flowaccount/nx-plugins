@@ -20,15 +20,16 @@
   },
   "license": "MIT",
   "peerDependencies": {
-    "@nx/workspace": "16.10.0"
+    "@nx/workspace": "^14.0.0"
   },
   "dependencies": {
-    "@angular-devkit/architect": "0.1602.6",
-    "@angular-devkit/schematics": "16.2.5",
-    "@nrwl/express": "16.10.0",
-    "@nrwl/jest": "16.10.0",
-    "@nrwl/node": "16.10.0",
-    "@nx/devkit": "^16.10.0",
+    "@angular-devkit/architect": "0.1400.4",
+    "@angular-devkit/schematics": "~11.2.0",
+    "ignore": "^5.1.8",
+    "dotenv": "6.2.0",
+    "dotenv-json": "^1.0.0",
+    "copy-webpack-plugin": "^9.0.1",
+    "license-webpack-plugin": "2.1.2",
     "circular-dependency-plugin": "^5.0.2",
     "copy-webpack-plugin": "^9.0.1",
     "depcheck": "1.4.3",
@@ -49,7 +50,21 @@
     "webpack": "^5.58.1",
     "webpack-dev-server": "4.15.1",
     "webpack-merge": "^5.8.0",
-    "webpack-node-externals": "^3.0.0"
+    "webpack-node-externals": "^3.0.0",
+    "webpack-dev-server": "^4.3.1",
+    "depcheck": "1.4.3",
+    "serverless": "3.33.0",
+    "serverless-offline": "^12.0.4",
+    "serverless-apigw-binary": "^0.4.4",
+    "is-builtin-module": "^3.0.0",
+    "rxjs-for-await": "0.0.2",
+    "graceful-fs": "4.2.1",
+    "upath": "^2.0.1",
+    "ts-loader": "^9.2.8",
+    "@nx/devkit": "^14.1.5",
+    "@nx/jest": "14.1.5",
+    "@nx/node": "14.1.5",
+    "@nx/express": "14.1.5"
   },
   "repository": {
     "type": "git",

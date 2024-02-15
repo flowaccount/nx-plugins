@@ -2,6 +2,7 @@ import isBuiltinModule = require('is-builtin-module');
 import * as _ from 'lodash';
 import { DependencyResolver } from './types';
 import { getProdModules } from './normalize';
+import { of } from 'rxjs';
 import { ExecutorContext } from '@nx/devkit';
 import { StatsCompilation } from 'webpack';
 

@@ -13,7 +13,7 @@ jest.mock('tsconfig-paths-webpack-plugin');
 jest.mock('@nx/workspace/src/utilities/run-webpack', () => ({
   runWebpack: jest.fn(),
 }));
-import { runWebpack } from '@nrwl/node/src/utils/run-webpack';
+import { runWebpack } from '@nx/node/src/utils/run-webpack';
 import { FileReplacement } from '../../utils/types';
 
 describe('Serverless Build Builder', () => {

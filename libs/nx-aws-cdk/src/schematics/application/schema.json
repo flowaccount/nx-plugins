@@ -101,7 +101,6 @@
       },
       "description": "Array for lambda timeout"
     },
-
     "eventSources": {
       "type": "array",
       "description": "Array for event source",
@@ -118,5 +117,7 @@
       "description": "Array for event ARNS"
     }
   },
-  "required": ["name"]
+  "required": [
+    "name"
+  ]
 }

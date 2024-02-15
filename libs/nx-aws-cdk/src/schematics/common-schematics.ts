@@ -16,7 +16,7 @@ import { NormalizedSchema } from './normalized-schema';
 
 export function getBuildConfig(options: NormalizedSchema) {
   return {
-    executor: '@nrwl/node:build',
+    executor: '@nx/node:build',
     options: {
       outputPath: joinPathFragments(normalize('dist'), options.appProjectRoot),
       package: options.appProjectRoot,

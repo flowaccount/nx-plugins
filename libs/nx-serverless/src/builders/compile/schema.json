@@ -1,4 +1,6 @@
 {
+  "version": 2,
+  "outputCapture": "direct-nodejs",
   "title": "Serverless Application Compile Target",
   "description": "Serverless application build target options for Compile Facade",
   "type": "object",
@@ -56,7 +58,10 @@
           }
         },
         "additionalProperties": false,
-        "required": ["replace", "with"]
+        "required": [
+          "replace",
+          "with"
+        ]
       },
       "default": []
     },
@@ -110,7 +115,11 @@
             }
           },
           "additionalProperties": false,
-          "required": ["glob", "input", "output"]
+          "required": [
+            "glob",
+            "input",
+            "output"
+          ]
         },
         {
           "type": "string"

@@ -6,29 +6,18 @@
   "generators": {},
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "libs/nx-aws-cdk/**/*.ts",
-          "libs/nx-aws-cdk/**/*.spec.ts",
-          "libs/nx-aws-cdk/**/*.spec.tsx",
-          "libs/nx-aws-cdk/**/*.spec.js",
-          "libs/nx-aws-cdk/**/*.spec.jsx",
-          "libs/nx-aws-cdk/**/*.d.ts"
-        ]
-      },
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "options": {
-        "jestConfig": "libs/nx-aws-cdk/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/nx-aws-cdk/jest.config.ts"
       },
       "outputs": ["{workspaceRoot}/coverage/libs/nx-aws-cdk"]
     },
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "options": {
         "outputPath": "dist/libs/nx-aws-cdk",
         "tsConfig": "libs/nx-aws-cdk/tsconfig.lib.json",

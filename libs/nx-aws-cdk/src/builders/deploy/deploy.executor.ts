@@ -14,7 +14,7 @@ import {
   parseTargetString,
   runExecutor,
 } from '@nx/devkit';
-import { ExecutorEvent } from '@nrwl/node/src/executors/node/node.impl';
+import { ExecutorEvent } from '@nx/node/src/executors/node/node.impl';
 
 export default async function runSynthExecutor(
   options: DeployExecutorSchema,
@@ -63,7 +63,6 @@ export default async function runSynthExecutor(
     process.env.useServiceDiscovery = argsss['useServiceDiscovery'];
     process.env.existingCluster = argsss['existingCluster'];
     process.env.keyPairName = argsss['keyPairName'];
-    process.env.existingCluster = argsss['existingCluster'];
   }
 
   // require('dotenv-json')(argsss)

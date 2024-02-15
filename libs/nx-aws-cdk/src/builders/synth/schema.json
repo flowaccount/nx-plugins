@@ -1,6 +1,7 @@
 {
+  "version": 2,
+  "outputCapture": "direct-nodejs",
   "$schema": "http://json-schema.org/schema",
-  "cli": "nx",
   "title": "NxAWSCdk Synth",
   "description": "Synth an app via the `cdk` cli command.",
   "type": "object",
@@ -35,5 +36,9 @@
       "default": false
     }
   },
-  "required": ["profile", "output", "stackName"]
+  "required": [
+    "profile",
+    "output",
+    "stackName"
+  ]
 }

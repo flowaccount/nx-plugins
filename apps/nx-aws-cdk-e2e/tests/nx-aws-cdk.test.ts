@@ -3,14 +3,14 @@ import {
   ensureNxProject,
   readJson,
   runNxCommandAsync,
-  uniq
-} from '@nrwl/nx-plugin/testing';
+  uniq,
+} from '@nx/plugin/testing';
 describe('nx-aws-cdk e2e', () => {
   beforeAll(() => {
     ensureNxProject('@flowaccount/nx-aws-cdk', 'dist/libs/nx-aws-cdk');
   });
   describe('nx-aws-cdk:ec2-instance e2e', () => {
-    it('should create nx-aws-cdk:ec2-instance', async done => {
+    it('should create nx-aws-cdk:ec2-instance', async (done) => {
       const plugin = uniq('nx-aws-cdk');
       await runNxCommandAsync(
         `generate @flowaccount/nx-aws-cdk:ec2-instance --project ${plugin} --name ec2-test --id ec2-instance-test --imageId i-12345test --keyName test_key --subnetId subnet-1234-test --instanceType t3.micro`
@@ -20,7 +20,7 @@ describe('nx-aws-cdk e2e', () => {
       done();
     }, 50000);
     describe('--directory', () => {
-      it('should create src in the specified directory', async done => {
+      it('should create src in the specified directory', async (done) => {
         const plugin = uniq('nx-aws-cdk');
         await runNxCommandAsync(
           `generate @flowaccount/nx-aws-cdk:ec2-instance --project ${plugin} --name ec2-test --id ec2-instance-test --directory subdir --imageId i-12345test --keyName test_key --subnetId subnet-1234-test --instanceType t3.micro`
@@ -37,7 +37,7 @@ describe('nx-aws-cdk e2e', () => {
       }, 50000);
     });
     describe('--tags', () => {
-      it('should add tags to nx.json', async done => {
+      it('should add tags to nx.json', async (done) => {
         const plugin = uniq('nx-aws-cdk');
         await runNxCommandAsync(
           `generate @flowaccount/nx-aws-cdk:ec2-instance --project ${plugin} --name ec2-test --id ec2-instance-test --imageId i-12345test --keyName test_key --subnetId subnet-1234-test --instanceType t3.micro --tags e2etag,e2ePackage `

@@ -15,8 +15,8 @@ import { ProjectType } from '@nx/workspace';
 import { initGenerator } from '../init/init';
 import { getBuildConfig } from '../utils';
 import { normalize } from 'path';
-import { jestProjectGenerator } from '@nrwl/jest';
-import { lintProjectGenerator } from '@nrwl/linter';
+import { jestProjectGenerator } from '@nx/jest';
+import { lintProjectGenerator } from '@nx/eslint';
 
 interface NormalizedSchema extends Schema {
   parsedTags: string[];
@@ -246,7 +246,7 @@ export async function apiGenerator(host: Tree, schema: Schema) {
   }
   // updateNxJson(options);
   // options.unitTestRunner === 'jest'
-  //   ? externalSchematic('@nrwl/jest', 'jest-project', {
+  //   ? externalSchematic('@nx/jest', 'jest-project', {
   //       project: options.name,
   //       setupFile: 'none',
   //       skipSerializers: true

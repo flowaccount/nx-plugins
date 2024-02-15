@@ -2,15 +2,16 @@
 export default {
   preset: '../../jest.preset.js',
   transform: {
-    '^.+\\.[tj]sx?$': 'ts-jest',
+    '^.+\\.[tj]sx?$': [
+      'ts-jest',
+      {
+        diagnostics: false,
+      },
+    ],
   },
   // moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'html'],
   coverageDirectory: '../../coverage/libs/nx-serverless',
-  globals: {
-    'ts-jest': {
-      diagnostics: false,
-    },
-  },
+  globals: {},
   displayName: 'nx-serverless',
   testEnvironment: 'node',
 };

@@ -17,8 +17,8 @@ import {
   parseTargetString,
   readTargetOptions,
 } from '@nx/devkit';
-// import * as gracefulFs from 'graceful-fs';
-// gracefulFs.gracefulify(fs); // fix serverless too many files open error on windows. /wick
+import * as gracefulFs from 'graceful-fs';
+gracefulFs.gracefulify(fs); // fix serverless too many files open error on windows. /wick
 export class ServerlessWrapper {
   constructor() {}
 

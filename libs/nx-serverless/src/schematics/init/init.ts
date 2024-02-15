@@ -9,7 +9,7 @@ import {
   logger,
 } from '@nx/devkit';
 import { runTasksInSerial } from '@nx/workspace/src/utilities/run-tasks-in-serial';
-import { jestInitGenerator } from '@nrwl/jest';
+import { jestInitGenerator } from '@nx/jest';
 import { Schema } from './schema';
 import {
   nxVersion,

@@ -25,7 +25,7 @@
       "x-prompt": "Which cloud provider are you using for this serverless application? ( aws | azure | google )"
     },
     "initExpress": {
-      "description": "Also run @nrwl/express schematic on your project?",
+      "description": "Also run @nx/express schematic on your project?",
       "type": "boolean",
       "default": true
     },

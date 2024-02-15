@@ -22,7 +22,7 @@ import { convertNxExecutor, ExecutorContext, logger } from '@nx/devkit';
 
 import { eachValueFrom } from 'rxjs-for-await';
 import { runWebpack } from '../../utils/run-webpack';
-// import { runWebpack } from '@nrwl/node/src/utils/
+// import { runWebpack } from '@nx/node/src/utils/
 
 export type ServerlessBuildEvent = ServerlessEventResult & {
   outfile: string;

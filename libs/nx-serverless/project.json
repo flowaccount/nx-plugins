@@ -6,24 +6,13 @@
   "generators": {},
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "libs/nx-serverless/**/*.ts",
-          "libs/nx-serverless/**/*.spec.ts",
-          "libs/nx-serverless/**/*.spec.tsx",
-          "libs/nx-serverless/**/*.spec.js",
-          "libs/nx-serverless/**/*.spec.jsx",
-          "libs/nx-serverless/**/*.d.ts"
-        ]
-      },
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "options": {
-        "jestConfig": "libs/nx-serverless/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/nx-serverless/jest.config.ts"
       },
       "outputs": ["{workspaceRoot}/coverage/libs/nx-serverless"]
     },

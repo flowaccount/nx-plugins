@@ -1,7 +1,8 @@
 {
+  "version": 2,
+  "outputCapture": "direct-nodejs",
   "title": "Schema for Executing Serverless offline apps",
   "description": "Serverless offline execution options",
-  "cli": "nx",
   "type": "object",
   "properties": {
     "buildTarget": {
@@ -52,5 +53,9 @@
     }
   },
   "additionalProperties": true,
-  "required": ["buildTarget", "config", "location"]
+  "required": [
+    "buildTarget",
+    "config",
+    "location"
+  ]
 }

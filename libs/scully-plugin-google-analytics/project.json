@@ -6,31 +6,20 @@
   "generators": {},
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "libs/scully-plugin-google-analytics/**/*.ts",
-          "libs/scully-plugin-google-analytics/**/*.spec.ts",
-          "libs/scully-plugin-google-analytics/**/*.spec.tsx",
-          "libs/scully-plugin-google-analytics/**/*.spec.js",
-          "libs/scully-plugin-google-analytics/**/*.spec.jsx",
-          "libs/scully-plugin-google-analytics/**/*.d.ts"
-        ]
-      },
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "options": {
-        "jestConfig": "libs/scully-plugin-google-analytics/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/scully-plugin-google-analytics/jest.config.ts"
       },
       "outputs": [
         "{workspaceRoot}/coverage/libs/scully-plugin-google-analytics"
       ]
     },
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "options": {
         "outputPath": "dist/libs/scully-plugin-google-analytics",
         "tsConfig": "libs/scully-plugin-google-analytics/tsconfig.lib.json",

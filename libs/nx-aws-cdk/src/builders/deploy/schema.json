@@ -1,6 +1,7 @@
 {
+  "version": 2,
+  "outputCapture": "direct-nodejs",
   "$schema": "http://json-schema.org/schema",
-  "cli": "nx",
   "title": "NxAWSCdk Deploy",
   "description": "Deploy an app via the `cdk` cli command.",
   "type": "object",
@@ -26,7 +27,11 @@
     },
     "require-approval": {
       "type": "string",
-      "enum": ["never", "any-changes", "broadening"],
+      "enum": [
+        "never",
+        "any-changes",
+        "broadening"
+      ],
       "description": "What security-sensitive changes need manual approval"
     },
     "ci": {
@@ -77,7 +82,10 @@
     },
     "progress": {
       "type": "string",
-      "enum": ["bar", "events"],
+      "enum": [
+        "bar",
+        "events"
+      ],
       "description": "Display mode for stack activity events"
     },
     "no-rollback": {
@@ -91,9 +99,12 @@
     },
     "verbose": {
       "type": "boolean",
-
       "default": false
     }
   },
-  "required": ["profile", "output", "stackName"]
+  "required": [
+    "profile",
+    "output",
+    "stackName"
+  ]
 }

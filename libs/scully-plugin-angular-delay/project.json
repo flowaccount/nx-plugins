@@ -6,30 +6,18 @@
   "generators": {},
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
-      "options": {
-        "lintFilePatterns": [
-          "libs/scully-plugin-angular-delay/**/*.ts",
-          "libs/scully-plugin-angular-delay/src/index.ts",
-          "libs/scully-plugin-angular-delay/**/*.spec.ts",
-          "libs/scully-plugin-angular-delay/**/*.spec.tsx",
-          "libs/scully-plugin-angular-delay/**/*.spec.js",
-          "libs/scully-plugin-angular-delay/**/*.spec.jsx",
-          "libs/scully-plugin-angular-delay/**/*.d.ts"
-        ]
-      },
+      "executor": "@nx/eslint:lint",
       "outputs": ["{options.outputFile}"]
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "options": {
-        "jestConfig": "libs/scully-plugin-angular-delay/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "libs/scully-plugin-angular-delay/jest.config.ts"
       },
       "outputs": ["{workspaceRoot}/coverage/libs/scully-plugin-angular-delay"]
     },
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "options": {
         "outputPath": "dist/libs/scully-plugin-angular-delay",
         "tsConfig": "libs/scully-plugin-angular-delay/tsconfig.lib.json",

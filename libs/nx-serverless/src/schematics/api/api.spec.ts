@@ -129,7 +129,7 @@ describe('node api app', () => {
             },
           },
           test: {
-            builder: '@nrwl/jest:jest',
+            builder: '@nx/jest:jest',
             options: {
               jestConfig: 'apps/my-serveless-app/jest.config.js',
               passWithNoTests: true,

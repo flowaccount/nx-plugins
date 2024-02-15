@@ -1,4 +1,6 @@
 {
+  "version": 2,
+  "outputCapture": "direct-nodejs",
   "title": "Schema for Executing Serverless sls cli",
   "description": "Serverless deployment execution options",
   "type": "object",
