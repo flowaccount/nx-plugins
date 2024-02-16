@@ -27,7 +27,7 @@ export function runWebpack(config: webpack.Configuration): Observable<any> {
           logger.error('there is an error!');
           logger.error(err);
         }
-        console.error(stats);
+        stats.compilation.errors.forEach(({message}) => logger.error(message))
         callback(err, stats);
         webpackCompiler.close((closeErr) => {
           if (closeErr) subscriber.error(closeErr);
