@@ -193,4 +193,6 @@ export interface ServerlessExecuteBuilderOptions {
   exec?: string;
   readyWhen: string;
   skipBuild?: boolean;
+  config: string;
+  package?: string;
 }

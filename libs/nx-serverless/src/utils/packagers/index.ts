@@ -36,6 +36,7 @@ import {
   logger,
   writeJsonFile,
   readJsonFile,
+  detectPackageManager,
 } from '@nx/devkit';
 import { StatsCompilation } from 'webpack';
 
@@ -55,6 +56,18 @@ export function packager(packagerId) {
     throw message;
   }
   return registeredPackagers[packagerId];
+}
+
+
+export function getSlsCommand() {
+  const packageManager = detectPackageManager();
+  switch (packageManager) {
+    case 'pnpm':
+    case 'yarn':
+    case 'npm':
+    default:
+      return 'npx sls';
+  }
 }
 
 export async function preparePackageJson(
