@@ -4,7 +4,6 @@ import {
   ServerlessEventResult,
 } from '../../utils/types';
 import { tap, map, catchError } from 'rxjs/operators';
-
 import { getNodeWebpackConfig } from '../../utils/node.config';
 import {
   normalizeBuildOptions,
@@ -12,17 +11,15 @@ import {
   getSourceRoot,
 } from '../../utils/normalize';
 import { ServerlessWrapper } from '../../utils/serverless';
-// import { wrapMiddlewareBuildOptions } from '../../utils/middleware';;
 import { resolve } from 'path';
 import { writeFileSync } from 'fs';
 import { consolidateExcludes } from '../../utils/serverless.config';
 import { copyAssetFilesSync } from '../../utils/copy-asset-files';
 import normalizeAssetOptions from '../../utils/normalize-options';
 import { convertNxExecutor, ExecutorContext, logger } from '@nx/devkit';
-
 import { eachValueFrom } from 'rxjs-for-await';
 import { runWebpack } from '../../utils/run-webpack';
-// import { runWebpack } from '@nx/node/src/utils/
+
 
 export type ServerlessBuildEvent = ServerlessEventResult & {
   outfile: string;

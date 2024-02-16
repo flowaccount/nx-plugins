@@ -64,21 +64,6 @@ export function getSourceRoot(context: ExecutorContext) {
     throw new Error(`${context.projectName} does not have a root.`);
   }
   return sourceRoot;
-  // const workspaceHost = workspaces.createWorkspaceHost(new NodeJsSyncHost());
-  // logger.debug("readWorkspace", context.workspaceRoot, workspaceHost)
-  // const { workspace } = await workspaces.readWorkspace(
-  //   context.workspaceRoot,
-  //   workspaceHost
-  // );
-  // if (workspace.projects.get(context.target.project).sourceRoot) {
-  //   return workspace.projects.get(context.target.project).sourceRoot;
-  // } else {
-  //   context.reportStatus('Error');
-  //   const message = `${context.target.project} does not have a sourceRoot. Please define one.`;
-  //   logger.debug("throwing error for getting sourceroot")
-  //   logger.error(message);
-  //   throw new Error(message);
-  // }
 }
 
 export function normalizeBuildOptions<T extends ServerlessBaseOptions>(
