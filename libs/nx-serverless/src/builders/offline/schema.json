@@ -50,6 +50,10 @@
       "items": {
         "type": "string"
       }
+    },
+    "processEnvFile": {
+      "type": "string",
+      "description": "Env file location"
     }
   },
   "additionalProperties": true,

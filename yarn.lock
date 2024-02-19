@@ -16223,7 +16223,7 @@ serverless-apigw-binary@^0.4.4:
   resolved "https://registry.yarnpkg.com/serverless-apigw-binary/-/serverless-apigw-binary-0.4.4.tgz#f3cffd8365322a2a1d8bde5fd94b306b7a64d4fb"
   integrity sha512-2DJmQTzeXa/+8u9ekReqf7j4gQjBtzQE4MK9nlOnEz4F7MVWCQXYlLPmf2TXSoxxJZzlWvIiNzCTq6vAT9F5FQ==
 
-serverless-offline@^13.3.3:
+serverless-offline@13.3.3, serverless-offline@^13.3.3:
   version "13.3.3"
   resolved "https://registry.yarnpkg.com/serverless-offline/-/serverless-offline-13.3.3.tgz#84f5a7cc0ad29f3240e549961a04567cb03a1dc5"
   integrity sha512-KVw+khABJumgHsOrddtRvjKY5CDPCShOS4SYPvXXvmOrsOcS/upLEPdgcExXgAaF3OUBRsrHmroqXiLko06cbw==

@@ -195,4 +195,5 @@ export interface ServerlessExecuteBuilderOptions {
   skipBuild?: boolean;
   config: string;
   package?: string;
+  processEnvFile?: string;
 }

@@ -1,4 +1,4 @@
-import { ChildProcess, execSync, fork } from 'child_process';
+import { ChildProcess, execSync, fork, spawn } from 'child_process';
 import * as treeKill from 'tree-kill';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { ExecutorContext, logger } from '@nx/devkit';
@@ -10,6 +10,8 @@ import {
   SimpleBuildEvent,
 } from '../../utils/types';
 import { getSlsCommand } from '../../utils/packagers';
+import * as fs from 'fs';
+import * as path from 'node:path';
 
 try {
   require('dotenv').config();
@@ -20,6 +22,7 @@ export async function* offlineExecutor(
   options: ServerlessExecuteBuilderOptions,
   context: ExecutorContext
 ) {
+  console.log(options)
   process.on('SIGTERM', () => {
     subProcess?.kill();
     process.exit(128 + 15);
@@ -83,26 +86,33 @@ function runProcess(
     return;
   }
   dotEnvJson({
-    path: `${options.location}/env-staging.json`
+    path: `${options.package}/${options.processEnvFile ?? 'env-staging.json'}`
   });
+  // options.config = `${process.cwd()}/dist/apps/api/lambda.crm/serverless.yml`
   const slsCommand = getSlsCommand();
   let stringifiedArgs = `offline --config ${options.config} --stage ${options.stage}`;
   const args: string[] = [];
   // args.push('sls');
   args.push('offline');
   // args.push('--help');
-  args.push(`--config=${options.config}`);
+  // args.push(`--config=${options.config}`);
   args.push(`--stage=${options.stage}`);
 
-  if(options.verbose) { 
-    stringifiedArgs += ' --verbose'; 
+  const configPath = path.parse(options.config)
+  fs.copyFileSync(options.config, path.join(options.location, configPath.base))
+
+  if(options.verbose) {
+    stringifiedArgs += ' --verbose';
     args.push('--verbose');
   }
   const fullCommand = `${slsCommand} ${stringifiedArgs}`.trim();
   console.log(`Executing Command: ${fullCommand} in cwd: ${options.location} `); //${options.package}
-    
+    // subProcess = spawn(
+    //   'npx',
+    //   ['sls', ...args], {stdio: 'inherit', cwd: options.location}
+    // )
     subProcess = fork(
-      '../../../node_modules/serverless/bin/serverless.js',   // require.resolve('serverless'),
+      `${process.cwd()}/node_modules/serverless/bin/serverless.js`,   // require.resolve('serverless'),
       args,
       {
         stdio: 'inherit',
