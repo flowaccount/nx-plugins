@@ -60,13 +60,13 @@ export async function deployExecutor(
   options: ServerlessDeployBuilderOptions,
   context: ExecutorContext
 ) {
-  const buildTargetObj = parseTargetString(options.buildTarget);
+  const { target, project, configuration } = parseTargetString(options.buildTarget);
   const root = getSourceRoot(context);
   const buildOptionsAny = await getBuildTargetConfiguration(
-    buildTargetObj.target,
-    buildTargetObj.project,
+    target,
+    project,
     context,
-    buildTargetObj.configuration
+    configuration
   );
   const buildOptions = normalizeBuildOptions(
     <BuildBuilderOptions>buildOptionsAny,
@@ -150,13 +150,16 @@ export async function deployExecutor(
   }
 
   options.package = getPackagePath(options);
-  let stringifiedArgs = `--config ${buildOptions.serverlessConfig} --stage ${options.stage}`; // --package ${options.package}
+  // let stringifiedArgs = `--config ${buildOptions.serverlessConfig} --stage ${options.stage}`; // --package ${options.package}
+  let stringifiedArgs = ''
   if (options.function) {
     stringifiedArgs += ` --function ${options.function}`;
   }
   if (options.verbose) {
     stringifiedArgs += ` --verbose`;
   }
+  const config = path.parse(buildOptions.serverlessConfig)
+  fs.copyFileSync(buildOptions.serverlessConfig, path.join(options.package, config.base))
 
   const IS_CI_RUN = process.env.CI == 'true';
   const slsCommand = getSlsCommand();
@@ -164,6 +167,9 @@ export async function deployExecutor(
   console.log(`Executing Command: ${fullCommand} in cwd: ${options.package}`);
 
   try {
+    console.log(process.cwd())
+    console.log('------------------')
+    console.log(options.package)
     execSync(fullCommand, { stdio: 'inherit', cwd: options.package }); // || process.cwd()
   } catch (error) {
     // An error occurred (non-zero exit code)
