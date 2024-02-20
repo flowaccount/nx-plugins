@@ -107,18 +107,11 @@ function runProcess(
   }
   const fullCommand = `${slsCommand} ${stringifiedArgs}`.trim();
   console.log(`Executing Command: ${fullCommand} in cwd: ${options.location} `); //${options.package}
-    // subProcess = spawn(
-    //   'npx',
-    //   ['sls', ...args], {stdio: 'inherit', cwd: options.location}
-    // )
-    subProcess = fork(
-      `${process.cwd()}/node_modules/serverless/bin/serverless.js`,   // require.resolve('serverless'),
-      args,
-      {
-        stdio: 'inherit',
-        cwd: options.location,
-      }
-    );
+    subProcess = spawn(
+      'npx',
+      ['sls', ...args], {stdio: 'inherit', cwd: options.location}
+    )
+
     subProcess.on('message', (message) => {
       console.log('Message from child process:', message);
     });
