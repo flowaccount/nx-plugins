@@ -257,6 +257,7 @@ export function getProdModules(
   }
   const ignoredDevDependencies = [
     'aws-sdk',
+    '@aws-sdk/client-dynamodb',
     '@types/aws-serverless-express',
     '@types/aws-lambda',
     '@types/node',
