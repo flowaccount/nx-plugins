@@ -4564,32 +4564,6 @@
     "@sentry/types" "5.30.0"
     tslib "^1.9.3"
 
-"@serverless/dashboard-plugin@^6.2.3":
-  version "6.2.3"
-  resolved "https://registry.yarnpkg.com/@serverless/dashboard-plugin/-/dashboard-plugin-6.2.3.tgz#039a94e8319dee85e78eb6adae051fb8505a3789"
-  integrity sha512-iTZhpZbiVl6G2AyfgoqxemqqpG4pUceWys3GsyZtjimnfnGd2UFBOMVUMTavLhYia7lQc4kQVuXQ+afLlkg+pQ==
-  dependencies:
-    "@serverless/event-mocks" "^1.1.1"
-    "@serverless/platform-client" "^4.3.2"
-    "@serverless/utils" "^6.8.2"
-    child-process-ext "^2.1.1"
-    chokidar "^3.5.3"
-    flat "^5.0.2"
-    fs-extra "^9.1.0"
-    js-yaml "^4.1.0"
-    jszip "^3.10.1"
-    lodash "^4.17.21"
-    memoizee "^0.4.15"
-    ncjsm "^4.3.2"
-    node-dir "^0.1.17"
-    node-fetch "^2.6.8"
-    open "^7.4.2"
-    semver "^7.3.8"
-    simple-git "^3.16.0"
-    type "^2.7.2"
-    uuid "^8.3.2"
-    yamljs "^0.3.0"
-
 "@serverless/dashboard-plugin@^7.2.0":
   version "7.2.0"
   resolved "https://registry.yarnpkg.com/@serverless/dashboard-plugin/-/dashboard-plugin-7.2.0.tgz#9e903e9099c830b34a5a9356d01e940e63252262"
@@ -4627,27 +4601,6 @@
     "@types/lodash" "^4.14.123"
     lodash "^4.17.11"
 
-"@serverless/platform-client@^4.3.2":
-  version "4.3.2"
-  resolved "https://registry.yarnpkg.com/@serverless/platform-client/-/platform-client-4.3.2.tgz#10cd3ad8cf452a33528cfb14bbb6003d30a74805"
-  integrity sha512-DAa5Z0JAZc6UfrTZLYwqoZxgAponZpFwaqd7WzzMA+loMCkYWyJNwxrAmV6cr2UUJpkko4toPZuJ3vM9Ie+NDA==
-  dependencies:
-    adm-zip "^0.5.5"
-    archiver "^5.3.0"
-    axios "^0.21.1"
-    fast-glob "^3.2.7"
-    https-proxy-agent "^5.0.0"
-    ignore "^5.1.8"
-    isomorphic-ws "^4.0.1"
-    js-yaml "^3.14.1"
-    jwt-decode "^2.2.0"
-    minimatch "^3.0.4"
-    querystring "^0.2.1"
-    run-parallel-limit "^1.1.0"
-    throat "^5.0.0"
-    traverse "^0.6.6"
-    ws "^7.5.3"
-
 "@serverless/platform-client@^4.5.1":
   version "4.5.1"
   resolved "https://registry.yarnpkg.com/@serverless/platform-client/-/platform-client-4.5.1.tgz#db5915bb53339761e704cc3f7d352c7754a79af2"
@@ -4668,45 +4621,6 @@
     throat "^5.0.0"
     traverse "^0.6.6"
     ws "^7.5.3"
-
-"@serverless/utils@^6.11.1", "@serverless/utils@^6.8.2":
-  version "6.13.1"
-  resolved "https://registry.yarnpkg.com/@serverless/utils/-/utils-6.13.1.tgz#bff40cbe82b4337185ab52b6f57bfe647b037700"
-  integrity sha512-yokWzlsIaAd3TWzNgIDz6l8HZmtYZs9caaLuheZ0IiZ/bDWSCLBWn84HKkdWZOmFnYxejyPNJEOwE59mtSR3Ow==
-  dependencies:
-    archive-type "^4.0.0"
-    chalk "^4.1.2"
-    ci-info "^3.8.0"
-    cli-progress-footer "^2.3.2"
-    content-disposition "^0.5.4"
-    d "^1.0.1"
-    decompress "^4.2.1"
-    event-emitter "^0.3.5"
-    ext "^1.7.0"
-    ext-name "^5.0.0"
-    file-type "^16.5.4"
-    filenamify "^4.3.0"
-    get-stream "^6.0.1"
-    got "^11.8.6"
-    inquirer "^8.2.5"
-    js-yaml "^4.1.0"
-    jwt-decode "^3.1.2"
-    lodash "^4.17.21"
-    log "^6.3.1"
-    log-node "^8.0.3"
-    make-dir "^4.0.0"
-    memoizee "^0.4.15"
-    ms "^2.1.3"
-    ncjsm "^4.3.2"
-    node-fetch "^2.6.11"
-    open "^8.4.2"
-    p-event "^4.2.0"
-    supports-color "^8.1.1"
-    timers-ext "^0.1.7"
-    type "^2.7.2"
-    uni-global "^1.0.0"
-    uuid "^8.3.2"
-    write-file-atomic "^4.0.2"
 
 "@serverless/utils@^6.13.1", "@serverless/utils@^6.14.0", "@serverless/utils@^6.15.0":
   version "6.15.0"
@@ -6879,13 +6793,6 @@ axios@1.1.3:
     follow-redirects "^1.15.0"
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
-
-axios@^0.21.1:
-  version "0.21.1"
-  resolved "https://registry.yarnpkg.com/axios/-/axios-0.21.1.tgz#22563481962f4d6bde9a76d516ef0e5d3c09b2b8"
-  integrity sha512-dKQiRHxGD9PPRIUNIWvZhPTPpl1rf/OxTYKsqKUDjBwYylTvV7SjSHJb9ratfyzM6wCdLCOYLzs73qpg5c4iGA==
-  dependencies:
-    follow-redirects "^1.10.0"
 
 axios@^1.6.0, axios@^1.6.2:
   version "1.6.7"
@@ -10153,7 +10060,7 @@ flatted@^3.1.0:
   resolved "https://registry.yarnpkg.com/flatted/-/flatted-3.1.1.tgz#c4b489e80096d9df1dfc97c79871aea7c617c469"
   integrity sha512-zAoAQiudy+r5SvnSw3KJy5os/oRJYHzrzja/tBDqrZtNhUw8bt6y8OBzMWcjWr+8liV8Eb6yOhw8WZ7VFZ5ZzA==
 
-follow-redirects@^1.0.0, follow-redirects@^1.10.0:
+follow-redirects@^1.0.0:
   version "1.14.1"
   resolved "https://registry.yarnpkg.com/follow-redirects/-/follow-redirects-1.14.1.tgz#d9114ded0a1cfdd334e164e6662ad02bfd91ff43"
   integrity sha512-HWqDgT7ZEkqRzBvc2s64vSZ/hfOceEol3ac/7tKwzuvEyWx3/4UegXh5oBOIotkGsObyk3xznnSRVADBgWSQVg==
@@ -16253,69 +16160,7 @@ serverless-offline@13.3.3, serverless-offline@^13.3.3:
     velocityjs "^2.0.6"
     ws "^8.16.0"
 
-serverless@3.33.0:
-  version "3.33.0"
-  resolved "https://registry.yarnpkg.com/serverless/-/serverless-3.33.0.tgz#7d4aacfacb5f122a24e8c6a8d2972cce99746c0c"
-  integrity sha512-qmG0RMelsWmnS5Smxoy0CbjpecgnJlM89wzSIgJqfkGlmOo2nJdd8y0/E6KlaTsaozlPKkjUBDzis2nF8VNO2g==
-  dependencies:
-    "@serverless/dashboard-plugin" "^6.2.3"
-    "@serverless/platform-client" "^4.3.2"
-    "@serverless/utils" "^6.11.1"
-    ajv "^8.12.0"
-    ajv-formats "^2.1.1"
-    archiver "^5.3.1"
-    aws-sdk "^2.1404.0"
-    bluebird "^3.7.2"
-    cachedir "^2.3.0"
-    chalk "^4.1.2"
-    child-process-ext "^2.1.1"
-    ci-info "^3.8.0"
-    cli-progress-footer "^2.3.2"
-    d "^1.0.1"
-    dayjs "^1.11.8"
-    decompress "^4.2.1"
-    dotenv "^16.3.1"
-    dotenv-expand "^10.0.0"
-    essentials "^1.2.0"
-    ext "^1.7.0"
-    fastest-levenshtein "^1.0.16"
-    filesize "^10.0.7"
-    fs-extra "^10.1.0"
-    get-stdin "^8.0.0"
-    globby "^11.1.0"
-    got "^11.8.6"
-    graceful-fs "^4.2.11"
-    https-proxy-agent "^5.0.1"
-    is-docker "^2.2.1"
-    js-yaml "^4.1.0"
-    json-colorizer "^2.2.2"
-    json-cycle "^1.5.0"
-    json-refs "^3.0.15"
-    lodash "^4.17.21"
-    memoizee "^0.4.15"
-    micromatch "^4.0.5"
-    node-fetch "^2.6.11"
-    npm-registry-utilities "^1.0.0"
-    object-hash "^3.0.0"
-    open "^8.4.2"
-    path2 "^0.1.0"
-    process-utils "^4.0.0"
-    promise-queue "^2.2.5"
-    require-from-string "^2.0.2"
-    semver "^7.5.3"
-    signal-exit "^3.0.7"
-    stream-buffers "^3.0.2"
-    strip-ansi "^6.0.1"
-    supports-color "^8.1.1"
-    tar "^6.1.15"
-    timers-ext "^0.1.7"
-    type "^2.7.2"
-    untildify "^4.0.0"
-    uuid "^9.0.0"
-    ws "^7.5.9"
-    yaml-ast-parser "0.0.43"
-
-serverless@^3.38.0:
+serverless@3.38.0, serverless@^3.38.0:
   version "3.38.0"
   resolved "https://registry.yarnpkg.com/serverless/-/serverless-3.38.0.tgz#9275763cab3ec1cd29635520cf24b9b5e7202583"
   integrity sha512-NJE1vOn8XmQEqfU9UxmVhkUFaCRmx6FhYw/jITN863WlOt4Y3PQbj3hwQyIb5QS1ZrXFq5ojklwewUXH7xGpdA==
