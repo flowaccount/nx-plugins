@@ -20,7 +20,7 @@ try {
   console.log(`Error:`, e)
 }
 
-let subProcess: ChildProcess = null
+let subProcess: ChildProcess
 export async function* offlineExecutor(
   options: ServerlessExecuteBuilderOptions,
   context: ExecutorContext
@@ -89,14 +89,20 @@ function runProcess(
   args.push(`--stage=${options.stage}`)
 
   const configPath = path.parse(options.config)
-  fs.copyFileSync(options.config, path.join(options.package, configPath.base))
+
+  if (options.package) {
+    fs.copyFileSync(options.config, path.join(options.package, configPath.base))
+  } else {
+    console.log('No package path provided')
+    return
+  }
 
   if (options.verbose) {
     stringifiedArgs += ' --verbose'
     args.push('--verbose')
   }
   const fullCommand = `${slsCommand} ${stringifiedArgs}`.trim()
-  console.log(`Executing Command: ${fullCommand} in cwd: ${options.package} `) 
+  console.log(`Executing Command: ${fullCommand} in cwd: ${options.package} `)
   subProcess = spawn(
     'npx',
     ['sls', ...args], { stdio: 'inherit', cwd: options.package }
@@ -116,7 +122,7 @@ function runProcess(
 }
 
 async function killProcess() {
-  if (!subProcess) {
+  if (!subProcess || !subProcess.pid) {
     return
   }
 
@@ -131,8 +137,6 @@ async function killProcess() {
     } else if (err.message) {
       logger.error(err.message)
     }
-  } finally {
-    subProcess = null
   }
 }
 
@@ -148,7 +152,7 @@ function getServerlessArg(options: ServerlessExecuteBuilderOptions) {
 }
 
 function getExecArgv(options: ServerlessExecuteBuilderOptions) {
-  const args = []
+  const args: string[] = []
   if (options.inspect === true) {
     options.inspect = InspectType.Inspect
   }
