@@ -1,6 +1,6 @@
 // npx scully --nw --configFile apps/frontend/flowaccount-landing/scully.config.js --removeStaticDist
 import { ExecutorContext, logger } from '@nx/devkit';
-import { buildTarget } from '../deploy/deploy.impl';
+import { buildTarget } from '../build/build.impl';
 import { getSourceRoot } from '../../utils/normalize';
 import { SimpleBuildEvent } from '../../utils/types';
 import { execSync } from 'child_process';

@@ -1,7 +1,10 @@
 import {
   BuildBuilderOptions,
   NormalizedBuildServerlessBuilderOptions,
+  ServerlessDeployBuilderOptions,
   ServerlessEventResult,
+  ServerlessExecuteBuilderOptions,
+  ServerlessSlsBuilderOptions,
 } from '../../utils/types';
 import { tap, map, catchError } from 'rxjs/operators';
 import { getNodeWebpackConfig } from '../../utils/node.config';
@@ -19,6 +22,8 @@ import normalizeAssetOptions from '../../utils/normalize-options';
 import { convertNxExecutor, ExecutorContext, logger } from '@nx/devkit';
 import { eachValueFrom } from 'rxjs-for-await';
 import { runWebpack } from '../../utils/run-webpack';
+import { ScullyBuilderOptions } from '../scully/scully.impl'
+import { startBuild } from '../../utils/target.schedulers'
 
 
 export type ServerlessBuildEvent = ServerlessEventResult & {
@@ -39,6 +44,7 @@ export async function buildExecutor(
   const config = (<NormalizedBuildServerlessBuilderOptions>(
     options
   )).webpackConfig.reduce((currentConfig, plugin) => {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     return require(plugin)(currentConfig, {
       options,
       configuration: context.configurationName,
@@ -88,7 +94,28 @@ export async function buildExecutor(
   return event;
 }
 export default buildExecutor;
+
 export const serverlessBuilder = convertNxExecutor(buildExecutor);
 function of(arg0: ServerlessBuildEvent): any {
   throw new Error('Function not implemented.');
+}
+
+export async function* buildTarget(
+  options:
+    | ServerlessDeployBuilderOptions
+    | ServerlessSlsBuilderOptions
+    | ScullyBuilderOptions
+    | ServerlessExecuteBuilderOptions,
+  context: ExecutorContext
+) {
+  for await (const event of startBuild(
+    { buildTarget: options.buildTarget, watch: false },
+    context
+  )) {
+    if (!event.success) {
+      logger.error('There was an error with the build. See above.');
+      logger.info(`${event.outfile} was not restarted.`);
+    }
+    yield event;
+  }
 }

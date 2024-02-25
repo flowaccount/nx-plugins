@@ -10,8 +10,9 @@ import {
   SimpleBuildEvent,
 } from '../../utils/types'
 import { getSlsCommand } from '../../utils/packagers'
-import * as fs from 'fs'
 import * as path from 'node:path'
+import { copySync, pathExistsSync } from 'fs-extra'
+import { buildTarget } from '../build/build.impl'
 
 try {
   // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -34,7 +35,9 @@ export async function* offlineExecutor(
     process.exit(code)
   })
 
-  if (options.skipBuild) {
+  const hasSrcPath = pathExistsSync(path.join(options.package, 'src'))
+  if (!options.skipBuild || !hasSrcPath) {
+    // build into output path before running serverless offline.
     if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
       const results = await runWaitUntilTargets(
         options.waitUntilTargets,
@@ -48,6 +51,13 @@ export async function* offlineExecutor(
           )
         }
       }
+    }
+    const iterator = await buildTarget(options, context);
+    const buildOutput = <SimpleBuildEvent>(await iterator.next()).value;
+    if (buildOutput.error) {
+      console.log(`Build error: ${buildOutput.error}`)
+    } else {
+      console.log(`Build success: ${buildOutput.outfile}`)
     }
   }
 
@@ -91,7 +101,7 @@ function runProcess(
   const configPath = path.parse(options.config)
 
   if (options.package) {
-    fs.copyFileSync(options.config, path.join(options.package, configPath.base))
+    copySync(options.config, path.join(options.package, configPath.base), { overwrite: true })
   } else {
     console.log('No package path provided')
     return

@@ -8,7 +8,7 @@ import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs';
 import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets } from '../../utils/target.schedulers';
-import { buildTarget } from '../deploy/deploy.impl';
+import { buildTarget } from '../build/build.impl';
 import { ExecutorContext } from '@nx/devkit';
 import {
   ServerlessSlsBuilderOptions,

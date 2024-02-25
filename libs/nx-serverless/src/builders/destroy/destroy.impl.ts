@@ -1,5 +1,5 @@
 import { runServerlessCommand } from '../../utils/serverless';
-import { buildTarget } from '../deploy/deploy.impl';
+import { buildTarget } from '../build/build.impl';
 import { ExecutorContext, logger } from '@nx/devkit';
 import {
   ServerlessDeployBuilderOptions,

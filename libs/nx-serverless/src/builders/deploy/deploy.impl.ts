@@ -8,20 +8,19 @@ import {
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs'; // TODO: 0 this is not needed here anymore?
 import { preparePackageJson } from '../../utils/packagers';
-import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
+import { runWaitUntilTargets } from '../../utils/target.schedulers';
 import { ExecutorContext, logger, parseTargetString } from '@nx/devkit';
 import {
   BuildBuilderOptions,
   ServerlessDeployBuilderOptions,
-  ServerlessSlsBuilderOptions,
   SimpleBuildEvent,
 } from '../../utils/types';
-import { ScullyBuilderOptions } from '../scully/scully.impl';
 import { detectPackageManager } from '@nx/devkit';
 import { getSourceRoot, normalizeBuildOptions } from '../../utils/normalize';
 import * as dotnetEnv from 'dotenv-json';
 import path = require('path');
 import { execSync } from 'child_process';
+import { buildTarget } from '../build/build.impl'
 
 gracefulFs.gracefulify(fs); // TODO: 0 this is not needed here anymore?
 /* Fix for EMFILE: too many open files on serverless deploy */
@@ -75,7 +74,7 @@ export async function deployExecutor(
   );
   console.log(buildOptions);
   if (!options.skipBuild) {
-    // build into output path before running serverless offline.
+    // build into output path before deploying.
     if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
       const results = await runWaitUntilTargets(
         options.waitUntilTargets,
@@ -199,25 +198,6 @@ export async function deployExecutor(
   // }
   // await runServerlessCommand(options, commands, extraArgs);
   return { success: true };
-}
-
-export async function* buildTarget(
-  options:
-    | ServerlessDeployBuilderOptions
-    | ServerlessSlsBuilderOptions
-    | ScullyBuilderOptions,
-  context: ExecutorContext
-) {
-  for await (const event of startBuild(
-    { buildTarget: options.buildTarget, watch: false },
-    context
-  )) {
-    if (!event.success) {
-      logger.error('There was an error with the build. See above.');
-      logger.info(`${event.outfile} was not restarted.`);
-    }
-    yield event;
-  }
 }
 
 export default deployExecutor;
