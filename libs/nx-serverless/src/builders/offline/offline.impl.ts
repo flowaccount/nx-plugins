@@ -6,23 +6,43 @@ import { promisify } from 'util';
 import * as dotEnvJson from 'dotenv-json';
 import {
   InspectType,
-  ServerlessExecuteBuilderOptions,
+  ServerlessExecutorOptions,
   SimpleBuildEvent,
 } from '../../utils/types';
 import { getSlsCommand } from '../../utils/packagers';
 import * as fs from 'fs';
 import * as path from 'node:path';
+import * as chalk from 'chalk';
+import { getProjectRoot } from '../../utils/normalize';
+import { NX_SERVERLESS_BUILD_TARGET_KEY } from '../../nrwl/nx-facade';
+
+
+
+interface ActiveTask {
+  id: string;
+  killed: boolean;
+  promise: Promise<void>;
+  childProcess: null | ChildProcess;
+  start: () => Promise<void>;
+  stop: (signal: NodeJS.Signals) => Promise<void>;
+}
 
 try {
   require('dotenv').config();
 } catch (e) {}
 
 let subProcess: ChildProcess = null;
+
+let additionalExitHandler: null | (() => void) = null;
+let currentTask: ActiveTask = null;
+const tasks: ActiveTask[] = [];
+
 export async function* offlineExecutor(
-  options: ServerlessExecuteBuilderOptions,
+  options: ServerlessExecutorOptions,
   context: ExecutorContext
 ) {
-  console.log(options)
+
+  const info = chalk.bold.green('info')
   process.on('SIGTERM', () => {
     subProcess?.kill();
     process.exit(128 + 15);
@@ -30,7 +50,7 @@ export async function* offlineExecutor(
   process.on('exit', (code) => {
     process.exit(code);
   });
-
+  options.stage = options.stage ?? 'dev';
   if (options.skipBuild) {
     if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
       const results = await runWaitUntilTargets(
@@ -49,17 +69,18 @@ export async function* offlineExecutor(
   }
 
   options.watch = true;
-  // for await (const event of startBuild(options, context)) {
-  //   if (!event.success) {
-  //     logger.error('There was an error with the build. See above.');
-  //     logger.info(`${event.outfile} was not restarted.`);
-  //   }
-  //   logger.info(`handleBuildEvent.`);
-  //   await handleBuildEvent(event, options);
-  //   yield event;
-  // }
 
-  await handleBuildEvent({ success: true}, options);
+  for await (const event of startBuild(options, context)) {
+    if (!event.success) {
+      logger.error('There was an error with the build. See above.');
+      logger.info(`${event.outfile} was not restarted.`);
+    }
+    logger.info(`${info} finished building, kill old and starting offline process.`);
+    await handleBuildEvent(event, options, context);
+    yield event;
+  }
+
+  await handleBuildEvent({ success: true}, options, context);
   yield ({ success: true});
 
   return new Promise<{ success: boolean }>(() => {
@@ -68,60 +89,79 @@ export async function* offlineExecutor(
 }
 async function handleBuildEvent(
   event: { success: boolean},
-  options: ServerlessExecuteBuilderOptions
+  options: ServerlessExecutorOptions,
+  context: ExecutorContext
 ) {
   if ((!event.success || options.watch) && subProcess) {
     await killProcess();
   }
-  logger.info('running process');
-  runProcess(event, options);
+  logger.info(`${chalk.bold.green('info')} running process`);
+  runProcess(event, options, context);
 }
 
 function runProcess(
   event: SimpleBuildEvent,
-  options: ServerlessExecuteBuilderOptions
+  options: ServerlessExecutorOptions,
+  context: ExecutorContext
 ) {
 
   if (subProcess || !event.success) {
     return;
   }
+
+  const projectRoot = getProjectRoot(context);
+
   dotEnvJson({
-    path: `${options.package}/${options.processEnvFile ?? 'env-staging.json'}`
+    path: `${projectRoot}/${options.processEnvironmentFile ?? 'env.json'}`
   });
-  // options.config = `${process.cwd()}/dist/apps/api/lambda.crm/serverless.yml`
+  
   const slsCommand = getSlsCommand();
-  let stringifiedArgs = `offline --config ${options.config} --stage ${options.stage}`;
+  let stringifiedArgs = `offline --stage ${options.stage}`;
   const args: string[] = [];
-  // args.push('sls');
   args.push('offline');
-  // args.push('--help');
-  // args.push(`--config=${options.config}`);
   args.push(`--stage=${options.stage}`);
 
-  const configPath = path.parse(options.config)
-  fs.copyFileSync(options.config, path.join(options.location, configPath.base))
+  // const configPath = path.parse(options.config)
+  // fs.copyFileSync(options.config, path.join(options.location, configPath.base))
 
   if(options.verbose) {
     stringifiedArgs += ' --verbose';
     args.push('--verbose');
   }
   const fullCommand = `${slsCommand} ${stringifiedArgs}`.trim();
-  console.log(`Executing Command: ${fullCommand} in cwd: ${options.location} `); //${options.package}
+  console.log(`Executing Command: ${fullCommand} in cwd: ${projectRoot} `); //${options.package}
+  const npxPath = path.resolve(context.root, 'node_modules/serverless', 'bin', 'serverless.js');
     subProcess = spawn(
-      'npx',
-      ['sls', ...args], {stdio: 'inherit', cwd: options.location}
+      'node',
+      [npxPath, ...args], 
+      {stdio: [0, 1, 'pipe', 'ipc'], cwd: projectRoot, 
+      env: {
+        // FORCE_COLOR: 'true',
+        NODE_OPTIONS: '--enable-source-maps',
+        ...process.env,
+        [NX_SERVERLESS_BUILD_TARGET_KEY]: options.buildTarget,
+      }}
     )
+    
+    const handleStdErr = (data) => {
+      // Don't log out error if task is killed and new one has started.
+      // This could happen if a new build is triggered while new process is starting, since the operation is not atomic.
+      // Log the error in normal mode
+      if (!options.watch || !subProcess.killed) {
+        logger.error(data.toString());
+      }
+    };
 
-    subProcess.on('message', (message) => {
-      console.log('Message from child process:', message);
-    });
-    subProcess.on('error', (err) => {
-      console.log(err);
-    });
+    subProcess.stderr.on('data', handleStdErr);
     subProcess.once('exit', (code) => {
-      if (code === 0) Promise.resolve({ success: true });
-      // If process is killed due to current task being killed, then resolve with success.
-      else Promise.resolve({ success: true });
+    subProcess.off('data', handleStdErr);
+      if (options.watch && !subProcess.killed) {
+        logger.info(
+          `NX Process exited with code ${code}, waiting for changes to restart...`
+        );
+      }
+      // if (!options.watch) done();
+      // resolve();
     });
 }
 
@@ -146,7 +186,7 @@ async function killProcess() {
   }
 }
 
-function getServerlessArg(options: ServerlessExecuteBuilderOptions) {
+function getServerlessArg(options: ServerlessExecutorOptions) {
   const args = ['offline', ...options.args];
   if (options.inspect === true) {
     options.inspect = InspectType.Inspect;
@@ -157,7 +197,7 @@ function getServerlessArg(options: ServerlessExecuteBuilderOptions) {
   return args;
 }
 
-function getExecArgv(options: ServerlessExecuteBuilderOptions) {
+function getExecArgv(options: ServerlessExecutorOptions) {
   const args = [];
   if (options.inspect === true) {
     options.inspect = InspectType.Inspect;

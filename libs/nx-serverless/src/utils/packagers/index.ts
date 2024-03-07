@@ -189,7 +189,7 @@ export async function preparePackageJson(
   logger.info('run packager to  install node_modules');
   const packageInstallResult = await packagerInstance.install(
     dirname(packageJsonPath),
-    { ignoreScripts: options.ignoreScripts }
+    { ignoreScripts: options.ignoreScripts ?? false }
   );
   if (packageInstallResult.error) {
     logger.error('ERROR: install package error!');

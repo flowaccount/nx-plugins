@@ -17,13 +17,13 @@
         "type": "string"
       }
     },
-    "config": {
+    "processEnvironmentFile": {
       "type": "string",
-      "description": "The serverless.yml/serverless.ts location"
+      "description": "The env-{stage}.json file name you want to use"
     },
-    "location": {
+    "stage": {
       "type": "string",
-      "description": "The src file location"
+      "description": "The stage to run serveless offline with"
     },
     "host": {
       "type": "string",
@@ -50,16 +50,11 @@
       "items": {
         "type": "string"
       }
-    },
-    "processEnvFile": {
-      "type": "string",
-      "description": "Env file location"
     }
   },
   "additionalProperties": true,
   "required": [
     "buildTarget",
-    "config",
-    "location"
+    "processEnvironmentFile"
   ]
 }

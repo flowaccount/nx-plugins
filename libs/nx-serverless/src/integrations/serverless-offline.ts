@@ -6,8 +6,17 @@ import { NxFacade } from '../nrwl/nx-facade';
  */
 export function prepareOffline(serverless: Serverless.Instance, nx: NxFacade) {
   serverless.service.package.individually = false;
-  console.log(nx.outputAbsolutePath)
+  console.log(`prepareStepOffline ${nx.outputAbsolutePath}`)
   set(serverless, 'service.custom.serverless-offline.location', nx.outputAbsolutePath);
+}
+
+/**
+ * Adds support to Invoke Local
+ * @link https://www.serverless.com/framework/docs/providers/aws/cli-reference/invoke-local
+ */
+export function prepareInvoke(serverless: Serverless.Instance, nx: NxFacade) {
+  console.log(`prepareStepOffline ${nx.outputAbsolutePath}`)
+  serverless.config.servicePath = nx.outputAbsolutePath;
 }
 
 /**
@@ -16,6 +25,7 @@ export function prepareOffline(serverless: Serverless.Instance, nx: NxFacade) {
  */
 export function prepareStepOffline(serverless: Serverless.Instance, nx: NxFacade) {
   serverless.service.package.individually = false;
+  console.log(`prepareStepOffline ${nx.outputAbsolutePath}`)
   set(serverless, 'service.custom.stepFunctionsOffline.location', nx.outputAbsolutePath);
 }
 

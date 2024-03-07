@@ -20,16 +20,10 @@ import {
     readonly outputAbsolutePath: string;
   
     constructor(private logging: Serverless.Logging) {
-      try {
+      
         this.graph = readCachedProjectGraph();
         this.buildTarget = process.env[NX_SERVERLESS_BUILD_TARGET_KEY] as string;
-        this.outputAbsolutePath = getAbsoluteOutputPath(this.graph, this.buildTarget);
-      } catch (e) {
-        console.log(e);
-        throw new Error(
-          'Nx context not found. This is probably because you are running serverless outside nx command.',
-        );
-      }
+        this.outputAbsolutePath = getAbsoluteOutputPath(this.graph, this.buildTarget).replace('src\\', '');
     }
   
     // async build(): Promise<void> {
@@ -47,12 +41,12 @@ import {
     //   }
     // }
   
-    private printBuildSuccessMessage(output: string) {
-      const startIndex = output.indexOf(this.buildTarget);
-      const endIndex = output.indexOf('\n', startIndex);
-      const buildTargetOutput = output.substring(startIndex, endIndex).trim();
-      this.logging.log.success(buildTargetOutput);
-    }
+    // private printBuildSuccessMessage(output: string) {
+    //   const startIndex = output.indexOf(this.buildTarget);
+    //   const endIndex = output.indexOf('\n', startIndex);
+    //   const buildTargetOutput = output.substring(startIndex, endIndex).trim();
+    //   this.logging.log.success(buildTargetOutput);
+    // }
   
     async watch(): Promise<void> {
       this.logging.log.info(`Watching with nx buildTarget: "${this.buildTarget}"`);

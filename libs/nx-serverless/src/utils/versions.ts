@@ -1,6 +1,6 @@
 export const nxVersion = '*';
-export const serverlessVersion = '^2.29.0';
-export const serverlessOfflineVersion = '7.0.0';
+export const serverlessVersion = '^3.33.0';
+export const serverlessOfflineVersion = '13.3.3';
 export const serverlessOptimizeVersion = '4.2.1-rc.1';
 export const awsSdkVersion = '*';
 export const awsTypeLambdaVersion = '^8.10.40';

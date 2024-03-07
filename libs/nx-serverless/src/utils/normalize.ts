@@ -5,65 +5,57 @@ import * as glob from 'glob';
 import { extname, join } from 'path';
 import * as _ from 'lodash';
 import { ServerlessWrapper } from './serverless';
-import { ExecutorContext, logger } from '@nx/devkit';
+import { ExecutorContext, ProjectConfiguration, logger } from '@nx/devkit';
+import * as chalk from 'chalk';
+import { AdditionalEntryPoint } from '@nx/webpack/src/executors/webpack/schema';
 
 export interface FileReplacement {
   replace: string;
   with: string;
 }
 
-export function assignEntriesToFunctionsFromServerless<
-  T extends ServerlessBaseOptions
->(options: T, root: string): T {
-  logger.info('getting all functions');
-  const functions = ServerlessWrapper.serverless.service.getAllFunctions();
-  const entries = {};
+export function assignEntriesToFunctionsFromServerless(context: ExecutorContext): AdditionalEntryPoint[] {
+  
+  const info = chalk.bold.green('info')
+  logger.info(`${info} getting all functions`);
+  const srcRoot = getSourceRoot(context);
+  const projectRoot = getProjectRoot(context);
+
+
+  const functions = ServerlessWrapper.configurationInput.functions;
+  const entries = [];
   _.forEach(functions, (func, index) => {
     normalize;
     const entry = getEntryForFunction(
       functions[index],
-      ServerlessWrapper.serverless.service.getFunction(func),
-      ServerlessWrapper.serverless,
-      options.sourceRoot,
-      root
+      func.handler,
+      ServerlessWrapper.configurationInput.provider.name,
+      srcRoot,
+      projectRoot
     );
-    _.merge(entries, entry);
+    entries.push(entry);
   });
-  const result = {
-    ...options,
-    files: entries,
-  };
-  return result;
+  return entries;
 }
 
-export async function getProjectRoot(context: ExecutorContext) {
-  const { root } = context.workspace.projects[context.projectName];
+export function getProjectRoot(context: ExecutorContext) {
+  const { root } = context.projectsConfigurations.projects[context.projectName];
   if (!root) {
     throw new Error(`${context.projectName} does not have a root.`);
   }
   return root;
-  // Mark for deletion
-  // const workspaceHost = workspaces.createWorkspaceHost(new NodeJsSyncHost());
-  // const { workspace } = await workspaces.readWorkspace(
-  //   context.workspaceRoot,
-  //   workspaceHost
-  // );
-  // if (workspace.projects.get(context.target.project).root) {
-  //   return workspace.projects.get(context.target.project).root;
-  // } else {
-  //   context.reportStatus('Error');
-  //   const message = `${context.target.project} does not have a root. Please define one.`;
-  //   context.logger.error(message);
-  //   throw new Error(message);
-  // }
 }
 
 export function getSourceRoot(context: ExecutorContext) {
-  const { sourceRoot } = context.workspace.projects[context.projectName];
+  const { sourceRoot } = context.projectsConfigurations.projects[context.projectName];
   if (!sourceRoot) {
     throw new Error(`${context.projectName} does not have a root.`);
   }
   return sourceRoot;
+}
+
+export function getProjectConfiguration(context: ExecutorContext): ProjectConfiguration {
+  return context.projectsConfigurations.projects[context.projectName];
 }
 
 export function normalizeBuildOptions<T extends ServerlessBaseOptions>(
@@ -103,40 +95,43 @@ const preferredExtensions = ['.js', '.ts', '.jsx', '.tsx'];
 
 export const getEntryForFunction = (
   name,
-  serverlessFunction,
-  serverless,
+  handler,
+  provider,
   sourceroot,
   root
-) => {
-  const handler = serverlessFunction.handler;
+) : AdditionalEntryPoint => {
 
   let handlerFile = getHandlerFile(handler);
   if (!handlerFile) {
-    _.get(serverless, 'service.provider.name') !== 'google' &&
-      serverless.cli.log(
+    provider !== 'google' &&
+       logger.warn(
         `\nWARNING: Entry for ${name}@${handler} could not be retrieved.\nPlease check your service config if you want to use lib.entries.`
       );
-    return {};
+    return;
   }
-  const servicePath = sourceroot.replace('/src', '');
-  // Sometimes the service path and handlerFile path overlap, unusually caused by plugins. This regex removes the overlap
-  const regex = new RegExp(`^${servicePath.replace(/\/([^/]*)/g, `($1\\/)?`)}`);
-  handlerFile = handlerFile.replace(regex, ``);
+  // const servicePath = sourceroot.replace('/src', '');
+  // // Sometimes the service path and handlerFile path overlap, unusually caused by plugins. This regex removes the overlap
+  // const regex = new RegExp(`^${servicePath.replace(/\/([^/]*)/g, `($1\\/)?`)}`);
+  // handlerFile = handlerFile.replace(regex, ``);
 
-  const ext = getEntryExtension(handlerFile, serverless, servicePath);
+  
 
-  // Create a valid entry key
-  let handlerFileFinal = `${sourceroot.replace(
-    '/src',
-    ''
-  )}/${handlerFile}${ext}`;
+  // // Create a valid entry key
+  // let handlerFileFinal = `${sourceroot.replace(
+  //   '/src',
+  //   ''
+  // )}/${handlerFile}${ext}`;
 
-  if (handlerFile.match(/src/)) {
-    handlerFileFinal = `${sourceroot}/${handlerFile.replace('src/', '')}${ext}`;
-  }
+  // if (handlerFile.match(/src/)) {
+  //   handlerFileFinal = `${sourceroot}/${handlerFile.replace('src/', '')}${ext}`;
+  // }
+
+  const ext = getEntryExtension(handlerFile, sourceroot);
+  const handlerFileFinal = `${sourceroot}/${handlerFile}${ext}`;
 
   return {
-    [handlerFile]: resolve(root, `${handlerFileFinal}`),
+    entryName: handlerFile,
+    entryPath: `${handlerFileFinal}`,
   };
 };
 
@@ -148,17 +143,17 @@ const getHandlerFile = (handler) => {
   }
 };
 
-const getEntryExtension = (fileName, serverless, servicePath) => {
+const getEntryExtension = (fileName, sourceroot) => {
   const files = glob.sync(`${fileName}.*`, {
-    cwd: servicePath,
+    cwd: sourceroot,
     nodir: true,
     // ignore: this.configuration.excludeFiles ? this.configuration.excludeFiles : undefined
   });
 
   if (_.isEmpty(files)) {
     // If we cannot find any handler we should terminate with an error
-    throw new serverless.classes.Error(
-      `No matching handler found for '${fileName}' in '${servicePath}'. Check your service definition.`
+    throw new Error(
+      `No matching handler found for '${fileName}' in '${sourceroot}'. Check your service definition.`
     );
   }
 
@@ -176,7 +171,7 @@ const getEntryExtension = (fileName, serverless, servicePath) => {
   );
 
   if (_.size(sortedFiles) > 1) {
-    serverless.cli.log(
+    logger.warn(
       `WARNING: More than one matching handlers found for '${fileName}'. Using '${_.first(
         sortedFiles
       )}'.`

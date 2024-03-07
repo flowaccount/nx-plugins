@@ -1,7 +1,6 @@
 import * as Serverless from 'serverless/lib/Serverless';
 import * as readConfiguration from 'serverless/lib/configuration/read';
 import {
-  ServerlessBaseOptions,
   ServerlessDeployBuilderOptions,
   ServerlessSlsBuilderOptions,
   SimpleBuildEvent,
@@ -14,15 +13,15 @@ import { copyBuildOutputToBePackaged, parseArgs } from './copy-asset-files';
 import {
   ExecutorContext,
   logger,
-  parseTargetString,
-  readTargetOptions,
 } from '@nx/devkit';
-import * as gracefulFs from 'graceful-fs';
-gracefulFs.gracefulify(fs); // fix serverless too many files open error on windows. /wick
-export class ServerlessWrapper {
-  constructor() {}
+import { getProjectRoot } from './normalize';
+import * as chalk from 'chalk';
 
+export class ServerlessWrapper {
+ 
   private static serverless$: any = null;
+  private static configurationInput$: any = null;
+
 
   static get serverless() {
     if (this.serverless$ === null) {
@@ -33,8 +32,19 @@ export class ServerlessWrapper {
     return this.serverless$;
   }
 
+  static get configurationInput() {
+    if (this.configurationInput$ === null) {
+      throw new Error(
+        'Please initialize serverless before usage, or pass option for initialization.'
+      );
+    }
+    return this.configurationInput$;
+  }
+  
+
   static dispose() {
     this.serverless$ = null;
+    this.configurationInput$ = null;
   }
 
   static isServerlessDeployBuilderOptions(
@@ -44,140 +54,49 @@ export class ServerlessWrapper {
   }
 
   static async init(
-    options: ServerlessBaseOptions
-    // context: ExecutorContext
+    context: ExecutorContext,
+    processEnvironmentFile: string
   ): Promise<void> {
     if (this.serverless$ === null) {
-      logger.debug('Starting to Initiate Serverless Instance');
+      const info = chalk.bold.green('info')
 
-      const buildOptions: {
-        outputPath?: string;
-        servicePath?: string;
-        processEnvironmentFile?: string;
-        serverlessConfig?: string;
-        buildTarget?: string;
-      } = {};
-      let deployOptions;
-      // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
-      const commands = [];
-      const extraArgs = {};
-      buildOptions.servicePath = options.servicePath;
-      buildOptions.processEnvironmentFile = options.processEnvironmentFile;
-      buildOptions.serverlessConfig = options.serverlessConfig;
-      buildOptions.outputPath = options.outputPath;
+      logger.info(`${info} Starting to Initiate Serverless Instance`);
 
+      const projectRoot = getProjectRoot(context);
       try {
-        console.log(buildOptions.servicePath);
-        console.log(buildOptions.processEnvironmentFile);
-        console.log(
-          fs.existsSync(
-            path.join(
-              buildOptions.servicePath,
-              buildOptions.processEnvironmentFile
-            )
-          )
+        const filePath = path.join(
+          projectRoot,
+          processEnvironmentFile
         );
-        if (
-          fs.existsSync(
-            path.join(
-              buildOptions.servicePath,
-              buildOptions.processEnvironmentFile
-            )
-          )
-        ) {
-          logger.debug(
-            'Loading Environment Variables',
-            buildOptions.servicePath,
-            buildOptions.processEnvironmentFile
-          );
-          dotEnvJson({
-            path: path.join(
-              buildOptions.servicePath,
-              buildOptions.processEnvironmentFile
-            ),
-          });
-          logger.info(
-            `Environment variables set according to ${buildOptions.processEnvironmentFile}`
-          );
-        } else {
-          logger.error('No env.json found! no environment will be set!');
-        }
-      } catch (e) {
-        logger.error(e);
-      }
-      logger.debug('Reading Configuration');
-      const typescriptConfig = fs.existsSync(
-        path.join(buildOptions.servicePath, 'serverless.ts')
-      );
-      const configFileName = typescriptConfig
-        ? 'serverless.ts'
-        : 'serverless.yml';
-      const configurationInput = await readConfiguration(
-        path.resolve(buildOptions.servicePath, configFileName)
-      );
-      logger.debug('Resolved configurations');
-      configurationInput.useDotenv = false;
-      logger.debug('Initiating Serverless Instance');
-      const serverlessConfig: any = {
-        commands: [
-          'deploy',
-          'package',
-          'offline',
-          'deploy list',
-          'destroy',
-          'deploy function',
-          'sls',
-        ],
-        configuration: configurationInput,
-        serviceDir: buildOptions.servicePath,
-        servicePath: buildOptions.servicePath,
-        configurationFilename: configFileName,
-        configurationPath: configFileName,
-        options: {},
-      };
-      serverlessConfig.servicePath = getPackagePath(buildOptions);
-      logger.info(
-        `setting serverlessConfig.servicePath to packagePath: ${serverlessConfig.servicePath}`
-      );
-      this.serverless$ = new Serverless(serverlessConfig);
-      if (
-        this.serverless$.version &&
-        this.serverless$.version.split('.')[0] > '1'
-      ) {
-        logger.info(
-          'Disabling "Resolve Configuration Internally" for serverless 2.0+.'
+        logger.info(`${info} Loading Environment Variables ${filePath}`);
+        dotEnvJson({
+          path: filePath,
+        });
+
+        logger.info(`${info} Reading Configuration`);
+        const typescriptConfig = fs.existsSync(
+          path.join(projectRoot, 'serverless.ts')
         );
-        this.serverless$._shouldResolveConfigurationInternally = false;
-        this.serverless$.isLocallyInstalled = true;
+        const configFileName = typescriptConfig
+          ? 'serverless.ts'
+          : 'serverless.yml';
+        this.configurationInput$ = await readConfiguration(
+          path.resolve(projectRoot, configFileName)
+        );
+        logger.info(`${info} Resolved configurations`);
+        this.configurationInput$.useDotenv = false;
+        logger.info(`${info} Initiating Serverless Instance`);
       }
-      // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
-      if (deployOptions) {
-        this.serverless$.processedInput = {
-          commands: commands,
-          options: extraArgs,
-        };
-        logger.info('serverless$.processedInput is set with deploy arguments');
+      catch (ex) {
+        logger.error(ex);
       }
-      // fix serverless issue wher eit resolveCliInput only once and not everytime init is called
-      await this.serverless$.init();
-      console.log('loading service', buildOptions.serverlessConfig);
-      await this.serverless$.service.load({
-        config: buildOptions.serverlessConfig,
-      });
-      if (deployOptions) {
-        this.serverless$.service.provider.stage = deployOptions.stage;
-      }
-      this.serverless$.cli.asciiGreeting();
-      return null;
-    } else {
-      return null;
     }
   }
 }
 
 export function getPackagePath(
-  options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions | any
-) {
+    options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions | any
+  ) {
   let packagePath = '';
   if (
     !options.serverlessPackagePath &&

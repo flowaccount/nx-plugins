@@ -139,6 +139,7 @@ export interface ServerlessDeployBuilderOptions {
   serverlessPackagePath?: string;
   args?: string;
   skipBuild?: boolean;
+  processEnvironmentFile?: string;
 }
 
 export interface ServerlessSlsBuilderOptions {
@@ -162,7 +163,7 @@ export interface ServerlessSlsBuilderOptions {
 }
 
 // https://www.npmjs.com/package/serverless-offline
-export interface ServerlessExecuteBuilderOptions {
+export interface ServerlessExecutorOptions {
   inspect: boolean | InspectType;
   waitUntilTargets: string[];
   buildTarget: string;
@@ -195,5 +196,5 @@ export interface ServerlessExecuteBuilderOptions {
   skipBuild?: boolean;
   config: string;
   package?: string;
-  processEnvFile?: string;
+  processEnvironmentFile?: string;
 }

@@ -1,14 +1,9 @@
 {
   "executors": {
-    "build": {
+    "webpack": {
       "implementation": "./src/builders/build/build.impl",
       "schema": "./src/builders/build/schema.json",
-      "description": "Build a Node application"
-    },
-    "compile": {
-      "implementation": "./src/builders/compile/compile.impl",
-      "schema": "./src/builders/compile/schema.json",
-      "description": "Compiles a Serverless Typescripted application"
+      "description": "Webpack a serverless application"
     },
     "offline": {
       "implementation": "./src/builders/offline/offline.impl",

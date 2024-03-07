@@ -108,7 +108,7 @@ export class Yarn {
     let args = `install --no-lockfile --non-interactive`;
 
     // Convert supported packagerOptions
-    if (packagerOptions.ignoreScripts) {
+    if (packagerOptions?.ignoreScripts) {
       args = `${args} --ignore-scripts`;
     }
 

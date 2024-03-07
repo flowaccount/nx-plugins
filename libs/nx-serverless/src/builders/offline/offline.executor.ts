@@ -6,8 +6,9 @@ import { watch } from 'chokidar';
 import { workspaceLayout } from '@nx/workspace/src/core/file-utils';
 import {
   InspectType,
-  ServerlessExecuteBuilderOptions,
+  ServerlessExecutorOptions,
 } from '../../utils/types';
+import { getProjectRoot } from '../../utils/normalize';
 
 // function getHttpServerArgs(options: ServerlessExecuteBuilderOptions) {
 //   const args = [] as any[];
@@ -110,7 +111,7 @@ function createFileWatcher(
   return { close: () => watcher.close() };
 }
 
-function getExecArgv(options: ServerlessExecuteBuilderOptions) {
+function getExecArgv(options: ServerlessExecutorOptions) {
   const args = [];
   if (options.inspect === true) {
     options.inspect = InspectType.Inspect;
@@ -131,7 +132,7 @@ function getExecArgv(options: ServerlessExecuteBuilderOptions) {
 }
 
 export async function* serverlessOfflineExecutor(
-  options: ServerlessExecuteBuilderOptions,
+  options: ServerlessExecutorOptions,
   context: ExecutorContext
 ) {
   console.log('executing offline');
@@ -153,9 +154,10 @@ export async function* serverlessOfflineExecutor(
     }
   };
   console.log('watching:' + context.root);
+  const projectRoot = getProjectRoot(context);
   const watcher = createFileWatcher(
     context.root,
-    context.workspace.projects[context.projectName].root,
+    projectRoot,
     run
   );
 

@@ -17,18 +17,9 @@
         "type": "string"
       }
     },
-    "config": {
+    "processEnvironmentFile": {
       "type": "string",
-      "description": "The serverless.yml/serverless.ts location"
-    },
-    "location": {
-      "type": "string",
-      "description": "The src file location"
-    },
-    "package": {
-      "type": "string",
-      "default": ".serverless",
-      "description": "The build output files location"
+      "description": "The env-{stage}.json file name you want to use"
     },
     "stage": {
       "type": "string",
@@ -80,9 +71,7 @@
   "additionalProperties": false,
   "required": [
     "buildTarget",
-    "config",
-    "location",
-    "package",
-    "stage"
+    "stage",
+    "processEnvironmentFile"
   ]
 }

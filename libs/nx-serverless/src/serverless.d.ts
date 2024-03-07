@@ -7,7 +7,7 @@ declare namespace Serverless {
       config: {
         servicePath: string;
       };
-  
+      serviceDir: string;
       service: {
         getServiceObject(): Service;
         provider: {

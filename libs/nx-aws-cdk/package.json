@@ -27,5 +27,6 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/flowaccount/nx-plugins/tree/master/libs/nx-aws-cdk"
-  }
+  },
+  "author": "FlowAccount Co., Ltd."
 }

@@ -1,27 +1,29 @@
-import * as _ from 'lodash';
-import {
-  ServerlessWrapper,
-  getPackagePath,
-  makeDistFileReadyForPackaging,
-} from '../../utils/serverless';
 /* Fix for EMFILE: too many open files on serverless deploy */
 import * as fs from 'fs';
 import * as gracefulFs from 'graceful-fs'; // TODO: 0 this is not needed here anymore?
-import { preparePackageJson } from '../../utils/packagers';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
-import { ExecutorContext, logger, parseTargetString } from '@nx/devkit';
+import { ExecutorContext, logger } from '@nx/devkit';
 import {
-  BuildBuilderOptions,
   ServerlessDeployBuilderOptions,
   ServerlessSlsBuilderOptions,
   SimpleBuildEvent,
 } from '../../utils/types';
 import { ScullyBuilderOptions } from '../scully/scully.impl';
 import { detectPackageManager } from '@nx/devkit';
-import { getSourceRoot, normalizeBuildOptions } from '../../utils/normalize';
-import * as dotnetEnv from 'dotenv-json';
-import path = require('path');
+import { getProjectConfiguration, getProjectRoot } from '../../utils/normalize';
+import * as chalk from 'chalk';
+import * as dotEnvJson from 'dotenv-json';
+
 import { execSync } from 'child_process';
+
+// import { WebpackExecutorOptions } from '@nx/webpack';
+
+import { NX_SERVERLESS_BUILD_TARGET_KEY } from '../../nrwl/nx-facade';
+import { NPM } from '../../utils/packagers/npm';
+import { Yarn } from '../../utils/packagers/yarn';
+import { packager } from '../../utils/packagers';
+import { dirname } from 'path';
+import { WebpackExecutorOptions } from '@nx/webpack';
 
 gracefulFs.gracefulify(fs); // TODO: 0 this is not needed here anymore?
 /* Fix for EMFILE: too many open files on serverless deploy */
@@ -37,18 +39,21 @@ function getSlsCommand() {
   }
 }
 
-async function getBuildTargetConfiguration(
+function getBuildTargetConfiguration(
   targetName: string,
-  projectName: string,
   context: ExecutorContext,
-  configuration?: string
-): Promise<any> {
-  const projectConfig = context.workspace.projects[projectName];
-  if (projectConfig && projectConfig.targets[targetName]) {
+): WebpackExecutorOptions {
+  const projectConfig = getProjectConfiguration(context);
+
+  const targetSplit = targetName.split(':')
+  const finalName = targetSplit[1];
+  const configuration = targetSplit[2];
+
+  if (projectConfig && projectConfig.targets[finalName]) {
     if (configuration) {
       return {
-        ...projectConfig.targets[targetName].options,
-        ...projectConfig.targets[targetName].configurations[configuration],
+        ...projectConfig.targets[finalName].options,
+        ...projectConfig.targets[finalName].configurations[configuration],
       };
     }
     return projectConfig.targets[targetName].options;
@@ -56,24 +61,55 @@ async function getBuildTargetConfiguration(
   throw new Error(`Build target '${targetName}' `);
 }
 
+function getPackagerInstance(options){
+  let packagerInstance = null;
+  if (options.packager && options.packager.toString().toLowerCase() == 'npm') {
+    packagerInstance = NPM;
+  } else if (
+    options.packager &&
+    options.packager.toString().toLowerCase() == 'yarn'
+  ) {
+    packagerInstance = Yarn;
+  } else if (packager('npm')) {
+    packagerInstance = NPM;
+  } else if (packager('yarn')) {
+    packagerInstance = Yarn;
+  } else {
+    return {
+      success: false,
+      error: 'No Packager to process package.json, please install npm or yarn',
+    };
+  }
+  logger.info(`packager instance is -- ${options.packager}`);
+  return packagerInstance;
+}
+
 export async function deployExecutor(
   options: ServerlessDeployBuilderOptions,
   context: ExecutorContext
 ) {
-  const { target, project, configuration } = parseTargetString(options.buildTarget);
-  const root = getSourceRoot(context);
-  const buildOptionsAny = await getBuildTargetConfiguration(
-    target,
-    project,
-    context,
-    configuration
-  );
-  const buildOptions = normalizeBuildOptions(
-    <BuildBuilderOptions>buildOptionsAny,
-    context.root,
-    root
-  );
-  console.log(buildOptions);
+  
+  
+  //  const { target, project, configuration } = parseTargetString(options.buildTarget, context);
+  // const root = getSourceRoot(context);
+
+  // const buildOptions = await getBuildTargetConfiguration(
+  //   target,
+  //   context,
+  //   configuration
+  // );
+
+  // const buildOptions = normalizeBuildOptions(
+  //   <BuildBuilderOptions>buildOptionsAny,
+  //   context.root,
+  //   root
+  // );
+  const projectRoot = getProjectRoot(context);
+  const info = chalk.bold.green('info')
+  dotEnvJson({
+    path: `${projectRoot}/${options.processEnvironmentFile ?? 'env.json'}`
+  });
+
   if (!options.skipBuild) {
     // build into output path before running serverless offline.
     if (options.waitUntilTargets && options.waitUntilTargets.length > 0) {
@@ -83,7 +119,6 @@ export async function deployExecutor(
       );
       for (const [i, result] of results.entries()) {
         if (!result.success) {
-          console.log('throw');
           throw new Error(
             `Wait until target failed: ${options.waitUntilTargets[i]}.`
           );
@@ -92,117 +127,57 @@ export async function deployExecutor(
     }
     const iterator = await buildTarget(options, context);
     const buildOutput = <SimpleBuildEvent>(await iterator.next()).value;
-    await makeDistFileReadyForPackaging(options);
-
-    options.package = getPackagePath(options);
-    logger.info(`options.package: ${options.package}`);
-    const prepResult = await preparePackageJson(
-      options,
-      context,
-      buildOutput.webpackStats,
-      buildOutput.resolverName,
-      buildOutput.tsconfig
-    );
-    if (!prepResult.success) {
-      throw new Error(`There was an error with the build. ${prepResult.error}`);
-    }
-    ServerlessWrapper.dispose();
-  } else {
-    try {
-      console.log(buildOptions.servicePath);
-      console.log(buildOptions.processEnvironmentFile);
-      console.log(
-        fs.existsSync(
-          path.join(
-            buildOptions.servicePath,
-            buildOptions.processEnvironmentFile
-          )
-        )
-      );
-      if (
-        fs.existsSync(
-          path.join(
-            buildOptions.servicePath,
-            buildOptions.processEnvironmentFile
-          )
-        )
-      ) {
-        logger.debug(
-          'Loading Environment Variables',
-          buildOptions.servicePath,
-          buildOptions.processEnvironmentFile
-        );
-        dotnetEnv({
-          path: path.join(
-            buildOptions.servicePath,
-            buildOptions.processEnvironmentFile
-          ),
-        });
-        logger.info(
-          `Environment variables set according to ${buildOptions.processEnvironmentFile}`
-        );
-      } else {
-        logger.error('No env.json found! no environment will be set!');
-      }
-    } catch (e) {
-      logger.error(e);
+    if(buildOutput.error)
+    {
+      throw new Error(buildOutput.error);
     }
   }
 
-  options.package = getPackagePath(options);
-  // let stringifiedArgs = `--config ${buildOptions.serverlessConfig} --stage ${options.stage}`; // --package ${options.package}
-  let stringifiedArgs = ''
+  // options.package = getPackagePath(options);
+  let stringifiedArgs = `--stage ${options.stage}`;
   if (options.function) {
     stringifiedArgs += ` --function ${options.function}`;
   }
   if (options.verbose) {
     stringifiedArgs += ` --verbose`;
   }
-  const config = path.parse(buildOptions.serverlessConfig)
-  fs.copyFileSync(buildOptions.serverlessConfig, path.join(options.package, config.base))
-
+  const buildConfig = getBuildTargetConfiguration(options.buildTarget, context);
   const IS_CI_RUN = process.env.CI == 'true';
   const slsCommand = getSlsCommand();
   const fullCommand = `${slsCommand} deploy ${stringifiedArgs}`.trim();
-  console.log(`Executing Command: ${fullCommand} in cwd: ${options.package}`);
-
+  logger.info(`nx Executing Command: ${fullCommand} in cwd: ${projectRoot}`);
+  //const npxPath = path.resolve(context.root, 'node_modules/serverless', 'bin', 'serverless.js');
   try {
-    console.log(process.cwd())
-    console.log('------------------')
-    console.log(options.package)
-    execSync(fullCommand, { stdio: 'inherit', cwd: options.package }); // || process.cwd()
+    const packagerInstance = getPackagerInstance(options);
+    logger.info(`${info} installing yarn on ${context.root}/${buildConfig.outputPath}`);
+    const result = await packagerInstance.install(`${context.root}/${buildConfig.outputPath}`);
+    if (result.error) {
+      logger.error('ERROR: generating lock file!');
+      return { success: false, error: result.error.toString() };
+    }
+    execSync(fullCommand, 
+      { 
+        stdio: 'inherit',
+        cwd: projectRoot, 
+        env: {
+          FORCE_COLOR: 'true',
+          NODE_OPTIONS: '--enable-source-maps',
+          ...process.env,
+          [NX_SERVERLESS_BUILD_TARGET_KEY]: options.buildTarget,
+      } 
+    });
   } catch (error) {
-    // An error occurred (non-zero exit code)
-    console.error(error);
+    logger.error(error);
     return { success: false }; // Exit the program with a non-zero status code
   }
   if (IS_CI_RUN) {
-    // console.log(result.all);
+    //logger.info("what do you want to see here?");
   }
-
-  // const extraArgs = [];
-  // const commands = [];
-  // commands.push('deploy');
-  // if (options.function && options.function != '') {
-  //   console.log(`pushing function command ${options.function}`)
-  //   commands.push('function');
-  //   extraArgs.push(`--function ${options.function}`); // fix function deploy /wick
-  // }
-  // if (options.list) {
-  //   commands.push('list');
-  // }
-  // if(!options.args) {
-  //   delete options.args;
-  // }
-  // if(options.verbose) {
-  //   extraArgs.push('--verbose');
-  // }
-  // await runServerlessCommand(options, commands, extraArgs);
   return { success: true };
 }
 
 export async function* buildTarget(
-  options:
+  options: 
     | ServerlessDeployBuilderOptions
     | ServerlessSlsBuilderOptions
     | ScullyBuilderOptions,
