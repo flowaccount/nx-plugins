@@ -2,7 +2,6 @@
 // import { prepareInvoke } from '../integrations/serverless-invoke-local';
 import { prepareOffline, prepareStepOffline, prepareInvoke } from '../src/integrations/serverless-offline'
 import { NxFacade } from '../src/nrwl/nx-facade'
-import { getPackagePath } from '../src/utils/serverless'
 //import { PackagingManager } from './packaging/packaging-manager';
 
 class NxServerlessPlugin {
