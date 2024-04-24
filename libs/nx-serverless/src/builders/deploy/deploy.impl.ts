@@ -22,7 +22,6 @@ import { NX_SERVERLESS_BUILD_TARGET_KEY } from '../../nrwl/nx-facade';
 import { NPM } from '../../utils/packagers/npm';
 import { Yarn } from '../../utils/packagers/yarn';
 import { packager } from '../../utils/packagers';
-import { dirname } from 'path';
 import { WebpackExecutorOptions } from '@nx/webpack';
 
 gracefulFs.gracefulify(fs); // TODO: 0 this is not needed here anymore?
