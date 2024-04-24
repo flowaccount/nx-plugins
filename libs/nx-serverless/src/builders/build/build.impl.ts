@@ -120,7 +120,7 @@ export async function buildExecutor(
   options.outputHashing = 'none';
   options.progress = true;
   options.standardWebpackConfigFunction = false
-  options.webpackConfig = path.join(__dirname, '..', '..', 'webpack/webpack.config.ts');
+  options.webpackConfig = path.join(__dirname, '..', '..', 'webpack/webpack.config.js');
   logger.info(`${info} start compiling webpack`);
   const result = await webpackExecutor(options,context).next();
   return result.value;

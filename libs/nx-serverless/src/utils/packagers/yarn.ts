@@ -105,7 +105,7 @@ export class Yarn {
 
   static async install(cwd, packagerOptions) {
     const command = /^win/.test(process.platform) ? 'yarn.cmd' : 'yarn';
-    let args = `install --no-lockfile --non-interactive`;
+    let args = `install --non-interactive`;
 
     // Convert supported packagerOptions
     if (packagerOptions?.ignoreScripts) {
