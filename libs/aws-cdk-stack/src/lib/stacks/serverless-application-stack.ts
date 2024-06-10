@@ -1,9 +1,8 @@
-import { Construct, NestedStack, Stack } from '@aws-cdk/core';
-
+import {  NestedStack } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import { logger } from '@nx/devkit';
 import { ServerlessApplicationStackProperties } from '../types';
 import { TypescriptLambdaStack } from './lambda-stack';
-import { ManagedPolicyStack } from './managed-policy-stack';
 
 export class ServerlessApplicationStack extends NestedStack {
   constructor(

@@ -1,4 +1,4 @@
-import { Construct, Stack } from '@aws-cdk/core';
+import { Stack } from 'aws-cdk-lib/core'; import { Construct } from 'constructs';
 import { ALBStackProperties } from '../types';
 import { logger } from '@nx/devkit';
 import {
@@ -7,9 +7,9 @@ import {
   ApplicationTargetGroup,
   ListenerAction,
   ListenerCondition,
-} from '@aws-cdk/aws-elasticloadbalancingv2';
-import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { Subnet } from '@aws-cdk/aws-ec2';
+} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
+import { Certificate, ICertificate } from 'aws-cdk-lib/aws-certificatemanager';
+import { Subnet } from 'aws-cdk-lib/aws-ec2';
 
 export class ApplicationLoadBalancerStack extends Stack {
   public readonly lb: ApplicationLoadBalancer;

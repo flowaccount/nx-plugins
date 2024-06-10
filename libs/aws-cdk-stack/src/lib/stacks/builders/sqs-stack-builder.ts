@@ -4,8 +4,8 @@ import {
   SqsConfigurationBuilderOption,
 } from '../../types';
 import { BaseApplicationStackBuilder } from './base-application-stack-builder';
-import { QueueProps } from '@aws-cdk/aws-sqs';
-import { Duration, StackProps } from '@aws-cdk/core';
+import { QueueProps } from 'aws-cdk-lib/aws-sqs';
+import { Duration, StackProps } from 'aws-cdk-lib/core';
 
 export class SqsStackBuilder extends BaseApplicationStackBuilder {
   constructor(

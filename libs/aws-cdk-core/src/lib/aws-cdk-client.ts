@@ -11,7 +11,7 @@ import { getParameterString } from './utils';
 
 // cp -Force ./apps/domain/accounting-domain/heartbeat/src/environments/environment.staging.ts ./apps/domain/accounting-domain/heartbeat/src/environments/environment.ts &&
 
-// yarn cdk --profile=dev_console --region=ap-southeast-1 --o=dist/apps/domain/accounting-domain/heartbeat/heartbeat.out --app 'npx ts-node --project=apps/domain/accounting-domain/heartbeat/tsconfig.app.json apps/domain/accounting-domain/heartbeat/src/main.ts' deploy HeartbeatService-staging --context @aws-cdk/core:newStyleStackSynthesis=true --context assume-role-credentials:readIamRoleName=OrganizationDevOpsAccessRole --context assume-role-credentials:writeIamRoleName=OrganizationDevOpsAccessRole --plugin cdk-assume-role-credential-plugin
+// yarn cdk --profile=dev_console --region=ap-southeast-1 --o=dist/apps/domain/accounting-domain/heartbeat/heartbeat.out --app 'npx ts-node --project=apps/domain/accounting-domain/heartbeat/tsconfig.app.json apps/domain/accounting-domain/heartbeat/src/main.ts' deploy HeartbeatService-staging --context aws-cdk-lib/core:newStyleStackSynthesis=true --context assume-role-credentials:readIamRoleName=OrganizationDevOpsAccessRole --context assume-role-credentials:writeIamRoleName=OrganizationDevOpsAccessRole --plugin cdk-assume-role-credential-plugin
 
 export class AwsCdkClient {
   constructor(private cliCommand: LoadedCLI, public cwd?: string) {}

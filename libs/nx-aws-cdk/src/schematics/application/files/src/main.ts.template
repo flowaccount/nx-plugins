@@ -1,7 +1,7 @@
 // import { PreFirehoseStack, FireHoseStack, DbFirehoseStack } from './app';
 import { environment } from './environments/environment';
 import { logger } from '@nx/devkit';
-import { App } from '@aws-cdk/core';
+import { App } from 'aws-cdk-lib/core';
 import { AuroraServerlessDbStack, ElasticsearchStack, ManagedPolicyStack, RoleStack, ServerlessApplicationStack, SQSStack, TypescriptLambdaStack, VpcStack } from '@flowaccount/aws-cdk-stack';
 
 logger.info("🐺")

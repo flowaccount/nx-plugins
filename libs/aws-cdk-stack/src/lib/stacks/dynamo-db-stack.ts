@@ -1,5 +1,6 @@
-import { Table } from '@aws-cdk/aws-dynamodb';
-import { Stack, Construct, CfnOutput } from '@aws-cdk/core';
+import { Table } from 'aws-cdk-lib/aws-dynamodb';
+import { Stack,  CfnOutput } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import { DynamoDbEnvironmentProps } from '../types';
 
 export class DynamoDbStack extends Stack {

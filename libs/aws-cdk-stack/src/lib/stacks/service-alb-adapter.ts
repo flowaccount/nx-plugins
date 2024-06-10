@@ -1,19 +1,11 @@
-import { Construct, Duration, Stack, StackProps } from '@aws-cdk/core';
+import { Stack, StackProps } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import {
-  ApplicationListenerRule,
-  ApplicationTargetGroup,
   IApplicationLoadBalancer,
-  IApplicationTargetGroup,
-  INetworkTargetGroup,
   ITargetGroup,
-  ListenerCondition,
-  NetworkTargetGroup,
-} from '@aws-cdk/aws-elasticloadbalancingv2';
-import { logger } from '@nx/devkit';
-import { CnameRecord, HostedZone } from '@aws-cdk/aws-route53';
-import { Ec2Service } from '@aws-cdk/aws-ecs';
+} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { ApplicationTargetGroupConfiguration, ECSServiceModel } from '../types';
-import { IVpc } from '@aws-cdk/aws-ec2';
+import { IVpc } from 'aws-cdk-lib/aws-ec2';
 
 export interface ServiceALBAdapterProperties extends StackProps {
   alb: IApplicationLoadBalancer;

@@ -1,41 +1,13 @@
 import 'reflect-metadata';
-import { IRole, ManagedPolicy } from '@aws-cdk/aws-iam';
-import { App, Construct, Duration, Stack } from '@aws-cdk/core';
-import { logger } from '@nx/devkit';
-import { inject, injectable, registry } from 'tsyringe';
-import { ECSAutoScalingGroup } from './ecs-autoscaling-group';
-import { ECSCluster } from './ecs-cluster';
-import { ECSService } from './ecs-service';
-import { ManagedPolicyStack } from './managed-policy-stack';
-import { RoleStack } from './role-stack';
+import { App } from 'aws-cdk-lib/core';
 import { VpcStack } from './vpc';
 import {
   ApplicationTargetGroupConfiguration,
   IECSStackEnvironmentConfig,
 } from '../types';
-import {
-  ApplicationListenerRule,
-  ApplicationLoadBalancer,
-  ApplicationTargetGroup,
-  IApplicationLoadBalancer,
-  IApplicationTargetGroup,
-  INetworkTargetGroup,
-  ITargetGroup,
-  ListenerAction,
-  ListenerCondition,
-  NetworkTargetGroup,
-} from '@aws-cdk/aws-elasticloadbalancingv2';
-// import { Subnet, Vpc } from '@aws-cdk/aws-ec2';
-// import { Certificate } from '@aws-cdk/aws-certificatemanager';
-import { CnameRecord, HostedZone, IHostedZone } from '@aws-cdk/aws-route53';
+// import { Subnet, Vpc } from 'aws-cdk-lib/aws-ec2';
+// import { Certificate } from 'aws-cdk-lib/aws-certificatemanager';
 import { ApplicationLoadBalancerStack } from './application-load-balancer';
-import { Subnet } from '@aws-cdk/aws-ec2';
-import { ApplicationTargetGroupStack } from './application-target-group';
-import { Certificate, ICertificate } from '@aws-cdk/aws-certificatemanager';
-import { AsgCapacityProvider, CfnCapacityProvider } from '@aws-cdk/aws-ecs';
-import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
-import { ServiceALBAdapter } from './service-alb-adapter';
-import { config, env } from 'process';
 
 /**
  * This class is used to create an ECS cluster stack by specifying the VPC and Subnets
@@ -44,7 +16,7 @@ import { config, env } from 'process';
  * Please register it like this
  * import { AwsECSCluster } from '@flowaccount/aws-cdk-stack'
  * import { configuration } from './configurations/configuration'
- * import { App } from '@aws-cdk/core'
+ * import { App } from 'aws-cdk-lib/core'
  * const app = new App()
  * const awsEcsCluster = new AwsECSCluster(app, `${configuration.app}-ecs-cluster`, { ...configuration, env: configuration.awsCredentials } )
  *

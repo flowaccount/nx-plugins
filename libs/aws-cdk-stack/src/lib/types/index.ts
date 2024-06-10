@@ -6,20 +6,20 @@ import {
   SubnetAttributes,
   SubnetSelection,
   VpcAttributes,
-} from '@aws-cdk/aws-ec2';
+} from 'aws-cdk-lib/aws-ec2';
 import {
   Conditions,
   IPrincipal,
   IRole,
   PrincipalBase,
   ServicePrincipal,
-} from '@aws-cdk/aws-iam';
-import { Runtime } from '@aws-cdk/aws-lambda';
-import * as lambda from '@aws-cdk/aws-lambda';
-import { IQueue, QueueProps } from '@aws-cdk/aws-sqs';
-import { Duration, NestedStackProps, StackProps } from '@aws-cdk/core';
-import { SqsEventSourceProps } from '@aws-cdk/aws-lambda-event-sources';
-import { EnableScalingProps, TableProps } from '@aws-cdk/aws-dynamodb';
+} from 'aws-cdk-lib/aws-iam';
+import { Runtime } from 'aws-cdk-lib/aws-lambda';
+import * as lambda from 'aws-cdk-lib/aws-lambda';
+import { IQueue, QueueProps } from 'aws-cdk-lib/aws-sqs';
+import { Duration, NestedStackProps, StackProps } from 'aws-cdk-lib/core';
+import { SqsEventSourceProps } from 'aws-cdk-lib/aws-lambda-event-sources';
+import { EnableScalingProps, TableProps } from 'aws-cdk-lib/aws-dynamodb';
 import {
   CloudMapNamespaceOptions,
   ContainerDefinitionOptions,
@@ -31,14 +31,14 @@ import {
   PlacementStrategy,
   PortMapping,
   Volume,
-} from '@aws-cdk/aws-ecs';
+} from 'aws-cdk-lib/aws-ecs';
 import {
   DnsRecordType,
   PrivateDnsNamespaceAttributes,
   RoutingPolicy,
-} from '@aws-cdk/aws-servicediscovery';
-import { ScalingSchedule } from '@aws-cdk/aws-applicationautoscaling';
-import { ApplicationLoadBalancerProps, ApplicationLoadBalancerRedirectConfig, ApplicationTargetGroupProps, IApplicationListener, IApplicationLoadBalancer, IpAddressType, TargetType } from '@aws-cdk/aws-elasticloadbalancingv2';
+} from 'aws-cdk-lib/aws-servicediscovery';
+import { ScalingSchedule } from 'aws-cdk-lib/aws-applicationautoscaling';
+import { ApplicationLoadBalancerProps, ApplicationLoadBalancerRedirectConfig, ApplicationTargetGroupProps, IApplicationListener, IApplicationLoadBalancer, IpAddressType, TargetType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 import { registry } from 'tsyringe';
 
 export interface VpcStackProperties extends StackProps {

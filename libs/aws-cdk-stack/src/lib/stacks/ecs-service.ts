@@ -1,4 +1,5 @@
-import { Stack, StackProps, Construct, Tags, Duration } from '@aws-cdk/core';
+import { Stack, StackProps, Tags } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import {
   Cluster,
   TaskDefinition,
@@ -6,7 +7,6 @@ import {
   NetworkMode,
   Ec2Service,
   ContainerDefinition,
-  ContainerImage,
   LogDrivers,
   AwsLogDriverMode,
   Secret,
@@ -14,26 +14,21 @@ import {
   ScalableTaskCount,
   ContainerDefinitionOptions,
   CfnCapacityProvider,
-} from '@aws-cdk/aws-ecs';
-import { IVpc } from '@aws-cdk/aws-ec2';
-import { IRole } from '@aws-cdk/aws-iam';
+} from 'aws-cdk-lib/aws-ecs';
+import { IVpc } from 'aws-cdk-lib/aws-ec2';
+import { IRole } from 'aws-cdk-lib/aws-iam';
 import { logger } from '@nx/devkit';
 import { ECSModel, ECSServiceModel, TagModel } from '../types';
-import { LogGroup } from '@aws-cdk/aws-logs';
-import { PrivateDnsNamespace, Service } from '@aws-cdk/aws-servicediscovery';
-import * as ssm from '@aws-cdk/aws-secretsmanager';
+import { LogGroup } from 'aws-cdk-lib/aws-logs';
+import { PrivateDnsNamespace, Service } from 'aws-cdk-lib/aws-servicediscovery';
+import * as ssm from 'aws-cdk-lib/aws-secretsmanager';
 import {
-  ApplicationListener,
-  ApplicationListenerRule,
-  ApplicationLoadBalancer,
   ApplicationTargetGroup,
-  IApplicationLoadBalancer,
   IApplicationTargetGroup,
   INetworkTargetGroup,
   ITargetGroup,
-  ListenerCondition,
   NetworkTargetGroup,
-} from '@aws-cdk/aws-elasticloadbalancingv2';
+} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 export interface ECSServiceProps extends StackProps {
   readonly vpc: IVpc;
@@ -114,7 +109,7 @@ export class ECSService extends Stack {
             ssm.Secret.fromSecretAttributes(
               this,
               `${containerOption.hostname}-secret-${k}`,
-              { secretArn: `${s.taskDefinition.secrets[ccount][k]}` }
+              { secretCompleteArn: `${s.taskDefinition.secrets[ccount][k]}` }
             )
           );
         });

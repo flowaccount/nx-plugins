@@ -1,15 +1,10 @@
-import { CfnAutoScalingGroup } from '@aws-cdk/aws-autoscaling';
-import { IVpc } from '@aws-cdk/aws-ec2';
 import {
-  CfnCapacityProvider,
   CfnClusterCapacityProviderAssociations,
-  Cluster,
-} from '@aws-cdk/aws-ecs';
-import { IRole } from '@aws-cdk/aws-iam';
-import { Stack, Construct, StackProps, Tags } from '@aws-cdk/core';
+} from 'aws-cdk-lib/aws-ecs';
+import { Stack,  StackProps, Tags } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import { logger } from '@nx/devkit';
-import { AutoScalingGroupModel, ECSModel, TagModel } from '../types';
-import { ECSAutoScalingGroup } from './ecs-autoscaling-group';
+import { ECSModel, TagModel } from '../types';
 
 interface ECSCapacityProviderProps extends StackProps {
   readonly ecs: ECSModel;

@@ -56,9 +56,9 @@ yarn nx run my-cdk:deploy [--configuration=<stack-suffix>]
 ## ECS environment file example
 
 ```
-import { Peer, Port } from "@aws-cdk/aws-ec2"
-import { PlacementConstraint } from "@aws-cdk/aws-ecs"
-import { ServicePrincipal } from "@aws-cdk/aws-iam"
+import { Peer, Port } from "aws-cdk-lib/aws-ec2"
+import { PlacementConstraint } from "aws-cdk-lib/aws-ecs"
+import { ServicePrincipal } from "aws-cdk-lib/aws-iam"
 import { AppEnvModel } from '@flowaccount/core/cdk'
 
 const _region = `ap-southeast-1`

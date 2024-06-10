@@ -19,7 +19,7 @@ describe('init', () => {
       packageJson.devDependencies['@flowaccount/nx-aws-cdk']
     ).toBeDefined();
     expect(packageJson.devDependencies['aws-cdk']).toBeDefined();
-    expect(packageJson.devDependencies['@aws-cdk/core']).toBeDefined();
+    expect(packageJson.devDependencies['aws-cdk-lib/core']).toBeDefined();
     expect(packageJson.devDependencies['@types/aws-lambda']).toBeDefined();
   });
 
@@ -35,7 +35,7 @@ describe('init', () => {
       packageJson.devDependencies['@flowaccount/nx-aws-cdk']
     ).toBeDefined();
     expect(packageJson.devDependencies['aws-cdk']).toBeDefined();
-    expect(packageJson.devDependencies['@aws-cdk/core']).toBeDefined();
+    expect(packageJson.devDependencies['aws-cdk-lib/core']).toBeDefined();
     expect(
       packageJson.devDependencies['serverless-apigw-binary']
     ).toBeDefined();
@@ -58,7 +58,7 @@ describe('init', () => {
       packageJson.devDependencies['@flowaccount/nx-aws-cdk']
     ).toBeDefined();
     expect(packageJson.devDependencies['aws-cdk']).toBeDefined();
-    expect(packageJson.devDependencies['@aws-cdk/core']).toBeDefined();
-    expect(packageJson.devDependencies['@aws-cdk/aws-ec2']).toBeDefined();
+    expect(packageJson.devDependencies['aws-cdk-lib/core']).toBeDefined();
+    expect(packageJson.devDependencies['aws-cdk-lib/aws-ec2']).toBeDefined();
   });
 });
