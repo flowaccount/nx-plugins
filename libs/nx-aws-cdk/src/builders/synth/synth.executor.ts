@@ -16,7 +16,7 @@ import {
   parseTargetString,
   runExecutor,
 } from '@nx/devkit';
-import { ExecutorEvent } from '@nx/node/src/executors/node/node.impl';
+import { WebpackExecutorEvent } from '@nx/webpack/src/executors/webpack/webpack.impl';
 
 export default async function runSynthExecutor(
   options: SynthExecutorSchema,
@@ -25,7 +25,7 @@ export default async function runSynthExecutor(
 ) {
   logger.info(`Building the cdk application`);
   const iterator = await buildTarget(options, context);
-  const buildOutput = <ExecutorEvent>(await iterator.next()).value;
+  const buildOutput = <WebpackExecutorEvent>(await iterator.next()).value;
   if (!buildOutput.success) {
     return {
       success: false,
@@ -75,7 +75,7 @@ async function* startBuild(
   context: ExecutorContext
 ) {
   const buildTarget = parseTargetString(options.buildTarget);
-  yield* await runExecutor<ExecutorEvent>(
+  yield* await runExecutor<WebpackExecutorEvent>(
     buildTarget,
     {
       watch: options.watch,
