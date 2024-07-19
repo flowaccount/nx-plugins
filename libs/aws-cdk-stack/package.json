@@ -2,6 +2,7 @@
   "name": "@flowaccount/aws-cdk-stack",
   "version": "99.99.99",
   "dependencies": {
+    "constructs": "^10.3.0",
     "aws-cdk": "^2.143.1",
     "aws-cdk-lib": "^2.143.1",
     "uuid": "9.0.0",
