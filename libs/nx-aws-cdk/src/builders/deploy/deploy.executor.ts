@@ -46,7 +46,7 @@ export default async function runSynthExecutor(
   const cdkOption = getCdkOptions(cdkOptionFlag);
 
   // argument
-  const argsss = parseArgs();
+  const argsss = options
   if (argsss) {
     process.env.serviceName = argsss['serviceName'];
     process.env.targetGroupArn = argsss['targetGroupArn'];
