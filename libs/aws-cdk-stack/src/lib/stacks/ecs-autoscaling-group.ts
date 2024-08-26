@@ -9,13 +9,13 @@ import {
   AmazonLinuxImage
 } from 'aws-cdk-lib/aws-ec2';
 import { CfnInstanceProfile, IRole } from 'aws-cdk-lib/aws-iam';
-import { CfnCapacityProvider, Cluster, EcsOptimizedImage, WindowsOptimizedVersion } from 'aws-cdk-lib/aws-ecs';
+import { CfnCapacityProvider, Cluster, EcsOptimizedImage, ICluster, WindowsOptimizedVersion } from 'aws-cdk-lib/aws-ecs';
 import { CfnAutoScalingGroup } from 'aws-cdk-lib/aws-autoscaling';
 import { ECSModel, S3MountConfig, TagModel, AutoScalingGroupModel } from '../types';
 
 interface ECSAutoScalingGroupProps extends StackProps {
   readonly vpc: IVpc;
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
   readonly ecsModel: ECSModel;
   readonly asgModel: AutoScalingGroupModel;
   readonly taglist: TagModel[];
@@ -128,7 +128,6 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
           subnetType: SubnetType.PRIVATE_WITH_EGRESS,
         }).subnetIds,
       });
-      console.log('--------------------------------', asgGroup)
       asgGroup.addPropertyOverride(
         'NewInstancesProtectedFromScaleIn',
         stackProps.asgModel.asg.protectionFromScaleIn
@@ -160,16 +159,13 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
       Tags.of(this).add(tag.key, tag.value);
     });
       // ECS Cluster and Auto Scaling Group
-      console.log(asgGroup.autoScalingGroupName);
       // let protection: string = stackProps.asgModel.asg.protectionFromScaleIn==true? 'ENABLED': 'DISABLED'
       let protection: string;
-      console.log(stackProps.asgModel.asg.protectionFromScaleIn);
       if(stackProps.asgModel.asg.protectionFromScaleIn){
         protection = 'ENABLED'
       } else{
         protection = 'DISABLED'
       }
-      console.log(protection)
     const myCapacityProvider = new CfnCapacityProvider(this, `${asgGroup.autoScalingGroupName}`, {
       autoScalingGroupProvider: {
         autoScalingGroupArn: asgGroup.autoScalingGroupName,

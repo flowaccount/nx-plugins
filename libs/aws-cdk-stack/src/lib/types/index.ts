@@ -399,6 +399,7 @@ export class ECSModel {
   defaultCloudMapNamespace?: CloudMapNamespaceOptions;
   isWindows?: boolean;
   providerList: string[];
+  existingCluster?: boolean;
 }
 
 export class ECSServiceModel {

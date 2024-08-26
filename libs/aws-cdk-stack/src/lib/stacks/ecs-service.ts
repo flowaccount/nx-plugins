@@ -14,6 +14,7 @@ import {
   ScalableTaskCount,
   ContainerDefinitionOptions,
   CfnCapacityProvider,
+  ICluster,
 } from 'aws-cdk-lib/aws-ecs';
 import { IVpc } from 'aws-cdk-lib/aws-ec2';
 import { IRole } from 'aws-cdk-lib/aws-iam';
@@ -32,7 +33,7 @@ import {
 
 export interface ECSServiceProps extends StackProps {
   readonly vpc: IVpc;
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
   readonly executionRole: IRole;
   readonly taskRole: IRole;
   readonly ecs?: ECSModel;

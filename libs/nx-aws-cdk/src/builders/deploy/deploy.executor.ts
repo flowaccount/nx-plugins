@@ -100,7 +100,7 @@ async function* startBuild(
   options: DeployExecutorSchema,
   context: ExecutorContext
 ) {
-  const buildTarget = parseTargetString(options.buildTarget);
+  const buildTarget = parseTargetString(options.buildTarget, context.projectGraph);
   yield* await runExecutor<WebpackExecutorEvent>(
     buildTarget,
     {

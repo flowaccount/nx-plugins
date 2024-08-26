@@ -1,5 +1,5 @@
-import { Workspaces } from '@nrwl/tao/src/shared/workspace';
 
+import { readProjectsConfigurationFromProjectGraph, Workspaces } from '@nx/devkit';
 import { readFileSync, statSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -20,5 +20,6 @@ export function writeJson(path: string, object: any) {
 }
 
 export function readWorkspaceJson() {
+  //readProjectsConfigurationFromProjectGraph 
   return new Workspaces(join(__dirname, '../../')).readWorkspaceConfiguration();
 }
