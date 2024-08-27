@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { IRole, ManagedPolicy } from 'aws-cdk-lib/aws-iam';
+import { IRole, ManagedPolicy, Role } from 'aws-cdk-lib/aws-iam';
 import { App } from 'aws-cdk-lib/core';
 import { logger } from '@nx/devkit';
 import { ECSAutoScalingGroup } from './ecs-autoscaling-group';
@@ -119,8 +119,10 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     {
       name: configuration.ecs.taskRole.name,
       assumedBy: configuration.ecs.taskRole.assumedBy,
+      existingRole : configuration.ecs.existingCluster ?? false
     }
   ).output.role;
+  
   _taskPolicy = new ManagedPolicyStack(
     _app,
     `${configuration.ecs.taskRolePolicy.name}`,

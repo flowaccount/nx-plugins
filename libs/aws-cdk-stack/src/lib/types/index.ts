@@ -105,6 +105,7 @@ export interface InlineRoleStackProperties extends StackProps {
 export interface RoleStackProperties extends StackProps {
   name: string;
   assumedBy: PrincipalBase[];
+  existingRole? : boolean;
   // policies: Policy[]
 }
 

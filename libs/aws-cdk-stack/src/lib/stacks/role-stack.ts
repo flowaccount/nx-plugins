@@ -9,12 +9,16 @@ export class RoleStack extends Stack {
   constructor(scope: Construct, id: string, _props: RoleStackProperties) {
     super(scope, id, _props);
 
-    logger.debug(`creating role -- ${_props.name}`);
-    const role = new Role(this, `${_props.name}`, {
-      roleName: _props.name,
-      assumedBy: new CompositePrincipal(..._props.assumedBy),
-    });
-
-    this.output = { role: role };
+    if (_props.existingRole) {
+      const role = Role.fromRoleName(this, `${_props.name}`, _props.name,  { })
+      this.output = { role: role };
+    } else {
+      logger.debug(`creating role -- ${_props.name}`);
+      const role = new Role(this, `${_props.name}`, {
+        roleName: _props.name,
+        assumedBy: new CompositePrincipal(..._props.assumedBy),
+      });
+      this.output = { role: role };
+    }
   }
 }
