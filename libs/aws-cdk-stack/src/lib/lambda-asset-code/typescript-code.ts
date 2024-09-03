@@ -70,6 +70,7 @@ export class TypeScriptAssetCode extends AssetCode {
       copySourceToBePackaged(path, distPath);
       destPath = distPath;
     }
+    destPath = destPath.trim();
     super(pathModule.join(destPath, '.deploy'));
     this.originalSourcePath = path;
     // Remember the original source folder
