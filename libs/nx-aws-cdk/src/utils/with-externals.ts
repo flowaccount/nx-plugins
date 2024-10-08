@@ -7,14 +7,14 @@ export function withExternals(externals: RegExp[]): NxComposableWebpackPlugin {
     config.externals = Array.isArray(config.externals)
       ? config.externals
       : config.externals
-        ? [config.externals]
-        : [];
+      ? [config.externals]
+      : [];
     config.externals.push(function (
       ctx,
       callback: (
         err?: null | Error,
-        result?: string | boolean | string[] | { [index: string]: any },
-      ) => void,
+        result?: string | boolean | string[] | { [index: string]: any }
+      ) => void
     ) {
       if (externals.some((e) => e.test(ctx.request))) {
         // not bundled
@@ -27,3 +27,4 @@ export function withExternals(externals: RegExp[]): NxComposableWebpackPlugin {
     return config;
   };
 }
+

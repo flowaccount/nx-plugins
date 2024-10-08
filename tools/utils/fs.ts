@@ -1,5 +1,7 @@
-
-import { readProjectsConfigurationFromProjectGraph, Workspaces } from '@nx/devkit';
+import {
+  readProjectsConfigurationFromProjectGraph,
+  Workspaces,
+} from '@nx/devkit';
 import { readFileSync, statSync, writeFileSync } from 'fs';
 import { join } from 'path';
 
@@ -7,7 +9,9 @@ export function existsSync(path: string) {
   let results;
   try {
     results = statSync(path);
-  } catch {}
+  } catch {
+    /* empty */
+  }
   return !!results;
 }
 
@@ -20,6 +24,6 @@ export function writeJson(path: string, object: any) {
 }
 
 export function readWorkspaceJson() {
-  //readProjectsConfigurationFromProjectGraph 
+  //readProjectsConfigurationFromProjectGraph
   return new Workspaces(join(__dirname, '../../')).readWorkspaceConfiguration();
 }

@@ -10,7 +10,6 @@ import { ManagedPolicyStack } from './managed-policy-stack';
 import { RoleStack } from './role-stack';
 import { VpcStack } from './vpc';
 import { IECSStackEnvironmentConfig } from '../types';
-import { Construct } from 'constructs';
 
 /**
  * This class is used to create an ECS cluster stack by specifying the VPC and Subnets

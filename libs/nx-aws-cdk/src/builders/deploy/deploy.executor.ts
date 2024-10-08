@@ -7,7 +7,7 @@ import {
 } from '@flowaccount/aws-cdk-core';
 import { resolve } from 'path';
 import { DeployExecutorSchema } from './schema';
-import { getCdkOptions, getSynthOptions } from '@flowaccount/aws-cdk-core';
+import { getCdkOptions } from '@flowaccount/aws-cdk-core';
 import {
   ExecutorContext,
   logger,
@@ -15,7 +15,6 @@ import {
   runExecutor,
 } from '@nx/devkit';
 import { WebpackExecutorEvent } from '@nx/webpack/src/executors/webpack/webpack.impl';
-
 
 export default async function runSynthExecutor(
   options: DeployExecutorSchema,
@@ -46,7 +45,7 @@ export default async function runSynthExecutor(
   const cdkOption = getCdkOptions(cdkOptionFlag);
 
   // argument
-  const argsss = options
+  const argsss = options;
   if (argsss) {
     process.env.serviceName = argsss['serviceName'];
     process.env.targetGroupArn = argsss['targetGroupArn'];
@@ -100,7 +99,10 @@ async function* startBuild(
   options: DeployExecutorSchema,
   context: ExecutorContext
 ) {
-  const buildTarget = parseTargetString(options.buildTarget, context.projectGraph);
+  const buildTarget = parseTargetString(
+    options.buildTarget,
+    context.projectGraph
+  );
   yield* await runExecutor<WebpackExecutorEvent>(
     buildTarget,
     {
