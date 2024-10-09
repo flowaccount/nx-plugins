@@ -7,7 +7,7 @@ import * as child_process from 'child_process';
 import * as fs from 'fs';
 import * as mkdirp from 'mkdirp';
 import { logger } from '@nx/devkit';
-import { copy, ensureFileSync } from 'fs-extra';
+import { ensureFileSync } from 'fs-extra';
 
 const typeScriptAlreadyBuilt: string[] = []; // list of source code paths already built in this session
 
@@ -70,6 +70,7 @@ export class TypeScriptAssetCode extends AssetCode {
       copySourceToBePackaged(path, distPath);
       destPath = distPath;
     }
+    destPath = destPath.trim();
     super(pathModule.join(destPath, '.deploy'));
     this.originalSourcePath = path;
     // Remember the original source folder
@@ -92,9 +93,16 @@ export class TypeScriptAssetCode extends AssetCode {
     logger.info(
       `Building typescript application from source path:${this.typeScriptSourcePath}`
     );
+
+    // Check typeScriptSourcePath is directory
+    if (!this.isDirectoryPath(this.typeScriptSourcePath)) {
+      throw new Error('Source path is invalid: ' + this.typeScriptSourcePath);
+    }
+
     if (typeScriptAlreadyBuilt.includes(this.typeScriptSourcePath)) {
       return;
     }
+
     typeScriptAlreadyBuilt.push(this.typeScriptSourcePath);
 
     // Ensure the deploy path exists
@@ -200,7 +208,15 @@ export class TypeScriptAssetCode extends AssetCode {
       }
     }
   }
+
+  private isDirectoryPath(filePath: string): boolean {
+    return (
+      pathModule.extname(filePath) === '' &&
+      pathModule.basename(filePath) !== ''
+    );
+  }
 }
-function copySync(srcPath: string, outputPath: string) {
-  throw new Error('Function not implemented.');
-}
+
+// function copySync(srcPath: string, outputPath: string) {
+//   throw new Error('Function not implemented.');
+// }
