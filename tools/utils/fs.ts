@@ -1,13 +1,17 @@
-import { Workspaces } from '@nrwl/tao/src/shared/workspace';
-
+import {
+  readProjectsConfigurationFromProjectGraph,
+  createProjectGraphAsync,
+  ProjectsConfigurations,
+} from '@nx/devkit';
 import { readFileSync, statSync, writeFileSync } from 'fs';
-import { join } from 'path';
 
 export function existsSync(path: string) {
   let results;
   try {
     results = statSync(path);
-  } catch {}
+  } catch {
+    /* empty */
+  }
   return !!results;
 }
 
@@ -19,6 +23,10 @@ export function writeJson(path: string, object: any) {
   return writeFileSync(path, JSON.stringify(object, null, 2));
 }
 
-export function readWorkspaceJson() {
-  return new Workspaces(join(__dirname, '../../')).readWorkspaceConfiguration();
+export async function readWorkspaceJson(): Promise<ProjectsConfigurations> {
+  // return new Workspaces(join(__dirname, '../../')).readWorkspaceConfiguration();
+  const projectGraph = await createProjectGraphAsync();
+  const projectsConfig =
+    readProjectsConfigurationFromProjectGraph(projectGraph);
+  return projectsConfig;
 }

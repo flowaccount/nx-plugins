@@ -7,13 +7,7 @@ import {
   SubnetSelection,
   VpcAttributes,
 } from 'aws-cdk-lib/aws-ec2';
-import {
-  Conditions,
-  IPrincipal,
-  IRole,
-  PrincipalBase,
-  ServicePrincipal,
-} from 'aws-cdk-lib/aws-iam';
+import { Conditions, IRole, PrincipalBase } from 'aws-cdk-lib/aws-iam';
 import { Runtime } from 'aws-cdk-lib/aws-lambda';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
 import { IQueue, QueueProps } from 'aws-cdk-lib/aws-sqs';
@@ -29,7 +23,6 @@ import {
   NetworkMode,
   PlacementConstraint,
   PlacementStrategy,
-  PortMapping,
   Volume,
 } from 'aws-cdk-lib/aws-ecs';
 import {
@@ -38,8 +31,13 @@ import {
   RoutingPolicy,
 } from 'aws-cdk-lib/aws-servicediscovery';
 import { ScalingSchedule } from 'aws-cdk-lib/aws-applicationautoscaling';
-import { ApplicationLoadBalancerProps, ApplicationLoadBalancerRedirectConfig, ApplicationTargetGroupProps, IApplicationListener, IApplicationLoadBalancer, IpAddressType, TargetType } from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { registry } from 'tsyringe';
+import {
+  ApplicationLoadBalancerRedirectConfig,
+  ApplicationTargetGroupProps,
+  IApplicationListener,
+  IpAddressType,
+  TargetType,
+} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
 
 export interface VpcStackProperties extends StackProps {
   vpcAttributes: VpcAttributes;
@@ -52,35 +50,33 @@ export interface ALBLoadBalancerProperties {
   internetFacing: boolean;
   publicSubnet1: string;
   publicSubnet2: string;
-};
+}
 export interface ALBStackConfiguration {
-  applicationLoadbalancerProperties:  ALBLoadBalancerProperties;
+  applicationLoadbalancerProperties: ALBLoadBalancerProperties;
   certificateArns: string[];
-  redirectConfigs: ApplicationLoadBalancerRedirectConfig[]
+  redirectConfigs: ApplicationLoadBalancerRedirectConfig[];
 }
 export interface ALBStackProperties extends StackProps {
   applicationLoadbalancerProps: ALBLoadBalancerProperties;
   certificateArns: string[];
-  redirectConfigs: ApplicationLoadBalancerRedirectConfig[],
-  targetGroups: ApplicationTargetGroupConfiguration[],
-  vpc: IVpc
+  redirectConfigs: ApplicationLoadBalancerRedirectConfig[];
+  targetGroups: ApplicationTargetGroupConfiguration[];
+  vpc: IVpc;
 }
 export interface ApplicationTargetGroupConfiguration {
-    targetGroupName: string;
-    targetType: TargetType,
-    port: number,
-    healthCheck: {
-      path: string
-    }
-    apiDomain: string
+  targetGroupName: string;
+  targetType: TargetType;
+  port: number;
+  healthCheck: {
+    path: string;
+  };
+  apiDomain: string;
 }
 export interface ApplicationTargetGroupStackProperties extends StackProps {
   applicationtargetGroupProps: ApplicationTargetGroupProps;
-  albListener: IApplicationListener,
+  albListener: IApplicationListener;
   apiDomain: string;
 }
-
-
 
 interface PolicyStatementStackProperties {
   actions: string[];
@@ -105,6 +101,7 @@ export interface InlineRoleStackProperties extends StackProps {
 export interface RoleStackProperties extends StackProps {
   name: string;
   assumedBy: PrincipalBase[];
+  existingRole?: boolean;
   // policies: Policy[]
 }
 
@@ -338,7 +335,7 @@ export interface IECSStackEnvironmentConfig extends StackProps {
 }
 
 export abstract class ECSStackEnvironmentConfig {
-  static readonly token = Symbol("IECSStackEnvironmentConfig");
+  static readonly token = Symbol('IECSStackEnvironmentConfig');
 }
 
 export class RoleModel {
@@ -352,8 +349,8 @@ export class AutoScalingGroupModel {
     instanceType: string;
     keyName: string;
     version: number | string;
-    volumeType: string
-    volumeSize: number
+    volumeType: string;
+    volumeSize: number;
   };
   asg: {
     name: string;
@@ -399,6 +396,7 @@ export class ECSModel {
   defaultCloudMapNamespace?: CloudMapNamespaceOptions;
   isWindows?: boolean;
   providerList: string[];
+  existingCluster?: boolean;
 }
 
 export class ECSServiceModel {
