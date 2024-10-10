@@ -12,7 +12,7 @@ executors:
       # set node max space
       NODE_OPTIONS: '--max_old_space_size=4096'
     docker:
-      - image: circleci/node:12-browsers
+      - image: circleci/node:17-browsers
 commands:
   yarn_install:
     description: 'Install Dependencies'
@@ -20,11 +20,11 @@ commands:
       - run: yarn install --non-interactive #--frozen-lockfile
       - run: ./node_modules/.bin/cypress verify
       - save_cache:
-          key: flowaccount-nx-plugins-node12-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
+          key: flowaccount-nx-plugins-node17-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
       - save_cache:
-          key: flowaccount-nx-plugins-node12-cypress-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
+          key: flowaccount-nx-plugins-node17-cypress-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/Cypress
   restore_cypress_cache:
@@ -32,17 +32,17 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - flowaccount-nx-plugins-node12-cypress-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
+            - flowaccount-nx-plugins-node17-cypress-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
-            - flowaccount-nx-plugins-node12-cypress-
+            - flowaccount-nx-plugins-node17-cypress-
   restore_yarn_cache:
     description: 'Restore Cached Dependencies'
     steps:
       - restore_cache:
           keys:
-            - flowaccount-nx-plugins-node12-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
+            - flowaccount-nx-plugins-node17-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
-            - flowaccount-nx-plugins-node12-yarn-
+            - flowaccount-nx-plugins-node17-yarn-
   setup:
     description: 'Setup Executor'
     steps:
