@@ -1,4 +1,4 @@
-import { ChildProcess, execSync, fork, spawn } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import * as treeKill from 'tree-kill';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { ExecutorContext, logger } from '@nx/devkit';
@@ -10,39 +10,25 @@ import {
   SimpleBuildEvent,
 } from '../../utils/types';
 import { getSlsCommand } from '../../utils/packagers';
-import * as fs from 'fs';
 import * as path from 'node:path';
 import * as chalk from 'chalk';
 import { getProjectRoot } from '../../utils/normalize';
 import { NX_SERVERLESS_BUILD_TARGET_KEY } from '../../nrwl/nx-facade';
-
-
-
-interface ActiveTask {
-  id: string;
-  killed: boolean;
-  promise: Promise<void>;
-  childProcess: null | ChildProcess;
-  start: () => Promise<void>;
-  stop: (signal: NodeJS.Signals) => Promise<void>;
-}
+import * as dotfile from 'dotenv';
 
 try {
-  require('dotenv').config();
-} catch (e) {}
+  dotfile.config();
+} catch (e) {
+  /* empty */
+}
 
 let subProcess: ChildProcess = null;
-
-let additionalExitHandler: null | (() => void) = null;
-let currentTask: ActiveTask = null;
-const tasks: ActiveTask[] = [];
 
 export async function* offlineExecutor(
   options: ServerlessExecutorOptions,
   context: ExecutorContext
 ) {
-
-  const info = chalk.bold.green('info')
+  const info = chalk.bold.green('info');
   process.on('SIGTERM', () => {
     subProcess?.kill();
     process.exit(128 + 15);
@@ -75,20 +61,22 @@ export async function* offlineExecutor(
       logger.error('There was an error with the build. See above.');
       logger.info(`${event.outfile} was not restarted.`);
     }
-    logger.info(`${info} finished building, kill old and starting offline process.`);
+    logger.info(
+      `${info} finished building, kill old and starting offline process.`
+    );
     await handleBuildEvent(event, options, context);
     yield event;
   }
 
-  await handleBuildEvent({ success: true}, options, context);
-  yield ({ success: true});
+  await handleBuildEvent({ success: true }, options, context);
+  yield { success: true };
 
   return new Promise<{ success: boolean }>(() => {
-    success: true;
+    true;
   });
 }
 async function handleBuildEvent(
-  event: { success: boolean},
+  event: { success: boolean },
   options: ServerlessExecutorOptions,
   context: ExecutorContext
 ) {
@@ -104,7 +92,6 @@ function runProcess(
   options: ServerlessExecutorOptions,
   context: ExecutorContext
 ) {
-
   if (subProcess || !event.success) {
     return;
   }
@@ -112,9 +99,9 @@ function runProcess(
   const projectRoot = getProjectRoot(context);
 
   dotEnvJson({
-    path: `${projectRoot}/${options.processEnvironmentFile ?? 'env.json'}`
+    path: `${projectRoot}/${options.processEnvironmentFile ?? 'env.json'}`,
   });
-  
+
   const slsCommand = getSlsCommand();
   let stringifiedArgs = `offline --stage ${options.stage}`;
   const args: string[] = [];
@@ -124,45 +111,49 @@ function runProcess(
   // const configPath = path.parse(options.config)
   // fs.copyFileSync(options.config, path.join(options.location, configPath.base))
 
-  if(options.verbose) {
+  if (options.verbose) {
     stringifiedArgs += ' --verbose';
     args.push('--verbose');
   }
   const fullCommand = `${slsCommand} ${stringifiedArgs}`.trim();
   console.log(`Executing Command: ${fullCommand} in cwd: ${projectRoot} `); //${options.package}
-  const npxPath = path.resolve(context.root, 'node_modules/serverless', 'bin', 'serverless.js');
-    subProcess = spawn(
-      'node',
-      [npxPath, ...args], 
-      {stdio: [0, 1, 'pipe', 'ipc'], cwd: projectRoot, 
-      env: {
-        // FORCE_COLOR: 'true',
-        NODE_OPTIONS: '--enable-source-maps',
-        ...process.env,
-        [NX_SERVERLESS_BUILD_TARGET_KEY]: options.buildTarget,
-      }}
-    )
-    
-    const handleStdErr = (data) => {
-      // Don't log out error if task is killed and new one has started.
-      // This could happen if a new build is triggered while new process is starting, since the operation is not atomic.
-      // Log the error in normal mode
-      if (!options.watch || !subProcess.killed) {
-        logger.error(data.toString());
-      }
-    };
+  const npxPath = path.resolve(
+    context.root,
+    'node_modules/serverless',
+    'bin',
+    'serverless.js'
+  );
+  subProcess = spawn('node', [npxPath, ...args], {
+    stdio: [0, 1, 'pipe', 'ipc'],
+    cwd: projectRoot,
+    env: {
+      // FORCE_COLOR: 'true',
+      NODE_OPTIONS: '--enable-source-maps',
+      ...process.env,
+      [NX_SERVERLESS_BUILD_TARGET_KEY]: options.buildTarget,
+    },
+  });
 
-    subProcess.stderr.on('data', handleStdErr);
-    subProcess.once('exit', (code) => {
+  const handleStdErr = (data) => {
+    // Don't log out error if task is killed and new one has started.
+    // This could happen if a new build is triggered while new process is starting, since the operation is not atomic.
+    // Log the error in normal mode
+    if (!options.watch || !subProcess.killed) {
+      logger.error(data.toString());
+    }
+  };
+
+  subProcess.stderr.on('data', handleStdErr);
+  subProcess.once('exit', (code) => {
     subProcess.off('data', handleStdErr);
-      if (options.watch && !subProcess.killed) {
-        logger.info(
-          `NX Process exited with code ${code}, waiting for changes to restart...`
-        );
-      }
-      // if (!options.watch) done();
-      // resolve();
-    });
+    if (options.watch && !subProcess.killed) {
+      logger.info(
+        `NX Process exited with code ${code}, waiting for changes to restart...`
+      );
+    }
+    // if (!options.watch) done();
+    // resolve();
+  });
 }
 
 async function killProcess() {
@@ -208,7 +199,7 @@ function getExecArgv(options: ServerlessExecutorOptions) {
   }
   args.push('offline');
   for (const key in options) {
-    if (options.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(options, key)) {
       if (options[key] !== undefined) {
         args.push(`--${key}=${options[key]}`);
       }
