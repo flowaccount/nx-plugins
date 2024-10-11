@@ -82,14 +82,14 @@ jobs:
       #     command: yarn documentation
       - run:
           name: Run Unit Tests
-          command: yarn affected:test --base=origin/master~1 --runInBand
+          command: yarn affected:test --base=origin/main --exclude=nx-serverless --runInBand
   e2e-nx-plugins:
     executor: default
     steps:
       - setup
       - run:
           name: nx-plugins E2E Tests
-          command: yarn affected:e2e  --base=origin/master~1
+          command: yarn affected:e2e --base=origin/main
           no_output_timeout: 30m
   semantic-release:
     executor: default
@@ -97,7 +97,7 @@ jobs:
       - setup
       - run:
           name: Build
-          command: yarn nx affected --target=build --base=origin/master~1 --parallel --with-deps
+          command: yarn nx affected --target=build --base=origin/main --parallel --with-deps
       - run:
           name: Release
           command: yarn semantic-release
