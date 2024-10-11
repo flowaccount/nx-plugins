@@ -73,7 +73,7 @@ jobs:
       - setup
       - run:
           name: Check Formatting
-          command: yarn format:check --base=origin/master~1
+          command: yarn format:check --uncommitted
       - run:
           name: Check Commit Message Format
           command: yarn checkcommit
