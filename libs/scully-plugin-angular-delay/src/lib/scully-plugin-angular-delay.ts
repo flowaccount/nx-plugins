@@ -1,4 +1,8 @@
-import { registerPlugin, scullyConfig } from 'D:/projects/flowaccount/flowaccount.workspace/node_modules/@scullyio/scully/src/';
+// import {
+//   registerPlugin,
+//   scullyConfig,
+// } from 'D:/projects/flowaccount/flowaccount.workspace/node_modules/@scullyio@scullyio/scully/src/';
+import { registerPlugin, scullyConfig } from '@scullyio/scully';
 import { existsSync, readFileSync, writeFileSync } from 'fs';
 import { join } from 'path';
 import { JSDOM } from 'jsdom';
@@ -23,7 +27,7 @@ export function getDelayAngularPlugin({
   routesBlacklist,
   delayMilliseconds,
   tsConfigPath,
-  distFolder
+  distFolder,
 }: DelayAngularPluginOptions = {}) {
   if (routesBlacklist) {
     RoutesBlacklist = routesBlacklist;
@@ -48,7 +52,7 @@ function escapeRegExp(string): string {
 
 async function delayAngularPlugin(html, routeObj) {
   const blacklistRoute = RoutesBlacklist.find(
-    obj => obj.route === routeObj.route
+    (obj) => obj.route === routeObj.route
   );
   if (blacklistRoute && !blacklistRoute.removeAngular) {
     return Promise.resolve(html);
@@ -70,18 +74,16 @@ async function delayAngularPlugin(html, routeObj) {
   //   readFileSync(tsConfigPath, { encoding: 'utf8' }).toString()
   // );
 
-  const distFolder = (DistFolder) ? DistFolder : scullyConfig.distFolder;
+  const distFolder = DistFolder ? DistFolder : scullyConfig.distFolder;
   // let isEs5Config = false;
   // let statsJsonPath = join(distFolder, 'stats-es2015.json');
   // if (tsConfig.compilerOptions.target === 'es5') {
   //   isEs5Config = true;
-    const statsJsonPath = join(distFolder, 'stats.json');
+  const statsJsonPath = join(distFolder, 'stats.json');
   //}
 
   if (!existsSync(statsJsonPath)) {
-    const noStatsJsonError = `A ${
-      'stats'
-      }.json is required for the 'delayAngular' plugin.
+    const noStatsJsonError = `A ${'stats'}.json is required for the 'delayAngular' plugin.
 Please run 'ng build' with the '--stats-json' flag`;
     console.error(noStatsJsonError);
     throw new Error(noStatsJsonError);
@@ -111,17 +113,15 @@ Please run 'ng build' with the '--stats-json' flag`;
   } else {
     scullyDelayAngularStatsJson = JSON.parse(
       readFileSync(scullyDelayAngularStatsJsonPath, {
-        encoding: 'utf8'
+        encoding: 'utf8',
       }).toString()
     );
   }
-  let assetsList = scullyDelayAngularStatsJson
-    .filter(entry => {
-      return (
-        entry['name'].includes('.js')
-      );
+  const assetsList = scullyDelayAngularStatsJson
+    .filter((entry) => {
+      return entry['name'].includes('.js');
     })
-    .map(entry => entry['name']);
+    .map((entry) => entry['name']);
   // assetsList = [
   //   ...assetsList,
   //   ...assetsList.map(asset => {
@@ -131,11 +131,11 @@ Please run 'ng build' with the '--stats-json' flag`;
   //   })
   // ];
   if (blacklistRoute && blacklistRoute.removeAngular) {
-    assetsList.forEach(entry => {
+    assetsList.forEach((entry) => {
       const regex = new RegExp(
         `<script( charset="?utf-8"?)? src="?${escapeRegExp(
           entry
-        )}"?( type="?module"?)?( nomodule(="")?)?( defer(="")?)?><\/script>`,
+        )}"?( type="?module"?)?( nomodule(="")?)?( defer(="")?)?><\\/script>`,
         'gmi'
       );
       html = html.replace(regex, '');
@@ -166,11 +166,11 @@ Please run 'ng build' with the '--stats-json' flag`;
     const polyFillsJs = [];
     const otherJs = [];
     const scriptsArray = [];
-    assetsList.forEach(entry => {
+    assetsList.forEach((entry) => {
       const regex = new RegExp(
         `<script( charset="?utf-8"?)? src="?${escapeRegExp(
           entry
-        )}"?( type="?module"?)?( nomodule(="")?)?( defer(="")?)?><\/script>`,
+        )}"?( type="?module"?)?( nomodule(="")?)?( defer(="")?)?><\\/script>`,
         'gmi'
       );
       const match = html.match(regex);
@@ -193,7 +193,7 @@ Please run 'ng build' with the '--stats-json' flag`;
         otherJs.push(x);
       }
       if (index === scriptsArray.length - 1) {
-        polyFillsJs.forEach(s => {
+        polyFillsJs.forEach((s) => {
           sorted.splice(1, 0, s);
         });
         sorted = sorted.concat(mainJs);
