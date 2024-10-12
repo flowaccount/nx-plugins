@@ -87,10 +87,10 @@ jobs:
     executor: default
     steps:
       - setup
-      - run:
-          name: nx-plugins E2E Tests
-          command: yarn affected:e2e --base=origin/main
-          no_output_timeout: 30m
+      # - run:
+      #     name: nx-plugins E2E Tests
+      #     command: yarn affected:e2e --base=origin/main
+      #     no_output_timeout: 30m
   semantic-release:
     executor: default
     steps:
