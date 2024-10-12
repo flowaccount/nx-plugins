@@ -119,7 +119,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn checkcommit && yarn format:check"
+      "pre-push": "yarn checkcommit && yarn format:check --base=origin/main"
     }
   }
 }
