@@ -39,7 +39,8 @@
     "publish-local": "copy .npmrc.local .npmrc && run-p \"rimraf tmp\" e2e-registry \"ts-node ./tools/scripts/publish-all 99.99.99 local\"",
     "semantic-release": "semantic-release",
     "ts-node": "ts-node",
-    "rimraf": "rimraf"
+    "rimraf": "rimraf",
+    "branch": "git rev-parse --abbrev-ref HEAD"
   },
   "private": true,
   "dependencies": {
@@ -119,7 +120,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn checkcommit && yarn format:check --base=origin/main"
+      "pre-push": "yarn checkcommit && yarn format:check --base='$(git rev-parse --abbrev-ref HEAD)'"
     }
   }
 }
