@@ -23,5 +23,5 @@ packages:
     proxy: npmjs
 
 # log settings
-logs:
+log:
   - { type: stdout, format: pretty, level: warn }
