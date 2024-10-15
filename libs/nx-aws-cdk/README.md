@@ -71,8 +71,8 @@ export const environment: AppEnvModel = {
     appprefix: _appprefix,
     stage: _stage,
     app: _app,
-    awsCredentials: { 
-        account: "xxxxxxxxxxxx", 
+    awsCredentials: {
+        account: "xxxxxxxxxxxx",
         region: _region
     },
     vpc: {
@@ -179,7 +179,7 @@ export const environment: AppEnvModel = {
     },
     service: [
         {
-            
+
             taskDefinition: {
                 name: `${_app}-${_stage}-taskdef`,
                 containerDefinitionOptions: {
@@ -250,7 +250,20 @@ export const environment: AppEnvModel = {
 ```
 
 ## argument setup
+
 add to libs\nx-aws-cdk\src\builders\deploy\deploy.executor.ts
 
 nx: yarn publish-local
 workspace: yarn upgrade nx-aws-cdk
+
+## Release Notes
+
+#### Version 2.0.4 (2024-10-16)
+
+- Fix create new ECS service with nx18
+- Fix deployment script and update core logic for supporting nx18
+
+#### Version 2.0.3 (2024-09-09)
+
+- Update core function to support Node 20
+- Update package version for reduced vulnerability
