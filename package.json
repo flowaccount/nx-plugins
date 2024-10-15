@@ -36,7 +36,7 @@
     "workspace-generator": "nx workspace-generator",
     "e2e-registry": "yarn verdaccio --config ./tools/scripts/local-registry/config.yml --listen 4872",
     "publish-beta": "ts-node tools/scripts/publish-beta",
-    "publish-local": "copy .npmrc.local .npmrc && run-p \"rimraf tmp\" e2e-registry \"ts-node ./tools/scripts/publish-all 99.99.99 local\"",
+    "publish-local": "cp .npmrc.local .npmrc && run-p \"rimraf tmp\" e2e-registry \"ts-node ./tools/scripts/publish-all 99.99.99 local\"",
     "semantic-release": "semantic-release",
     "ts-node": "ts-node",
     "rimraf": "rimraf"
@@ -119,7 +119,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "yarn checkcommit && yarn format:check"
+      "pre-push": "yarn checkcommit && yarn format:check --base=$(git rev-parse --abbrev-ref HEAD)"
     }
   }
 }

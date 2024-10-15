@@ -14,6 +14,7 @@ import {
   ScalableTaskCount,
   ContainerDefinitionOptions,
   CfnCapacityProvider,
+  ICluster,
 } from 'aws-cdk-lib/aws-ecs';
 import { IVpc } from 'aws-cdk-lib/aws-ec2';
 import { IRole } from 'aws-cdk-lib/aws-iam';
@@ -32,7 +33,7 @@ import {
 
 export interface ECSServiceProps extends StackProps {
   readonly vpc: IVpc;
-  readonly cluster: Cluster;
+  readonly cluster: ICluster;
   readonly executionRole: IRole;
   readonly taskRole: IRole;
   readonly ecs?: ECSModel;
@@ -49,7 +50,6 @@ export class ECSService extends Stack {
   constructor(scope: Construct, id: string, stackProps: ECSServiceProps) {
     super(scope, id, stackProps);
     logger.info('start creating the ecs service');
-    let _taskDefinition: TaskDefinition;
     let _container: ContainerDefinition;
     let _scalableTaskCount: ScalableTaskCount;
     logger.info('fetching cluster from attributes');
@@ -75,15 +75,19 @@ export class ECSService extends Stack {
     );
     const s = stackProps.ecsService;
     logger.info('instantiaing task defenitions');
-    _taskDefinition = new TaskDefinition(this, s.taskDefinition.name, {
-      compatibility: Compatibility.EC2,
-      executionRole: stackProps.executionRole,
-      taskRole: stackProps.taskRole,
-      networkMode: s.networkMode ? s.networkMode : NetworkMode.NAT,
-      cpu: s.taskDefinition.cpu,
-      memoryMiB: s.taskDefinition.memory,
-      volumes: s.taskDefinition.volume,
-    });
+    const _taskDefinition: TaskDefinition = new TaskDefinition(
+      this,
+      s.taskDefinition.name,
+      {
+        compatibility: Compatibility.EC2,
+        executionRole: stackProps.executionRole,
+        taskRole: stackProps.taskRole,
+        networkMode: s.networkMode ? s.networkMode : NetworkMode.NAT,
+        cpu: s.taskDefinition.cpu,
+        memoryMiB: s.taskDefinition.memory,
+        volumes: s.taskDefinition.volume,
+      }
+    );
 
     const containerDefinitionOptions: ContainerDefinitionOptions[] =
       s.taskDefinition.containerDefinitionOptions.constructor.name == 'Array'

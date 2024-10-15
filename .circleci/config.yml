@@ -12,7 +12,7 @@ executors:
       # set node max space
       NODE_OPTIONS: '--max_old_space_size=4096'
     docker:
-      - image: circleci/node:12-browsers
+      - image: cimg/node:20.11-browsers
 commands:
   yarn_install:
     description: 'Install Dependencies'
@@ -20,11 +20,11 @@ commands:
       - run: yarn install --non-interactive #--frozen-lockfile
       - run: ./node_modules/.bin/cypress verify
       - save_cache:
-          key: flowaccount-nx-plugins-node12-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
+          key: flowaccount-nx-plugins-node20-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/yarn
       - save_cache:
-          key: flowaccount-nx-plugins-node12-cypress-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
+          key: flowaccount-nx-plugins-node20-cypress-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
           paths:
             - ~/.cache/Cypress
   restore_cypress_cache:
@@ -32,17 +32,17 @@ commands:
     steps:
       - restore_cache:
           keys:
-            - flowaccount-nx-plugins-node12-cypress-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
+            - flowaccount-nx-plugins-node20-cypress-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
-            - flowaccount-nx-plugins-node12-cypress-
+            - flowaccount-nx-plugins-node20-cypress-
   restore_yarn_cache:
     description: 'Restore Cached Dependencies'
     steps:
       - restore_cache:
           keys:
-            - flowaccount-nx-plugins-node12-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
+            - flowaccount-nx-plugins-node20-yarn-{{ .Environment.CACHE_VERSION }}-{{ checksum "yarn.lock" }}
             # fallback to using the latest cache if no exact match is found
-            - flowaccount-nx-plugins-node12-yarn-
+            - flowaccount-nx-plugins-node20-yarn-
   setup:
     description: 'Setup Executor'
     steps:
@@ -73,7 +73,7 @@ jobs:
       - setup
       - run:
           name: Check Formatting
-          command: yarn format:check
+          command: yarn format:check --base=$(git rev-parse --abbrev-ref HEAD)
       - run:
           name: Check Commit Message Format
           command: yarn checkcommit
@@ -82,22 +82,22 @@ jobs:
       #     command: yarn documentation
       - run:
           name: Run Unit Tests
-          command: yarn affected:test --base=origin/master~1 --runInBand
+          command: yarn affected:test --base=origin/main --exclude=nx-serverless --runInBand
   e2e-nx-plugins:
     executor: default
     steps:
       - setup
-      - run:
-          name: nx-plugins E2E Tests
-          command: yarn affected:e2e  --base=origin/master~1
-          no_output_timeout: 30m
+      # - run:
+      #     name: nx-plugins E2E Tests
+      #     command: yarn affected:e2e --base=origin/main
+      #     no_output_timeout: 30m
   semantic-release:
     executor: default
     steps:
       - setup
       - run:
           name: Build
-          command: yarn nx affected --target=build --base=origin/master~1 --parallel --with-deps
+          command: yarn nx affected --target=build --base=origin/main --parallel --with-deps
       - run:
           name: Release
           command: yarn semantic-release

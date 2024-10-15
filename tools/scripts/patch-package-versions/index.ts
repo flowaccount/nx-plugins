@@ -1,7 +1,5 @@
-import { WorkspaceJsonConfiguration } from '@nx/devkit';
-
+import { ProjectsConfigurations } from '@nx/devkit';
 import { execSync } from 'child_process';
-
 import {
   existsSync,
   readJson,
@@ -10,7 +8,7 @@ import {
 } from '../../utils';
 
 export function PatchPackageVersions(newVersion: string, updateGit = true) {
-  const workspace: WorkspaceJsonConfiguration = readWorkspaceJson();
+  const workspace: ProjectsConfigurations = readWorkspaceJson();
   const rootPkg = readJson('package.json');
 
   rootPkg.version = newVersion;

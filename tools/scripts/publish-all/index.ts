@@ -1,4 +1,4 @@
-import { WorkspaceJsonConfiguration } from '@nx/devkit';
+import { ProjectsConfigurations } from '@nx/devkit';
 
 import { execSync } from 'child_process';
 import { existsSync } from 'fs';
@@ -7,7 +7,8 @@ import { readJson, readWorkspaceJson } from '../../utils';
 import { PatchPackageVersions } from '../patch-package-versions';
 
 export function PublishAll(version: string, tag = 'latest') {
-  const workspace: WorkspaceJsonConfiguration = readWorkspaceJson();
+  // const workspace: WorkspaceJsonConfiguration = readWorkspaceJson();
+  const workspace: ProjectsConfigurations = readWorkspaceJson();
   const rootPkg = readJson('package.json');
 
   PatchPackageVersions(version, false);

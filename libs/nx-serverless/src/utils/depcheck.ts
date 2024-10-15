@@ -1,4 +1,4 @@
-import * as depcheck from 'depcheck';
+import depcheck from 'depcheck';
 import { DependencyResolver } from './types';
 import { getProdModules } from './normalize';
 import { ExecutorContext, logger, readJsonFile } from '@nx/devkit';

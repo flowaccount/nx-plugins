@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { IRole, ManagedPolicy } from 'aws-cdk-lib/aws-iam';
+import { IRole } from 'aws-cdk-lib/aws-iam';
 import { App } from 'aws-cdk-lib/core';
 import { logger } from '@nx/devkit';
 import { ECSAutoScalingGroup } from './ecs-autoscaling-group';
@@ -10,12 +10,6 @@ import { ManagedPolicyStack } from './managed-policy-stack';
 import { RoleStack } from './role-stack';
 import { VpcStack } from './vpc';
 import { IECSStackEnvironmentConfig } from '../types';
-import {
-  ApplicationListenerRule,
-  ApplicationLoadBalancer,
-  ApplicationTargetGroup,
-} from 'aws-cdk-lib/aws-elasticloadbalancingv2';
-import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 
 /**
  * This class is used to create an ECS cluster stack by specifying the VPC and Subnets
@@ -35,26 +29,12 @@ import { IHostedZone } from 'aws-cdk-lib/aws-route53';
 // export class AwsECSCluster { //  extends Stack
 
 export const createStack = (configuration: IECSStackEnvironmentConfig) => {
-  let _app: App = new App();
-  let _applicationLoadbalancer: ApplicationLoadBalancer;
-  let _ta;
-  rgetGroup: ApplicationTargetGroup;
-  let _ecs: ECSCluster;
-  let _cp: ECSCapacityProvider;
+  const _app: App = new App();
+  const _autoScalingGroupList: ECSAutoScalingGroup[] = [];
+  const _services: ECSService[] = [];
 
-  let _instancePolicy: ManagedPolicy;
-  let _taskPolicy: ManagedPolicy;
-  let _taskExecutionRole: IRole;
-  let _instanceRole: IRole;
-  let _taskRole: IRole;
-  let _zone: IHostedZone;
-  let _taskExecutionPolicy: ManagedPolicy;
-  let _vpc: VpcStack;
-  let _tg: ApplicationTargetGroup;
-  let _applicationListenerRule: ApplicationListenerRule;
-  let _autoScalingGroupList: ECSAutoScalingGroup[] = [];
-  let _services: ECSService[] = [];
   logger.info(`Initiating AwsECSCluster for ${configuration.app}`);
+
   if (
     !configuration.applicationLoadBalancer &&
     !configuration.applicationLoadBalancerArn
@@ -63,8 +43,9 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
       'you must specify at least a loadbalancer config or an existing ARN'
     );
   }
+
   // Loadbalancer vpc and route53
-  _vpc = new VpcStack(
+  const _vpc: VpcStack = new VpcStack(
     _app,
     `vpc-${configuration.app}-${configuration.stage}`,
     configuration.vpc
@@ -75,7 +56,8 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
   logger.info(
     `Initiating instance role instance-role-${configuration.app}-${configuration.stage}`
   );
-  _instanceRole = new RoleStack(
+
+  const _instanceRole: IRole = new RoleStack(
     _app,
     `instance-role-${configuration.app}-${configuration.stage}`,
     {
@@ -83,18 +65,15 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
       assumedBy: configuration.ecs.instanceRole.assumedBy,
     }
   ).output.role;
-  _instancePolicy = new ManagedPolicyStack(
-    _app,
-    `${configuration.ecs.instancePolicy.name}`,
-    {
-      ...configuration.ecs.instancePolicy,
-      roles: [_instanceRole],
-    }
-  ).output.policy;
-  // instance role and policy
+
+  // instance policy
+  new ManagedPolicyStack(_app, `${configuration.ecs.instancePolicy.name}`, {
+    ...configuration.ecs.instancePolicy,
+    roles: [_instanceRole],
+  }).output.policy;
 
   // task execution role and policy
-  _taskExecutionRole = new RoleStack(
+  const _taskExecutionRole: IRole = new RoleStack(
     _app,
     `task-execution-role-${configuration.app}-${configuration.stage}`,
     {
@@ -102,7 +81,9 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
       assumedBy: configuration.ecs.taskExecutionRole.assumedBy,
     }
   ).output.role;
-  _taskExecutionPolicy = new ManagedPolicyStack(
+
+  // task execution policy
+  new ManagedPolicyStack(
     _app,
     `${configuration.ecs.taskExecutionRolePolicy.name}`,
     {
@@ -110,29 +91,26 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
       roles: [_taskExecutionRole],
     }
   ).output.policy;
-  // task execution role and policy
 
   // task role and policy
-  _taskRole = new RoleStack(
+  const _taskRole: IRole = new RoleStack(
     _app,
     `task-role-${configuration.app}-${configuration.stage}`,
     {
       name: configuration.ecs.taskRole.name,
       assumedBy: configuration.ecs.taskRole.assumedBy,
+      existingRole: configuration.ecs.existingCluster ?? false,
     }
   ).output.role;
-  _taskPolicy = new ManagedPolicyStack(
-    _app,
-    `${configuration.ecs.taskRolePolicy.name}`,
-    {
-      ...configuration.ecs.taskRolePolicy,
-      roles: [_taskRole],
-    }
-  ).output.policy;
-  // task role and policy
+
+  // task policy
+  new ManagedPolicyStack(_app, `${configuration.ecs.taskRolePolicy.name}`, {
+    ...configuration.ecs.taskRolePolicy,
+    roles: [_taskRole],
+  }).output.policy;
 
   // ECS Cluster and Auto Scaling Group
-  _ecs = new ECSCluster(
+  const _ecs: ECSCluster = new ECSCluster(
     _app,
     `cluster-${configuration.app}-${configuration.stage}`,
     {
@@ -156,14 +134,13 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     });
     _autoScalingGroupList.push(tempasg);
   });
-  _cp = new ECSCapacityProvider(
-    _app,
-    `${configuration.ecs.clusterName}-provider`,
-    {
-      ecs: configuration.ecs,
-      taglist: configuration.tag,
-    }
-  );
+
+  // capacity provider
+  new ECSCapacityProvider(_app, `${configuration.ecs.clusterName}-provider`, {
+    ecs: configuration.ecs,
+    taglist: configuration.tag,
+  });
+
   configuration.service.forEach((apiService, index) => {
     const service = new ECSService(_app, `${apiService.name}`, {
       ecsService: apiService,
@@ -175,7 +152,8 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
       stage: configuration.stage,
       taglist: configuration.tag,
       env: configuration.awsCredentials,
-    }); //
+    });
+
     _services.push(service);
 
     // Call our new stack to tie things up together.
