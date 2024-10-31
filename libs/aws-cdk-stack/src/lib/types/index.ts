@@ -373,7 +373,7 @@ class SecurityGroupsModel {
   name: string;
   inboudRule: SecurityGroupsInboudRuleModel[];
 }
-class PolicyStatementModel {
+export class PolicyStatementModel {
   actions: string[];
   resources: string[];
   conditions?: Conditions;
