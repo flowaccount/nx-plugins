@@ -191,30 +191,27 @@ const createInstancePolicy = (
   instanceRoles?: IRole[],
   stage?: string
 ) => {
-  const defaultPolicy: PolicyStatementModel = {
+  const generalPolicy: PolicyStatementModel = {
     actions: [
       'ec2:DescribeInstances',
       'ec2:DescribeRegions',
       'ec2:DescribeSecurityGroups',
       'ec2:DescribeSubnets',
       'ec2:DescribeVpcs',
-      'elasticloadbalancing:DeregisterInstancesFromLoadBalancer',
-      'elasticloadbalancing:DeregisterTargets',
-      'elasticloadbalancing:RegisterInstancesWithLoadBalancer',
-      'elasticloadbalancing:RegisterTargets',
-      'elasticloadbalancing:DescribeLoadBalancers',
-      'elasticloadbalancing:DescribeTargetGroups',
-      'autoscaling:DescribeAutoScalingGroups',
-      'autoscaling:UpdateAutoScalingGroup',
       'ecs:CreateCluster',
-      'ecs:DeleteCluster',
       'ecs:DeregisterContainerInstance',
-      'ecs:DescribeClusters',
-      'ecs:DescribeContainerInstances',
-      'ecs:ListClusters',
+      'ecs:DiscoverPollEndpoint',
+      'ecs:Poll',
       'ecs:RegisterContainerInstance',
-      'ecs:UpdateContainerInstancesState',
       'ecs:StartTelemetrySession',
+      'ecs:UpdateContainerInstancesState',
+      'ecs:Submit*',
+      'ecs:ListTagsForResource',
+      'logs:CreateLogGroup',
+      'logs:CreateLogStream',
+      'logs:PutLogEvents',
+      'logs:DescribeLogStreams',
+      'secretsmanager:GetSecretValue',
     ],
     resources: ['*'],
   };
@@ -249,7 +246,7 @@ const createInstancePolicy = (
     resources: ['*'],
   };
 
-  const statements: PolicyStatementModel[] = [defaultPolicy, ssmPolicy];
+  const statements: PolicyStatementModel[] = [generalPolicy, ssmPolicy];
   statements.push(...extendedPolicy.statements);
 
   const instancePolicy: PolicyModel = {
