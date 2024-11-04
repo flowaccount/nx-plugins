@@ -184,7 +184,6 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
   });
 };
 
-// NOTE: provate function
 const createInstancePolicy = (
   app: App,
   instancePolicyName: string,
