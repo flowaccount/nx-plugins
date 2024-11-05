@@ -211,7 +211,6 @@ const createInstancePolicy = (
       'logs:CreateLogStream',
       'logs:PutLogEvents',
       'logs:DescribeLogStreams',
-      'secretsmanager:GetSecretValue',
     ],
     resources: ['*'],
   };
