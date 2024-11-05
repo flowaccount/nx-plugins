@@ -219,7 +219,7 @@ const createInstancePolicy = (
       'ssm:DescribeAssociation',
       'ssm:GetDeployablePatchSnapshotForInstance',
       'ssm:GetDocument',
-      'ssm:DescribeDocumentr',
+      'ssm:DescribeDocument',
       'ssm:GetManifest',
       'ssm:GetParameter',
       'ssm:GetParameters',
