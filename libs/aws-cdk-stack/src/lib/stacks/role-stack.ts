@@ -10,16 +10,27 @@ export class RoleStack extends Stack {
   constructor(scope: Construct, id: string, _props: RoleStackProperties) {
     super(scope, id, _props);
 
-    if (_props.existingRole) {
-      const role = Role.fromRoleName(this, `${_props.name}`, _props.name, {});
-      this.output = { role: role };
+    const existingRole: IRole = this.getExistingRole(_props.name);
+    if (_props.existingRole || existingRole) {
+      this.output = { role: existingRole };
     } else {
       logger.debug(`creating role -- ${_props.name}`);
-      const role = new Role(this, `${_props.name}`, {
+      const newRole = new Role(this, `${_props.name}`, {
         roleName: _props.name,
         assumedBy: new CompositePrincipal(..._props.assumedBy),
       });
-      this.output = { role: role };
+      this.output = { role: newRole };
+    }
+  }
+
+  private getExistingRole(roleName: string): IRole {
+    try {
+      const role = Role.fromRoleName(this, roleName, roleName, {});
+      console.log('Instance role exists:', role.roleName);
+      return role;
+    } catch (error) {
+      console.log('Instance role does not exist:', error.message);
+      return null;
     }
   }
 }

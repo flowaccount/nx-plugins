@@ -248,15 +248,11 @@ const createInstancePolicy = (
   const statements: PolicyStatementModel[] = [generalPolicy, ssmPolicy];
   statements.push(...extendedPolicy.statements);
 
-  const instancePolicy: PolicyModel = {
+  const instancePolicyProps: PolicyStackProperties = {
     statements: statements,
     name: extendedPolicy.name
       ? extendedPolicy.name
       : `default-${stage}-cluster-policy`,
-  };
-
-  const instancePolicyProps: PolicyStackProperties = {
-    ...instancePolicy,
     roles: instanceRoles,
   };
 
