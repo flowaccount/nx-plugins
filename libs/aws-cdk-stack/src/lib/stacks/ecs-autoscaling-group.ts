@@ -133,6 +133,8 @@ export class ECSAutoScalingGroup extends Stack {
                 volumeType: stackProps.asgModel.launchTemplate.volumeType,
                 volumeSize: stackProps.asgModel.launchTemplate.volumeSize,
                 deleteOnTermination: true,
+                encrypted: stackProps.asgModel.launchTemplate.encrypted,
+                kmsKeyId: stackProps.asgModel.launchTemplate.kmsKeyId,
               },
               deviceName: '/dev/xvda',
             },

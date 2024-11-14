@@ -351,6 +351,8 @@ export class AutoScalingGroupModel {
     version: number | string;
     volumeType: string;
     volumeSize: number;
+    encrypted?: boolean;
+    kmsKeyId?: string;
   };
   asg: {
     name: string;
