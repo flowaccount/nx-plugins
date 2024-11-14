@@ -42,49 +42,51 @@ export class ECSAutoScalingGroup extends Stack {
   ) {
     super(scope, id, stackProps);
     let _userData = `
-#!/bin/bash
-echo "Creating ECS Configuration File"
-mkdir /etc/ecs || echo "ECS Directory Already Exists"
-cat << EOF >> /etc/ecs/ecs.config
-ECS_CLUSTER=${stackProps.cluster.clusterName}
-ECS_ENABLE_CONTAINER_METADATA=true
-EOF
+                    #!/bin/bash
+                    echo "Creating ECS Configuration File"
+                    mkdir /etc/ecs || echo "ECS Directory Already Exists"
+                    cat << EOF >> /etc/ecs/ecs.config
+                    ECS_CLUSTER=${stackProps.cluster.clusterName}
+                    ECS_ENABLE_CONTAINER_METADATA=true
+                    EOF
 
-amazon-linux-extras disable docker && amazon-linux-extras install -y ecs && systemctl enable --now --no-block ecs
-docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
-        `;
+                    amazon-linux-extras disable docker && amazon-linux-extras install -y ecs && systemctl enable --now --no-block ecs
+                    docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
+                    `;
+
     if (stackProps.s3MountConfig) {
       _userData = `
-#!/bin/bash
-echo "Creating ECS Configuration File"
-mkdir /etc/ecs || echo "ECS Directory Already Exists"
-cat << EOF >> /etc/ecs/ecs.config
-ECS_CLUSTER=${stackProps.cluster.clusterName}
-ECS_ENABLE_CONTAINER_METADATA=true
-EOF
+                  #!/bin/bash
+                  echo "Creating ECS Configuration File"
+                  mkdir /etc/ecs || echo "ECS Directory Already Exists"
+                  cat << EOF >> /etc/ecs/ecs.config
+                  ECS_CLUSTER=${stackProps.cluster.clusterName}
+                  ECS_ENABLE_CONTAINER_METADATA=true
+                  EOF
 
-amazon-linux-extras disable docker && amazon-linux-extras install -y ecs && systemctl enable --now --no-block ecs
-docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
-sudo yum update -y
-sudo yum -y install python-pip
-sudo pip install s3cmd
-mkdir ${stackProps.s3MountConfig.localPath}
-sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}
-{ sudo crontab -l; sudo echo "* * * * * sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}"; } | sudo crontab -
-          `;
+                  amazon-linux-extras disable docker && amazon-linux-extras install -y ecs && systemctl enable --now --no-block ecs
+                  docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
+                  sudo yum update -y
+                  sudo yum -y install python-pip
+                  sudo pip install s3cmd
+                  mkdir ${stackProps.s3MountConfig.localPath}
+                  sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}
+                  { sudo crontab -l; sudo echo "* * * * * sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3MountConfig.localPath}"; } | sudo crontab -
+                  `;
     }
 
     if (stackProps.ecsModel.isWindows) {
       _userData = `
-        <powershell>
-        [Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", $TRUE, "Machine")
-        [Environment]::SetEnvironmentVariable("ECS_ENABLE_CONTAINER_METADATA", $TRUE, "Machine")
-        [Environment]::SetEnvironmentVariable("ECS_ENABLE_MEMORY_UNBOUNDED_WINDOWS_WORKAROUND", $TRUE, "Machine")
-        Import-Module ECSTools
-        Initialize-ECSAgent -Cluster '${stackProps.cluster.clusterName}' -EnableTaskIAMRole
-        </powershell>
-        `;
+                  <powershell>
+                  [Environment]::SetEnvironmentVariable("ECS_ENABLE_AWSLOGS_EXECUTIONROLE_OVERRIDE", $TRUE, "Machine")
+                  [Environment]::SetEnvironmentVariable("ECS_ENABLE_CONTAINER_METADATA", $TRUE, "Machine")
+                  [Environment]::SetEnvironmentVariable("ECS_ENABLE_MEMORY_UNBOUNDED_WINDOWS_WORKAROUND", $TRUE, "Machine")
+                  Import-Module ECSTools
+                  Initialize-ECSAgent -Cluster '${stackProps.cluster.clusterName}' -EnableTaskIAMRole
+                  </powershell>
+                  `;
     }
+
     const _securityGroup = new SecurityGroup(
       this,
       stackProps.asgModel.asg.instanceSecurityGroup.name,
@@ -94,11 +96,13 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
         securityGroupName: stackProps.asgModel.asg.instanceSecurityGroup.name,
       }
     );
+
     stackProps.asgModel.asg.instanceSecurityGroup.inboudRule.forEach(
       (_rule) => {
         _securityGroup.addIngressRule(_rule.peer, _rule.connection);
       }
     );
+
     const _instanceProfile = new CfnInstanceProfile(
       this,
       stackProps.asgModel.asg.instanceProfileName,
@@ -107,6 +111,7 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
         instanceProfileName: stackProps.asgModel.asg.instanceProfileName,
       }
     );
+
     const _launchTemplate: CfnLaunchTemplate = new CfnLaunchTemplate(
       this,
       stackProps.asgModel.launchTemplate.name,
