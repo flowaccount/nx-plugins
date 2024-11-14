@@ -6,7 +6,6 @@ import {
   CfnLaunchTemplate,
   SecurityGroup,
   SubnetType,
-  AmazonLinuxImage,
 } from 'aws-cdk-lib/aws-ec2';
 import { CfnInstanceProfile, IRole } from 'aws-cdk-lib/aws-iam';
 import {
@@ -176,7 +175,7 @@ export class ECSAutoScalingGroup extends Stack {
         SpotAllocationStrategy: 'capacity-optimized',
       },
     });
-    asgGroup.addDependsOn(_launchTemplate);
+    asgGroup.addDependency(_launchTemplate);
     this._autoScalingGroup = asgGroup;
     // });
 
@@ -185,12 +184,10 @@ export class ECSAutoScalingGroup extends Stack {
     });
     // ECS Cluster and Auto Scaling Group
     // let protection: string = stackProps.asgModel.asg.protectionFromScaleIn==true? 'ENABLED': 'DISABLED'
-    let protection: string;
-    if (stackProps.asgModel.asg.protectionFromScaleIn) {
-      protection = 'ENABLED';
-    } else {
-      protection = 'DISABLED';
-    }
+    const protection: string = stackProps.asgModel.asg.protectionFromScaleIn
+      ? 'ENABLED'
+      : 'DISABLED';
+
     const myCapacityProvider = new CfnCapacityProvider(
       this,
       `${asgGroup.autoScalingGroupName}`,
@@ -206,6 +203,7 @@ export class ECSAutoScalingGroup extends Stack {
         name: `${asgGroup.autoScalingGroupName}`,
       }
     );
-    myCapacityProvider.addDependsOn(asgGroup);
+
+    myCapacityProvider.addDependency(asgGroup);
   }
 }
