@@ -74,7 +74,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
   // instance policy
   createInstancePolicy(
     _app,
-    `${configuration.ecs.instancePolicy.name}`,
+    configuration.ecs.instancePolicy.name,
     configuration.ecs.instancePolicy,
     [_instanceRole],
     configuration.stage
@@ -207,10 +207,6 @@ const createInstancePolicy = (
       'ecs:UpdateContainerInstancesState',
       'ecs:Submit*',
       'ecs:ListTagsForResource',
-      'logs:CreateLogGroup',
-      'logs:CreateLogStream',
-      'logs:PutLogEvents',
-      'logs:DescribeLogStreams',
     ],
     resources: ['*'],
   };
