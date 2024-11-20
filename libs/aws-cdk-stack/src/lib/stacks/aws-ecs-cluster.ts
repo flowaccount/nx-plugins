@@ -68,6 +68,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     {
       name: configuration.ecs.instanceRole.name,
       assumedBy: configuration.ecs.instanceRole.assumedBy,
+      existingRole: configuration.ecs.existingCluster ?? false,
     }
   ).output.role;
 
