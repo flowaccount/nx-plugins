@@ -191,25 +191,17 @@ const createInstancePolicy = (
   instanceRoles?: IRole[],
   stage?: string
 ) => {
-  const generalPolicy: PolicyStatementModel = {
+  const ec2Policy: PolicyStatementModel = {
     actions: [
       'ec2:DescribeInstances',
       'ec2:DescribeRegions',
       'ec2:DescribeSecurityGroups',
       'ec2:DescribeSubnets',
       'ec2:DescribeVpcs',
-      'ecs:CreateCluster',
-      'ecs:DeregisterContainerInstance',
-      'ecs:DiscoverPollEndpoint',
-      'ecs:Poll',
-      'ecs:RegisterContainerInstance',
-      'ecs:StartTelemetrySession',
-      'ecs:UpdateContainerInstancesState',
-      'ecs:Submit*',
-      'ecs:ListTagsForResource',
     ],
     resources: ['*'],
   };
+
   const ssmPolicy: PolicyStatementModel = {
     actions: [
       'ssm:DescribeAssociation',
@@ -241,7 +233,7 @@ const createInstancePolicy = (
     resources: ['*'],
   };
 
-  const statements: PolicyStatementModel[] = [generalPolicy, ssmPolicy];
+  const statements: PolicyStatementModel[] = [ec2Policy, ssmPolicy];
   statements.push(...extendedPolicy.statements);
 
   const instancePolicyProps: PolicyStackProperties = {
