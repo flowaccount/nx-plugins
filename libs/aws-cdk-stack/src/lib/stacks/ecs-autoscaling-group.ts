@@ -6,7 +6,6 @@ import {
   CfnLaunchTemplate,
   SecurityGroup,
   SubnetType,
-  AmazonLinuxImage,
 } from 'aws-cdk-lib/aws-ec2';
 import { CfnInstanceProfile, IRole } from 'aws-cdk-lib/aws-iam';
 import {
@@ -53,6 +52,7 @@ EOF
 amazon-linux-extras disable docker && amazon-linux-extras install -y ecs && systemctl enable --now --no-block ecs
 docker plugin install rexray/ebs EBS_REGION=${stackProps.env.region} --grant-all-permissions
         `;
+
     if (stackProps.s3MountConfig) {
       _userData = `
 #!/bin/bash
@@ -85,6 +85,7 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
         </powershell>
         `;
     }
+
     const _securityGroup = new SecurityGroup(
       this,
       stackProps.asgModel.asg.instanceSecurityGroup.name,
@@ -94,11 +95,13 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
         securityGroupName: stackProps.asgModel.asg.instanceSecurityGroup.name,
       }
     );
+
     stackProps.asgModel.asg.instanceSecurityGroup.inboudRule.forEach(
       (_rule) => {
         _securityGroup.addIngressRule(_rule.peer, _rule.connection);
       }
     );
+
     const _instanceProfile = new CfnInstanceProfile(
       this,
       stackProps.asgModel.asg.instanceProfileName,
@@ -107,6 +110,7 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
         instanceProfileName: stackProps.asgModel.asg.instanceProfileName,
       }
     );
+
     const _launchTemplate: CfnLaunchTemplate = new CfnLaunchTemplate(
       this,
       stackProps.asgModel.launchTemplate.name,
@@ -129,6 +133,8 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
                 volumeType: stackProps.asgModel.launchTemplate.volumeType,
                 volumeSize: stackProps.asgModel.launchTemplate.volumeSize,
                 deleteOnTermination: true,
+                encrypted: stackProps.asgModel.launchTemplate.encrypted,
+                kmsKeyId: stackProps.asgModel.launchTemplate.kmsKeyId,
               },
               deviceName: '/dev/xvda',
             },
@@ -171,7 +177,7 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
         SpotAllocationStrategy: 'capacity-optimized',
       },
     });
-    asgGroup.addDependsOn(_launchTemplate);
+    asgGroup.addDependency(_launchTemplate);
     this._autoScalingGroup = asgGroup;
     // });
 
@@ -180,12 +186,10 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
     });
     // ECS Cluster and Auto Scaling Group
     // let protection: string = stackProps.asgModel.asg.protectionFromScaleIn==true? 'ENABLED': 'DISABLED'
-    let protection: string;
-    if (stackProps.asgModel.asg.protectionFromScaleIn) {
-      protection = 'ENABLED';
-    } else {
-      protection = 'DISABLED';
-    }
+    const protection: string = stackProps.asgModel.asg.protectionFromScaleIn
+      ? 'ENABLED'
+      : 'DISABLED';
+
     const myCapacityProvider = new CfnCapacityProvider(
       this,
       `${asgGroup.autoScalingGroupName}`,
@@ -201,6 +205,7 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
         name: `${asgGroup.autoScalingGroupName}`,
       }
     );
-    myCapacityProvider.addDependsOn(asgGroup);
+
+    myCapacityProvider.addDependency(asgGroup);
   }
 }

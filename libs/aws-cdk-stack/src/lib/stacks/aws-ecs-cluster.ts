@@ -9,7 +9,12 @@ import { ECSCapacityProvider } from './ecs-capacity-provider';
 import { ManagedPolicyStack } from './managed-policy-stack';
 import { RoleStack } from './role-stack';
 import { VpcStack } from './vpc';
-import { IECSStackEnvironmentConfig } from '../types';
+import {
+  IECSStackEnvironmentConfig,
+  PolicyModel,
+  PolicyStackProperties,
+  PolicyStatementModel,
+} from '../types';
 
 /**
  * This class is used to create an ECS cluster stack by specifying the VPC and Subnets
@@ -63,14 +68,18 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     {
       name: configuration.ecs.instanceRole.name,
       assumedBy: configuration.ecs.instanceRole.assumedBy,
+      existingRole: configuration.ecs.instanceRole.existingRole ?? false,
     }
   ).output.role;
 
   // instance policy
-  new ManagedPolicyStack(_app, `${configuration.ecs.instancePolicy.name}`, {
-    ...configuration.ecs.instancePolicy,
-    roles: [_instanceRole],
-  }).output.policy;
+  createInstancePolicy(
+    _app,
+    configuration.ecs.instancePolicy.name,
+    configuration.ecs.instancePolicy,
+    [_instanceRole],
+    configuration.stage
+  );
 
   // task execution role and policy
   const _taskExecutionRole: IRole = new RoleStack(
@@ -174,4 +183,68 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     //    env: configuration.awsCredentials
     //   })
   });
+};
+
+const createInstancePolicy = (
+  app: App,
+  instancePolicyName: string,
+  extendedPolicy: PolicyModel,
+  instanceRoles?: IRole[],
+  stage?: string
+) => {
+  const ec2Policy: PolicyStatementModel = {
+    actions: [
+      'ec2:DescribeInstances',
+      'ec2:DescribeRegions',
+      'ec2:DescribeSecurityGroups',
+      'ec2:DescribeSubnets',
+      'ec2:DescribeVpcs',
+    ],
+    resources: ['*'],
+  };
+
+  const ssmPolicy: PolicyStatementModel = {
+    actions: [
+      'ssm:DescribeAssociation',
+      'ssm:GetDeployablePatchSnapshotForInstance',
+      'ssm:GetDocument',
+      'ssm:DescribeDocument',
+      'ssm:GetManifest',
+      'ssm:GetParameter',
+      'ssm:GetParameters',
+      'ssm:ListAssociations',
+      'ssm:ListInstanceAssociations',
+      'ssm:PutInventory',
+      'ssm:PutComplianceItems',
+      'ssm:PutConfigurePackageResult',
+      'ssm:UpdateAssociationStatus',
+      'ssm:UpdateInstanceAssociationStatus',
+      'ssm:UpdateInstanceInformation',
+      `ssmmessages:CreateControlChannel`,
+      `ssmmessages:CreateDataChannel`,
+      `ssmmessages:OpenControlChannel`,
+      `ssmmessages:OpenDataChannel`,
+      `ec2messages:AcknowledgeMessage`,
+      `ec2messages:DeleteMessage`,
+      `ec2messages:FailMessage`,
+      `ec2messages:GetEndpoint`,
+      `ec2messages:GetMessages`,
+      `ec2messages:SendReply`,
+    ],
+    resources: ['*'],
+  };
+
+  const statements: PolicyStatementModel[] = [ec2Policy, ssmPolicy];
+  statements.push(...extendedPolicy.statements);
+
+  const instancePolicyProps: PolicyStackProperties = {
+    statements: statements,
+    name: extendedPolicy.name
+      ? extendedPolicy.name
+      : `default-${stage}-cluster-policy`,
+    roles: instanceRoles,
+  };
+
+  return new ManagedPolicyStack(app, instancePolicyName, instancePolicyProps)
+    .output.policy;
 };

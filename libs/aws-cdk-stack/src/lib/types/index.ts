@@ -341,7 +341,9 @@ export abstract class ECSStackEnvironmentConfig {
 export class RoleModel {
   name: string;
   assumedBy: PrincipalBase[];
+  existingRole?: boolean;
 }
+
 export class AutoScalingGroupModel {
   launchTemplate: {
     name: string;
@@ -351,6 +353,8 @@ export class AutoScalingGroupModel {
     version: number | string;
     volumeType: string;
     volumeSize: number;
+    encrypted?: boolean;
+    kmsKeyId?: string;
   };
   asg: {
     name: string;
@@ -365,24 +369,29 @@ export class AutoScalingGroupModel {
     instanceSecurityGroup: SecurityGroupsModel;
   };
 }
+
 class SecurityGroupsInboudRuleModel {
   peer: IPeer;
   connection: Port;
 }
+
 class SecurityGroupsModel {
   name: string;
   inboudRule: SecurityGroupsInboudRuleModel[];
 }
+
 export class PolicyStatementModel {
   actions: string[];
   resources: string[];
   conditions?: Conditions;
 }
+
 export class PolicyModel {
   statements?: PolicyStatementModel[];
   statement?: PolicyStatementModel;
   name: string;
 }
+
 export class ECSModel {
   instancePolicy: PolicyModel;
   instanceRole: RoleModel;
@@ -478,6 +487,7 @@ export class TagModel {
   key: string;
   value: string;
 }
+
 export class S3MountConfig {
   bucketName: string;
   localPath: string;

@@ -11,15 +11,21 @@ export class RoleStack extends Stack {
     super(scope, id, _props);
 
     if (_props.existingRole) {
-      const role = Role.fromRoleName(this, `${_props.name}`, _props.name, {});
-      this.output = { role: role };
+      const existingRole: IRole = Role.fromRoleName(
+        this,
+        _props.name,
+        _props.name,
+        {}
+      );
+      existingRole;
+      this.output = { role: existingRole };
     } else {
       logger.debug(`creating role -- ${_props.name}`);
-      const role = new Role(this, `${_props.name}`, {
+      const newRole = new Role(this, `${_props.name}`, {
         roleName: _props.name,
         assumedBy: new CompositePrincipal(..._props.assumedBy),
       });
-      this.output = { role: role };
+      this.output = { role: newRole };
     }
   }
 }

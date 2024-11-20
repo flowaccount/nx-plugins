@@ -1,5 +1,6 @@
-import { ManagedPolicy, PolicyStatement } from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib/core'; import { Construct } from 'constructs';
+import { ManagedPolicy, PolicyStatement, IRole } from 'aws-cdk-lib/aws-iam';
+import { Stack } from 'aws-cdk-lib/core';
+import { Construct } from 'constructs';
 import { logger } from '@nx/devkit';
 import { PolicyStackProperties } from '../types';
 
@@ -7,6 +8,7 @@ export class ManagedPolicyStack extends Stack {
   public readonly output: {
     policy: ManagedPolicy;
   };
+
   constructor(scope: Construct, id: string, _props: PolicyStackProperties) {
     super(scope, id, _props);
 
@@ -22,6 +24,7 @@ export class ManagedPolicyStack extends Stack {
         }
       });
     }
+
     const _policyStatements: PolicyStatement[] = [];
     _props.statements?.forEach((statement) => {
       const policyStatement = new PolicyStatement();
@@ -33,12 +36,18 @@ export class ManagedPolicyStack extends Stack {
       });
       _policyStatements.push(policyStatement);
     });
+
     logger.debug(`creating policy:${_props.name}`);
     const _policy = new ManagedPolicy(this, _props.name, {
       managedPolicyName: _props.name,
       statements: _policyStatements,
-      roles: _props.roles,
     });
+
+    logger.debug(`attach policy to roles`);
+    _props.roles?.forEach((role: IRole) => {
+      _policy.attachToRole(role);
+    });
+
     this.output = { policy: _policy };
   }
 }
