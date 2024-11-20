@@ -341,6 +341,7 @@ export abstract class ECSStackEnvironmentConfig {
 export class RoleModel {
   name: string;
   assumedBy: PrincipalBase[];
+  existingRole?: boolean;
 }
 
 export class AutoScalingGroupModel {
