@@ -98,4 +98,14 @@ export class AthenaActions {
   // tag actions
   static readonly TagResource = 'athena:TagResource';
   static readonly UntagResource = 'athena:UntagResource';
+
+  // start actions
+  static readonly ListAll = 'athena:List*';
+  static readonly GetAll = 'athena:Get*';
+  static readonly CancelAll = 'athena:Cancel*';
+  static readonly CreateAll = 'athena:Create*';
+  static readonly DeleteAll = 'athena:Delete*';
+  static readonly StartAll = 'athena:Start*';
+  static readonly StopAll = 'athena:Stop*';
+  static readonly UpdateAll = 'athena:Update*';
 }
