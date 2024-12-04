@@ -88,9 +88,44 @@ export class LambdaActions {
     static readonly DeleteAll = 'lambda:Delete*';
     static readonly GetAll = 'lambda:Get*';
     static readonly InvokeAll = 'lambda:Invoke*';
+    static readonly PublishAll = 'lambda:Publish*';
     static readonly ListAll = 'lambda:List*';
     static readonly PutAll = 'lambda:Put*';
     static readonly RemoveAll = 'lambda:Remove*';
     static readonly UpdateAll = 'lambda:Update*';
-  }
-  
+    static readonly All = 'lambda:*';
+
+    static get ViewActions() {
+      return [
+        this.ListAll,
+        this.GetAll,
+      ];
+    }
+
+    static get WriteActions() {
+      return [
+        this.CreateAll,
+        this.DeleteAll,
+        this.InvokeAll,
+        this.PublishAll,
+        this.PutAll,
+        this.UpdateAll
+      ];
+    }
+
+    static get PermissionsActions() {
+      return [
+        this.AddAll,
+        this.DisableReplication,
+        this.EnableReplication,
+        this.RemoveAll
+      ]
+    }
+
+    static get TagActions() {
+      return [
+        this.TagResource,
+        this.UntagResource
+      ]
+    }
+}
