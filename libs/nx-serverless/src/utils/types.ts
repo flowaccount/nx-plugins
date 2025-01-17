@@ -2,6 +2,7 @@ import { StatsCompilation } from 'webpack';
 import { Observable } from 'rxjs';
 import { Target } from '@nx/devkit';
 import { Packager } from './enums';
+import { WebpackExecutorOptions } from '@nx/webpack';
 
 export interface FileReplacement {
   replace: string;
@@ -115,6 +116,10 @@ export interface SimpleBuildEvent {
 export const enum InspectType {
   Inspect = 'inspect',
   InspectBrk = 'inspect-brk',
+}
+
+export interface ServerlessBuildBuilderOptions extends WebpackExecutorOptions {
+  processEnvironmentFile?: string;
 }
 
 // review: Have to spin off options and clarify schema.json for deploy,build,serve

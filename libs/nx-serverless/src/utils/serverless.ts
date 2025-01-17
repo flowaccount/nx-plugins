@@ -1,5 +1,4 @@
-import * as Serverless from 'serverless/lib/Serverless';
-import * as readConfiguration from 'serverless/lib/configuration/read';
+import readConfiguration from 'serverless/lib/configuration/read';
 import {
   ServerlessDeployBuilderOptions,
   ServerlessSlsBuilderOptions,
@@ -7,21 +6,15 @@ import {
 } from './types';
 import * as path from 'path';
 import * as fs from 'fs';
-import * as dotEnvJson from 'dotenv-json';
+import dotEnvJson from 'dotenv-json';
 import { copyBuildOutputToBePackaged, parseArgs } from './copy-asset-files';
-// import * as componentsV2  from '@serverless/components';
-import {
-  ExecutorContext,
-  logger,
-} from '@nx/devkit';
+import { ExecutorContext, logger } from '@nx/devkit';
 import { getProjectRoot } from './normalize';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 export class ServerlessWrapper {
- 
   private static serverless$: any = null;
   private static configurationInput$: any = null;
-
 
   static get serverless() {
     if (this.serverless$ === null) {
@@ -40,7 +33,6 @@ export class ServerlessWrapper {
     }
     return this.configurationInput$;
   }
-  
 
   static dispose() {
     this.serverless$ = null;
@@ -58,16 +50,13 @@ export class ServerlessWrapper {
     processEnvironmentFile: string
   ): Promise<void> {
     if (this.serverless$ === null) {
-      const info = chalk.bold.green('info')
+      const info = chalk.bold.green('info');
 
       logger.info(`${info} Starting to Initiate Serverless Instance`);
 
       const projectRoot = getProjectRoot(context);
       try {
-        const filePath = path.join(
-          projectRoot,
-          processEnvironmentFile
-        );
+        const filePath = path.join(projectRoot, processEnvironmentFile);
         logger.info(`${info} Loading Environment Variables ${filePath}`);
         dotEnvJson({
           path: filePath,
@@ -86,8 +75,7 @@ export class ServerlessWrapper {
         logger.info(`${info} Resolved configurations`);
         this.configurationInput$.useDotenv = false;
         logger.info(`${info} Initiating Serverless Instance`);
-      }
-      catch (ex) {
+      } catch (ex) {
         logger.error(ex);
       }
     }
@@ -95,8 +83,8 @@ export class ServerlessWrapper {
 }
 
 export function getPackagePath(
-    options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions | any
-  ) {
+  options: ServerlessDeployBuilderOptions | ServerlessSlsBuilderOptions | any
+) {
   let packagePath = '';
   if (
     !options.serverlessPackagePath &&

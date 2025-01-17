@@ -3,10 +3,10 @@ import { ServerlessBaseOptions } from './types';
 import { statSync } from 'fs';
 import * as glob from 'glob';
 import { extname, join } from 'path';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import { ServerlessWrapper } from './serverless';
 import { ExecutorContext, ProjectConfiguration, logger } from '@nx/devkit';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { AdditionalEntryPoint } from '@nx/webpack/src/executors/webpack/schema';
 
 export interface FileReplacement {
@@ -14,13 +14,13 @@ export interface FileReplacement {
   with: string;
 }
 
-export function assignEntriesToFunctionsFromServerless(context: ExecutorContext): AdditionalEntryPoint[] {
-  
-  const info = chalk.bold.green('info')
+export function assignEntriesToFunctionsFromServerless(
+  context: ExecutorContext
+): AdditionalEntryPoint[] {
+  const info = chalk.bold.green('info');
   logger.info(`${info} getting all functions`);
   const srcRoot = getSourceRoot(context);
   const projectRoot = getProjectRoot(context);
-
 
   const functions = ServerlessWrapper.configurationInput.functions;
   const entries = [];
@@ -47,14 +47,17 @@ export function getProjectRoot(context: ExecutorContext) {
 }
 
 export function getSourceRoot(context: ExecutorContext) {
-  const { sourceRoot } = context.projectsConfigurations.projects[context.projectName];
+  const { sourceRoot } =
+    context.projectsConfigurations.projects[context.projectName];
   if (!sourceRoot) {
     throw new Error(`${context.projectName} does not have a root.`);
   }
   return sourceRoot;
 }
 
-export function getProjectConfiguration(context: ExecutorContext): ProjectConfiguration {
+export function getProjectConfiguration(
+  context: ExecutorContext
+): ProjectConfiguration {
   return context.projectsConfigurations.projects[context.projectName];
 }
 
@@ -99,12 +102,11 @@ export const getEntryForFunction = (
   provider,
   sourceroot,
   root
-) : AdditionalEntryPoint => {
-
+): AdditionalEntryPoint => {
   let handlerFile = getHandlerFile(handler);
   if (!handlerFile) {
     provider !== 'google' &&
-       logger.warn(
+      logger.warn(
         `\nWARNING: Entry for ${name}@${handler} could not be retrieved.\nPlease check your service config if you want to use lib.entries.`
       );
     return;
@@ -113,8 +115,6 @@ export const getEntryForFunction = (
   // // Sometimes the service path and handlerFile path overlap, unusually caused by plugins. This regex removes the overlap
   // const regex = new RegExp(`^${servicePath.replace(/\/([^/]*)/g, `($1\\/)?`)}`);
   // handlerFile = handlerFile.replace(regex, ``);
-
-  
 
   // // Create a valid entry key
   // let handlerFileFinal = `${sourceroot.replace(
