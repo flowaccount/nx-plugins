@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/nx-serverless",
-  "version": "99.99.99",
+  "version": "3.2.7",
   "main": "src/index.js",
   "description": "Serverless schematics for nx workspace",
   "keywords": [

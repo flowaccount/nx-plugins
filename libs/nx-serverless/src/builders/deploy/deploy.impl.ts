@@ -1,6 +1,3 @@
-/* Fix for EMFILE: too many open files on serverless deploy */
-import * as fs from 'fs';
-import * as gracefulFs from 'graceful-fs'; // TODO: 0 this is not needed here anymore?
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { ExecutorContext, logger } from '@nx/devkit';
 import {
@@ -11,21 +8,16 @@ import {
 import { ScullyBuilderOptions } from '../scully/scully.impl';
 import { detectPackageManager } from '@nx/devkit';
 import { getProjectConfiguration, getProjectRoot } from '../../utils/normalize';
-import * as chalk from 'chalk';
-import * as dotEnvJson from 'dotenv-json';
+import chalk from 'chalk';
+import dotEnvJson from 'dotenv-json';
 
 import { execSync } from 'child_process';
-
-// import { WebpackExecutorOptions } from '@nx/webpack';
 
 import { NX_SERVERLESS_BUILD_TARGET_KEY } from '../../nrwl/nx-facade';
 import { NPM } from '../../utils/packagers/npm';
 import { Yarn } from '../../utils/packagers/yarn';
 import { packager } from '../../utils/packagers';
 import { WebpackExecutorOptions } from '@nx/webpack';
-
-gracefulFs.gracefulify(fs); // TODO: 0 this is not needed here anymore?
-/* Fix for EMFILE: too many open files on serverless deploy */
 
 function getSlsCommand() {
   const packageManager = detectPackageManager();
@@ -40,11 +32,11 @@ function getSlsCommand() {
 
 function getBuildTargetConfiguration(
   targetName: string,
-  context: ExecutorContext,
+  context: ExecutorContext
 ): WebpackExecutorOptions {
   const projectConfig = getProjectConfiguration(context);
 
-  const targetSplit = targetName.split(':')
+  const targetSplit = targetName.split(':');
   const finalName = targetSplit[1];
   const configuration = targetSplit[2];
 
@@ -60,7 +52,7 @@ function getBuildTargetConfiguration(
   throw new Error(`Build target '${targetName}' `);
 }
 
-function getPackagerInstance(options){
+function getPackagerInstance(options) {
   let packagerInstance = null;
   if (options.packager && options.packager.toString().toLowerCase() == 'npm') {
     packagerInstance = NPM;
@@ -87,8 +79,6 @@ export async function deployExecutor(
   options: ServerlessDeployBuilderOptions,
   context: ExecutorContext
 ) {
-  
-  
   //  const { target, project, configuration } = parseTargetString(options.buildTarget, context);
   // const root = getSourceRoot(context);
 
@@ -104,9 +94,9 @@ export async function deployExecutor(
   //   root
   // );
   const projectRoot = getProjectRoot(context);
-  const info = chalk.bold.green('info')
+  const info = chalk.bold.green('info');
   dotEnvJson({
-    path: `${projectRoot}/${options.processEnvironmentFile ?? 'env.json'}`
+    path: `${projectRoot}/${options.processEnvironmentFile ?? 'env.json'}`,
   });
 
   if (!options.skipBuild) {
@@ -126,8 +116,7 @@ export async function deployExecutor(
     }
     const iterator = await buildTarget(options, context);
     const buildOutput = <SimpleBuildEvent>(await iterator.next()).value;
-    if(buildOutput.error)
-    {
+    if (buildOutput.error) {
       throw new Error(buildOutput.error);
     }
   }
@@ -148,22 +137,25 @@ export async function deployExecutor(
   //const npxPath = path.resolve(context.root, 'node_modules/serverless', 'bin', 'serverless.js');
   try {
     const packagerInstance = getPackagerInstance(options);
-    logger.info(`${info} installing yarn on ${context.root}/${buildConfig.outputPath}`);
-    const result = await packagerInstance.install(`${context.root}/${buildConfig.outputPath}`);
+    logger.info(
+      `${info} installing yarn on ${context.root}/${buildConfig.outputPath}`
+    );
+    const result = await packagerInstance.install(
+      `${context.root}/${buildConfig.outputPath}`
+    );
     if (result.error) {
       logger.error('ERROR: generating lock file!');
       return { success: false, error: result.error.toString() };
     }
-    execSync(fullCommand, 
-      { 
-        stdio: 'inherit',
-        cwd: projectRoot, 
-        env: {
-          FORCE_COLOR: 'true',
-          NODE_OPTIONS: '--enable-source-maps',
-          ...process.env,
-          [NX_SERVERLESS_BUILD_TARGET_KEY]: options.buildTarget,
-      } 
+    execSync(fullCommand, {
+      stdio: 'inherit',
+      cwd: projectRoot,
+      env: {
+        FORCE_COLOR: 'true',
+        NODE_OPTIONS: '--enable-source-maps',
+        ...process.env,
+        [NX_SERVERLESS_BUILD_TARGET_KEY]: options.buildTarget,
+      },
     });
   } catch (error) {
     logger.error(error);
@@ -176,7 +168,7 @@ export async function deployExecutor(
 }
 
 export async function* buildTarget(
-  options: 
+  options:
     | ServerlessDeployBuilderOptions
     | ServerlessSlsBuilderOptions
     | ScullyBuilderOptions,

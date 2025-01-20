@@ -3,7 +3,7 @@ import treeKill from 'tree-kill';
 import { runWaitUntilTargets, startBuild } from '../../utils/target.schedulers';
 import { ExecutorContext, logger } from '@nx/devkit';
 import { promisify } from 'util';
-import * as dotEnvJson from 'dotenv-json';
+import dotEnvJson from 'dotenv-json';
 import {
   InspectType,
   ServerlessExecutorOptions,
@@ -11,7 +11,7 @@ import {
 } from '../../utils/types';
 import { getSlsCommand } from '../../utils/packagers';
 import * as path from 'node:path';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import { getProjectRoot } from '../../utils/normalize';
 import { NX_SERVERLESS_BUILD_TARGET_KEY } from '../../nrwl/nx-facade';
 import * as dotfile from 'dotenv';
