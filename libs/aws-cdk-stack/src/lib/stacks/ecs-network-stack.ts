@@ -30,11 +30,10 @@ export const createNetworkStack = (
   configuration: IECSStackEnvironmentConfig
 ) => {
   const app: App = new App();
-  const _vpc = new VpcStack(
-    app,
-    `vpc-${configuration.stage}`,
-    configuration.vpc
-  ).vpc;
+  const _vpc = new VpcStack(app, `vpc-${configuration.stage}`, {
+    ...configuration.vpc,
+    taglist: configuration.tag,
+  }).vpc;
 
   const targetGroups: ApplicationTargetGroupConfiguration[] = [];
   configuration.service.forEach((apiService, index) => {

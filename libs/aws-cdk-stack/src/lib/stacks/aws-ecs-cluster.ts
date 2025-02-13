@@ -53,7 +53,10 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
   const _vpc: VpcStack = new VpcStack(
     _app,
     `vpc-${configuration.app}-${configuration.stage}`,
-    configuration.vpc
+    {
+      ...configuration.vpc,
+      taglist: configuration.tag,
+    }
   );
 
   // Loadbalancer vpc and route53
