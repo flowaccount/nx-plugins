@@ -59,7 +59,6 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     }
   );
 
-  // Loadbalancer vpc and route53
   // instance role and policy
   logger.info(
     `Initiating instance role instance-role-${configuration.app}-${configuration.stage}`
@@ -72,6 +71,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
       name: configuration.ecs.instanceRole.name,
       assumedBy: configuration.ecs.instanceRole.assumedBy,
       existingRole: configuration.ecs.instanceRole.existingRole ?? false,
+      taglist: configuration.tag,
     }
   ).output.role;
 
@@ -91,6 +91,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     {
       name: configuration.ecs.taskExecutionRole.name,
       assumedBy: configuration.ecs.taskExecutionRole.assumedBy,
+      taglist: configuration.tag,
     }
   ).output.role;
 
@@ -112,6 +113,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
       name: configuration.ecs.taskRole.name,
       assumedBy: configuration.ecs.taskRole.assumedBy,
       existingRole: configuration.ecs.existingCluster ?? false,
+      taglist: configuration.tag,
     }
   ).output.role;
 

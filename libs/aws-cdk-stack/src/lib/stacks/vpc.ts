@@ -5,7 +5,7 @@ import { TagModel, VpcStackProperties } from '../types';
 import { logger } from '@nx/devkit';
 
 export interface VpcStackProps extends VpcStackProperties {
-  readonly taglist: TagModel[];
+  readonly taglist?: TagModel[];
 }
 
 export class VpcStack extends Stack {
