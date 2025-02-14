@@ -14,6 +14,7 @@ import {
   PolicyModel,
   PolicyStackProperties,
   PolicyStatementModel,
+  TagModel,
 } from '../types';
 
 /**
@@ -102,6 +103,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     {
       ...configuration.ecs.taskExecutionRolePolicy,
       roles: [_taskExecutionRole],
+      taglist: configuration.tag,
     }
   ).output.policy;
 
@@ -121,6 +123,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
   new ManagedPolicyStack(_app, `${configuration.ecs.taskRolePolicy.name}`, {
     ...configuration.ecs.taskRolePolicy,
     roles: [_taskRole],
+    taglist: configuration.tag,
   }).output.policy;
 
   // ECS Cluster and Auto Scaling Group
@@ -195,7 +198,8 @@ const createInstancePolicy = (
   instancePolicyName: string,
   extendedPolicy: PolicyModel,
   instanceRoles?: IRole[],
-  stage?: string
+  stage?: string,
+  taglist?: TagModel[]
 ) => {
   const ec2Policy: PolicyStatementModel = {
     actions: [
@@ -250,6 +254,8 @@ const createInstancePolicy = (
     roles: instanceRoles,
   };
 
-  return new ManagedPolicyStack(app, instancePolicyName, instancePolicyProps)
-    .output.policy;
+  return new ManagedPolicyStack(app, instancePolicyName, {
+    ...instancePolicyProps,
+    taglist: taglist,
+  }).output.policy;
 };
