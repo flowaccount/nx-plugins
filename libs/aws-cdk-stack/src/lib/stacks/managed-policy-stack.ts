@@ -54,7 +54,8 @@ export class ManagedPolicyStack extends Stack {
 
     this.output = { policy: _policy };
 
-    stackProps.taglist.forEach((tag) => {
+    const taglist: TagModel[] = stackProps.taglist ?? [];
+    taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
     });
   }

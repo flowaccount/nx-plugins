@@ -82,7 +82,8 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     configuration.ecs.instancePolicy.name,
     configuration.ecs.instancePolicy,
     [_instanceRole],
-    configuration.stage
+    configuration.stage,
+    configuration.tag
   );
 
   // task execution role and policy
@@ -158,7 +159,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     taglist: configuration.tag,
   });
 
-  configuration.service.forEach((apiService, index) => {
+  configuration.service.forEach((apiService, _) => {
     const service = new ECSService(_app, `${apiService.name}`, {
       ecsService: apiService,
       ecs: configuration.ecs,
@@ -172,24 +173,6 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     });
 
     _services.push(service);
-
-    // Call our new stack to tie things up together.
-    // Before code was here, now it goes in here.
-
-    // WHY new stack? Because some resource like Listeners cannot exists outside stack/scope
-    // BUT When exists in the same scope/stack as Service it dies because of cross reference.
-    // That is why new stack
-
-    //   const serviceALBadapter = new ServiceALBAdapter(_app, `adapter-${apiService.name}`, {
-    //    alb: _alb,
-    //    tg: service.tg,
-    //    serviceConfiguration: apiService,
-    //    applicationtargetGroup: apiService.applicationtargetGroup,
-    //    stage: configuration.stage,
-    //    route53Domain: configuration.route53Domain,
-    //    vpc: _vpc.vpc,
-    //    env: configuration.awsCredentials
-    //   })
   });
 };
 

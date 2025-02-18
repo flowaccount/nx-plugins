@@ -32,7 +32,8 @@ export class RoleStack extends Stack {
       this.output = { role: newRole };
     }
 
-    stackProps.taglist.forEach((tag) => {
+    const taglist: TagModel[] = stackProps.taglist ?? [];
+    taglist.forEach((tag) => {
       Tags.of(this).add(tag.key, tag.value);
     });
   }
