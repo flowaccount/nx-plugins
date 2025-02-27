@@ -14,6 +14,7 @@ import {
   PolicyModel,
   PolicyStackProperties,
   PolicyStatementModel,
+  TagModel,
 } from '../types';
 
 /**
@@ -53,10 +54,12 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
   const _vpc: VpcStack = new VpcStack(
     _app,
     `vpc-${configuration.app}-${configuration.stage}`,
-    configuration.vpc
+    {
+      ...configuration.vpc,
+      taglist: configuration.tag,
+    }
   );
 
-  // Loadbalancer vpc and route53
   // instance role and policy
   logger.info(
     `Initiating instance role instance-role-${configuration.app}-${configuration.stage}`
@@ -69,6 +72,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
       name: configuration.ecs.instanceRole.name,
       assumedBy: configuration.ecs.instanceRole.assumedBy,
       existingRole: configuration.ecs.instanceRole.existingRole ?? false,
+      taglist: configuration.tag,
     }
   ).output.role;
 
@@ -78,7 +82,8 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     configuration.ecs.instancePolicy.name,
     configuration.ecs.instancePolicy,
     [_instanceRole],
-    configuration.stage
+    configuration.stage,
+    configuration.tag
   );
 
   // task execution role and policy
@@ -88,6 +93,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     {
       name: configuration.ecs.taskExecutionRole.name,
       assumedBy: configuration.ecs.taskExecutionRole.assumedBy,
+      taglist: configuration.tag,
     }
   ).output.role;
 
@@ -98,6 +104,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     {
       ...configuration.ecs.taskExecutionRolePolicy,
       roles: [_taskExecutionRole],
+      taglist: configuration.tag,
     }
   ).output.policy;
 
@@ -109,6 +116,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
       name: configuration.ecs.taskRole.name,
       assumedBy: configuration.ecs.taskRole.assumedBy,
       existingRole: configuration.ecs.existingCluster ?? false,
+      taglist: configuration.tag,
     }
   ).output.role;
 
@@ -116,6 +124,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
   new ManagedPolicyStack(_app, `${configuration.ecs.taskRolePolicy.name}`, {
     ...configuration.ecs.taskRolePolicy,
     roles: [_taskRole],
+    taglist: configuration.tag,
   }).output.policy;
 
   // ECS Cluster and Auto Scaling Group
@@ -150,7 +159,7 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     taglist: configuration.tag,
   });
 
-  configuration.service.forEach((apiService, index) => {
+  configuration.service.forEach((apiService, _) => {
     const service = new ECSService(_app, `${apiService.name}`, {
       ecsService: apiService,
       ecs: configuration.ecs,
@@ -164,24 +173,6 @@ export const createStack = (configuration: IECSStackEnvironmentConfig) => {
     });
 
     _services.push(service);
-
-    // Call our new stack to tie things up together.
-    // Before code was here, now it goes in here.
-
-    // WHY new stack? Because some resource like Listeners cannot exists outside stack/scope
-    // BUT When exists in the same scope/stack as Service it dies because of cross reference.
-    // That is why new stack
-
-    //   const serviceALBadapter = new ServiceALBAdapter(_app, `adapter-${apiService.name}`, {
-    //    alb: _alb,
-    //    tg: service.tg,
-    //    serviceConfiguration: apiService,
-    //    applicationtargetGroup: apiService.applicationtargetGroup,
-    //    stage: configuration.stage,
-    //    route53Domain: configuration.route53Domain,
-    //    vpc: _vpc.vpc,
-    //    env: configuration.awsCredentials
-    //   })
   });
 };
 
@@ -190,7 +181,8 @@ const createInstancePolicy = (
   instancePolicyName: string,
   extendedPolicy: PolicyModel,
   instanceRoles?: IRole[],
-  stage?: string
+  stage?: string,
+  taglist?: TagModel[]
 ) => {
   const ec2Policy: PolicyStatementModel = {
     actions: [
@@ -245,6 +237,8 @@ const createInstancePolicy = (
     roles: instanceRoles,
   };
 
-  return new ManagedPolicyStack(app, instancePolicyName, instancePolicyProps)
-    .output.policy;
+  return new ManagedPolicyStack(app, instancePolicyName, {
+    ...instancePolicyProps,
+    taglist: taglist,
+  }).output.policy;
 };

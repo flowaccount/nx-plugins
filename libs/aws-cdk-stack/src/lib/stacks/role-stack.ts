@@ -1,31 +1,40 @@
 import { CompositePrincipal, IRole, Role } from 'aws-cdk-lib/aws-iam';
-import { Stack } from 'aws-cdk-lib/core';
+import { Stack, Tags } from 'aws-cdk-lib/core';
 import { Construct } from 'constructs';
 import { logger } from '@nx/devkit';
-import { RoleStackProperties } from '../types';
+import { RoleStackProperties, TagModel } from '../types';
+
+export interface RoleStackProps extends RoleStackProperties {
+  readonly taglist?: TagModel[];
+}
 
 export class RoleStack extends Stack {
   public readonly output: { role: IRole };
 
-  constructor(scope: Construct, id: string, _props: RoleStackProperties) {
-    super(scope, id, _props);
+  constructor(scope: Construct, id: string, stackProps: RoleStackProps) {
+    super(scope, id, stackProps);
 
-    if (_props.existingRole) {
+    if (stackProps.existingRole) {
       const existingRole: IRole = Role.fromRoleName(
         this,
-        _props.name,
-        _props.name,
+        stackProps.name,
+        stackProps.name,
         {}
       );
       existingRole;
       this.output = { role: existingRole };
     } else {
-      logger.debug(`creating role -- ${_props.name}`);
-      const newRole = new Role(this, `${_props.name}`, {
-        roleName: _props.name,
-        assumedBy: new CompositePrincipal(..._props.assumedBy),
+      logger.debug(`creating role -- ${stackProps.name}`);
+      const newRole = new Role(this, `${stackProps.name}`, {
+        roleName: stackProps.name,
+        assumedBy: new CompositePrincipal(...stackProps.assumedBy),
       });
       this.output = { role: newRole };
     }
+
+    const taglist: TagModel[] = stackProps.taglist ?? [];
+    taglist.forEach((tag) => {
+      Tags.of(this).add(tag.key, tag.value);
+    });
   }
 }
