@@ -1,6 +1,6 @@
 {
   "name": "@flowaccount/nx-serverless",
-  "version": "3.2.7",
+  "version": "3.2.8",
   "main": "src/index.js",
   "description": "Serverless schematics for nx workspace",
   "keywords": [
@@ -32,7 +32,7 @@
     "dotenv-json": "^1.0.0",
     "depcheck": "1.4.3",
     "serverless": "^3.38.0",
-    "serverless-offline": "^13.3.3",
+    "serverless-offline": "^14.4.0",
     "serverless-apigw-binary": "^0.4.4",
     "swc-loader": "0.2.6",
     "is-builtin-module": "^3.0.0",
