@@ -366,6 +366,7 @@ export class AutoScalingGroupModel {
     onDemandPercentage: number;
     protectionFromScaleIn: boolean;
     instanceProfileName: string;
+    instanceProfileArn?: string;
     instanceSecurityGroup: SecurityGroupsModel;
   };
 }

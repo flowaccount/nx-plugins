@@ -102,14 +102,7 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
       }
     );
 
-    const _instanceProfile = new CfnInstanceProfile(
-      this,
-      stackProps.asgModel.asg.instanceProfileName,
-      {
-        roles: [stackProps.instanceRole.roleName],
-        instanceProfileName: stackProps.asgModel.asg.instanceProfileName,
-      }
-    );
+    const instanceProfileArn: string = this.getInstanceProfileArn(stackProps);
 
     const _launchTemplate: CfnLaunchTemplate = new CfnLaunchTemplate(
       this,
@@ -125,7 +118,7 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
           instanceType: stackProps.asgModel.launchTemplate.instanceType,
           keyName: stackProps.asgModel.launchTemplate.keyName,
           securityGroupIds: [_securityGroup.securityGroupId],
-          iamInstanceProfile: { arn: _instanceProfile.attrArn },
+          iamInstanceProfile: { arn: instanceProfileArn },
           userData: Fn.base64(_userData),
           blockDeviceMappings: [
             {
@@ -207,5 +200,31 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
     );
 
     myCapacityProvider.addDependency(asgGroup);
+  }
+
+  private getInstanceProfileArn(stackProps: ECSAutoScalingGroupProps): string {
+    const { asgModel, instanceRole } = stackProps;
+
+    if (asgModel.asg.instanceProfileArn) {
+      return asgModel.asg.instanceProfileArn;
+    }
+
+    const roleName = instanceRole.roleName;
+    if (!roleName) {
+      throw new Error(
+        'Instance role name is required to create instance profile.'
+      );
+    }
+
+    const instanceProfile = new CfnInstanceProfile(
+      this,
+      stackProps.asgModel.asg.instanceProfileName,
+      {
+        roles: [roleName],
+        instanceProfileName: stackProps.asgModel.asg.instanceProfileName,
+      }
+    );
+
+    return instanceProfile.attrArn;
   }
 }
