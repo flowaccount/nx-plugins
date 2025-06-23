@@ -65,6 +65,7 @@ export default async function runSynthExecutor(
     process.env.keyPairName = argsss['keyPairName'];
     process.env.existingRole = argsss['existingRole'];
     process.env.owner = argsss['owner'];
+    process.env.region = argsss['region'];
   }
 
   // require('dotenv-json')(argsss)

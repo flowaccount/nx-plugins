@@ -102,7 +102,7 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
       }
     );
 
-    const instanceProfileArn: string = this.getInstanceProfileArn(stackProps);
+    const _instanceProfileArn: string = this.getInstanceProfileArn(stackProps);
 
     const _launchTemplate: CfnLaunchTemplate = new CfnLaunchTemplate(
       this,
@@ -118,7 +118,7 @@ sudo s3cmd sync s3://${stackProps.s3MountConfig.bucketName} ${stackProps.s3Mount
           instanceType: stackProps.asgModel.launchTemplate.instanceType,
           keyName: stackProps.asgModel.launchTemplate.keyName,
           securityGroupIds: [_securityGroup.securityGroupId],
-          iamInstanceProfile: { arn: instanceProfileArn },
+          iamInstanceProfile: { arn: _instanceProfileArn },
           userData: Fn.base64(_userData),
           blockDeviceMappings: [
             {
