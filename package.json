@@ -79,7 +79,7 @@
     "aws-cdk": "^2.143.1",
     "aws-cdk-lib": "^2.143.1",
     "circular-dependency-plugin": "^5.0.2",
-    "cypress": "^4.1.0",
+    "cypress": "^5.0.0",
     "cz-conventional-changelog": "^3.0.2",
     "cz-customizable": "^6.2.0",
     "depcheck": "1.4.3",
