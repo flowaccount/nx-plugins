@@ -18,6 +18,9 @@ import {
   createProjectGraphAsync,
   ExecutorContext,
   logger,
+  ProjectGraph,
+  ProjectGraphDependency,
+  ProjectGraphProjectNode,
 } from '@nx/devkit'; //, runExecutor, Target
 import { webpackExecutor } from '@nx/webpack';
 import path = require('path');
@@ -36,7 +39,50 @@ export async function buildExecutor(
   //const root = getSourceRoot(context);
   if (options.generatePackageJson) {
     logger.info(`${info} creating projectGraph`);
-    context.projectGraph = await createProjectGraphAsync();
+
+    const projectName: string = context.projectName;
+    const projectDetails: ProjectGraph = await createProjectGraphAsync();
+
+    // Remove unused packages (exclude npm, core-api, and shared-models)
+    const projectDependencies: string[] = projectDetails.dependencies[
+      projectName
+    ]
+      .filter((dependency: ProjectGraphDependency) => {
+        const target = dependency.target;
+        return (
+          target !== undefined &&
+          !target.includes('npm:') &&
+          !target.includes('core-api') &&
+          !target.includes('shared-models')
+        );
+      })
+      .map((dependency: ProjectGraphDependency) => dependency.target as string);
+
+    const includedProjects: string[] = [...projectDependencies, projectName];
+
+    // Filter nodes to include only specified projects
+    const focusedNodes: Record<string, ProjectGraphProjectNode> =
+      Object.fromEntries(
+        Object.entries(projectDetails.nodes).filter(
+          ([name]: [string, ProjectGraphProjectNode]) =>
+            includedProjects.includes(name)
+        )
+      );
+
+    // Filter dependencies to include only specified projects
+    const focusedDependencies: Record<string, ProjectGraphDependency[]> =
+      Object.fromEntries(
+        Object.entries(projectDetails.dependencies).filter(
+          ([name]: [string, ProjectGraphDependency[]]) =>
+            includedProjects.includes(name)
+        )
+      );
+
+    context.projectGraph = {
+      ...projectDetails,
+      nodes: focusedNodes,
+      dependencies: focusedDependencies,
+    };
   }
   logger.info(`${info} initialing serverless configurations`);
   await ServerlessWrapper.init(context, envFile);
